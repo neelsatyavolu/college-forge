@@ -31,6 +31,7 @@ function SchoolRow({ s, last, status, onTier, onStatus }) {
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
             <h3 className="cf-display" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "var(--ink)" }}>{s.short}</h3>
             {s.priority ? <Badge variant="coral" uppercase>Priority ED</Badge> : null}
+            {isUcCampus(s) ? <Badge variant="teal" uppercase>UC Application</Badge> : null}
           </div>
           <div style={{ fontSize: 13, color: "var(--body)", marginBottom: 6 }}>
             {s.major || "—"}
@@ -68,6 +69,26 @@ function SchoolRow({ s, last, status, onTier, onStatus }) {
   );
 }
 
+function isUcCampus(c) {
+  const slug = String((c && c.slug) || "").toLowerCase();
+  const name = String((c && (c.name || c.short)) || "").toLowerCase();
+  if (slug.indexOf("university-of-california-") === 0) return true;
+  if (slug === "ucla") return true;
+  if (name.indexOf("university of california") !== -1) return true;
+  return false;
+}
+
+/** Soft app count: all UC campuses share one UC Application slot. */
+function applicationSlotCount(colleges) {
+  let nonUc = 0;
+  let hasUc = false;
+  for (const c of colleges || []) {
+    if (isUcCampus(c)) hasUc = true;
+    else nonUc++;
+  }
+  return nonUc + (hasUc ? 1 : 0);
+}
+
 function Shortlist({ data, onAsk, onWorkspaceChange }) {
   const [filter, setFilter] = React.useState("all");
   const apps = data.applications || {};
@@ -78,6 +99,8 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
   };
   const untiered = data.colleges.filter((c) => !c.tier || !TIER_META[c.tier]);
   const totalSupps = data.colleges.filter((c) => c.supp && c.supp !== "No supps").length;
+  const ucCount = data.colleges.filter(isUcCampus).length;
+  const appSlots = applicationSlotCount(data.colleges);
   const FILTERS = [
     { id: "all", label: "All" }, { id: "reach", label: "Reaches" },
     { id: "target", label: "Targets" }, { id: "safety", label: "Safeties" },
@@ -101,14 +124,24 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">School list</h1>
-          <p className="cf-page-lede">Tiers and application status are editable here. Copilot can re-tier from your profile; export a pack from Share & export for Common App paste.</p>
+          <p className="cf-page-lede">
+            Tiers and application status are editable here. Copilot can re-tier from your profile; export a pack from Share &amp; export for Common App paste.
+            {ucCount > 0
+              ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
+              : ""}
+          </p>
         </div>
         <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to adjust ✱</Button>
       </header>
 
       {data.colleges.length > 0 ? (
         <div className="cf-grid-short-stats" style={{ marginBottom: 28 }}>
-          {[["Total", data.colleges.length], ["Reaches", byTier.reach.length], ["With supps", `${totalSupps}/${data.colleges.length}`]].map(([l, v]) => (
+          {[
+            ["Campuses", data.colleges.length],
+            ["App slots", appSlots],
+            ["Reaches", byTier.reach.length],
+            ["With supps", `${totalSupps}/${data.colleges.length}`],
+          ].map(([l, v]) => (
             <div key={l}>
               <div className="cf-display cf-nums" style={{ fontSize: 32, lineHeight: 1, letterSpacing: "-0.5px", color: "var(--ink)" }}>{v}</div>
               <div style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)", marginTop: 4 }}>{l}</div>

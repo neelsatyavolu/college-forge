@@ -258,6 +258,7 @@ export async function POST(req: NextRequest) {
       gpaUnweighted,
       gpaWeighted,
       intended,
+      location,
       targetCount: 12,
     });
 

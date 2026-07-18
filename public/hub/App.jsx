@@ -175,6 +175,9 @@ function App() {
     setRunOnboarding(false);
     setShowOnboardBanner(false);
     persistOnboardBannerDismissed();
+    // Land on Shortlist so the student sees the built college list first.
+    setView("shortlist");
+    try { window.history.replaceState(null, "", "#shortlist"); } catch (e) {}
   }, [applyWorkspace, refresh]);
 
   const startOnboarding = React.useCallback(() => {
