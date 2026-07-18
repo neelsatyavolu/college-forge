@@ -1,0 +1,689 @@
+/* College Forge — global stylesheet (tokens concatenated from the design kit).
+   The webfonts are loaded via <link rel="preconnect"/"stylesheet"> in the page
+   head rather than @import here: @import serialises (parse CSS → then fetch
+   fonts), which leaves body copy in a fallback face for longer. */
+
+:root {
+  /* ── Type families ── */
+  --font-serif: "Cormorant Garamond", "EB Garamond", "Tiempos Headline", Garamond, "Times New Roman", serif;
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--font-serif);
+  --font-body: var(--font-sans);
+  --font-code: var(--font-mono);
+
+  /* ── Brand / primary (coral) ── */
+  --coral: #cc785c;
+  --coral-active: #a9583e;
+  --coral-disabled: #e6dfd8;
+
+  /* ── Ink & text neutrals (warm) ── */
+  --ink: #141413;
+  --body: #3d3d3a;
+  --body-strong: #252523;
+  --muted: #6c6a64;
+  --muted-soft: #8e8b82;
+
+  /* ── Hairlines & surfaces ── */
+  --hairline: #e6dfd8;
+  --hairline-soft: #ebe6df;
+  --canvas: #faf9f5;
+  --surface-soft: #f5f0e8;
+  --surface-card: #efe9de;
+  --surface-cream-strong: #e8e0d2;
+
+  /* ── Dark surfaces ── */
+  --surface-dark: #181715;
+  --surface-dark-elevated: #252320;
+  --surface-dark-soft: #1f1e1b;
+
+  /* ── Accents ── */
+  --accent-teal: #5db8a6;
+  --accent-amber: #e8a55a;
+
+  /* ── Semantic status ── */
+  --success: #5db872;
+  --warning: #d4a017;
+  --error: #c64545;
+
+  /* ── On-colors ── */
+  --on-primary: #ffffff;
+  --on-dark: #faf9f5;
+  --on-dark-soft: #a09d96;
+
+  /* ── Semantic aliases ── */
+  --color-bg: var(--canvas);
+  --color-text: var(--ink);
+  --color-text-body: var(--body);
+  --color-text-muted: var(--muted);
+  --color-border: var(--hairline);
+  --color-primary: var(--coral);
+  --color-primary-hover: var(--coral-active);
+  --surface-1: var(--canvas);
+  --surface-2: var(--surface-soft);
+  --surface-3: var(--surface-card);
+  --focus-ring: var(--coral);
+
+  /* ── Type scale ── */
+  --text-display-xl: 64px;   --leading-display-xl: 1.05;  --tracking-display-xl: -1.5px;
+  --text-display-lg: 48px;   --leading-display-lg: 1.1;   --tracking-display-lg: -1px;
+  --text-display-md: 36px;   --leading-display-md: 1.15;  --tracking-display-md: -0.5px;
+  --text-display-sm: 28px;   --leading-display-sm: 1.2;   --tracking-display-sm: -0.3px;
+  --text-title-lg: 22px;     --leading-title-lg: 1.3;
+  --text-title-md: 18px;     --leading-title-md: 1.4;
+  --text-title-sm: 16px;     --leading-title-sm: 1.4;
+  --text-body-md: 16px;      --leading-body-md: 1.55;
+  --text-body-sm: 14px;      --leading-body-sm: 1.55;
+  --text-caption: 13px;      --leading-caption: 1.4;
+  --text-caption-uppercase: 12px; --tracking-caption-uppercase: 1.5px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ── Spacing ── */
+  --space-0: 0; --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+  --space-16: 64px; --space-24: 96px;
+  --space-section: 96px;
+  --max-content: 1480px;
+  --nav-height: 64px;
+  --page-gutter: 12px;
+
+  /* ── Radius ── */
+  --radius-xs: 4px; --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-pill: 9999px;
+
+  /* ── Elevation ── */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgba(20, 20, 19, 0.05);
+  --shadow-sm: 0 1px 3px rgba(20, 20, 19, 0.06), 0 1px 2px rgba(20, 20, 19, 0.04);
+  --shadow-card-hover: 0 4px 14px rgba(20, 20, 19, 0.06);
+  --shadow-md: 0 4px 16px rgba(20, 20, 19, 0.08);
+  --shadow-lg: 0 12px 32px -8px rgba(20, 20, 19, 0.18);
+  --shadow-panel: -12px 0 32px -12px rgba(0, 0, 0, 0.18);
+  --shadow-fab: 0 6px 16px rgba(0, 0, 0, 0.15);
+
+  color-scheme: light;
+}
+
+/* ── Dark theme ────────────────────────────────────────────────────────────
+   A designed dark palette, not an inversion: it keeps the brand's warm cast
+   (browns/creams, coral primary) instead of the cold greys a generic
+   auto-darkener produces. Applied via data-theme on <html>, which the head
+   script sets from localStorage or the OS preference before first paint.
+   Only the values that must change are overridden; the type scale, spacing,
+   radii and semantic aliases above all still apply. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Brand — lifted slightly so coral keeps its punch on a dark canvas. */
+  --coral: #e08a6b;
+  --coral-active: #f0a184;
+  --coral-disabled: #3a352f;
+
+  /* Text — warm off-whites, never pure #fff. */
+  --ink: #f5f2ec;
+  --body: #cfcbc2;
+  --body-strong: #e6e2da;
+  --muted: #9d9890;
+  --muted-soft: #7a756d;
+
+  /* Hairlines & surfaces — warm charcoals, mirroring the cream ramp. */
+  --hairline: #35312b;
+  --hairline-soft: #2b2823;
+  --canvas: #14130f;
+  --surface-soft: #1c1a16;
+  --surface-card: #24211c;
+  --surface-cream-strong: #2f2b25;
+
+  /* Dark surfaces sit *below* the canvas in dark mode so they still read as
+     recessed (footer, dark cards) rather than blending into it. */
+  --surface-dark: #0e0d0b;
+  --surface-dark-elevated: #1f1d19;
+  --surface-dark-soft: #161410;
+
+  /* Accents & status — brightened for contrast against the dark canvas. */
+  --accent-teal: #6fc9b6;
+  --accent-amber: #eab36f;
+  --success: #6fce85;
+  --warning: #e2ba4d;
+  --error: #e57373;
+
+  --on-primary: #1a1512;
+  --on-dark: #f5f2ec;
+  --on-dark-soft: #9d9890;
+
+  /* Shadows need real black and more spread to register on dark. */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.7);
+  --shadow-panel: -12px 0 32px -12px rgba(0, 0, 0, 0.7);
+  --shadow-fab: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+
+.cf-display { font-family: var(--font-display); font-weight: var(--weight-medium); }
+
+html, body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Form controls do NOT inherit font-family from the page — without this they
+   fall back to the browser's UI font, so buttons/inputs render in the wrong
+   typeface next to Inter body copy. */
+button, input, textarea, select {
+  font-family: inherit;
+  -webkit-font-smoothing: inherit;
+}
+
+a { color: var(--coral); text-decoration: none; }
+a:hover { color: var(--coral-active); text-decoration: underline; text-underline-offset: 4px; }
+.cf-hairline { border-color: var(--hairline); }
+
+/* Only show a focus ring for keyboard users. A mouse click on a nav tab would
+   otherwise leave a ring behind, making the clicked tab and the active tab
+   both look selected. */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible) { outline: none; }
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Shared layout utilities (hub pages) ─────────────────────────────────── */
+
+.cf-page {
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-12);
+}
+
+.cf-page-header {
+  padding-bottom: var(--space-6);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.cf-page-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -1.3px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.cf-page-lede {
+  margin: 10px 0 0;
+  font-size: var(--text-body-sm);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 620px;
+  text-wrap: pretty;
+}
+
+.cf-empty {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  padding: 28px;
+  font-size: var(--text-body-sm);
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.cf-empty-soft {
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--hairline);
+  background: var(--surface-soft);
+  padding: var(--space-4);
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.cf-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.cf-img-outline {
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+  outline-offset: -1px;
+}
+:root[data-theme="dark"] .cf-img-outline {
+  outline-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Press feedback — buttons that opt in */
+.cf-press:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.cf-press {
+  transition-property: transform, background, border-color, color, box-shadow, opacity;
+  transition-duration: 140ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Filter pill (Shortlist etc.) — works in both themes */
+.cf-filter-pill {
+  padding: 8px 14px;
+  min-height: 36px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition-property: background, color, border-color;
+  transition-duration: 140ms;
+  background: transparent;
+  color: var(--muted);
+}
+.cf-filter-pill:hover { color: var(--ink); background: var(--surface-soft); }
+.cf-filter-pill[aria-pressed="true"],
+.cf-filter-pill.is-active {
+  background: var(--body-strong);
+  color: var(--canvas);
+  border-color: var(--body-strong);
+}
+:root[data-theme="dark"] .cf-filter-pill[aria-pressed="true"],
+:root[data-theme="dark"] .cf-filter-pill.is-active {
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+/* ── Hub shell / responsive nav ──────────────────────────────────────────── */
+
+.cf-hub-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--canvas) 85%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--hairline);
+}
+.cf-hub-nav__row {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  height: var(--nav-height);
+  padding: 0 var(--page-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cf-hub-nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: inherit;
+}
+.cf-hub-nav__brand:hover { text-decoration: none; color: inherit; }
+.cf-hub-nav__mark { color: var(--coral); font-size: 22px; line-height: 1; }
+.cf-hub-nav__word {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.cf-hub-nav__tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.cf-hub-nav__tab {
+  display: block;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none !important;
+  color: var(--muted);
+  background: transparent;
+  white-space: nowrap;
+  transition-property: background, color;
+  transition-duration: 140ms;
+}
+.cf-hub-nav__tab:hover { color: var(--ink); text-decoration: none !important; }
+.cf-hub-nav__tab[aria-current="page"] {
+  color: var(--ink);
+  background: var(--surface-card);
+}
+.cf-hub-nav__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.cf-hub-nav__scroller {
+  display: none;
+}
+
+/* Icon button (theme toggle) — 40×40 hit area */
+.cf-icon-btn {
+  height: 40px;
+  width: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.cf-icon-btn:hover { color: var(--ink); background: var(--surface-soft); }
+
+/* FAB */
+.cf-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--coral);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-fab);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+.cf-fab:hover { background: var(--coral-active); }
+
+/* Content grids used across pages */
+.cf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.cf-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.cf-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.cf-grid-hero { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; align-items: flex-end; }
+.cf-grid-snapshot { display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; }
+.cf-grid-profile { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: start; }
+.cf-grid-short-stats { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 24px; align-items: end; }
+
+/* Explore / Essays split panes — detail panel gets most of the width */
+.cf-split {
+  display: flex;
+  gap: 14px;
+  min-height: 560px;
+  height: min(720px, calc(100vh - 180px));
+}
+.cf-split__list {
+  width: 34%;
+  min-width: 280px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex-shrink: 0;
+}
+.cf-split--explore .cf-split__list {
+  width: 32%;
+  max-width: 380px;
+}
+.cf-split__detail {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Copilot panel width on small screens */
+.cf-chat-panel {
+  width: min(440px, calc(100vw - 24px));
+  height: min(640px, calc(100vh - 40px));
+}
+
+/* ── Breakpoints ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 960px) {
+  .cf-hub-main { padding-left: 10px !important; padding-right: 10px !important; }
+  .cf-hub-nav__row { gap: 8px; padding: 0 10px; }
+  .cf-hub-nav__tabs { display: none; }
+  .cf-hub-nav__scroller {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-top: 1px solid var(--hairline-soft);
+  }
+  .cf-hub-nav__scroller::-webkit-scrollbar { display: none; }
+  .cf-hub-nav__scroller ul {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    list-style: none;
+    margin: 0;
+    padding: 8px 16px 10px;
+    width: max-content;
+  }
+  .cf-hub-nav__word { font-size: 18px; }
+
+  .cf-grid-2,
+  .cf-grid-3,
+  .cf-grid-4,
+  .cf-grid-hero,
+  .cf-grid-snapshot,
+  .cf-grid-profile,
+  .cf-grid-short-stats {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .cf-grid-4 { grid-template-columns: 1fr 1fr; }
+
+  .cf-split {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+  .cf-split__list {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    max-height: 360px;
+  }
+  .cf-split__detail {
+    min-height: 420px;
+    max-height: none;
+  }
+
+  .cf-page { padding-top: var(--space-6); padding-bottom: var(--space-10); }
+  .cf-page-header { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 520px) {
+  .cf-grid-4 { grid-template-columns: 1fr; }
+  .cf-hub-main { padding-left: 8px !important; padding-right: 8px !important; padding-bottom: 72px !important; }
+  .cf-hub-nav__row { padding: 0 8px; }
+  .cf-hub-nav__scroller ul { padding-left: 8px; padding-right: 8px; }
+  .cf-fab { bottom: 16px; right: 16px; }
+  .cf-chat-panel { bottom: 8px !important; right: 8px !important; left: 8px; width: auto !important; }
+}
+
+/* ── Onboarding wizard (hard gate) ─────────────────────────────────────── */
+.cf-onboard {
+  min-height: 100vh;
+  background: var(--canvas);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px var(--page-gutter) 40px;
+  box-sizing: border-box;
+}
+.cf-onboard__shell {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px);
+}
+.cf-onboard__header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--hairline);
+}
+.cf-onboard__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cf-onboard__main {
+  flex: 1;
+  min-width: 0;
+}
+.cf-onboard__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hairline);
+  position: sticky;
+  bottom: 0;
+  background: color-mix(in srgb, var(--canvas) 92%, transparent);
+  backdrop-filter: blur(8px);
+  padding-bottom: 8px;
+}
+.cf-onboard-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 4px;
+  align-items: center;
+}
+.cf-onboard-progress__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted-soft);
+  padding: 4px 8px 4px 4px;
+  border-radius: var(--radius-pill);
+}
+.cf-onboard-progress__item.is-active {
+  color: var(--ink);
+  background: var(--surface-card);
+}
+.cf-onboard-progress__item.is-done {
+  color: var(--muted);
+}
+.cf-onboard-progress__dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  color: inherit;
+  flex-shrink: 0;
+}
+.cf-onboard-progress__item.is-active .cf-onboard-progress__dot {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--on-primary);
+}
+.cf-onboard-progress__item.is-done .cf-onboard-progress__dot {
+  background: color-mix(in srgb, var(--success) 18%, var(--canvas));
+  border-color: color-mix(in srgb, var(--success) 40%, var(--hairline));
+  color: var(--success);
+}
+.cf-onboard-progress__label {
+  display: none;
+}
+@media (min-width: 640px) {
+  .cf-onboard-progress__label { display: inline; }
+}
+.cf-onboard-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline);
+  background: var(--surface-card);
+  padding: 18px 20px;
+}
+.cf-onboard-success {
+  text-align: center;
+  max-width: 420px;
+  padding: 28px 24px;
+}
+.cf-onboard-checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
+}
+.cf-onboard-checklist li {
+  font-size: 14px;
+  color: var(--body);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface-card);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cf-onboard-checklist li::before {
+  content: "→";
+  color: var(--coral);
+  flex-shrink: 0;
+}
+.cf-onboard-school-hit {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--hairline);
+  background: var(--surface-card);
+  font-family: var(--font-body);
+  transition: border-color 140ms ease, background 140ms ease;
+}
+.cf-onboard-school-hit:hover:not(:disabled) {
+  border-color: var(--coral);
+  background: color-mix(in srgb, var(--coral) 6%, var(--surface-card));
+}
+.cf-onboard-school-hit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<!-- The hub ships its own designed dark theme (see styles.css). This tells
+     Dark Reader to stand down instead of machine-inverting the palette —
+     its injected overrides also went stale on dynamic style changes, which
+     made two nav tabs look selected at once. -->
+<meta name="darkreader-lock" />
+<title>College Forge — Hub</title>
+<script>
+  // Runs before first paint: no flash of the wrong theme.
+  (function () {
+    try {
+      var saved = localStorage.getItem("cf.theme");
+      var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  })();
+</script>
+<link rel="icon" href="../../assets/mark.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="../../styles.css" />
+<style>
+  html, body { margin: 0; padding: 0; min-height: 100%; background: var(--canvas); }
+  #root { min-height: 100vh; }
+  @keyframes cfbounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-3px); opacity: 1; } }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 9999px; border: 3px solid var(--canvas); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="./data.js"></script>
+<script src="./api.js"></script>
+<script type="text/babel" src="./AiChat.jsx"></script>
+<script type="text/babel" src="./Onboarding.jsx"></script>
+<script type="text/babel" src="./Overview.jsx"></script>
+<script type="text/babel" src="./Profile.jsx"></script>
+<script type="text/babel" src="./ExploreDetail.jsx"></script>
+<script type="text/babel" src="./Explore.jsx"></script>
+<script type="text/babel" src="./Essays.jsx"></script>
+<script type="text/babel" src="./Shortlist.jsx"></script>
+<script type="text/babel" src="./Planner.jsx"></script>
+<script type="text/babel" src="./Timeline.jsx"></script>
+<script type="text/babel" src="./Track.jsx"></script>
+<script type="text/babel" src="./Compare.jsx"></script>
+<script type="text/babel" src="./ShareExport.jsx"></script>
+<script type="text/babel" src="./Settings.jsx"></script>
+<script type="text/babel" src="./App.jsx"></script>
+<script type="text/babel">
+  const Root = window.App;
+  ReactDOM.createRoot(document.getElementById("root")).render(<Root />);
+</script>
+</body>
+</html>

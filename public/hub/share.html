@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<meta name="darkreader-lock" />
+<meta name="robots" content="noindex, nofollow" />
+<title>College Forge — Shared hub</title>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cf.theme");
+      var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  })();
+</script>
+<link rel="icon" href="../../assets/mark.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="../../styles.css" />
+<style>
+  html, body { margin: 0; padding: 0; min-height: 100%; background: var(--canvas); }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel">
+const { Badge, Button, SectionLabel } = window.CollegeForgeDesignSystem_e95e63;
+
+function tokenFromUrl() {
+  const q = new URLSearchParams(window.location.search);
+  return q.get("t") || q.get("token") || "";
+}
+
+function ShareApp() {
+  const token = tokenFromUrl();
+  const [state, setState] = React.useState({ loading: true, error: "", data: null, label: "" });
+  const [note, setNote] = React.useState("");
+  const [author, setAuthor] = React.useState("");
+  const [busy, setBusy] = React.useState(false);
+  const [msg, setMsg] = React.useState("");
+
+  const load = React.useCallback(async () => {
+    if (!token) {
+      setState({ loading: false, error: "Missing share token in the URL.", data: null, label: "" });
+      return;
+    }
+    try {
+      const res = await fetch("/api/share/" + encodeURIComponent(token));
+      const j = await res.json();
+      if (!res.ok || !j.success) {
+        setState({ loading: false, error: j.error || "Link invalid", data: null, label: "" });
+        return;
+      }
+      setState({ loading: false, error: "", data: j.data, label: j.label || "Shared hub" });
+    } catch (e) {
+      setState({ loading: false, error: "Could not load this share link.", data: null, label: "" });
+    }
+  }, [token]);
+
+  React.useEffect(() => { load(); }, [load]);
+
+  const submitNote = async () => {
+    if (!note.trim()) return;
+    setBusy(true);
+    setMsg("");
+    try {
+      const res = await fetch("/api/share/" + encodeURIComponent(token), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ body: note.trim(), author: author.trim() || "Advisor" }),
+      });
+      const j = await res.json();
+      if (!res.ok || !j.success) throw new Error(j.error || "Failed");
+      setState((s) => ({ ...s, data: j.data }));
+      setNote("");
+      setMsg("Note sent to the student.");
+    } catch (e) {
+      setMsg(e.message || "Could not post note");
+    }
+    setBusy(false);
+  };
+
+  if (state.loading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", color: "var(--muted)" }}>
+        Loading shared hub…
+      </div>
+    );
+  }
+
+  if (state.error || !state.data) {
+    return (
+      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24 }}>
+        <div style={{ maxWidth: 420, textAlign: "center" }}>
+          <div className="cf-display" style={{ fontSize: 28, color: "var(--ink)", marginBottom: 12 }}>Link unavailable</div>
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>{state.error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const d = state.data;
+  const a = d.applicant || {};
+  const p = d.profile || {};
+
+  return (
+    <div style={{ maxWidth: 880, margin: "0 auto", padding: "32px 20px 80px" }}>
+      <header style={{ marginBottom: 32, borderBottom: "1px solid var(--hairline)", paddingBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <span style={{ color: "var(--coral)", fontSize: 22 }}>✱</span>
+          <span className="cf-display" style={{ fontSize: 22, color: "var(--ink)" }}>College Forge</span>
+          <Badge variant="cream" uppercase>Read-only share</Badge>
+        </div>
+        <h1 className="cf-display" style={{ margin: "0 0 8px", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--ink)" }}>
+          {a.name || "Student"} — advisor view
+        </h1>
+        <p style={{ margin: 0, fontSize: 14, color: "var(--muted)" }}>
+          {state.label} · {a.cycle || ""} {a.year ? "· " + a.year : ""} · You can leave notes; you cannot edit the student hub.
+        </p>
+      </header>
+
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 12, marginBottom: 28 }}>
+        {[
+          ["GPA W", a.gpaWeighted],
+          ["GPA UW", a.gpaUnweighted],
+          ["SAT", a.sat],
+          ["Awards", a.awards],
+        ].map(([l, v]) => (
+          <div key={l} style={{ padding: 14, border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)", background: "var(--canvas)" }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--muted)" }}>{l}</div>
+            <div className="cf-display cf-nums" style={{ fontSize: 24, color: "var(--ink)" }}>{v || "—"}</div>
+          </div>
+        ))}
+      </section>
+
+      <section style={{ marginBottom: 28 }}>
+        <SectionLabel style={{ marginBottom: 10 }}>Profile</SectionLabel>
+        <div style={{ fontSize: 14, color: "var(--body)", lineHeight: 1.6 }}>
+          <div><strong>Major:</strong> {p.intended || "—"}</div>
+          <div><strong>HS:</strong> {p.hs || "—"} · Class of {p.gradYear || "—"}</div>
+          <div><strong>Location:</strong> {p.location || "—"}</div>
+          <div><strong>Counselor:</strong> {p.counselor || "—"}</div>
+        </div>
+      </section>
+
+      {d.ed ? (
+        <section style={{ marginBottom: 28, padding: 16, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--coral) 10%, transparent)" }}>
+          <SectionLabel style={{ marginBottom: 6 }}>Early Decision</SectionLabel>
+          <div className="cf-display" style={{ fontSize: 22 }}>{d.ed.school}</div>
+          <div style={{ fontSize: 13, color: "var(--muted)" }}>Deadline {d.ed.deadline || "—"}</div>
+        </section>
+      ) : null}
+
+      <section style={{ marginBottom: 28 }}>
+        <SectionLabel style={{ marginBottom: 10 }}>School list ({(d.colleges || []).length})</SectionLabel>
+        <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+          {(d.colleges || []).map((c) => {
+            const st = (d.applications && d.applications[c.slug] && d.applications[c.slug].status) || "researching";
+            return (
+              <li key={c.slug} style={{ padding: "10px 0", borderBottom: "1px solid var(--hairline-soft)", display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                <span style={{ color: "var(--ink)" }}><strong>{c.short || c.name}</strong> · {c.tier || "?"} · {c.deadline || "TBD"}</span>
+                <Badge variant="cream" uppercase>{st}</Badge>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section style={{ marginBottom: 28 }}>
+        <SectionLabel style={{ marginBottom: 10 }}>Top activities</SectionLabel>
+        <ol style={{ margin: 0, paddingLeft: 20, color: "var(--body)", fontSize: 14 }}>
+          {[...(p.activities || [])].sort((x, y) => x.rank - y.rank).slice(0, 8).map((act) => (
+            <li key={act.rank + act.name} style={{ marginBottom: 8 }}>
+              <strong>{act.name}</strong> — {act.role || ""} ({act.hpw || "?"} hr/wk)
+              {act.desc ? <div style={{ color: "var(--muted)", fontSize: 13 }}>{act.desc}</div> : null}
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section style={{ marginBottom: 28 }}>
+        <SectionLabel style={{ marginBottom: 10 }}>Recommendations</SectionLabel>
+        {(d.recommendations || []).length === 0 ? (
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>None tracked.</p>
+        ) : (
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 14 }}>
+            {(d.recommendations || []).map((r) => (
+              <li key={r.id} style={{ padding: "6px 0" }}>{r.name} ({r.type}) — {r.status}</li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section style={{ marginBottom: 28 }}>
+        <SectionLabel style={{ marginBottom: 10 }}>Financial aid</SectionLabel>
+        <p style={{ fontSize: 14, color: "var(--body)" }}>
+          FAFSA: <strong>{(d.financialAid && d.financialAid.fafsaStatus) || "—"}</strong>
+          {" · "}
+          CSS: <strong>{(d.financialAid && d.financialAid.cssStatus) || "—"}</strong>
+        </p>
+      </section>
+
+      <section style={{ marginBottom: 28 }}>
+        <SectionLabel style={{ marginBottom: 10 }}>Essay progress</SectionLabel>
+        <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 13 }}>
+          {(d.essays && d.essays.commonApp || []).map((e) => {
+            const draft = (d.essayDrafts && d.essayDrafts[e.id]) || "";
+            const words = draft.trim() ? draft.trim().split(/\s+/).length : 0;
+            return (
+              <li key={e.id} style={{ padding: "6px 0", borderBottom: "1px solid var(--hairline-soft)", display: "flex", justifyContent: "space-between", gap: 8 }}>
+                <span>{e.label}</span>
+                <span className="cf-nums" style={{ color: "var(--muted)" }}>{words}/{e.limit}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section style={{ marginBottom: 28, padding: 20, border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", background: "var(--surface-soft)" }}>
+        <SectionLabel style={{ marginBottom: 10 }}>Leave a note for the student</SectionLabel>
+        <input
+          placeholder="Your name"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          style={{ width: "100%", boxSizing: "border-box", marginBottom: 8, padding: "8px 10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)" }}
+        />
+        <textarea
+          placeholder="Feedback on essays, list balance, deadlines…"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          rows={4}
+          style={{ width: "100%", boxSizing: "border-box", padding: 10, borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", fontFamily: "var(--font-body)", fontSize: 14 }}
+        />
+        <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 12 }}>
+          <Button size="sm" onClick={submitNote} disabled={busy || !note.trim()}>{busy ? "Sending…" : "Send note"}</Button>
+          {msg ? <span style={{ fontSize: 13, color: "var(--muted)" }}>{msg}</span> : null}
+        </div>
+      </section>
+
+      {(d.advisorNotes || []).length > 0 ? (
+        <section>
+          <SectionLabel style={{ marginBottom: 10 }}>Notes so far</SectionLabel>
+          {(d.advisorNotes || []).map((n) => (
+            <div key={n.id} style={{ marginBottom: 12, padding: 12, border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)" }}>
+              <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 4 }}>{n.author} · {new Date(n.createdAt).toLocaleString()}</div>
+              <div style={{ fontSize: 14, color: "var(--body)" }}>{n.body}</div>
+            </div>
+          ))}
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<ShareApp />);
+</script>
+</body>
+</html>
