@@ -64,13 +64,147 @@ const REGION_STATES: Record<string, Set<string>> = {
 type Tier = "reach" | "target" | "safety";
 
 /**
- * Ambition only nudges the mix — it is NOT “load the list with Ivies.”
- * Ambitious ≈ one extra mild reach; conservative ≈ more likely admits.
+ * Ambition shapes the mix, not “every reach is Ivy.”
+ * Ambitious: more dream reaches (still labeled reach) + solid targets/safeties.
+ * Conservative: fewer stretches, more likely admits.
  */
 function quota(ambition: ListAmbition): Record<Tier, number> {
-  if (ambition === "ambitious") return { reach: 3, target: 5, safety: 4 };
-  if (ambition === "conservative") return { reach: 1, target: 5, safety: 6 };
-  return { reach: 2, target: 5, safety: 5 };
+  // Ambitious boards are longer: more dream reaches + solid mid + safeties
+  if (ambition === "ambitious") return { reach: 10, target: 9, safety: 8 };
+  if (ambition === "conservative") return { reach: 2, target: 6, safety: 8 };
+  return { reach: 4, target: 7, safety: 5 };
+}
+
+/**
+ * Soft major affinity — boosts schools known for a field when intended matches.
+ * Not exhaustive; used only to rank within tiers. Admit rate still labels tiers.
+ */
+const MAJOR_SLUG_AFFINITY: { match: RegExp; slugs: string[] }[] = [
+  {
+    match: /journalis|communicat|media|broadcast|writing|english|news/i,
+    slugs: [
+      "northwestern-university",
+      "new-york-university",
+      "university-of-southern-california",
+      "university-of-missouri-columbia",
+      "university-of-wisconsin-madison",
+      "boston-university",
+      "university-of-maryland-college-park",
+      "indiana-university-bloomington",
+      "arizona-state-university",
+      "university-of-michigan-ann-arbor",
+      "university-of-north-carolina-at-chapel-hill",
+      "syracuse-university",
+      "university-of-florida",
+      "university-of-texas-at-austin",
+      "american-university",
+      "george-washington-university",
+      "university-of-california-berkeley",
+      "university-of-california-los-angeles",
+      "emory-university",
+      "cornell-university",
+      "brown-university",
+      "washington-university-in-st-louis",
+      // solid mid-board often on journalism lists
+      "purdue-university-main-campus",
+      "wake-forest-university",
+      "university-of-pittsburgh",
+      "rutgers-university-new-brunswick",
+      "the-pennsylvania-state-university-university-park",
+      "michigan-state-university",
+    ],
+  },
+  {
+    match: /computer|cs\b|software|data sci|ai\b|informat/i,
+    slugs: [
+      "carnegie-mellon-university",
+      "university-of-illinois-urbana-champaign",
+      "university-of-washington",
+      "georgia-institute-of-technology",
+      "university-of-texas-at-austin",
+      "university-of-california-berkeley",
+      "university-of-california-san-diego",
+      "university-of-michigan-ann-arbor",
+      "purdue-university-main-campus",
+      "university-of-maryland-college-park",
+    ],
+  },
+  {
+    match: /business|finance|econ|market|account/i,
+    slugs: [
+      "university-of-pennsylvania",
+      "university-of-michigan-ann-arbor",
+      "new-york-university",
+      "university-of-california-berkeley",
+      "indiana-university-bloomington",
+      "university-of-texas-at-austin",
+      "university-of-virginia",
+      "university-of-north-carolina-at-chapel-hill",
+      "boston-college",
+      "university-of-southern-california",
+    ],
+  },
+  {
+    match: /engineer|mechanical|electrical|civil|aero/i,
+    slugs: [
+      "massachusetts-institute-of-technology",
+      "stanford-university",
+      "georgia-institute-of-technology",
+      "university-of-illinois-urbana-champaign",
+      "purdue-university-main-campus",
+      "university-of-michigan-ann-arbor",
+      "carnegie-mellon-university",
+      "texas-a-m-university",
+      "virginia-tech",
+      "university-of-california-berkeley",
+    ],
+  },
+];
+
+function majorAffinityBoost(slug: string, intended?: string): number {
+  if (!intended || !intended.trim()) return 0;
+  let boost = 0;
+  for (const row of MAJOR_SLUG_AFFINITY) {
+    if (!row.match.test(intended)) continue;
+    if (row.slugs.includes(slug)) boost += 28;
+  }
+  return boost;
+}
+
+/** Well-known flagship / solid mid-board schools — preferred for target & safety slots. */
+const BACKBONE_SLUGS = new Set([
+  "university-of-wisconsin-madison",
+  "university-of-illinois-urbana-champaign",
+  "university-of-maryland-college-park",
+  "purdue-university-main-campus",
+  "wake-forest-university",
+  "university-of-pittsburgh",
+  "rutgers-university-new-brunswick",
+  "arizona-state-university",
+  "indiana-university-bloomington",
+  "the-pennsylvania-state-university-university-park",
+  "michigan-state-university",
+  "ohio-state-university",
+  "university-of-minnesota-twin-cities",
+  "university-of-florida",
+  "university-of-texas-at-austin",
+  "university-of-washington",
+  "university-of-georgia",
+  "texas-a-m-university",
+  "university-of-massachusetts-amherst",
+  "clemson-university",
+  "university-of-connecticut",
+  "virginia-tech",
+  "north-carolina-state-university-at-raleigh",
+  "university-of-iowa",
+  "university-of-colorado-boulder",
+]);
+
+function backboneBoost(slug: string, tier: Tier): number {
+  if (!BACKBONE_SLUGS.has(slug)) return 0;
+  if (tier === "safety") return 22;
+  if (tier === "target") return 16;
+  return 3;
 }
 
 function parseSat(raw: string | number | null | undefined): number | null {
@@ -117,23 +251,24 @@ function satMid(u: UsNewsCollege): number | null {
 }
 
 /**
- * Academic “home band” for this student — admit-rate windows that define
- * realistic reach / target / safety. Ambition only shifts the windows a little.
+ * Academic windows for reach / target / safety.
+ * Admit rate & published GPAs are signals — not the whole story.
+ * Ambition mainly unlocks more selective *reaches* (still labeled reach).
  *
- * Example ~3.48 UW (no SAT): targets roughly 30–60% admit, reaches 15–30%,
- * safeties 60%+; ultra-selectives (&lt;~12%) are excluded from the seed pool
- * unless must-include (and still labeled reach).
+ * Example ~3.48 UW ambitious journalism-style list:
+ *   reaches: Northwestern, Michigan, NYU, USC, Emory, WashU, Cornell…
+ *   targets: Wisconsin, Maryland, UIUC, Purdue, Wake Forest, Pitt, Rutgers…
+ *   safeties: ASU, IU, Penn State, MSU…
+ *   plus a UC cluster (one application).
  */
 type SelectivityBand = {
-  /** Schools with admit rate below this are out of the seed pool (lottery). */
+  /** Below this admit rate → usually out of seed pool (except ambitious dream reaches). */
   skipBelow: number;
   /** Below this (and ≥ skipBelow) → reach */
   reachCeil: number;
   /** Below this (and ≥ reachCeil) → target; above → safety */
   targetCeil: number;
-  /** Ideal admit rate for ranking targets */
   idealAdmit: number;
-  /** Ideal school avg GPA for ranking */
   idealSchoolGpa: number;
 };
 
@@ -142,68 +277,61 @@ function selectivityBand(
   studentSat: number | null,
   ambition: ListAmbition
 ): SelectivityBand {
-  // Base band from unweighted-ish GPA
   let band: SelectivityBand;
   const g = studentGpa;
 
   if (g == null && studentSat == null) {
-    band = { skipBelow: 0.1, reachCeil: 0.22, targetCeil: 0.5, idealAdmit: 0.35, idealSchoolGpa: 3.6 };
+    band = { skipBelow: 0.08, reachCeil: 0.22, targetCeil: 0.5, idealAdmit: 0.35, idealSchoolGpa: 3.6 };
   } else if (g != null && g < 3.2) {
-    band = { skipBelow: 0.22, reachCeil: 0.4, targetCeil: 0.7, idealAdmit: 0.55, idealSchoolGpa: 3.3 };
+    band = { skipBelow: 0.18, reachCeil: 0.38, targetCeil: 0.68, idealAdmit: 0.52, idealSchoolGpa: 3.3 };
   } else if (g != null && g < 3.45) {
-    band = { skipBelow: 0.15, reachCeil: 0.32, targetCeil: 0.6, idealAdmit: 0.45, idealSchoolGpa: 3.45 };
+    band = { skipBelow: 0.1, reachCeil: 0.28, targetCeil: 0.58, idealAdmit: 0.42, idealSchoolGpa: 3.45 };
   } else if (g != null && g < 3.65) {
-    // ~3.48–3.64 — solid list, NOT Ivy targets
-    band = { skipBelow: 0.12, reachCeil: 0.28, targetCeil: 0.55, idealAdmit: 0.4, idealSchoolGpa: 3.55 };
+    // ~3.48 UW — targets at flagships; selective privates as reaches when ambitious
+    band = { skipBelow: 0.09, reachCeil: 0.26, targetCeil: 0.55, idealAdmit: 0.38, idealSchoolGpa: 3.55 };
   } else if (g != null && g < 3.85) {
-    band = { skipBelow: 0.08, reachCeil: 0.2, targetCeil: 0.45, idealAdmit: 0.28, idealSchoolGpa: 3.7 };
+    band = { skipBelow: 0.06, reachCeil: 0.18, targetCeil: 0.42, idealAdmit: 0.26, idealSchoolGpa: 3.7 };
   } else if (g != null) {
-    band = { skipBelow: 0.05, reachCeil: 0.14, targetCeil: 0.35, idealAdmit: 0.18, idealSchoolGpa: 3.85 };
+    band = { skipBelow: 0.04, reachCeil: 0.12, targetCeil: 0.32, idealAdmit: 0.16, idealSchoolGpa: 3.85 };
   } else {
-    // SAT-only fallback
     const s = studentSat!;
-    if (s < 1200) band = { skipBelow: 0.2, reachCeil: 0.38, targetCeil: 0.65, idealAdmit: 0.5, idealSchoolGpa: 3.4 };
-    else if (s < 1350) band = { skipBelow: 0.12, reachCeil: 0.28, targetCeil: 0.55, idealAdmit: 0.38, idealSchoolGpa: 3.55 };
-    else if (s < 1480) band = { skipBelow: 0.08, reachCeil: 0.2, targetCeil: 0.42, idealAdmit: 0.26, idealSchoolGpa: 3.7 };
-    else band = { skipBelow: 0.05, reachCeil: 0.14, targetCeil: 0.32, idealAdmit: 0.16, idealSchoolGpa: 3.9 };
+    if (s < 1200) band = { skipBelow: 0.16, reachCeil: 0.35, targetCeil: 0.62, idealAdmit: 0.48, idealSchoolGpa: 3.4 };
+    else if (s < 1350) band = { skipBelow: 0.1, reachCeil: 0.26, targetCeil: 0.52, idealAdmit: 0.36, idealSchoolGpa: 3.55 };
+    else if (s < 1480) band = { skipBelow: 0.06, reachCeil: 0.18, targetCeil: 0.4, idealAdmit: 0.24, idealSchoolGpa: 3.7 };
+    else band = { skipBelow: 0.04, reachCeil: 0.12, targetCeil: 0.3, idealAdmit: 0.15, idealSchoolGpa: 3.9 };
   }
 
-  // Ambition = slight risk shift, not a new stratosphere
   if (ambition === "ambitious") {
+    // Open the dream-reach door; do NOT reclassify hyper-selectives as targets
     band = {
       ...band,
-      skipBelow: Math.max(0.04, band.skipBelow - 0.03),
-      reachCeil: Math.max(band.skipBelow + 0.06, band.reachCeil - 0.04),
-      targetCeil: Math.max(band.reachCeil + 0.08, band.targetCeil - 0.04),
-      idealAdmit: Math.max(0.12, band.idealAdmit - 0.04),
+      skipBelow: Math.max(0.035, band.skipBelow - 0.055), // e.g. ~0.035–0.05 → Brown/Cornell allowed as reach
+      reachCeil: Math.min(0.35, band.reachCeil + 0.04),
+      targetCeil: band.targetCeil,
+      idealAdmit: Math.max(0.14, band.idealAdmit - 0.03),
     };
   } else if (ambition === "conservative") {
     band = {
       ...band,
-      skipBelow: Math.min(0.35, band.skipBelow + 0.04),
-      reachCeil: Math.min(0.55, band.reachCeil + 0.05),
-      targetCeil: Math.min(0.8, band.targetCeil + 0.05),
-      idealAdmit: Math.min(0.7, band.idealAdmit + 0.06),
+      skipBelow: Math.min(0.28, band.skipBelow + 0.05),
+      reachCeil: Math.min(0.45, band.reachCeil + 0.06),
+      targetCeil: Math.min(0.75, band.targetCeil + 0.06),
+      idealAdmit: Math.min(0.65, band.idealAdmit + 0.08),
     };
   }
 
-  // SAT can tighten or loosen slightly when both exist
   if (studentSat != null && g != null) {
-    if (studentSat >= 1500 && g >= 3.7) {
-      band.skipBelow = Math.max(0.04, band.skipBelow - 0.02);
-    }
-    if (studentSat < 1200 && g < 3.6) {
-      band.skipBelow = Math.min(0.3, band.skipBelow + 0.03);
-    }
+    if (studentSat >= 1500 && g >= 3.7) band.skipBelow = Math.max(0.03, band.skipBelow - 0.02);
+    if (studentSat < 1150 && g < 3.5) band.skipBelow = Math.min(0.28, band.skipBelow + 0.04);
   }
 
   return band;
 }
 
 /**
- * Map a school to reach/target/safety for THIS student.
- * Admit rate is the primary signal; GPA/SAT gaps refine. Never call a
- * hyper-selective school a "target" for a mid GPA.
+ * Tier labels must stay honest: selective schools stay reaches for mid GPAs.
+ * GPA ranges & admit rates are signals — major fit / hooks are not modeled as
+ * auto-promotions into "target."
  */
 function classifyTier(
   u: UsNewsCollege,
@@ -216,29 +344,28 @@ function classifyTier(
   const mid = satMid(u);
   const schoolGpa = typeof u.gpa === "number" ? u.gpa : null;
 
-  // Hard floor: ultra-selective is always reach if it appears (must-include)
+  // Hyper-selective for this profile → always reach (never "target" for ~3.5 UW)
   if (admit != null && admit < band.skipBelow) return "reach";
-  if (admit != null && admit < 0.1 && (studentGpa == null || studentGpa < 3.85)) return "reach";
+  if (admit != null && admit < 0.12 && (studentGpa == null || studentGpa < 3.75)) return "reach";
+  if (admit != null && admit < 0.15 && (studentGpa == null || studentGpa < 3.6)) return "reach";
 
-  // Primary: admit-rate windows
   if (admit != null) {
     if (admit < band.reachCeil) return "reach";
     if (admit < band.targetCeil) {
-      // Soften: if SAT is way below mid-50, bump to reach even in "target" admit band
-      if (studentSat != null && mid != null && studentSat < mid - 100) return "reach";
-      if (studentGpa != null && schoolGpa != null && schoolGpa - studentGpa > 0.35) return "reach";
+      if (studentSat != null && mid != null && studentSat < mid - 110) return "reach";
+      // Only promote to reach on large GPA gap if admit is still selective
+      if (studentGpa != null && schoolGpa != null && schoolGpa - studentGpa > 0.45 && admit < 0.35) {
+        return "reach";
+      }
       return "target";
     }
-    // High admit — safety unless student is well below school academic profile
-    if (studentSat != null && mid != null && studentSat < mid - 120) return "target";
-    if (studentGpa != null && schoolGpa != null && schoolGpa - studentGpa > 0.4) return "target";
+    if (studentSat != null && mid != null && studentSat < mid - 130) return "target";
     return "safety";
   }
 
-  // No admit rate: use rank + GPA gap
   if (studentGpa != null && schoolGpa != null) {
     const gap = studentGpa - schoolGpa;
-    if (gap <= -0.3) return "reach";
+    if (gap <= -0.35) return "reach";
     if (gap >= 0.25) return "safety";
     return "target";
   }
@@ -247,83 +374,104 @@ function classifyTier(
     if (studentSat > mid + 60) return "safety";
     return "target";
   }
-  if (u.rank <= 40) return "reach";
-  if (u.rank <= 120) return "target";
+  if (u.rank <= 35) return "reach";
+  if (u.rank <= 100) return "target";
   return "safety";
 }
 
 /**
- * How far this school is from a good academic fit. Lower = better for that tier.
- * Strongly prefers schools near the student's band — not prestige rank.
+ * Lower = better pick for this tier. Blends academic band with major affinity.
+ * Admit rate is not everything — strong major programs get a real boost.
  */
 function fitScore(
   u: UsNewsCollege,
   studentSat: number | null,
   studentGpa: number | null,
-  ambition: ListAmbition = "balanced"
+  ambition: ListAmbition = "balanced",
+  intended?: string
 ): number {
   const band = selectivityBand(studentGpa, studentSat, ambition);
   let score = 0;
   const mid = satMid(u);
+  const tier = classifyTier(u, studentSat, studentGpa, ambition);
 
   if (u.admitRate != null) {
-    score += Math.abs(u.admitRate - band.idealAdmit) * 120;
-    // Extra penalty for lottery schools even if somehow in pool
-    if (u.admitRate < band.skipBelow) score += 80;
-    if (u.admitRate < 0.1 && (studentGpa == null || studentGpa < 3.8)) score += 50;
+    // Ideal admit depends on which tier bucket we're filling
+    const ideal =
+      tier === "reach"
+        ? ambition === "ambitious"
+          ? 0.1 // prefer real dream reaches (NU, NYU, USC, Emory…) over mild 20% schools only
+          : (band.skipBelow + band.reachCeil) / 2
+        : tier === "safety"
+          ? Math.min(0.85, band.targetCeil + 0.22)
+          : band.idealAdmit;
+    score += Math.abs(u.admitRate - ideal) * (tier === "reach" && ambition === "ambitious" ? 40 : 70);
+    // Mild penalty for ultra-long-shots on balanced/conservative
+    if (tier === "reach" && u.admitRate < 0.06 && ambition !== "ambitious") score += 40;
   } else {
-    score += Math.abs(u.rank - 90) / 15;
+    score += Math.abs(u.rank - (tier === "reach" ? 40 : tier === "safety" ? 120 : 80)) / 12;
   }
 
   if (studentSat != null && mid != null) {
-    score += Math.abs(studentSat - mid) / 8;
+    // Soft signal only — mid-50s are not hard gates
+    score += Math.abs(studentSat - mid) / 14;
   }
   if (studentGpa != null && typeof u.gpa === "number") {
-    score += Math.abs(studentGpa - u.gpa) * 35;
-    score += Math.abs(u.gpa - band.idealSchoolGpa) * 15;
+    // Soft signal — published avgs are incomplete / not destiny
+    score += Math.abs(studentGpa - u.gpa) * 18;
   }
 
-  // Mild anti-prestige bias for mid profiles so we don't fill with brand names
-  if (studentGpa != null && studentGpa < 3.7 && u.rank <= 20) score += 25;
-  if (studentGpa != null && studentGpa < 3.55 && u.rank <= 40) score += 12;
+  // Major affinity (journalism, CS, etc.) — can outweigh mild admit-rate distance
+  score -= majorAffinityBoost(u.slug, intended);
+  // Prefer recognizable flagships for mid/safety rather than obscure high-admit schools
+  score -= backboneBoost(u.slug, tier);
 
-  score += u.rank * 0.015;
+  score += u.rank * 0.01;
   return score;
 }
 
 /**
- * Drop schools that are unrealistically selective for this profile from the
- * seed pool. Must-includes always stay (and get labeled reach if needed).
- *
- * "Ambitious" opens the door only slightly — still no Yale-as-target territory.
+ * Seed-pool filter. Ambitious allows selective dream reaches (Northwestern, Michigan,
+ * NYU…) for mid GPAs with strong hooks — still never as fake "targets."
+ * Balanced/conservative stay tighter.
  */
 function academicallyPlausible(
   u: UsNewsCollege,
   studentSat: number | null,
   studentGpa: number | null,
-  ambition: ListAmbition
+  ambition: ListAmbition,
+  intended?: string
 ): boolean {
   const band = selectivityBand(studentGpa, studentSat, ambition);
   const admit = u.admitRate;
   const mid = satMid(u);
+  const majorHit = majorAffinityBoost(u.slug, intended) > 0;
 
-  if (admit != null && admit < band.skipBelow) return false;
+  if (admit != null && admit < band.skipBelow) {
+    // Ambitious + major fit can still keep a few dream schools (e.g. Medill)
+    if (!(ambition === "ambitious" && majorHit && admit >= 0.04)) return false;
+  }
 
-  // Absolute lottery guardrails by GPA (must-includes bypass this function)
   if (studentGpa != null) {
-    if (studentGpa < 3.35 && admit != null && admit < 0.18) return false;
-    if (studentGpa < 3.55 && admit != null && admit < 0.1) return false;
-    if (studentGpa < 3.7 && admit != null && admit < 0.06) return false;
-    if (typeof u.gpa === "number" && u.gpa - studentGpa > 0.5) return false;
-    if (ambition !== "ambitious" && typeof u.gpa === "number" && u.gpa - studentGpa > 0.4) {
+    // Hard lottery blocks only for balanced/conservative
+    if (ambition !== "ambitious") {
+      if (studentGpa < 3.4 && admit != null && admit < 0.12) return false;
+      if (studentGpa < 3.55 && admit != null && admit < 0.08) return false;
+      if (studentGpa < 3.7 && admit != null && admit < 0.05) return false;
+    } else {
+      // Ambitious: allow HYP-level only with major affinity or must-include path
+      if (studentGpa < 3.55 && admit != null && admit < 0.04) return false;
+      if (studentGpa < 3.4 && admit != null && admit < 0.07 && !majorHit) return false;
+    }
+    // GPA published averages are soft — only extreme gaps drop a school
+    if (typeof u.gpa === "number" && u.gpa - studentGpa > 0.65 && ambition === "conservative") {
       return false;
     }
   }
 
   if (studentSat != null && mid != null) {
-    // Don't seed schools whose mid-50 is > ~150 points above student (ambitious: 180)
-    const maxGap = ambition === "ambitious" ? 180 : ambition === "conservative" ? 100 : 140;
-    if (mid - studentSat > maxGap) return false;
+    const maxGap = ambition === "ambitious" ? 220 : ambition === "conservative" ? 110 : 160;
+    if (mid - studentSat > maxGap && !majorHit) return false;
   }
 
   return true;
@@ -388,17 +536,22 @@ function expandUcCampuses(
   studentSat: number | null,
   studentGpa: number | null,
   ambition: ListAmbition,
-  maxUc = 6
+  maxUc = 6,
+  intended?: string
 ): College[] {
   const have = new Set(list.map((c) => c.slug));
   const ucAlready = list.filter(isUcCampus).length;
   if (ucAlready >= maxUc) return list.map(withUcTag);
 
   const ucPool = US_NEWS_TOP_250.filter(
-    (u) => isUcCampus(u) && !have.has(u.slug) && academicallyPlausible(u, studentSat, studentGpa, ambition)
+    (u) =>
+      isUcCampus(u) &&
+      !have.has(u.slug) &&
+      academicallyPlausible(u, studentSat, studentGpa, ambition, intended)
   ).sort(
     (a, b) =>
-      fitScore(a, studentSat, studentGpa, ambition) - fitScore(b, studentSat, studentGpa, ambition)
+      fitScore(a, studentSat, studentGpa, ambition, intended) -
+      fitScore(b, studentSat, studentGpa, ambition, intended)
   );
 
   const out = list.map(withUcTag);
@@ -451,13 +604,16 @@ export type SeedCollegeListParams = {
 };
 
 export function seedCollegeList(params: SeedCollegeListParams): College[] {
-  // Campus count target (UCs can push total campuses higher since they share 1 app slot).
-  const target = Math.max(6, Math.min(16, params.targetCount ?? 12));
+  // Campus count (UCs can push higher — they share 1 app slot).
+  // Ambitious lists run longer (closer to a full CA/journalism-style board).
+  const ambition: ListAmbition = params.prefs?.ambition || "balanced";
+  const defaultTarget = ambition === "ambitious" ? 22 : ambition === "conservative" ? 12 : 15;
+  const target = Math.max(8, Math.min(26, params.targetCount ?? defaultTarget));
   const prefs = params.prefs;
-  const ambition: ListAmbition = prefs.ambition || "balanced";
   const studentSat = parseSat(params.sat);
   const studentGpa =
     parseGpa(params.gpaUnweighted) ?? parseGpa(params.gpaWeighted);
+  const intended = params.intended || "";
   const settings = (prefs.settings || []).filter(Boolean);
   const regions = (prefs.regions || []).filter(Boolean);
 
@@ -517,7 +673,10 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
         if (!settingMatch(u.setting, settings)) return false;
         if (!regionMatch(u.state, regions)) return false;
       }
-      if (opts.strictAcademics && !academicallyPlausible(u, studentSat, studentGpa, ambition)) {
+      if (
+        opts.strictAcademics &&
+        !academicallyPlausible(u, studentSat, studentGpa, ambition, intended)
+      ) {
         return false;
       }
       return true;
@@ -528,11 +687,29 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
     need > 0
       ? pool({ strictPrefs: true, strictAcademics: true, skipUc: true })
       : [];
-  if (need > 0 && candidates.length < need + 10) {
+  if (need > 0 && candidates.length < need + 12) {
     candidates = pool({ strictPrefs: false, strictAcademics: true, skipUc: true });
   }
-  if (need > 0 && candidates.length < need + 6) {
+  if (need > 0 && candidates.length < need + 8) {
     candidates = pool({ strictPrefs: false, strictAcademics: false, skipUc: true });
+  }
+
+  // Prefer major-affinity + backbone schools into the candidate pool
+  if (need > 0) {
+    const inject = new Set<string>();
+    if (intended) {
+      for (const row of MAJOR_SLUG_AFFINITY) {
+        if (!row.match.test(intended)) continue;
+        for (const slug of row.slugs) inject.add(slug);
+      }
+    }
+    for (const slug of BACKBONE_SLUGS) inject.add(slug);
+    for (const slug of inject) {
+      const u = US_NEWS_TOP_250.find((x) => x.slug === slug);
+      if (!u || have.has(u.slug) || isUcCampus(u)) continue;
+      if (!academicallyPlausible(u, studentSat, studentGpa, ambition, intended)) continue;
+      if (!candidates.some((c) => c.slug === u.slug)) candidates.push(u);
+    }
   }
 
   const byTier: Record<Tier, UsNewsCollege[]> = { reach: [], target: [], safety: [] };
@@ -540,11 +717,16 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
     byTier[classifyTier(u, studentSat, studentGpa, ambition)].push(u);
   }
   for (const t of Object.keys(byTier) as Tier[]) {
-    byTier[t].sort(
-      (a, b) =>
-        fitScore(a, studentSat, studentGpa, ambition) -
-        fitScore(b, studentSat, studentGpa, ambition)
-    );
+    byTier[t].sort((a, b) => {
+      // Major-fit schools first within each tier (journalism → Medill/NYU/USC…)
+      const ma = majorAffinityBoost(a.slug, intended) > 0 ? 0 : 1;
+      const mb = majorAffinityBoost(b.slug, intended) > 0 ? 0 : 1;
+      if (ma !== mb) return ma - mb;
+      return (
+        fitScore(a, studentSat, studentGpa, ambition, intended) -
+        fitScore(b, studentSat, studentGpa, ambition, intended)
+      );
+    });
   }
 
   const added: College[] = [];
@@ -575,11 +757,11 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   let result = dedupeColleges([...kept, ...added]);
 
   // UC Application = one app for all campuses. Expand UCs freely when relevant.
-  if (wantsUcCluster(prefs, params.location, prefs.notes, result)) {
-    result = expandUcCampuses(result, studentSat, studentGpa, ambition, 7);
+  const maxUc = ambition === "ambitious" ? 9 : 6;
+  if (wantsUcCluster(prefs, params.location, prefs.notes, result) || ambition === "ambitious") {
+    result = expandUcCampuses(result, studentSat, studentGpa, ambition, maxUc, intended);
   } else if (result.some(isUcCampus)) {
-    // Already has a UC must-include — still safe to add sibling campuses (same app).
-    result = expandUcCampuses(result, studentSat, studentGpa, ambition, 5);
+    result = expandUcCampuses(result, studentSat, studentGpa, ambition, 6, intended);
   }
 
   return result.map(withUcTag);

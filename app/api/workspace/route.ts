@@ -259,7 +259,8 @@ export async function POST(req: NextRequest) {
       gpaWeighted,
       intended,
       location,
-      targetCount: 12,
+      // Ambitious builds a longer board; seeder also expands UC cluster separately.
+      targetCount: listPrefs.ambition === "ambitious" ? 22 : listPrefs.ambition === "conservative" ? 12 : 15,
     });
 
     next.onboarding = {

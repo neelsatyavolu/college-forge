@@ -22,17 +22,17 @@ const AMBITION_OPTIONS = [
   {
     id: "ambitious",
     title: "Ambitious",
-    blurb: "A bit more risk — a few extra reaches that still fit your stats, not lottery schools as targets.",
+    blurb: "Include stronger dream reaches (still labeled reach) plus solid targets — major fit matters, not just admit rates.",
   },
   {
     id: "balanced",
     title: "Just right",
-    blurb: "Realistic mix of reaches, targets, and safeties matched to your academics.",
+    blurb: "Realistic mix of reaches, targets, and safeties for your academics and interests.",
   },
   {
     id: "conservative",
     title: "Conservative",
-    blurb: "Lean safer — more likely admits, fewer stretches.",
+    blurb: "Lean safer — more likely admits, fewer long-shot reaches.",
   },
 ];
 
@@ -822,9 +822,9 @@ ${story.other.trim() || "(none)"}
 
 ## College list preferences
 - Strategy: ${prefs.ambition} (${ambitionLabel(prefs.ambition)})
-  · ambitious = slightly more risk within the student's real band (NOT Ivy-as-target for mid GPAs)
-  · balanced = realistic mix; conservative = lean safer
-  · Always match reach/target/safety to GPA/SAT — never label hyper-selective schools as targets for ~3.5 UW
+  · ambitious = include stronger dream reaches (still labeled reach) that fit interests/major; not "Yale is a target"
+  · balanced = classic mix; conservative = lean safer
+  · Admit rates and GPA ranges are signals only — major fit matters. Hyper-selective schools stay reaches for mid GPAs.
 - Campus settings: ${(prefs.settings || []).join(", ") || "any"}
 - Size: ${prefs.size || "any"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}
