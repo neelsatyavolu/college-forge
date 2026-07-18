@@ -177,6 +177,12 @@ function App() {
     persistOnboardBannerDismissed();
   }, [applyWorkspace, refresh]);
 
+  const startOnboarding = React.useCallback(() => {
+    try { localStorage.removeItem("cf.onboard.dismissed"); } catch (e) {}
+    setShowOnboardBanner(true);
+    setRunOnboarding(true);
+  }, []);
+
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "var(--canvas)", color: "var(--muted)", fontSize: 14 }}>
@@ -241,7 +247,14 @@ function App() {
           {view === "track" && <Track data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "compare" && <Compare data={data} onAsk={openChat} />}
           {view === "share" && <ShareExport data={data} onWorkspaceChange={applyWorkspace} />}
-          {view === "settings" && <Settings theme={theme} onToggleTheme={toggleTheme} />}
+          {view === "settings" && (
+            <Settings
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              onStartOnboarding={startOnboarding}
+              onWorkspaceChange={applyWorkspace}
+            />
+          )}
         </div>
       </div>
 

@@ -164,7 +164,7 @@ function ProviderRow({ name, label, blurb, connected, models, modelValue, onMode
   );
 }
 
-function Settings({ theme, onToggleTheme }) {
+function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }) {
   const [status, setStatus] = React.useState(null);
   const [prefs, setPrefs] = React.useState(loadAiPrefs);
   const [busy, setBusy] = React.useState("");
@@ -200,6 +200,36 @@ function Settings({ theme, onToggleTheme }) {
       setMsg(provider === "grok" ? "Grok disconnected." : "ChatGPT disconnected.");
       await loadStatus();
     } catch (e) { setErr(e.message); }
+    setBusy("");
+  };
+
+  const redoOnboarding = () => {
+    setErr(""); setMsg("");
+    if (typeof onStartOnboarding === "function") onStartOnboarding();
+  };
+
+  const resetHubAndOnboard = async () => {
+    const ok = window.confirm(
+      "Reset this hub to empty and restart onboarding?\n\nThis clears profile, colleges, essays drafts, uploads metadata, and setup state. AI provider sign-ins are kept."
+    );
+    if (!ok) return;
+    setBusy("reset"); setErr(""); setMsg("");
+    try {
+      const res = await fetch("/api/workspace", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "reset" }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Could not reset hub.");
+      const ws = j.data || j;
+      if (typeof onWorkspaceChange === "function") onWorkspaceChange(ws);
+      setMsg("Hub reset. Starting onboarding…");
+      if (typeof onStartOnboarding === "function") onStartOnboarding({ fresh: true });
+    } catch (e) {
+      setErr(e.message);
+    }
     setBusy("");
   };
 
@@ -314,6 +344,33 @@ function Settings({ theme, onToggleTheme }) {
           <Button size="sm" variant="secondary" onClick={onToggleTheme}>
             {theme === "dark" ? "Switch to light" : "Switch to dark"}
           </Button>
+        </div>
+      </Panel>
+
+      <Panel title="Setup">
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+            <div style={{ flex: "1 1 220px", minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Redo onboarding</div>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
+                Re-run the setup wizard (story, list prefs, AI hub build). Existing hub data is kept and used as prefill; finishing overwrites fields the wizard saves.
+              </p>
+            </div>
+            <Button size="sm" onClick={redoOnboarding} disabled={busy === "reset"}>
+              Redo onboarding
+            </Button>
+          </div>
+          <div style={{ borderTop: "1px solid var(--hairline)", paddingTop: 16, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+            <div style={{ flex: "1 1 220px", minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Reset hub &amp; start over</div>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
+                Wipe workspace data to empty, then open onboarding from a clean slate. AI logins stay connected.
+              </p>
+            </div>
+            <Button size="sm" variant="secondary" onClick={resetHubAndOnboard} disabled={busy === "reset"}>
+              {busy === "reset" ? "Resetting…" : "Reset hub"}
+            </Button>
+          </div>
         </div>
       </Panel>
 
