@@ -24,6 +24,8 @@
     switch (name) {
       case "web_search":
         return detail ? "Searching the web for “" + detail + "”…" : "Searching the web…";
+      case "web_fetch":
+        return detail ? "Reading page " + detail + "…" : "Reading a web page…";
       case "read_upload":
       case "read_file":
         return detail ? "Reading " + detail + "…" : "Reading your file…";

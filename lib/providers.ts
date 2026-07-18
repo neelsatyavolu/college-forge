@@ -9,7 +9,11 @@ import {
   runOpencodeChat,
 } from "./opencode-client";
 import type { ChatTurn, ChatEmitter, ProviderName, ToolSpec, ToolExecutor } from "./chat-types";
-import { isWebSearchAvailable, webSearchProviderLabel } from "./web-search-tool";
+import {
+  isWebSearchAvailable,
+  isWebFetchAvailable,
+  webSearchProviderLabel,
+} from "./web-search-tool";
 
 export type { ChatTurn, ChatEmitter, ProviderName, ToolSpec, ToolExecutor };
 
@@ -24,9 +28,11 @@ export type ProviderStatus = {
   defaultGrokModel: string;
   opencodeModels: { id: string; label: string; tier: string }[];
   defaultOpencodeModel: string;
-  /** Copilot can call web_search when EXA_API_KEY is set. */
+  /** Copilot can call web_search when EXA and/or TinyFish is configured. */
   webSearchAvailable: boolean;
-  webSearchProvider: "exa" | "none";
+  webSearchProvider: "exa+tinyfish" | "exa" | "tinyfish" | "none";
+  /** Full-page fetch via TinyFish (web_fetch tool). */
+  webFetchAvailable: boolean;
 };
 
 export async function resolveProviderStatus(): Promise<ProviderStatus> {
@@ -55,6 +61,7 @@ export async function resolveProviderStatus(): Promise<ProviderStatus> {
     defaultOpencodeModel: DEFAULT_OPENCODE_MODEL,
     webSearchAvailable: isWebSearchAvailable(),
     webSearchProvider: webSearchProviderLabel(),
+    webFetchAvailable: isWebFetchAvailable(),
   };
 }
 

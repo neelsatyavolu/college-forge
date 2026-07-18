@@ -1,5 +1,5 @@
 import type { ToolSpec, ToolExecutor } from "./chat-types";
-import { runWebSearch } from "./web-search-tool";
+import { runWebSearch, runWebFetch } from "./web-search-tool";
 import {
   getWorkspace,
   saveWorkspace,
@@ -261,7 +261,7 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
     {
       name: "web_search",
       description:
-        "Search the LIVE web via Exa for current facts: admit rates, ED/RD deadlines, SAT ranges, net price, rankings, supplement requirements, scholarships, recent admissions news. Always use this before inventing numbers when adding or enriching colleges. Returns titles, URLs, and page excerpts — cite sources. If the tool reports it is not configured, tell the user EXA_API_KEY is missing on the server.",
+        "Search the LIVE web (Exa + TinyFish when configured) for current facts: admit rates, ED/RD deadlines, SAT ranges, net price, rankings, supplements, scholarships. Returns ranked results, URLs, excerpts, and deep-reads of top pages when TinyFish is available. Always use before inventing numbers. Cite source URLs.",
       parameters: {
         type: "object",
         properties: {
@@ -272,6 +272,23 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
           },
         },
         required: ["query"],
+        additionalProperties: false,
+      },
+    },
+    {
+      name: "web_fetch",
+      description:
+        "Fetch a full web page as clean markdown (TinyFish Fetch). Use after web_search when you need the complete admissions page, Common Data Set, or deadline FAQ. Pass a full https URL.",
+      parameters: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "Full https URL from search results or an official school page." },
+          purpose: {
+            type: "string",
+            description: "Optional: what you need from the page (e.g. 'RD deadline and test policy').",
+          },
+        },
+        required: ["url"],
         additionalProperties: false,
       },
     },
@@ -388,6 +405,12 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
         case "web_search": {
           if (typeof a.query !== "string") return "web_search requires a string 'query'.";
           const r = await runWebSearch(a.query);
+          return r.ok ? r.content : r.error;
+        }
+        case "web_fetch": {
+          if (typeof a.url !== "string") return "web_fetch requires a string 'url'.";
+          const purpose = typeof a.purpose === "string" ? a.purpose : undefined;
+          const r = await runWebFetch(a.url, purpose);
           return r.ok ? r.content : r.error;
         }
         case "set_applicant_snapshot": {

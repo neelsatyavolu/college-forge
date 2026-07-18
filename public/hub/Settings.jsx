@@ -286,10 +286,21 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
             color: "var(--body)",
             lineHeight: 1.5,
           }}>
-            <strong style={{ color: "var(--ink)" }}>Web search: </strong>
+            <strong style={{ color: "var(--ink)" }}>Web research: </strong>
             {status.webSearchAvailable
-              ? "Exa is configured — the copilot can look up admit rates, deadlines, and school facts live."
-              : "Not configured. Add EXA_API_KEY on the server (Vercel env or .env.local) so the copilot can search the web. Get a key at dashboard.exa.ai."}
+              ? status.webSearchProvider === "exa+tinyfish"
+                ? "Exa + TinyFish — search, merge results, and deep-read top pages for admit rates, deadlines, and school facts."
+                : status.webSearchProvider === "exa"
+                  ? "Exa is configured for live search. Add TINYFISH_API_KEY for full-page fetch (higher quality)."
+                  : status.webSearchProvider === "tinyfish"
+                    ? "TinyFish is configured (search + page fetch). Add EXA_API_KEY for neural search ranking."
+                    : "Configured."
+              : "Not configured. Set EXA_API_KEY and/or TINYFISH_API_KEY on the server (Vercel env or .env.local)."}
+            {status.webFetchAvailable
+              ? " Full-page fetch is on."
+              : status.webSearchAvailable
+                ? " Full-page fetch needs TINYFISH_API_KEY."
+                : ""}
           </p>
         ) : null}
 

@@ -1,6 +1,6 @@
 import type { ChatTurn, ChatEmitter } from "./chat-types";
 import { READ_FILE_TOOL, readContextFile } from "./file-tool";
-import { WEB_SEARCH_TOOL, runWebSearch } from "./web-search-tool";
+import { WEB_SEARCH_TOOL, WEB_FETCH_TOOL, runWebSearch, runWebFetch } from "./web-search-tool";
 import {
   friendlyRoundMessage,
   friendlyWritingMessage,
@@ -55,6 +55,7 @@ function toolTargetFromArgs(args: string | undefined): string | undefined {
     const parsed = JSON.parse(args || "{}");
     if (parsed && typeof parsed.path === "string") return parsed.path;
     if (parsed && typeof parsed.query === "string") return parsed.query;
+    if (parsed && typeof parsed.url === "string") return parsed.url;
   } catch {
     // ignore — the tool event is still useful without a target
   }
@@ -86,6 +87,7 @@ async function callOpencode(
         tools: [
           { type: "function", function: READ_FILE_TOOL },
           { type: "function", function: WEB_SEARCH_TOOL },
+          { type: "function", function: WEB_FETCH_TOOL },
         ],
         temperature: 0.4,
         max_tokens: 16384,
@@ -129,7 +131,7 @@ async function callOpencode(
 
 async function executeTool(call: AssistantToolCall): Promise<string> {
   const name = call.function.name;
-  let parsed: { path?: unknown; query?: unknown };
+  let parsed: { path?: unknown; query?: unknown; url?: unknown; purpose?: unknown };
   try {
     parsed = JSON.parse(call.function.arguments || "{}");
   } catch {
@@ -143,6 +145,12 @@ async function executeTool(call: AssistantToolCall): Promise<string> {
   if (name === "web_search") {
     if (typeof parsed.query !== "string") return "web_search requires a string 'query' argument.";
     const result = await runWebSearch(parsed.query);
+    return result.ok ? result.content : result.error;
+  }
+  if (name === "web_fetch") {
+    if (typeof parsed.url !== "string") return "web_fetch requires a string 'url' argument.";
+    const purpose = typeof parsed.purpose === "string" ? parsed.purpose : undefined;
+    const result = await runWebFetch(parsed.url, purpose);
     return result.ok ? result.content : result.error;
   }
   return `Unknown tool: ${name}`;
