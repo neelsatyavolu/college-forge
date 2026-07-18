@@ -22,17 +22,17 @@ const AMBITION_OPTIONS = [
   {
     id: "ambitious",
     title: "Ambitious",
-    blurb: "More reaches. Stretch for dream schools; fewer safeties.",
+    blurb: "A bit more risk — a few extra reaches that still fit your stats, not lottery schools as targets.",
   },
   {
     id: "balanced",
     title: "Just right",
-    blurb: "Classic mix of reaches, targets, and safeties.",
+    blurb: "Realistic mix of reaches, targets, and safeties matched to your academics.",
   },
   {
     id: "conservative",
     title: "Conservative",
-    blurb: "Favor likelier admits; fewer ultra-selective reaches.",
+    blurb: "Lean safer — more likely admits, fewer stretches.",
   },
 ];
 
@@ -822,7 +822,9 @@ ${story.other.trim() || "(none)"}
 
 ## College list preferences
 - Strategy: ${prefs.ambition} (${ambitionLabel(prefs.ambition)})
-  · ambitious = more reaches; balanced = classic mix; conservative = favor likelier admits
+  · ambitious = slightly more risk within the student's real band (NOT Ivy-as-target for mid GPAs)
+  · balanced = realistic mix; conservative = lean safer
+  · Always match reach/target/safety to GPA/SAT — never label hyper-selective schools as targets for ~3.5 UW
 - Campus settings: ${(prefs.settings || []).join(", ") || "any"}
 - Size: ${prefs.size || "any"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}

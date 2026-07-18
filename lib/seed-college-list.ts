@@ -63,10 +63,14 @@ const REGION_STATES: Record<string, Set<string>> = {
 
 type Tier = "reach" | "target" | "safety";
 
+/**
+ * Ambition only nudges the mix — it is NOT “load the list with Ivies.”
+ * Ambitious ≈ one extra mild reach; conservative ≈ more likely admits.
+ */
 function quota(ambition: ListAmbition): Record<Tier, number> {
-  if (ambition === "ambitious") return { reach: 4, target: 5, safety: 3 };
-  if (ambition === "conservative") return { reach: 2, target: 4, safety: 6 };
-  return { reach: 3, target: 5, safety: 4 };
+  if (ambition === "ambitious") return { reach: 3, target: 5, safety: 4 };
+  if (ambition === "conservative") return { reach: 1, target: 5, safety: 6 };
+  return { reach: 2, target: 5, safety: 5 };
 }
 
 function parseSat(raw: string | number | null | undefined): number | null {
@@ -81,6 +85,8 @@ function parseGpa(raw: string | number | null | undefined): number | null {
   if (raw == null || raw === "" || raw === "—") return null;
   const n = typeof raw === "number" ? raw : Number(String(raw).replace(/[^\d.]/g, ""));
   if (!Number.isFinite(n) || n <= 0 || n > 6) return null;
+  // Weighted 4.3-scale often > 4.0 — normalize roughly for comparisons
+  if (n > 4.3) return Math.round(Math.min(4.0, n * 0.93) * 100) / 100;
   return Math.round(n * 100) / 100;
 }
 
@@ -111,103 +117,185 @@ function satMid(u: UsNewsCollege): number | null {
 }
 
 /**
+ * Academic “home band” for this student — admit-rate windows that define
+ * realistic reach / target / safety. Ambition only shifts the windows a little.
+ *
+ * Example ~3.48 UW (no SAT): targets roughly 30–60% admit, reaches 15–30%,
+ * safeties 60%+; ultra-selectives (&lt;~12%) are excluded from the seed pool
+ * unless must-include (and still labeled reach).
+ */
+type SelectivityBand = {
+  /** Schools with admit rate below this are out of the seed pool (lottery). */
+  skipBelow: number;
+  /** Below this (and ≥ skipBelow) → reach */
+  reachCeil: number;
+  /** Below this (and ≥ reachCeil) → target; above → safety */
+  targetCeil: number;
+  /** Ideal admit rate for ranking targets */
+  idealAdmit: number;
+  /** Ideal school avg GPA for ranking */
+  idealSchoolGpa: number;
+};
+
+function selectivityBand(
+  studentGpa: number | null,
+  studentSat: number | null,
+  ambition: ListAmbition
+): SelectivityBand {
+  // Base band from unweighted-ish GPA
+  let band: SelectivityBand;
+  const g = studentGpa;
+
+  if (g == null && studentSat == null) {
+    band = { skipBelow: 0.1, reachCeil: 0.22, targetCeil: 0.5, idealAdmit: 0.35, idealSchoolGpa: 3.6 };
+  } else if (g != null && g < 3.2) {
+    band = { skipBelow: 0.22, reachCeil: 0.4, targetCeil: 0.7, idealAdmit: 0.55, idealSchoolGpa: 3.3 };
+  } else if (g != null && g < 3.45) {
+    band = { skipBelow: 0.15, reachCeil: 0.32, targetCeil: 0.6, idealAdmit: 0.45, idealSchoolGpa: 3.45 };
+  } else if (g != null && g < 3.65) {
+    // ~3.48–3.64 — solid list, NOT Ivy targets
+    band = { skipBelow: 0.12, reachCeil: 0.28, targetCeil: 0.55, idealAdmit: 0.4, idealSchoolGpa: 3.55 };
+  } else if (g != null && g < 3.85) {
+    band = { skipBelow: 0.08, reachCeil: 0.2, targetCeil: 0.45, idealAdmit: 0.28, idealSchoolGpa: 3.7 };
+  } else if (g != null) {
+    band = { skipBelow: 0.05, reachCeil: 0.14, targetCeil: 0.35, idealAdmit: 0.18, idealSchoolGpa: 3.85 };
+  } else {
+    // SAT-only fallback
+    const s = studentSat!;
+    if (s < 1200) band = { skipBelow: 0.2, reachCeil: 0.38, targetCeil: 0.65, idealAdmit: 0.5, idealSchoolGpa: 3.4 };
+    else if (s < 1350) band = { skipBelow: 0.12, reachCeil: 0.28, targetCeil: 0.55, idealAdmit: 0.38, idealSchoolGpa: 3.55 };
+    else if (s < 1480) band = { skipBelow: 0.08, reachCeil: 0.2, targetCeil: 0.42, idealAdmit: 0.26, idealSchoolGpa: 3.7 };
+    else band = { skipBelow: 0.05, reachCeil: 0.14, targetCeil: 0.32, idealAdmit: 0.16, idealSchoolGpa: 3.9 };
+  }
+
+  // Ambition = slight risk shift, not a new stratosphere
+  if (ambition === "ambitious") {
+    band = {
+      ...band,
+      skipBelow: Math.max(0.04, band.skipBelow - 0.03),
+      reachCeil: Math.max(band.skipBelow + 0.06, band.reachCeil - 0.04),
+      targetCeil: Math.max(band.reachCeil + 0.08, band.targetCeil - 0.04),
+      idealAdmit: Math.max(0.12, band.idealAdmit - 0.04),
+    };
+  } else if (ambition === "conservative") {
+    band = {
+      ...band,
+      skipBelow: Math.min(0.35, band.skipBelow + 0.04),
+      reachCeil: Math.min(0.55, band.reachCeil + 0.05),
+      targetCeil: Math.min(0.8, band.targetCeil + 0.05),
+      idealAdmit: Math.min(0.7, band.idealAdmit + 0.06),
+    };
+  }
+
+  // SAT can tighten or loosen slightly when both exist
+  if (studentSat != null && g != null) {
+    if (studentSat >= 1500 && g >= 3.7) {
+      band.skipBelow = Math.max(0.04, band.skipBelow - 0.02);
+    }
+    if (studentSat < 1200 && g < 3.6) {
+      band.skipBelow = Math.min(0.3, band.skipBelow + 0.03);
+    }
+  }
+
+  return band;
+}
+
+/**
  * Map a school to reach/target/safety for THIS student.
- * GPA-first when we have a school avg GPA; SAT band second; admit rate last.
+ * Admit rate is the primary signal; GPA/SAT gaps refine. Never call a
+ * hyper-selective school a "target" for a mid GPA.
  */
 function classifyTier(
   u: UsNewsCollege,
   studentSat: number | null,
-  studentGpa: number | null
+  studentGpa: number | null,
+  ambition: ListAmbition = "balanced"
 ): Tier {
+  const band = selectivityBand(studentGpa, studentSat, ambition);
   const admit = u.admitRate;
   const mid = satMid(u);
   const schoolGpa = typeof u.gpa === "number" ? u.gpa : null;
 
-  // GPA gap (UW-ish 4.0 scale). school.gpa in our dataset is typically unweighted avg.
-  if (studentGpa != null && schoolGpa != null) {
-    const gap = studentGpa - schoolGpa;
-    if (gap <= -0.25) return "reach";
-    if (gap >= 0.2 && (admit == null || admit >= 0.25)) return "safety";
-    if (gap >= -0.1 && gap <= 0.15) return "target";
-  }
+  // Hard floor: ultra-selective is always reach if it appears (must-include)
+  if (admit != null && admit < band.skipBelow) return "reach";
+  if (admit != null && admit < 0.1 && (studentGpa == null || studentGpa < 3.85)) return "reach";
 
-  if (studentSat != null && mid != null) {
-    if (studentSat < mid - 80) return "reach";
-    if (studentSat > mid + 50 && (admit == null || admit >= 0.25)) return "safety";
-    if (studentSat >= mid - 50 && studentSat <= mid + 40) return "target";
-    if (studentSat < mid) return "reach";
-    return "target";
-  }
-
-  // GPA alone vs selectivity proxy when school has no gpa field
-  if (studentGpa != null) {
-    // Rough bands: elite avg admits need ~3.9+; mid-selective ~3.5–3.8; broader 3.3–
-    if (studentGpa < 3.5) {
-      if (admit != null && admit < 0.2) return "reach";
-      if (admit != null && admit < 0.45) return "target";
-      if (admit != null) return "safety";
-      if (u.rank <= 40) return "reach";
-      if (u.rank <= 100) return "target";
-      return "safety";
+  // Primary: admit-rate windows
+  if (admit != null) {
+    if (admit < band.reachCeil) return "reach";
+    if (admit < band.targetCeil) {
+      // Soften: if SAT is way below mid-50, bump to reach even in "target" admit band
+      if (studentSat != null && mid != null && studentSat < mid - 100) return "reach";
+      if (studentGpa != null && schoolGpa != null && schoolGpa - studentGpa > 0.35) return "reach";
+      return "target";
     }
-    if (studentGpa < 3.75) {
-      if (admit != null && admit < 0.12) return "reach";
-      if (admit != null && admit < 0.35) return "target";
-      if (admit != null) return "safety";
-      if (u.rank <= 25) return "reach";
-      if (u.rank <= 80) return "target";
-      return "safety";
-    }
-    // strong GPA 3.75+
-    if (admit != null && admit < 0.1) return "reach";
-    if (admit != null && admit < 0.3) return "target";
-    if (admit != null) return "safety";
-  }
-
-  if (admit == null) {
-    if (u.rank <= 30) return "reach";
-    if (u.rank <= 80) return "target";
+    // High admit — safety unless student is well below school academic profile
+    if (studentSat != null && mid != null && studentSat < mid - 120) return "target";
+    if (studentGpa != null && schoolGpa != null && schoolGpa - studentGpa > 0.4) return "target";
     return "safety";
   }
-  if (admit < 0.12) return "reach";
-  if (admit < 0.35) return "target";
+
+  // No admit rate: use rank + GPA gap
+  if (studentGpa != null && schoolGpa != null) {
+    const gap = studentGpa - schoolGpa;
+    if (gap <= -0.3) return "reach";
+    if (gap >= 0.25) return "safety";
+    return "target";
+  }
+  if (studentSat != null && mid != null) {
+    if (studentSat < mid - 90) return "reach";
+    if (studentSat > mid + 60) return "safety";
+    return "target";
+  }
+  if (u.rank <= 40) return "reach";
+  if (u.rank <= 120) return "target";
   return "safety";
 }
 
 /**
- * How far this school is from a good academic fit. Lower = better target.
- * Used to rank candidates inside each tier so 3.48 UW doesn't get Princeton first.
+ * How far this school is from a good academic fit. Lower = better for that tier.
+ * Strongly prefers schools near the student's band — not prestige rank.
  */
 function fitScore(
   u: UsNewsCollege,
   studentSat: number | null,
-  studentGpa: number | null
+  studentGpa: number | null,
+  ambition: ListAmbition = "balanced"
 ): number {
+  const band = selectivityBand(studentGpa, studentSat, ambition);
   let score = 0;
   const mid = satMid(u);
+
+  if (u.admitRate != null) {
+    score += Math.abs(u.admitRate - band.idealAdmit) * 120;
+    // Extra penalty for lottery schools even if somehow in pool
+    if (u.admitRate < band.skipBelow) score += 80;
+    if (u.admitRate < 0.1 && (studentGpa == null || studentGpa < 3.8)) score += 50;
+  } else {
+    score += Math.abs(u.rank - 90) / 15;
+  }
+
   if (studentSat != null && mid != null) {
-    score += Math.abs(studentSat - mid) / 10;
+    score += Math.abs(studentSat - mid) / 8;
   }
   if (studentGpa != null && typeof u.gpa === "number") {
-    score += Math.abs(studentGpa - u.gpa) * 40;
-  } else if (studentGpa != null && u.admitRate != null) {
-    // Prefer admit rates that match GPA band
-    const idealAdmit =
-      studentGpa < 3.4 ? 0.55 : studentGpa < 3.6 ? 0.4 : studentGpa < 3.8 ? 0.25 : 0.12;
-    score += Math.abs(u.admitRate - idealAdmit) * 100;
-  } else {
-    // No academics: mild preference for mid ranks over pure top
-    score += Math.abs(u.rank - 80) / 20;
+    score += Math.abs(studentGpa - u.gpa) * 35;
+    score += Math.abs(u.gpa - band.idealSchoolGpa) * 15;
   }
-  // Slight diversity: don't always pick rank 1–10
-  score += u.rank * 0.02;
+
+  // Mild anti-prestige bias for mid profiles so we don't fill with brand names
+  if (studentGpa != null && studentGpa < 3.7 && u.rank <= 20) score += 25;
+  if (studentGpa != null && studentGpa < 3.55 && u.rank <= 40) score += 12;
+
+  score += u.rank * 0.015;
   return score;
 }
 
 /**
- * Drop schools that are unrealistically selective for this academic profile
- * from the *seed pool* (must-includes always stay). Extreme reaches still
- * allowed sparingly via tier classification.
+ * Drop schools that are unrealistically selective for this profile from the
+ * seed pool. Must-includes always stay (and get labeled reach if needed).
+ *
+ * "Ambitious" opens the door only slightly — still no Yale-as-target territory.
  */
 function academicallyPlausible(
   u: UsNewsCollege,
@@ -215,26 +303,27 @@ function academicallyPlausible(
   studentGpa: number | null,
   ambition: ListAmbition
 ): boolean {
-  // Ultra-elite (admit < 8%) without strong academics → only if ambitious, and even then as reach only
-  const ultra = u.admitRate != null && u.admitRate < 0.08;
-  const verySelective = u.admitRate != null && u.admitRate < 0.15;
+  const band = selectivityBand(studentGpa, studentSat, ambition);
+  const admit = u.admitRate;
+  const mid = satMid(u);
 
-  if (studentGpa != null && studentGpa < 3.55) {
-    if (ultra && ambition !== "ambitious") return false;
-    if (ultra && studentGpa < 3.4) return false; // skip ivies entirely for lower GPA unless must-include
-    if (verySelective && studentGpa < 3.3 && ambition === "conservative") return false;
+  if (admit != null && admit < band.skipBelow) return false;
+
+  // Absolute lottery guardrails by GPA (must-includes bypass this function)
+  if (studentGpa != null) {
+    if (studentGpa < 3.35 && admit != null && admit < 0.18) return false;
+    if (studentGpa < 3.55 && admit != null && admit < 0.1) return false;
+    if (studentGpa < 3.7 && admit != null && admit < 0.06) return false;
+    if (typeof u.gpa === "number" && u.gpa - studentGpa > 0.5) return false;
+    if (ambition !== "ambitious" && typeof u.gpa === "number" && u.gpa - studentGpa > 0.4) {
+      return false;
+    }
   }
 
-  if (studentSat != null && studentSat < 1280) {
-    const mid = satMid(u);
-    if (mid != null && mid - studentSat > 200 && ambition === "conservative") return false;
-    if (mid != null && mid - studentSat > 250) return false;
-  }
-
-  if (studentGpa != null && typeof u.gpa === "number") {
-    // School avg GPA more than 0.55 above student → skip unless ambitious reach
-    if (u.gpa - studentGpa > 0.55 && ambition !== "ambitious") return false;
-    if (u.gpa - studentGpa > 0.7) return false;
+  if (studentSat != null && mid != null) {
+    // Don't seed schools whose mid-50 is > ~150 points above student (ambitious: 180)
+    const maxGap = ambition === "ambitious" ? 180 : ambition === "conservative" ? 100 : 140;
+    if (mid - studentSat > maxGap) return false;
   }
 
   return true;
@@ -307,13 +396,16 @@ function expandUcCampuses(
 
   const ucPool = US_NEWS_TOP_250.filter(
     (u) => isUcCampus(u) && !have.has(u.slug) && academicallyPlausible(u, studentSat, studentGpa, ambition)
-  ).sort((a, b) => fitScore(a, studentSat, studentGpa) - fitScore(b, studentSat, studentGpa));
+  ).sort(
+    (a, b) =>
+      fitScore(a, studentSat, studentGpa, ambition) - fitScore(b, studentSat, studentGpa, ambition)
+  );
 
   const out = list.map(withUcTag);
   let added = ucAlready;
   for (const u of ucPool) {
     if (added >= maxUc) break;
-    const tier = classifyTier(u, studentSat, studentGpa);
+    const tier = classifyTier(u, studentSat, studentGpa, ambition);
     out.push(usNewsToCollege(u, tier, false));
     have.add(u.slug);
     added++;
@@ -373,14 +465,15 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   const kept: College[] = dedupeColleges(params.existing.map((c) => ({ ...c }))).map(withUcTag);
   const have = new Set(kept.map((c) => c.slug));
 
+  // Always re-tier from student stats (must-includes keep the school, not a wrong "target" label)
   for (let i = 0; i < kept.length; i++) {
     const hit = US_NEWS_TOP_250.find((u) => u.slug === kept[i].slug);
     if (hit) {
-      const tier = classifyTier(hit, studentSat, studentGpa);
+      const tier = classifyTier(hit, studentSat, studentGpa, ambition);
       kept[i] = withUcTag({
         ...kept[i],
-        tier: kept[i].tier || tier,
-        verdict: kept[i].verdict || verdictFor(tier),
+        tier,
+        verdict: verdictFor(tier),
         rank: kept[i].rank ?? hit.rank,
         photo: kept[i].photo ?? hit.photo,
         admit:
@@ -391,11 +484,13 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
           (hit.sat25 != null && hit.sat75 != null ? `${hit.sat25}–${hit.sat75}` : undefined),
         scorecardId: kept[i].scorecardId ?? hit.scorecardId,
       });
-    } else if (!kept[i].tier) {
+    } else {
+      // Unknown school: leave mild target unless already labeled
+      const tier = (kept[i].tier as Tier) || "target";
       kept[i] = withUcTag({
         ...kept[i],
-        tier: "target",
-        verdict: kept[i].verdict || verdictFor("target"),
+        tier,
+        verdict: verdictFor(tier),
       });
     }
   }
@@ -442,11 +537,13 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
 
   const byTier: Record<Tier, UsNewsCollege[]> = { reach: [], target: [], safety: [] };
   for (const u of candidates) {
-    byTier[classifyTier(u, studentSat, studentGpa)].push(u);
+    byTier[classifyTier(u, studentSat, studentGpa, ambition)].push(u);
   }
   for (const t of Object.keys(byTier) as Tier[]) {
     byTier[t].sort(
-      (a, b) => fitScore(a, studentSat, studentGpa) - fitScore(b, studentSat, studentGpa)
+      (a, b) =>
+        fitScore(a, studentSat, studentGpa, ambition) -
+        fitScore(b, studentSat, studentGpa, ambition)
     );
   }
 
