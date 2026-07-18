@@ -261,10 +261,16 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
     {
       name: "web_search",
       description:
-        "Search the web for up-to-date facts (admit rates, deadlines, test ranges, rankings) when populating colleges or answering questions.",
+        "Search the LIVE web for current facts: admit rates, ED/RD deadlines, SAT ranges, net price, rankings, supplement requirements, scholarships, recent admissions news. Always use this before inventing numbers when adding or enriching colleges. Returns titles, URLs, and excerpts — cite sources.",
       parameters: {
         type: "object",
-        properties: { query: { type: "string" } },
+        properties: {
+          query: {
+            type: "string",
+            description:
+              "Specific query, e.g. 'Boston University Class of 2029 acceptance rate' or 'UCSB RD application deadline 2026'.",
+          },
+        },
         required: ["query"],
         additionalProperties: false,
       },

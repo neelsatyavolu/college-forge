@@ -831,13 +831,13 @@ ${story.other.trim() || "(none)"}
 ## Must-include schools (keep these; already on the list as priority seeds)
 ${must}
 
-## College list — ALREADY SEEDED
-The server already filled a preliminary shortlist (~8–12 schools) around the must-includes using the student's prefs (ambition / setting / region). You will see them in the workspace snapshot.
-- Do NOT call remove_college on any of them.
-- Do NOT leave the list at only the must-includes — if the snapshot shows fewer than 8 schools, upsert_college until you reach at least 10.
-- You MAY enrich schools (tier, major fit, deadlines, tags, verdict) with upsert_college.
-- You MAY add 1–3 extra schools that fit prefs + intended major if something important is missing.
-- Prefer real data (web_search) when enriching admit rates / deadlines.
+## College list — ALREADY SEEDED (academically matched)
+The server already filled a preliminary shortlist (~8–12 schools) around the must-includes using the student's GPA/SAT + prefs. You will see them in the workspace snapshot.
+- Do NOT call remove_college on seeded schools unless they are clear duplicates.
+- Do NOT replace the list with only Ivies / ultra-selectives if the student's stats don't support that.
+- Match reach/target/safety to the real academic profile (e.g. ~3.5 UW → mostly accessible targets/safeties, a few true reaches).
+- Use web_search liberally to verify admit rates, deadlines, and major strength before enriching with upsert_college.
+- You MAY add 1–3 schools that fit prefs + intended major; you MAY re-tier after research.
 
 ## Uploads to read with read_upload if relevant
 ${uploadLine}

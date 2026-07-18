@@ -255,6 +255,8 @@ export async function POST(req: NextRequest) {
       existing: next.colleges,
       prefs: listPrefs,
       sat,
+      gpaUnweighted,
+      gpaWeighted,
       intended,
       targetCount: 12,
     });

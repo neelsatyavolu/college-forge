@@ -272,6 +272,11 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
       }>
         <p style={{ margin: "0 0 4px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
           The copilot runs on <strong style={{ color: "var(--ink)" }}>your own</strong> Grok or ChatGPT account. Connect at least one to chat, upload transcripts, and update your hub.
+          {" "}It can <strong style={{ color: "var(--ink)" }}>search the live web</strong>
+          {status && status.webSearchAvailable
+            ? ` (${status.webSearchProvider === "exa" ? "Exa" : "DuckDuckGo"} backend)`
+            : ""}
+          {" "}for admit rates, deadlines, and school research.
         </p>
 
         {loading ? (

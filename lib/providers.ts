@@ -9,6 +9,7 @@ import {
   runOpencodeChat,
 } from "./opencode-client";
 import type { ChatTurn, ChatEmitter, ProviderName, ToolSpec, ToolExecutor } from "./chat-types";
+import { isWebSearchAvailable, webSearchProviderLabel } from "./web-search-tool";
 
 export type { ChatTurn, ChatEmitter, ProviderName, ToolSpec, ToolExecutor };
 
@@ -23,6 +24,9 @@ export type ProviderStatus = {
   defaultGrokModel: string;
   opencodeModels: { id: string; label: string; tier: string }[];
   defaultOpencodeModel: string;
+  /** Copilot can call web_search (Exa if keyed, else DuckDuckGo). */
+  webSearchAvailable: boolean;
+  webSearchProvider: "exa" | "duckduckgo";
 };
 
 export async function resolveProviderStatus(): Promise<ProviderStatus> {
@@ -49,6 +53,8 @@ export async function resolveProviderStatus(): Promise<ProviderStatus> {
     defaultGrokModel: DEFAULT_GROK_MODEL,
     opencodeModels: OPENCODE_MODELS.map((m) => ({ id: m.id, label: m.label, tier: m.tier })),
     defaultOpencodeModel: DEFAULT_OPENCODE_MODEL,
+    webSearchAvailable: isWebSearchAvailable(),
+    webSearchProvider: webSearchProviderLabel(),
   };
 }
 

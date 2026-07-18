@@ -1,8 +1,8 @@
 /**
  * Deterministic preliminary college list for onboarding.
  * Must-include schools stay; we fill to ~12 from US News top ~250 using
- * list prefs (ambition, setting, region). LLMs often only keep must-haves
- * if left to call upsert_college many times — this guarantees a real shortlist.
+ * student academics (GPA / SAT) + list prefs. Without GPA matching the pool
+ * sorts by rank and dumps Ivies on every student — bad for a 3.4 UW profile.
  */
 
 import type { College, OnboardingListPrefs, ListAmbition } from "./store";
@@ -20,9 +20,8 @@ const REGION_STATES: Record<string, Set<string>> = {
 
 type Tier = "reach" | "target" | "safety";
 
-/** How many of each tier we aim for (before must-haves shift the mix). */
 function quota(ambition: ListAmbition): Record<Tier, number> {
-  if (ambition === "ambitious") return { reach: 5, target: 4, safety: 3 };
+  if (ambition === "ambitious") return { reach: 4, target: 5, safety: 3 };
   if (ambition === "conservative") return { reach: 2, target: 4, safety: 6 };
   return { reach: 3, target: 5, safety: 4 };
 }
@@ -34,14 +33,19 @@ function parseSat(raw: string | number | null | undefined): number | null {
   return Math.round(n);
 }
 
+/** Prefer unweighted when both present; 0–4.0 / 0–5.0 scale. */
+function parseGpa(raw: string | number | null | undefined): number | null {
+  if (raw == null || raw === "" || raw === "—") return null;
+  const n = typeof raw === "number" ? raw : Number(String(raw).replace(/[^\d.]/g, ""));
+  if (!Number.isFinite(n) || n <= 0 || n > 6) return null;
+  return Math.round(n * 100) / 100;
+}
+
 function shortName(name: string): string {
   return name.replace(/^The\s+/i, "").replace(/\s*[-–—].*$/, "").slice(0, 28);
 }
 
-function settingMatch(
-  schoolSetting: UsNewsCollege["setting"],
-  wanted: string[]
-): boolean {
+function settingMatch(schoolSetting: UsNewsCollege["setting"], wanted: string[]): boolean {
   if (!wanted.length) return true;
   const mapped = wanted.map((w) => (w === "college-town" ? "town" : w));
   return mapped.includes(schoolSetting);
@@ -56,27 +60,68 @@ function regionMatch(state: string, regions: string[]): boolean {
   });
 }
 
+function satMid(u: UsNewsCollege): number | null {
+  if (typeof u.sat25 === "number" && typeof u.sat75 === "number") {
+    return (u.sat25 + u.sat75) / 2;
+  }
+  return null;
+}
+
+/**
+ * Map a school to reach/target/safety for THIS student.
+ * GPA-first when we have a school avg GPA; SAT band second; admit rate last.
+ */
 function classifyTier(
   u: UsNewsCollege,
-  studentSat: number | null
+  studentSat: number | null,
+  studentGpa: number | null
 ): Tier {
   const admit = u.admitRate;
-  const mid =
-    typeof u.sat25 === "number" && typeof u.sat75 === "number"
-      ? (u.sat25 + u.sat75) / 2
-      : null;
+  const mid = satMid(u);
+  const schoolGpa = typeof u.gpa === "number" ? u.gpa : null;
+
+  // GPA gap (UW-ish 4.0 scale). school.gpa in our dataset is typically unweighted avg.
+  if (studentGpa != null && schoolGpa != null) {
+    const gap = studentGpa - schoolGpa;
+    if (gap <= -0.25) return "reach";
+    if (gap >= 0.2 && (admit == null || admit >= 0.25)) return "safety";
+    if (gap >= -0.1 && gap <= 0.15) return "target";
+  }
 
   if (studentSat != null && mid != null) {
     if (studentSat < mid - 80) return "reach";
-    if (studentSat > mid + 40 && (admit == null || admit >= 0.2)) return "safety";
-    if (studentSat >= mid - 40 && studentSat <= mid + 40) return "target";
-    // borderline
+    if (studentSat > mid + 50 && (admit == null || admit >= 0.25)) return "safety";
+    if (studentSat >= mid - 50 && studentSat <= mid + 40) return "target";
     if (studentSat < mid) return "reach";
     return "target";
   }
 
+  // GPA alone vs selectivity proxy when school has no gpa field
+  if (studentGpa != null) {
+    // Rough bands: elite avg admits need ~3.9+; mid-selective ~3.5–3.8; broader 3.3–
+    if (studentGpa < 3.5) {
+      if (admit != null && admit < 0.2) return "reach";
+      if (admit != null && admit < 0.45) return "target";
+      if (admit != null) return "safety";
+      if (u.rank <= 40) return "reach";
+      if (u.rank <= 100) return "target";
+      return "safety";
+    }
+    if (studentGpa < 3.75) {
+      if (admit != null && admit < 0.12) return "reach";
+      if (admit != null && admit < 0.35) return "target";
+      if (admit != null) return "safety";
+      if (u.rank <= 25) return "reach";
+      if (u.rank <= 80) return "target";
+      return "safety";
+    }
+    // strong GPA 3.75+
+    if (admit != null && admit < 0.1) return "reach";
+    if (admit != null && admit < 0.3) return "target";
+    if (admit != null) return "safety";
+  }
+
   if (admit == null) {
-    // rank as proxy: lower rank # = more selective
     if (u.rank <= 30) return "reach";
     if (u.rank <= 80) return "target";
     return "safety";
@@ -84,6 +129,72 @@ function classifyTier(
   if (admit < 0.12) return "reach";
   if (admit < 0.35) return "target";
   return "safety";
+}
+
+/**
+ * How far this school is from a good academic fit. Lower = better target.
+ * Used to rank candidates inside each tier so 3.48 UW doesn't get Princeton first.
+ */
+function fitScore(
+  u: UsNewsCollege,
+  studentSat: number | null,
+  studentGpa: number | null
+): number {
+  let score = 0;
+  const mid = satMid(u);
+  if (studentSat != null && mid != null) {
+    score += Math.abs(studentSat - mid) / 10;
+  }
+  if (studentGpa != null && typeof u.gpa === "number") {
+    score += Math.abs(studentGpa - u.gpa) * 40;
+  } else if (studentGpa != null && u.admitRate != null) {
+    // Prefer admit rates that match GPA band
+    const idealAdmit =
+      studentGpa < 3.4 ? 0.55 : studentGpa < 3.6 ? 0.4 : studentGpa < 3.8 ? 0.25 : 0.12;
+    score += Math.abs(u.admitRate - idealAdmit) * 100;
+  } else {
+    // No academics: mild preference for mid ranks over pure top
+    score += Math.abs(u.rank - 80) / 20;
+  }
+  // Slight diversity: don't always pick rank 1–10
+  score += u.rank * 0.02;
+  return score;
+}
+
+/**
+ * Drop schools that are unrealistically selective for this academic profile
+ * from the *seed pool* (must-includes always stay). Extreme reaches still
+ * allowed sparingly via tier classification.
+ */
+function academicallyPlausible(
+  u: UsNewsCollege,
+  studentSat: number | null,
+  studentGpa: number | null,
+  ambition: ListAmbition
+): boolean {
+  // Ultra-elite (admit < 8%) without strong academics → only if ambitious, and even then as reach only
+  const ultra = u.admitRate != null && u.admitRate < 0.08;
+  const verySelective = u.admitRate != null && u.admitRate < 0.15;
+
+  if (studentGpa != null && studentGpa < 3.55) {
+    if (ultra && ambition !== "ambitious") return false;
+    if (ultra && studentGpa < 3.4) return false; // skip ivies entirely for lower GPA unless must-include
+    if (verySelective && studentGpa < 3.3 && ambition === "conservative") return false;
+  }
+
+  if (studentSat != null && studentSat < 1280) {
+    const mid = satMid(u);
+    if (mid != null && mid - studentSat > 200 && ambition === "conservative") return false;
+    if (mid != null && mid - studentSat > 250) return false;
+  }
+
+  if (studentGpa != null && typeof u.gpa === "number") {
+    // School avg GPA more than 0.55 above student → skip unless ambitious reach
+    if (u.gpa - studentGpa > 0.55 && ambition !== "ambitious") return false;
+    if (u.gpa - studentGpa > 0.7) return false;
+  }
+
+  return true;
 }
 
 function verdictFor(tier: Tier): { tone: string; label: string } {
@@ -117,18 +228,26 @@ export function usNewsToCollege(u: UsNewsCollege, tier: Tier, priority = false):
   };
 }
 
-function shuffleStable<T>(arr: T[], seed: string): T[] {
-  // Simple seeded shuffle so the same prefs get a stable but not purely rank-sorted list.
-  let h = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  const out = arr.slice();
-  for (let i = out.length - 1; i > 0; i--) {
-    h = Math.imul(h ^ (h >>> 13), 16777619);
-    const j = Math.abs(h) % (i + 1);
-    [out[i], out[j]] = [out[j], out[i]];
+function slugKey(s: string): string {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+/** Deduplicate by slug and normalized name. */
+function dedupeColleges(list: College[]): College[] {
+  const bySlug = new Set<string>();
+  const byName = new Set<string>();
+  const out: College[] = [];
+  for (const c of list) {
+    const slug = c.slug || slugKey(c.name);
+    const nameKey = slugKey(c.name || c.short || "");
+    if (bySlug.has(slug) || (nameKey && byName.has(nameKey))) continue;
+    bySlug.add(slug);
+    if (nameKey) byName.add(nameKey);
+    out.push({ ...c, slug });
   }
   return out;
 }
@@ -136,101 +255,93 @@ function shuffleStable<T>(arr: T[], seed: string): T[] {
 export type SeedCollegeListParams = {
   existing: College[];
   prefs: OnboardingListPrefs;
-  /** Student superscore if known */
   sat?: string | number | null;
+  /** Prefer unweighted when both exist */
+  gpaUnweighted?: string | number | null;
+  gpaWeighted?: string | number | null;
   intended?: string;
-  /** Total schools to aim for (including must-haves). Default 12. */
   targetCount?: number;
 };
 
-/**
- * Keep existing schools (must-includes), fill remaining slots from US News
- * filtered by prefs, with a reach/target/safety mix from ambition.
- */
 export function seedCollegeList(params: SeedCollegeListParams): College[] {
   const target = Math.max(6, Math.min(16, params.targetCount ?? 12));
   const prefs = params.prefs;
   const ambition: ListAmbition = prefs.ambition || "balanced";
   const studentSat = parseSat(params.sat);
+  const studentGpa =
+    parseGpa(params.gpaUnweighted) ?? parseGpa(params.gpaWeighted);
   const settings = (prefs.settings || []).filter(Boolean);
   const regions = (prefs.regions || []).filter(Boolean);
 
-  // Preserve existing order; ensure priority flags stay meaningful.
-  const kept: College[] = params.existing.map((c) => ({ ...c }));
+  // Dedup existing (must-includes can collide with prior list after redo)
+  const kept: College[] = dedupeColleges(params.existing.map((c) => ({ ...c })));
   const have = new Set(kept.map((c) => c.slug));
 
-  // Ensure tiers on existing when missing
   for (let i = 0; i < kept.length; i++) {
-    if (kept[i].tier) continue;
     const hit = US_NEWS_TOP_250.find((u) => u.slug === kept[i].slug);
     if (hit) {
-      const tier = classifyTier(hit, studentSat);
+      const tier = classifyTier(hit, studentSat, studentGpa);
       kept[i] = {
         ...kept[i],
-        tier,
+        tier: kept[i].tier || tier,
         verdict: kept[i].verdict || verdictFor(tier),
         rank: kept[i].rank ?? hit.rank,
         photo: kept[i].photo ?? hit.photo,
-        admit: kept[i].admit || (hit.admitRate != null ? `${Math.round(hit.admitRate * 1000) / 10}%` : undefined),
+        admit:
+          kept[i].admit ||
+          (hit.admitRate != null ? `${Math.round(hit.admitRate * 1000) / 10}%` : undefined),
         satRange:
           kept[i].satRange ||
           (hit.sat25 != null && hit.sat75 != null ? `${hit.sat25}–${hit.sat75}` : undefined),
+        scorecardId: kept[i].scorecardId ?? hit.scorecardId,
       };
-    } else {
+    } else if (!kept[i].tier) {
       kept[i] = { ...kept[i], tier: "target", verdict: kept[i].verdict || verdictFor("target") };
     }
   }
 
-  if (kept.length >= target) return kept;
+  if (kept.length >= target) return kept.slice(0, target);
 
   const need = target - kept.length;
   const q = quota(ambition);
-
-  // Count existing tiers toward quota
   const filled: Record<Tier, number> = { reach: 0, target: 0, safety: 0 };
   for (const c of kept) {
     const t = (c.tier as Tier) || "target";
     if (t in filled) filled[t]++;
   }
 
-  function pool(strict: boolean): UsNewsCollege[] {
+  function pool(opts: { strictPrefs: boolean; strictAcademics: boolean }): UsNewsCollege[] {
     return US_NEWS_TOP_250.filter((u) => {
       if (have.has(u.slug)) return false;
-      if (strict) {
+      if (opts.strictPrefs) {
         if (!settingMatch(u.setting, settings)) return false;
         if (!regionMatch(u.state, regions)) return false;
+      }
+      if (opts.strictAcademics && !academicallyPlausible(u, studentSat, studentGpa, ambition)) {
+        return false;
       }
       return true;
     });
   }
 
-  // Prefer strict filter; if too thin, relax.
-  let candidates = pool(true);
-  if (candidates.length < need + 8) candidates = pool(false);
-
-  const seedKey = [
-    ambition,
-    settings.join(","),
-    regions.join(","),
-    params.intended || "",
-    studentSat ?? "",
-  ].join("|");
+  // Prefer prefs+academics; relax prefs first, then academics if still thin
+  let candidates = pool({ strictPrefs: true, strictAcademics: true });
+  if (candidates.length < need + 10) {
+    candidates = pool({ strictPrefs: false, strictAcademics: true });
+  }
+  if (candidates.length < need + 6) {
+    candidates = pool({ strictPrefs: false, strictAcademics: false });
+  }
 
   const byTier: Record<Tier, UsNewsCollege[]> = { reach: [], target: [], safety: [] };
   for (const u of candidates) {
-    byTier[classifyTier(u, studentSat)].push(u);
+    byTier[classifyTier(u, studentSat, studentGpa)].push(u);
   }
   for (const t of Object.keys(byTier) as Tier[]) {
-    // Prefer a mix of selectivity within tier: sort by rank then light shuffle
-    byTier[t].sort((a, b) => a.rank - b.rank);
-    byTier[t] = shuffleStable(byTier[t], seedKey + t).sort((a, b) => {
-      // keep roughly rank-ordered but break ties with shuffle order preserved via stable-ish
-      return a.rank - b.rank;
-    });
-    // Interleave top and mid ranks for variety
-    const top = byTier[t].filter((_, i) => i % 3 !== 2);
-    const rest = byTier[t].filter((_, i) => i % 3 === 2);
-    byTier[t] = [...top, ...rest];
+    // Best academic fit first (not pure prestige rank)
+    byTier[t].sort(
+      (a, b) => fitScore(a, studentSat, studentGpa) - fitScore(b, studentSat, studentGpa)
+    );
   }
 
   const added: College[] = [];
@@ -245,13 +356,10 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
     }
   };
 
-  // Fill remaining quota slots first
   for (const tier of ["reach", "target", "safety"] as Tier[]) {
-    const want = Math.max(0, q[tier] - filled[tier]);
-    take(tier, want);
+    take(tier, Math.max(0, q[tier] - filled[tier]));
   }
 
-  // Top up to `need` from any tier (prefer target, then safety, then reach)
   let remaining = need - added.length;
   for (const tier of ["target", "safety", "reach"] as Tier[]) {
     if (remaining <= 0) break;
@@ -260,5 +368,5 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
     remaining -= added.length - before;
   }
 
-  return [...kept, ...added];
+  return dedupeColleges([...kept, ...added]);
 }

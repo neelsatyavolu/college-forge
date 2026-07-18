@@ -9,7 +9,8 @@ import {
   type GrokTokens,
 } from "./grok-oauth";
 
-const MAX_ROUNDS = 6;
+// Hub builds need several tool rounds (web_search × N + set_* + upsert_college).
+const MAX_ROUNDS = 10;
 const UPSTREAM_TIMEOUT_MS = 90_000;
 
 export { DEFAULT_GROK_MODEL, GROK_MODELS, isKnownGrokModel };
