@@ -299,13 +299,14 @@ function satMid(u: UsNewsCollege): number | null {
  * Ambition mainly unlocks more selective *reaches* (still labeled reach).
  *
  * Example ~3.48 UW ambitious journalism-style list:
- *   reaches: Northwestern, Michigan, NYU, USC, Emory, WashU, Cornell…
+ *   reaches: Northwestern (Medill), Michigan, NYU, USC, Cornell… (1–2 under ~8%)
  *   targets: Wisconsin, Maryland, UIUC, Purdue, Wake Forest, Pitt, Rutgers…
  *   safeties: ASU, IU, Penn State, MSU…
  *   plus a UC cluster (one application).
+ * Ambitious = mild risk + major-fit dreams — NOT a full HYPMS lottery stack.
  */
 type SelectivityBand = {
-  /** Below this admit rate → usually out of seed pool (except ambitious dream reaches). */
+  /** Below this admit rate → usually out of seed pool (except ambitious major-fit dreams). */
   skipBelow: number;
   /** Below this (and ≥ skipBelow) → reach */
   reachCeil: number;
@@ -314,6 +315,9 @@ type SelectivityBand = {
   idealAdmit: number;
   idealSchoolGpa: number;
 };
+
+/** Schools under this rate are "ultra" lottery for mid profiles — hard-capped in the list. */
+const ULTRA_ADMIT = 0.08;
 
 function selectivityBand(
   studentGpa: number | null,
@@ -345,13 +349,13 @@ function selectivityBand(
   }
 
   if (ambition === "ambitious") {
-    // Open the dream-reach door; do NOT reclassify hyper-selectives as targets
+    // Mild dream-reach door (NU/Cornell/Michigan) — still block pure HYPMS via academicallyPlausible + ultra cap
     band = {
       ...band,
-      skipBelow: Math.max(0.035, band.skipBelow - 0.055), // e.g. ~0.035–0.05 → Brown/Cornell allowed as reach
-      reachCeil: Math.min(0.35, band.reachCeil + 0.04),
+      skipBelow: Math.max(0.055, band.skipBelow - 0.03), // e.g. ~0.06 for mid GPA
+      reachCeil: Math.min(0.32, band.reachCeil + 0.02),
       targetCeil: band.targetCeil,
-      idealAdmit: Math.max(0.14, band.idealAdmit - 0.03),
+      idealAdmit: Math.max(0.16, band.idealAdmit - 0.02),
     };
   } else if (ambition === "conservative") {
     band = {
@@ -364,11 +368,25 @@ function selectivityBand(
   }
 
   if (studentSat != null && g != null) {
-    if (studentSat >= 1500 && g >= 3.7) band.skipBelow = Math.max(0.03, band.skipBelow - 0.02);
+    // Only high-stat students open the true lottery door
+    if (studentSat >= 1520 && g >= 3.85) band.skipBelow = Math.max(0.03, band.skipBelow - 0.02);
     if (studentSat < 1150 && g < 3.5) band.skipBelow = Math.min(0.28, band.skipBelow + 0.04);
   }
 
   return band;
+}
+
+/** Max ultra-selective (admit < 8%) reaches allowed by ambition + GPA. */
+function ultraDreamCap(ambition: ListAmbition, studentGpa: number | null): number {
+  if (ambition === "conservative") return 0;
+  if (studentGpa != null && studentGpa < 3.4) return ambition === "ambitious" ? 1 : 0;
+  if (studentGpa != null && studentGpa < 3.7) return ambition === "ambitious" ? 2 : 1;
+  if (ambition === "ambitious") return 3;
+  return 2;
+}
+
+function isUltraSelective(u: { admitRate?: number | null }): boolean {
+  return typeof u.admitRate === "number" && u.admitRate < ULTRA_ADMIT;
 }
 
 /**
@@ -443,14 +461,16 @@ function fitScore(
     const ideal =
       tier === "reach"
         ? ambition === "ambitious"
-          ? 0.1 // prefer real dream reaches (NU, NYU, USC, Emory…) over mild 20% schools only
+          ? 0.14 // NU / Michigan / NYU / USC — not HYP lottery
           : (band.skipBelow + band.reachCeil) / 2
         : tier === "safety"
           ? Math.min(0.85, band.targetCeil + 0.22)
           : band.idealAdmit;
     score += Math.abs(u.admitRate - ideal) * (tier === "reach" && ambition === "ambitious" ? 40 : 70);
-    // Mild penalty for ultra-long-shots on balanced/conservative
-    if (tier === "reach" && u.admitRate < 0.06 && ambition !== "ambitious") score += 40;
+    // Soft-penalize pure lottery schools even on ambitious (major affinity can still win)
+    if (tier === "reach" && u.admitRate < 0.06) {
+      score += ambition === "ambitious" ? 18 : 40;
+    }
   } else {
     score += Math.abs(u.rank - (tier === "reach" ? 40 : tier === "safety" ? 120 : 80)) / 12;
   }
@@ -474,9 +494,8 @@ function fitScore(
 }
 
 /**
- * Seed-pool filter. Ambitious allows selective dream reaches (Northwestern, Michigan,
- * NYU…) for mid GPAs with strong hooks — still never as fake "targets."
- * Balanced/conservative stay tighter.
+ * Seed-pool filter. Ambitious allows a *few* selective dream reaches (Northwestern,
+ * Michigan, NYU…) for mid GPAs with major fit — never a HYPMS stack, never fake "targets."
  */
 function academicallyPlausible(
   u: UsNewsCollege,
@@ -491,20 +510,23 @@ function academicallyPlausible(
   const majorHit = majorAffinityBoost(u.slug, intended) > 0;
 
   if (admit != null && admit < band.skipBelow) {
-    // Ambitious + major fit can still keep a few dream schools (e.g. Medill)
-    if (!(ambition === "ambitious" && majorHit && admit >= 0.04)) return false;
+    // Ambitious + major fit: Medill-class dreams (~6–8%), not pure sub-5% lottery
+    if (!(ambition === "ambitious" && majorHit && admit >= 0.055)) return false;
   }
 
-  if (studentGpa != null) {
-    // Hard lottery blocks only for balanced/conservative
+  if (studentGpa != null && admit != null) {
+    // Hard blocks: mid GPAs do not get HYP/Stanford/Yale/MIT in the seed pool
+    if (studentGpa < 3.7 && admit < 0.05) return false;
+    if (studentGpa < 3.55 && admit < ULTRA_ADMIT && !(ambition === "ambitious" && majorHit)) {
+      return false;
+    }
     if (ambition !== "ambitious") {
-      if (studentGpa < 3.4 && admit != null && admit < 0.12) return false;
-      if (studentGpa < 3.55 && admit != null && admit < 0.08) return false;
-      if (studentGpa < 3.7 && admit != null && admit < 0.05) return false;
+      if (studentGpa < 3.4 && admit < 0.12) return false;
+      if (studentGpa < 3.55 && admit < 0.08) return false;
+      if (studentGpa < 3.7 && admit < 0.05) return false;
     } else {
-      // Ambitious: allow HYP-level only with major affinity or must-include path
-      if (studentGpa < 3.55 && admit != null && admit < 0.04) return false;
-      if (studentGpa < 3.4 && admit != null && admit < 0.07 && !majorHit) return false;
+      // Ambitious mid: ultra only with major affinity (e.g. Northwestern Medill)
+      if (studentGpa < 3.4 && admit < 0.07 && !majorHit) return false;
     }
     // GPA published averages are soft — only extreme gaps drop a school
     if (typeof u.gpa === "number" && u.gpa - studentGpa > 0.65 && ambition === "conservative") {
@@ -809,14 +831,28 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   }
   for (const t of Object.keys(byTier) as Tier[]) {
     byTier[t].sort((a, b) => {
-      const ma = majorAffinityBoost(a.slug, intended) > 0 ? 0 : 1;
-      const mb = majorAffinityBoost(b.slug, intended) > 0 ? 0 : 1;
-      if (ma !== mb) return ma - mb;
+      const majA = majorAffinityBoost(a.slug, intended) > 0;
+      const majB = majorAffinityBoost(b.slug, intended) > 0;
+      if (majA !== majB) return majA ? -1 : 1;
+      // Non-major reaches: demote ultra lottery so mild flagships fill first
+      if (t === "reach" && !majA && !majB) {
+        const ua = isUltraSelective(a) ? 1 : 0;
+        const ub = isUltraSelective(b) ? 1 : 0;
+        if (ua !== ub) return ua - ub;
+      }
+      // Major-fit reaches (incl. Medill-class ultra) ranked by fitScore
       return (
         fitScore(a, studentSat, studentGpa, ambition, intended) -
         fitScore(b, studentSat, studentGpa, ambition, intended)
       );
     });
+  }
+
+  const maxUltra = ultraDreamCap(ambition, studentGpa);
+  let ultraTaken = 0;
+  for (const c of keptNonUc) {
+    const hit = US_NEWS_TOP_250.find((u) => u.slug === c.slug);
+    if (hit && isUltraSelective(hit) && (c.tier === "reach" || !c.tier)) ultraTaken++;
   }
 
   const added: College[] = [];
@@ -825,6 +861,18 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
       const u = byTier[tier].shift()!;
       if (have.has(u.slug)) continue;
       if (added.some((a) => a.scorecardId && a.scorecardId === u.scorecardId)) continue;
+      if (tier === "reach" && isUltraSelective(u)) {
+        if (ultraTaken >= maxUltra) continue;
+        // Ultra slots require major fit for mid GPAs (ambitious dream only)
+        if (
+          studentGpa != null &&
+          studentGpa < 3.7 &&
+          majorAffinityBoost(u.slug, intended) <= 0
+        ) {
+          continue;
+        }
+        ultraTaken++;
+      }
       have.add(u.slug);
       added.push(usNewsToCollege(u, tier, false));
       filled[tier]++;
@@ -833,6 +881,23 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   };
 
   if (nonUcNeeded > 0) {
+    // Ambitious: reserve 1 major-fit ultra dream (e.g. Northwestern Medill) before
+    // milder reaches fill the quota and crowd it out.
+    if (ambition === "ambitious" && maxUltra > 0 && ultraTaken < maxUltra) {
+      const dreamIdx = byTier.reach.findIndex(
+        (u) => isUltraSelective(u) && majorAffinityBoost(u.slug, intended) > 0
+      );
+      if (dreamIdx >= 0 && overallQ.reach - filled.reach > 0) {
+        const [dream] = byTier.reach.splice(dreamIdx, 1);
+        if (dream && !have.has(dream.slug)) {
+          have.add(dream.slug);
+          added.push(usNewsToCollege(dream, "reach", false));
+          filled.reach++;
+          ultraTaken++;
+        }
+      }
+    }
+
     // Fill toward overall balance (not raw campus dump)
     for (const tier of ["reach", "target", "safety"] as Tier[]) {
       take(tier, Math.max(0, overallQ[tier] - filled[tier]));

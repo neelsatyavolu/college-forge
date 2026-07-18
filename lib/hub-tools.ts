@@ -167,7 +167,7 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
     {
       name: "upsert_college",
       description:
-        "Add or update a college on the user's list (matched by slug; slug is derived from the name if omitted). Set tier to 'reach' | 'target' | 'safety' and verdict for the colored badge. Fill as many fields as you can from research.",
+        "Add or update a college on the user's list (matched by slug; slug is derived from the name if omitted). Set tier to 'reach' | 'target' | 'safety' and verdict for the colored badge. Fill as many fields as you can from research. For mid GPAs (~3.5 UW), do NOT flood the list with sub-8% ultra-selectives (HYP/MIT/Stanford/UChicago etc.) — prefer major-fit reaches and real targets/safeties. Prefer enriching seeded schools over replacing the list.",
       parameters: {
         type: "object",
         properties: {

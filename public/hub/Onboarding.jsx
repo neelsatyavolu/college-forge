@@ -22,7 +22,7 @@ const AMBITION_OPTIONS = [
   {
     id: "ambitious",
     title: "Ambitious",
-    blurb: "Include stronger dream reaches (still labeled reach) plus solid targets — major fit matters, not just admit rates.",
+    blurb: "A few major-fit dream reaches (e.g. Medill, Michigan) plus solid targets — not a full Ivy/HYP lottery list.",
   },
   {
     id: "balanced",
@@ -858,13 +858,14 @@ ${story.other.trim() || "(none)"}
 
 ## College list preferences
 - Strategy: ${prefs.ambition} (${ambitionLabel(prefs.ambition)})
-  · ambitious = include stronger dream reaches (still labeled reach) that fit interests/major; not "Yale is a target"
+  · ambitious = mild risk: a few major-fit dream reaches (Northwestern Medill, Michigan, NYU, USC…) STILL labeled reach — NOT "Yale/MIT/Princeton/Stanford is a target" and NOT a full HYPMS stack
+  · For ~3.4–3.6 UW: prefer reaches in ~10–25% admit; at most 1–2 schools under ~8% admit, and only with clear major fit (e.g. Medill for journalism)
   · balanced = classic mix; conservative = lean safer
-  · Admit rates and GPA ranges are signals only — major fit matters. Hyper-selective schools stay reaches for mid GPAs.
+  · Hyper-selectives under ~5–6% (HYP, MIT, Stanford, UChicago, etc.) stay off the list unless the student asked for them or GPA is clearly elite (~3.85+ UW)
 - Application budget: ${typeof prefs.appCount === "number" ? prefs.appCount : "auto ~12"} applications
   · All UC campuses = ONE application. Do not treat 9 UCs as 9 apps.
-  · Keep a balanced mix of reach / target / safety across the non-UC list.
-  · Never add duplicate schools (same campus twice).
+  · Keep a balanced mix of reach / target / safety across the non-UC list (roughly 30–40% reach max for ambitious).
+  · Never add duplicate schools (same campus twice — e.g. do not list both "University of Texas" and "UT Austin").
 - Campus settings: ${(prefs.settings || []).join(", ") || "any"}
 - Size: ${prefs.size || "any"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}
@@ -873,14 +874,15 @@ ${story.other.trim() || "(none)"}
 ## Must-include schools (keep these; already on the list as priority seeds)
 ${must}
 
-## College list — ALREADY SEEDED (academically matched)
+## College list — ALREADY SEEDED (academically matched) — AUTHORITATIVE STRUCTURE
 The server already filled a preliminary shortlist around the must-includes using the student's GPA/SAT + prefs. You will see them in the workspace snapshot.
+- **Do NOT replace, gut, or lottery-up the seeded list.** Enrich notes, majors, deadlines, and honest tiers.
 - Do NOT call remove_college on seeded schools unless they are clear duplicates.
-- Do NOT replace the list with only Ivies / ultra-selectives if the student's stats don't support that.
-- Match reach/target/safety to the real academic profile (e.g. ~3.5 UW → mostly accessible targets/safeties, a few true reaches).
-- **UC Application = one app for all UC campuses.** You can add Berkeley, UCLA, UCSD, Davis, Irvine, etc. freely — they do not each burn a Common App slot. Prefer keeping a sensible UC cluster when CA/West is relevant.
-- Use web_search liberally to verify admit rates, deadlines, and major strength before enriching with upsert_college.
-- You MAY add schools that fit prefs + intended major (including more UCs); you MAY re-tier after research.
+- Do NOT dump Princeton, MIT, Stanford, Yale, Harvard, UChicago, Columbia, Duke, etc. onto a mid-GPA list just because ambition is "ambitious."
+- Match reach/target/safety to the real academic profile (e.g. ~3.5 UW + 1500 SAT → mostly 30–55% targets, 15–30% reaches, real safeties; a couple major-fit dreams OK).
+- **UC Application = one app for all UC campuses.** You can keep Berkeley, UCLA, UCSD, Davis, Irvine, etc. — they do not each burn a Common App slot. Prefer a sensible UC mix (not every campus as "reach").
+- Use web_search to verify admit rates, deadlines, and major strength before enriching with upsert_college.
+- You MAY add 1–3 schools that fit prefs + intended major if the list is thin on targets/safeties; prefer those tiers over more ultra-reaches.
 
 ## Uploads to read with read_upload if relevant
 ${uploadLine}
@@ -890,9 +892,9 @@ ${uploadLine}
 2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
 3. Parse awards → set_honors; set awards count on the snapshot.
 4. Read uploads and merge any extra structured data (coursework, more activities, etc.).
-5. Review the seeded college list: enrich tiers/deadlines/major fit; top up to 10–12 if thin. Never strip the list down to only must-includes.
+5. Review the seeded college list: enrich tiers/deadlines/major fit; top up targets/safeties if thin. Never strip the list down to only must-includes. Never turn it into mostly sub-10% lotteries.
 6. Set a few critical_dates if you know real deadlines for the list.
-7. Reply with a short plain-text summary: what you saved + the school list with tiers.
+7. Reply with a short plain-text summary: what you saved + the school list with tiers (reach/target/safety counts should look balanced).
 
 Call tools. Empty fields are better than invented numbers.`;
 }
