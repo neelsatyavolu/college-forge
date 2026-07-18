@@ -1,4 +1,10 @@
-const { Button, Input, Badge } = window.CollegeForgeDesignSystem_e95e63;
+// Unique names — hub Babel scripts share one global scope, so plain `Field` /
+// `Input` would be clobbered by Profile.jsx (read-only Field + local Input).
+const {
+  Button: OnboardButton,
+  Input: OnboardInput,
+  Badge: OnboardBadge,
+} = window.CollegeForgeDesignSystem_e95e63;
 
 // Steps: welcome → connect → identity → academics → schools → upload → review
 const STEPS = [
@@ -16,7 +22,7 @@ function present(v) {
   return Boolean(s) && s !== "—";
 }
 
-function FieldLabel({ children, hint, required }) {
+function OnboardFieldLabel({ children, hint, required }) {
   return (
     <label style={{ display: "block", marginBottom: 6 }}>
       <span style={{ fontSize: 12, fontWeight: 600, color: "var(--ink)", letterSpacing: "0.2px" }}>
@@ -32,10 +38,10 @@ function FieldLabel({ children, hint, required }) {
   );
 }
 
-function Field({ label, hint, required, children }) {
+function OnboardField({ label, hint, required, children }) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <FieldLabel required={required} hint={hint}>{label}</FieldLabel>
+      <OnboardFieldLabel required={required} hint={hint}>{label}</OnboardFieldLabel>
       {children}
     </div>
   );
@@ -146,12 +152,12 @@ function ConnectStep({ status, onConnected }) {
 
       {!flow ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 360 }}>
-          <Button size="md" onClick={() => start("grok")} disabled={busy} style={{ justifyContent: "center" }}>
+          <OnboardButton size="md" onClick={() => start("grok")} disabled={busy} style={{ justifyContent: "center" }}>
             Connect Grok
-          </Button>
-          <Button size="md" variant="secondary" onClick={() => start("codex")} disabled={busy} style={{ justifyContent: "center" }}>
+          </OnboardButton>
+          <OnboardButton size="md" variant="secondary" onClick={() => start("codex")} disabled={busy} style={{ justifyContent: "center" }}>
             Connect ChatGPT
-          </Button>
+          </OnboardButton>
         </div>
       ) : (
         <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
@@ -172,18 +178,18 @@ function ConnectStep({ status, onConnected }) {
               <li>Copy that page’s full URL and paste it below.</li>
             </ol>
           </div>
-          <Input
+          <OnboardInput
             value={callback}
             onChange={(e) => setCallback(e.target.value)}
             placeholder="Paste the localhost URL from the address bar…"
           />
           <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-            <Button size="sm" onClick={complete} disabled={busy || !callback.trim()}>
+            <OnboardButton size="sm" onClick={complete} disabled={busy || !callback.trim()}>
               Finish sign-in
-            </Button>
-            <Button size="sm" variant="secondary" onClick={() => { setFlow(null); setErr(""); }} disabled={busy}>
+            </OnboardButton>
+            <OnboardButton size="sm" variant="secondary" onClick={() => { setFlow(null); setErr(""); }} disabled={busy}>
               Cancel
-            </Button>
+            </OnboardButton>
           </div>
         </div>
       )}
@@ -311,9 +317,9 @@ function SchoolsStep({ selected, onChange, max = 3 }) {
                     .join(" · ")}
                 </div>
               </div>
-              <Button size="sm" variant="secondary" onClick={() => remove(c)} disabled={busySlug === c.slug}>
+              <OnboardButton size="sm" variant="secondary" onClick={() => remove(c)} disabled={busySlug === c.slug}>
                 Remove
-              </Button>
+              </OnboardButton>
             </div>
           ))}
         </div>
@@ -321,14 +327,14 @@ function SchoolsStep({ selected, onChange, max = 3 }) {
 
       {selected.length < max ? (
         <div>
-          <Field label="Search schools" required={selected.length === 0} hint="Type at least 2 letters">
-            <Input
+          <OnboardField label="Search schools" required={selected.length === 0} hint="Type at least 2 letters">
+            <OnboardInput
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="e.g. Stanford, MIT, Tufts…"
               autoComplete="off"
             />
-          </Field>
+          </OnboardField>
           {searching ? (
             <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 8 }}>Searching…</div>
           ) : null}
@@ -395,7 +401,7 @@ function UploadStep({ uploads, onUploaded }) {
     <div>
       <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <span>Upload documents</span>
-        <Badge variant="cream" uppercase>Optional</Badge>
+        <OnboardBadge variant="cream" uppercase>Optional</OnboardBadge>
       </h2>
       <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
         Transcript, resume, or activities list. The copilot can read these later to flesh out activities, honors, and coursework. You can skip this step.
@@ -409,9 +415,9 @@ function UploadStep({ uploads, onUploaded }) {
           style={{ display: "none" }}
           onChange={(e) => upload(e.target.files)}
         />
-        <Button size="md" variant="secondary" disabled={busy} onClick={() => fileRef.current && fileRef.current.click()}>
+        <OnboardButton size="md" variant="secondary" disabled={busy} onClick={() => fileRef.current && fileRef.current.click()}>
           {busy ? "Uploading…" : "Choose files"}
-        </Button>
+        </OnboardButton>
         <p style={{ margin: "10px 0 0", fontSize: 12, color: "var(--muted)" }}>PDF, DOCX, or text · max 15 MB each</p>
         {uploads.length > 0 ? (
           <ul style={{ margin: "14px 0 0", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
@@ -664,21 +670,21 @@ function Onboarding({ data, onComplete }) {
                 This powers Overview and Profile. Required fields are marked.
               </p>
               <div style={{ maxWidth: 440 }}>
-                <Field label="Full name" required>
-                  <Input value={draft.name} onChange={set("name")} placeholder="Alex Rivera" autoComplete="name" />
-                </Field>
-                <Field label="Graduation year" required hint="e.g. 2027">
-                  <Input value={draft.gradYear} onChange={set("gradYear")} placeholder="2027" inputMode="numeric" />
-                </Field>
-                <Field label="High school" required>
-                  <Input value={draft.hs} onChange={set("hs")} placeholder="Lincoln High School" />
-                </Field>
-                <Field label="Intended major" required>
-                  <Input value={draft.intended} onChange={set("intended")} placeholder="Computer Science" />
-                </Field>
-                <Field label="Location" hint="City, State — optional">
-                  <Input value={draft.location} onChange={set("location")} placeholder="Austin, TX" />
-                </Field>
+                <OnboardField label="Full name" required>
+                  <OnboardInput value={draft.name} onChange={set("name")} placeholder="Alex Rivera" autoComplete="name" />
+                </OnboardField>
+                <OnboardField label="Graduation year" required hint="e.g. 2027">
+                  <OnboardInput value={draft.gradYear} onChange={set("gradYear")} placeholder="2027" inputMode="numeric" />
+                </OnboardField>
+                <OnboardField label="High school" required>
+                  <OnboardInput value={draft.hs} onChange={set("hs")} placeholder="Lincoln High School" />
+                </OnboardField>
+                <OnboardField label="Intended major" required>
+                  <OnboardInput value={draft.intended} onChange={set("intended")} placeholder="Computer Science" />
+                </OnboardField>
+                <OnboardField label="Location" hint="City, State — optional">
+                  <OnboardInput value={draft.location} onChange={set("location")} placeholder="Austin, TX" />
+                </OnboardField>
               </div>
             </div>
           ) : null}
@@ -692,12 +698,12 @@ function Onboarding({ data, onComplete }) {
                 At least one GPA is required. SAT is optional — mark test-optional if you’re not reporting scores.
               </p>
               <div style={{ maxWidth: 440 }}>
-                <Field label="Weighted GPA" required={!present(draft.gpaUnweighted)}>
-                  <Input value={draft.gpaWeighted} onChange={set("gpaWeighted")} placeholder="4.28" inputMode="decimal" />
-                </Field>
-                <Field label="Unweighted GPA" required={!present(draft.gpaWeighted)}>
-                  <Input value={draft.gpaUnweighted} onChange={set("gpaUnweighted")} placeholder="3.95" inputMode="decimal" />
-                </Field>
+                <OnboardField label="Weighted GPA" required={!present(draft.gpaUnweighted)}>
+                  <OnboardInput value={draft.gpaWeighted} onChange={set("gpaWeighted")} placeholder="4.28" inputMode="decimal" />
+                </OnboardField>
+                <OnboardField label="Unweighted GPA" required={!present(draft.gpaWeighted)}>
+                  <OnboardInput value={draft.gpaUnweighted} onChange={set("gpaUnweighted")} placeholder="3.95" inputMode="decimal" />
+                </OnboardField>
                 <div style={{ marginBottom: 12 }}>
                   <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--ink)", cursor: "pointer" }}>
                     <input
@@ -710,12 +716,12 @@ function Onboarding({ data, onComplete }) {
                 </div>
                 {!draft.testOptional ? (
                   <>
-                    <Field label="SAT (superscore)" hint="Optional">
-                      <Input value={draft.sat} onChange={set("sat")} placeholder="1540" inputMode="numeric" />
-                    </Field>
-                    <Field label="SAT note" hint="e.g. 790 M / 750 EBRW — optional">
-                      <Input value={draft.satNote} onChange={set("satNote")} placeholder="790 M / 750 EBRW" />
-                    </Field>
+                    <OnboardField label="SAT (superscore)" hint="Optional">
+                      <OnboardInput value={draft.sat} onChange={set("sat")} placeholder="1540" inputMode="numeric" />
+                    </OnboardField>
+                    <OnboardField label="SAT note" hint="e.g. 790 M / 750 EBRW — optional">
+                      <OnboardInput value={draft.satNote} onChange={set("satNote")} placeholder="790 M / 750 EBRW" />
+                    </OnboardField>
                   </>
                 ) : null}
               </div>
@@ -754,27 +760,27 @@ function Onboarding({ data, onComplete }) {
         <footer className="cf-onboard__footer">
           <div>
             {step > 0 ? (
-              <Button variant="secondary" size="md" onClick={goBack} disabled={busy}>
+              <OnboardButton variant="secondary" size="md" onClick={goBack} disabled={busy}>
                 Back
-              </Button>
+              </OnboardButton>
             ) : (
               <span />
             )}
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {id === "upload" ? (
-              <Button variant="secondary" size="md" onClick={goNext} disabled={busy}>
+              <OnboardButton variant="secondary" size="md" onClick={goNext} disabled={busy}>
                 Skip
-              </Button>
+              </OnboardButton>
             ) : null}
             {isLast ? (
-              <Button size="md" onClick={finish} disabled={busy || !canNext()}>
+              <OnboardButton size="md" onClick={finish} disabled={busy || !canNext()}>
                 {busy ? "Saving…" : "Open my hub ✱"}
-              </Button>
+              </OnboardButton>
             ) : (
-              <Button size="md" onClick={goNext} disabled={busy || !canNext()}>
+              <OnboardButton size="md" onClick={goNext} disabled={busy || !canNext()}>
                 Continue
-              </Button>
+              </OnboardButton>
             )}
           </div>
         </footer>
