@@ -828,8 +828,16 @@ ${story.other.trim() || "(none)"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}
 - Extra constraints: ${prefs.notes.trim() || "(none)"}
 
-## Must-include schools (already on the workspace or listed — keep them, mark priority when possible)
+## Must-include schools (keep these; already on the list as priority seeds)
 ${must}
+
+## College list — ALREADY SEEDED
+The server already filled a preliminary shortlist (~8–12 schools) around the must-includes using the student's prefs (ambition / setting / region). You will see them in the workspace snapshot.
+- Do NOT call remove_college on any of them.
+- Do NOT leave the list at only the must-includes — if the snapshot shows fewer than 8 schools, upsert_college until you reach at least 10.
+- You MAY enrich schools (tier, major fit, deadlines, tags, verdict) with upsert_college.
+- You MAY add 1–3 extra schools that fit prefs + intended major if something important is missing.
+- Prefer real data (web_search) when enriching admit rates / deadlines.
 
 ## Uploads to read with read_upload if relevant
 ${uploadLine}
@@ -839,11 +847,7 @@ ${uploadLine}
 2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
 3. Parse awards → set_honors; set awards count on the snapshot.
 4. Read uploads and merge any extra structured data (coursework, more activities, etc.).
-5. Build a preliminary college list of about 8–12 schools matching prefs and the student profile.
-   - Always keep must-include schools.
-   - Mix reach / target / safety according to ambition.
-   - Use web_search + upsert_college with real admit rates, SAT ranges, location, deadlines when possible.
-   - Prefer majors and constraints from intended major + list notes.
+5. Review the seeded college list: enrich tiers/deadlines/major fit; top up to 10–12 if thin. Never strip the list down to only must-includes.
 6. Set a few critical_dates if you know real deadlines for the list.
 7. Reply with a short plain-text summary: what you saved + the school list with tiers.
 
@@ -1040,8 +1044,13 @@ function Onboarding({ data, onComplete }) {
       if (!saveRes.ok || saveJ.success === false) {
         throw new Error(saveJ.error || "Could not save onboarding.");
       }
-
-      setBuildLog("Asking the AI to build your hub…");
+      const savedWs = saveJ.data || saveJ;
+      const seededN = (savedWs.colleges && savedWs.colleges.length) || 0;
+      setBuildLog(
+        seededN
+          ? `Seeded ${seededN} schools · structuring profile with AI…`
+          : "Asking the AI to build your hub…"
+      );
 
       const prompt = buildAiPrompt({ draft, story, prefs, mustHave, uploads });
       const aiPrefs = loadAiPrefs();

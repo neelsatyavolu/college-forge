@@ -10,6 +10,7 @@ import {
   type Activity,
   type Honor,
 } from "@/lib/store";
+import { seedCollegeList } from "@/lib/seed-college-list";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { applyWorkspacePatch, type WorkspacePatch } from "@/lib/workspace-patch";
 import {
@@ -246,6 +247,18 @@ export async function POST(req: NextRequest) {
       return withCookie({ success: false, error: check.error }, setCookie, 400);
     }
 
+    // Fill a real shortlist around must-includes (US News + prefs). Do this
+    // server-side so the list isn't left at N must-haves when the model skips
+    // bulk upsert_college calls.
+    const beforeColleges = next.colleges.length;
+    next.colleges = seedCollegeList({
+      existing: next.colleges,
+      prefs: listPrefs,
+      sat,
+      intended,
+      targetCount: 12,
+    });
+
     next.onboarding = {
       ...next.onboarding,
       completed: true,
@@ -256,7 +269,7 @@ export async function POST(req: NextRequest) {
     await saveWorkspace(id, next);
     console.log(
       `[workspace] ws=${id.slice(0, 8)} onboarding complete name="${name}" ` +
-        `colleges=${next.colleges.length} storyActs=${storyNotes.activities.length}c ambition=${ambition}`
+        `colleges=${beforeColleges}→${next.colleges.length} storyActs=${storyNotes.activities.length}c ambition=${ambition}`
     );
     return withCookie({ success: true, data: next }, setCookie);
   }
