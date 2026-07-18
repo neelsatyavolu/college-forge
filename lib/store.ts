@@ -42,9 +42,31 @@ export type Essay = {
 };
 export type UploadMeta = { name: string; chars: number; uploadedAt: number };
 
+/** How aggressive the preliminary college list should be. */
+export type ListAmbition = "ambitious" | "balanced" | "conservative";
+
+export type OnboardingListPrefs = {
+  ambition: ListAmbition;
+  /** Campus settings the student prefers (urban, suburban, rural, college-town). */
+  settings: string[];
+  /** Preferred enrollment size: small | medium | large | any */
+  size: string;
+  /** Geographic regions of interest. */
+  regions: string[];
+  /** Free-text constraints (“need strong CS”, “in-state public only”, etc.). */
+  notes: string;
+};
+
 export type OnboardingState = {
   completed: boolean;
   completedAt?: number;
+  /** Freeform story from onboarding (activities / awards / other) for the AI. */
+  storyNotes?: {
+    activities: string;
+    awards: string;
+    other: string;
+  };
+  listPrefs?: OnboardingListPrefs;
 };
 
 export type AppStatus =
@@ -192,7 +214,10 @@ function presentStat(v: unknown): boolean {
   return Boolean(s) && s !== "—";
 }
 
-/** Server-side unlock rule (matches the wizard): identity + ≥1 GPA + ≥1 school. */
+/**
+ * Server-side unlock rule (matches the wizard): identity + ≥1 GPA.
+ * College list is optional at unlock — the onboarding AI builds a preliminary list.
+ */
 export function canCompleteOnboarding(ws: Workspace): { ok: true } | { ok: false; error: string } {
   const name = (ws.applicant?.name || "").trim();
   if (!name) return { ok: false, error: "Name is required." };
@@ -208,9 +233,6 @@ export function canCompleteOnboarding(ws: Workspace): { ok: true } | { ok: false
   }
   if (!presentStat(ws.applicant?.gpaWeighted) && !presentStat(ws.applicant?.gpaUnweighted)) {
     return { ok: false, error: "At least one GPA (weighted or unweighted) is required." };
-  }
-  if ((ws.colleges?.length || 0) < 1) {
-    return { ok: false, error: "Add at least one school to your list." };
   }
   return { ok: true };
 }

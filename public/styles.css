@@ -687,3 +687,177 @@ button:focus-visible {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+/* Story / prefs UI */
+.cf-onboard-nudge {
+  max-width: 560px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--coral) 35%, var(--hairline));
+  background: color-mix(in srgb, var(--coral) 8%, var(--surface-card));
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.cf-onboard-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 140ms ease;
+}
+.cf-onboard-textarea:focus {
+  border-color: var(--coral);
+}
+.cf-onboard-textarea::placeholder {
+  color: var(--muted-soft);
+}
+.cf-onboard-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.cf-onboard-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.cf-onboard-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 640px;
+}
+@media (max-width: 640px) {
+  .cf-onboard-choice-grid { grid-template-columns: 1fr; }
+}
+.cf-onboard-choice {
+  text-align: left;
+  cursor: pointer;
+  padding: 14px 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface-card);
+  font-family: var(--font-body);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+.cf-onboard-choice:hover {
+  border-color: color-mix(in srgb, var(--coral) 45%, var(--hairline));
+}
+.cf-onboard-choice.is-active {
+  border-color: var(--coral);
+  background: color-mix(in srgb, var(--coral) 10%, var(--surface-card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--coral) 40%, transparent);
+}
+.cf-onboard-choice__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cf-onboard-choice__blurb {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.cf-onboard-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cf-onboard-chip {
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  padding: 7px 12px;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+.cf-onboard-chip:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--coral) 40%, var(--hairline));
+}
+.cf-onboard-chip.is-active {
+  color: var(--on-primary);
+  background: var(--coral);
+  border-color: var(--coral);
+}
+.cf-onboard-school-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface-card);
+}
+.cf-onboard-school-results {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow: auto;
+}
+.cf-onboard-review-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+  font-size: 13px;
+}
+.cf-onboard-review-row > span:first-child {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.cf-onboard-review-row > span:last-child {
+  color: var(--ink);
+  text-align: right;
+  text-wrap: pretty;
+}
+.cf-onboard-build-panel {
+  max-width: 480px;
+}
+.cf-onboard-build-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.45;
+}
+.cf-onboard-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--hairline);
+  border-top-color: var(--coral);
+  animation: cf-onboard-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes cf-onboard-spin {
+  to { transform: rotate(360deg); }
+}

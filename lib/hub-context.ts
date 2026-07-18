@@ -31,6 +31,23 @@ function snapshot(ws: Workspace): string {
     lines.push(`App statuses: ${appStatuses.map(([s, e]) => `${s}:${e.status}`).join(", ")}`);
   }
   lines.push(`Advisor notes: ${(ws.advisorNotes || []).length}`);
+  const prefs = ws.onboarding?.listPrefs;
+  if (prefs) {
+    lines.push(
+      `List prefs: ambition=${prefs.ambition || "—"}, size=${prefs.size || "any"}, ` +
+        `settings=${(prefs.settings || []).join("/") || "any"}, regions=${(prefs.regions || []).join("/") || "any"}`
+    );
+    if (prefs.notes) lines.push(`List notes: ${prefs.notes.slice(0, 240)}`);
+  }
+  const story = ws.onboarding?.storyNotes;
+  if (story) {
+    const bits = [
+      story.activities?.trim() ? `activities(${story.activities.trim().length}c)` : null,
+      story.awards?.trim() ? `awards(${story.awards.trim().length}c)` : null,
+      story.other?.trim() ? `other(${story.other.trim().length}c)` : null,
+    ].filter(Boolean);
+    if (bits.length) lines.push(`Onboarding story notes: ${bits.join(", ")}`);
+  }
   return lines.join("\n");
 }
 

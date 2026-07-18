@@ -5,6 +5,10 @@ import {
   saveWorkspace,
   canCompleteOnboarding,
   type Workspace,
+  type OnboardingListPrefs,
+  type ListAmbition,
+  type Activity,
+  type Honor,
 } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { applyWorkspacePatch, type WorkspacePatch } from "@/lib/workspace-patch";
@@ -53,11 +57,17 @@ type Body = {
     residency: string;
   }>;
   testing?: Partial<{ sat: string; satNote: string }>;
+  storyNotes?: { activities?: string; awards?: string; other?: string };
+  listPrefs?: Partial<OnboardingListPrefs>;
+  activities?: Activity[];
+  honors?: Honor[];
   patch?: WorkspacePatch;
   code?: string;
   label?: string;
   token?: string;
 };
+
+const AMBITIONS = new Set<ListAmbition>(["ambitious", "balanced", "conservative"]);
 
 function str(v: unknown): string {
   return typeof v === "string" ? v.trim() : v == null ? "" : String(v).trim();
@@ -148,6 +158,8 @@ export async function POST(req: NextRequest) {
     const a = body.applicant || {};
     const p = body.profile || {};
     const t = body.testing || {};
+    const sn = body.storyNotes || {};
+    const lp = body.listPrefs || {};
 
     const name = str(a.name);
     const cycle = str(a.cycle);
@@ -166,6 +178,34 @@ export async function POST(req: NextRequest) {
     const cycleOut = cycle || (gradYear ? `Fall ${gradYear}` : "");
     const yearOut = year || (gradYear ? `Class of ${gradYear}` : "");
 
+    const ambition: ListAmbition = AMBITIONS.has(lp.ambition as ListAmbition)
+      ? (lp.ambition as ListAmbition)
+      : "balanced";
+    const listPrefs: OnboardingListPrefs = {
+      ambition,
+      settings: Array.isArray(lp.settings)
+        ? lp.settings.map((s) => str(s)).filter(Boolean).slice(0, 8)
+        : [],
+      size: str(lp.size) || "any",
+      regions: Array.isArray(lp.regions)
+        ? lp.regions.map((s) => str(s)).filter(Boolean).slice(0, 12)
+        : [],
+      notes: str(lp.notes).slice(0, 4000),
+    };
+
+    const storyNotes = {
+      activities: str(sn.activities).slice(0, 20_000),
+      awards: str(sn.awards).slice(0, 12_000),
+      other: str(sn.other).slice(0, 12_000),
+    };
+
+    const activities = Array.isArray(body.activities) ? body.activities : ws.profile.activities;
+    const honors = Array.isArray(body.honors) ? body.honors : ws.profile.honors;
+    const awardsCount =
+      typeof a.awards === "number" && Number.isFinite(a.awards)
+        ? a.awards
+        : honors.length || ws.applicant.awards || 0;
+
     const next: Workspace = {
       ...ws,
       applicant: {
@@ -177,6 +217,7 @@ export async function POST(req: NextRequest) {
         gpaUnweighted: gpaUnweighted || "—",
         sat: sat || "—",
         satNote,
+        awards: awardsCount,
       },
       profile: {
         ...ws.profile,
@@ -189,6 +230,14 @@ export async function POST(req: NextRequest) {
           sat: sat || "—",
           satNote,
         },
+        activities,
+        honors,
+      },
+      onboarding: {
+        ...ws.onboarding,
+        completed: false, // set true after validation below
+        storyNotes,
+        listPrefs,
       },
     };
 
@@ -197,10 +246,17 @@ export async function POST(req: NextRequest) {
       return withCookie({ success: false, error: check.error }, setCookie, 400);
     }
 
-    next.onboarding = { completed: true, completedAt: Date.now() };
+    next.onboarding = {
+      ...next.onboarding,
+      completed: true,
+      completedAt: Date.now(),
+      storyNotes,
+      listPrefs,
+    };
     await saveWorkspace(id, next);
     console.log(
-      `[workspace] ws=${id.slice(0, 8)} onboarding complete name="${name}" colleges=${next.colleges.length}`
+      `[workspace] ws=${id.slice(0, 8)} onboarding complete name="${name}" ` +
+        `colleges=${next.colleges.length} storyActs=${storyNotes.activities.length}c ambition=${ambition}`
     );
     return withCookie({ success: true, data: next }, setCookie);
   }
