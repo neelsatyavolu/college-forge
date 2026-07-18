@@ -2,6 +2,12 @@ import type { ChatTurn, ChatEmitter, ToolSpec, ToolExecutor } from "./chat-types
 import { READ_FILE_TOOL, readContextFile } from "./file-tool";
 import { WEB_SEARCH_TOOL, runWebSearch } from "./web-search-tool";
 import {
+  friendlyRoundMessage,
+  friendlyWritingMessage,
+  friendlyCutOffNote,
+  friendlyToolBudgetNote,
+} from "./chat-status";
+import {
   DEFAULT_GROK_MODEL,
   GROK_API_BASE,
   GROK_MODELS,
@@ -159,7 +165,7 @@ export async function runGrokChat(params: {
     emit({
       type: "status",
       stage: round === 0 ? "thinking" : "round",
-      message: round === 0 ? "Thinking..." : `Continuing - round ${round + 1}...`,
+      message: friendlyRoundMessage(round + 1),
       round: round + 1,
     });
 
@@ -170,13 +176,13 @@ export async function runGrokChat(params: {
     if (text) {
       const out = (accumulated ? "\n\n" : "") + text;
       accumulated += out;
-      emit({ type: "status", stage: "writing", message: "Writing answer...", round: round + 1 });
+      emit({ type: "status", stage: "writing", message: friendlyWritingMessage(), round: round + 1 });
       emit({ type: "delta", text: out });
     }
 
     if (toolCalls.length === 0) {
       if (truncated) {
-        const suffix = "\n\n_(response was cut off - try a more specific question)_";
+        const suffix = friendlyCutOffNote();
         accumulated += suffix;
         emit({ type: "delta", text: suffix });
       }
@@ -202,8 +208,7 @@ export async function runGrokChat(params: {
     }
   }
 
-  const suffix =
-    (accumulated ? "\n\n" : "") + "_(reached tool-read budget - try a more specific question)_";
+  const suffix = friendlyToolBudgetNote();
   accumulated += suffix;
   emit({ type: "delta", text: suffix });
   return {

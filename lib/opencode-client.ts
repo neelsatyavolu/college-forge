@@ -1,6 +1,13 @@
 import type { ChatTurn, ChatEmitter } from "./chat-types";
 import { READ_FILE_TOOL, readContextFile } from "./file-tool";
 import { WEB_SEARCH_TOOL, runWebSearch } from "./web-search-tool";
+import {
+  friendlyRoundMessage,
+  friendlyWritingMessage,
+  friendlyThinkingMessage,
+  friendlyCutOffNote,
+  friendlyToolBudgetNote,
+} from "./chat-status";
 
 const DEFAULT_BASE_URL = process.env.OPENCODE_API_URL ?? "https://opencode.ai/zen/go/v1";
 const MAX_ROUNDS = 6;
@@ -173,7 +180,7 @@ export async function runOpencodeChat(params: {
     emit({
       type: "status",
       stage: round === 0 ? "thinking" : "round",
-      message: round === 0 ? "Thinking…" : `Continuing — round ${round + 1}…`,
+      message: friendlyRoundMessage(round + 1),
       round: round + 1,
     });
 
@@ -186,11 +193,10 @@ export async function runOpencodeChat(params: {
     if (finishReason === "length") truncated = true;
 
     if (reasoning && reasoning.trim()) {
-      const snippet = reasoning.replace(/\s+/g, " ").trim().slice(-140);
       emit({
         type: "status",
         stage: "reasoning",
-        message: `Thinking: ${snippet}`,
+        message: friendlyThinkingMessage(),
         round: round + 1,
       });
     }
@@ -198,13 +204,13 @@ export async function runOpencodeChat(params: {
     if (text) {
       const out = (accumulated ? "\n\n" : "") + text;
       accumulated += out;
-      emit({ type: "status", stage: "writing", message: "Writing answer…", round: round + 1 });
+      emit({ type: "status", stage: "writing", message: friendlyWritingMessage(), round: round + 1 });
       emit({ type: "delta", text: out });
     }
 
     if (toolCalls.length === 0) {
       if (truncated) {
-        const suffix = "\n\n_(response was cut off — try a more specific question)_";
+        const suffix = friendlyCutOffNote();
         accumulated += suffix;
         emit({ type: "delta", text: suffix });
       }
@@ -229,8 +235,7 @@ export async function runOpencodeChat(params: {
     }
   }
 
-  const suffix =
-    (accumulated ? "\n\n" : "") + "_(reached tool-read budget — try a more specific question)_";
+  const suffix = friendlyToolBudgetNote();
   accumulated += suffix;
   emit({ type: "delta", text: suffix });
   return { text: accumulated, finishReason: "tool_round_limit", rounds: MAX_ROUNDS, truncated };

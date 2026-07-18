@@ -239,8 +239,17 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage }) {
           if (!line.trim()) continue;
           let ev; try { ev = JSON.parse(line); } catch (e) { continue; }
           if (ev.type === "delta") appendToLastAssistant(ev.text);
-          else if (ev.type === "status") setStatus(ev.message);
-          else if (ev.type === "tool") setStatus(`Updating your hub: ${ev.name}${ev.path ? ` (${ev.path})` : ""}…`);
+          else if (ev.type === "status") {
+            const soft = window.cfChatStatus && window.cfChatStatus.softenStatusMessage
+              ? window.cfChatStatus.softenStatusMessage(ev.message)
+              : ev.message;
+            setStatus(soft || "Working…");
+          } else if (ev.type === "tool") {
+            const label = window.cfChatStatus && window.cfChatStatus.friendlyToolMessage
+              ? window.cfChatStatus.friendlyToolMessage(ev.name, ev.path)
+              : "Updating your hub…";
+            setStatus(label);
+          }
           else if (ev.type === "error") { appendToLastAssistant(`⚠️ ${ev.message}`); }
           else if (ev.type === "done") setStatus("");
         }

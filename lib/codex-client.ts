@@ -2,6 +2,13 @@ import { CODEX_BACKEND_BASE, type CodexTokens } from "./codex-oauth";
 import type { ChatTurn, ChatEmitter, ToolSpec, ToolExecutor } from "./chat-types";
 import { READ_FILE_TOOL, readContextFile } from "./file-tool";
 import { WEB_SEARCH_TOOL, runWebSearch } from "./web-search-tool";
+import {
+  friendlyRoundMessage,
+  friendlyWritingMessage,
+  friendlyThinkingMessage,
+  friendlyCutOffNote,
+  friendlyToolBudgetNote,
+} from "./chat-status";
 
 export const CODEX_MODELS = [
   { id: "gpt-5.6-sol", label: "GPT-5.6 Sol", tier: "flagship" },
@@ -162,7 +169,7 @@ async function parseCodexStream(
         let out = p.delta;
         if (!firstTextEmitted) {
           firstTextEmitted = true;
-          emit({ type: "status", stage: "writing", message: "Writing answer…", round });
+          emit({ type: "status", stage: "writing", message: friendlyWritingMessage(), round });
           // Round 1's text follows earlier rounds' text — keep the blank
           // line between segments so the client renders them apart.
           if (hasPriorText) out = "\n\n" + out;
@@ -186,7 +193,7 @@ async function parseCodexStream(
           lastReasoningEmit = now;
           const snippet = reasoningBuf.replace(/\s+/g, " ").trim().slice(-140);
           if (snippet) {
-            emit({ type: "status", stage: "reasoning", message: `Thinking: ${snippet}`, round });
+            emit({ type: "status", stage: "reasoning", message: friendlyThinkingMessage(), round });
           }
         }
       }
@@ -400,7 +407,7 @@ export async function runCodexChat(params: {
     emit({
       type: "status",
       stage: round === 0 ? "thinking" : "round",
-      message: round === 0 ? "Thinking…" : `Continuing — round ${round + 1}…`,
+      message: friendlyRoundMessage(round + 1),
       round: round + 1,
     });
 
@@ -420,7 +427,7 @@ export async function runCodexChat(params: {
 
     if (toolCalls.length === 0) {
       if (truncated) {
-        const suffix = "\n\n_(response was cut off — try a more specific question)_";
+        const suffix = friendlyCutOffNote();
         accumulated += suffix;
         emit({ type: "delta", text: suffix });
       }
@@ -445,8 +452,7 @@ export async function runCodexChat(params: {
     }
   }
 
-  const suffix =
-    (accumulated ? "\n\n" : "") + "_(reached tool-round limit — try a more specific question)_";
+  const suffix = friendlyToolBudgetNote();
   accumulated += suffix;
   emit({ type: "delta", text: suffix });
   return {

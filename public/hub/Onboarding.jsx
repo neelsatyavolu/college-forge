@@ -1095,11 +1095,18 @@ function Onboarding({ data, onComplete }) {
           } catch (e) {
             continue;
           }
-          if (ev.type === "status") setBuildLog(ev.message || "Working…");
-          else if (ev.type === "tool") {
-            setBuildLog(`Updating hub: ${ev.name}${ev.path ? ` (${ev.path})` : ""}…`);
+          if (ev.type === "status") {
+            const soft = window.cfChatStatus && window.cfChatStatus.softenStatusMessage
+              ? window.cfChatStatus.softenStatusMessage(ev.message)
+              : ev.message;
+            setBuildLog(soft || "Working…");
+          } else if (ev.type === "tool") {
+            const label = window.cfChatStatus && window.cfChatStatus.friendlyToolMessage
+              ? window.cfChatStatus.friendlyToolMessage(ev.name, ev.path)
+              : "Updating your hub…";
+            setBuildLog(label);
           } else if (ev.type === "error") {
-            throw new Error(ev.message || "AI error while building.");
+            throw new Error(ev.message || "Something went wrong while building.");
           } else if (ev.type === "done") {
             setBuildLog("Finishing up…");
           }
