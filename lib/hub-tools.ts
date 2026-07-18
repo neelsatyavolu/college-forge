@@ -261,7 +261,7 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
     {
       name: "web_search",
       description:
-        "Search the LIVE web for current facts: admit rates, ED/RD deadlines, SAT ranges, net price, rankings, supplement requirements, scholarships, recent admissions news. Always use this before inventing numbers when adding or enriching colleges. Returns titles, URLs, and excerpts — cite sources.",
+        "Search the LIVE web via Exa for current facts: admit rates, ED/RD deadlines, SAT ranges, net price, rankings, supplement requirements, scholarships, recent admissions news. Always use this before inventing numbers when adding or enriching colleges. Returns titles, URLs, and page excerpts — cite sources. If the tool reports it is not configured, tell the user EXA_API_KEY is missing on the server.",
       parameters: {
         type: "object",
         properties: {

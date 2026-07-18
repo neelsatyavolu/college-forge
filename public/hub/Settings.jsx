@@ -272,12 +272,26 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
       }>
         <p style={{ margin: "0 0 4px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
           The copilot runs on <strong style={{ color: "var(--ink)" }}>your own</strong> Grok or ChatGPT account. Connect at least one to chat, upload transcripts, and update your hub.
-          {" "}It can <strong style={{ color: "var(--ink)" }}>search the live web</strong>
-          {status && status.webSearchAvailable
-            ? ` (${status.webSearchProvider === "exa" ? "Exa" : "DuckDuckGo"} backend)`
-            : ""}
-          {" "}for admit rates, deadlines, and school research.
         </p>
+        {!loading && status ? (
+          <p style={{
+            margin: "12px 0 0",
+            padding: "10px 12px",
+            borderRadius: "var(--radius-sm)",
+            border: "1px solid var(--hairline)",
+            background: status.webSearchAvailable
+              ? "color-mix(in srgb, var(--accent-teal, #2a9d8f) 10%, transparent)"
+              : "color-mix(in srgb, var(--warning, #d4a017) 12%, transparent)",
+            fontSize: 13,
+            color: "var(--body)",
+            lineHeight: 1.5,
+          }}>
+            <strong style={{ color: "var(--ink)" }}>Web search: </strong>
+            {status.webSearchAvailable
+              ? "Exa is configured — the copilot can look up admit rates, deadlines, and school facts live."
+              : "Not configured. Add EXA_API_KEY on the server (Vercel env or .env.local) so the copilot can search the web. Get a key at dashboard.exa.ai."}
+          </p>
+        ) : null}
 
         {loading ? (
           <p style={{ margin: "16px 0 0", fontSize: 13, color: "var(--muted)" }}>Checking connections…</p>

@@ -24,9 +24,9 @@ export type ProviderStatus = {
   defaultGrokModel: string;
   opencodeModels: { id: string; label: string; tier: string }[];
   defaultOpencodeModel: string;
-  /** Copilot can call web_search (Exa if keyed, else DuckDuckGo). */
+  /** Copilot can call web_search when EXA_API_KEY is set. */
   webSearchAvailable: boolean;
-  webSearchProvider: "exa" | "duckduckgo";
+  webSearchProvider: "exa" | "none";
 };
 
 export async function resolveProviderStatus(): Promise<ProviderStatus> {
