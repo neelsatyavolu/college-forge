@@ -182,8 +182,16 @@ export async function POST(req: NextRequest) {
     const ambition: ListAmbition = AMBITIONS.has(lp.ambition as ListAmbition)
       ? (lp.ambition as ListAmbition)
       : "balanced";
+    let appCount: number | null = null;
+    if (typeof lp.appCount === "number" && Number.isFinite(lp.appCount)) {
+      appCount = Math.max(8, Math.min(15, Math.round(lp.appCount)));
+    } else if (lp.appCount === null) {
+      appCount = null;
+    }
+
     const listPrefs: OnboardingListPrefs = {
       ambition,
+      appCount,
       settings: Array.isArray(lp.settings)
         ? lp.settings.map((s) => str(s)).filter(Boolean).slice(0, 8)
         : [],
@@ -259,8 +267,6 @@ export async function POST(req: NextRequest) {
       gpaWeighted,
       intended,
       location,
-      // Ambitious builds a longer board; seeder also expands UC cluster separately.
-      targetCount: listPrefs.ambition === "ambitious" ? 22 : listPrefs.ambition === "conservative" ? 12 : 15,
     });
 
     next.onboarding = {

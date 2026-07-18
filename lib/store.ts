@@ -47,6 +47,12 @@ export type ListAmbition = "ambitious" | "balanced" | "conservative";
 
 export type OnboardingListPrefs = {
   ambition: ListAmbition;
+  /**
+   * Target number of *applications* (not campuses).
+   * All UC campuses count as 1. Null/omitted → seeder default (~12).
+   * Typical range 8–15.
+   */
+  appCount?: number | null;
   /** Campus settings the student prefers (urban, suburban, rural, college-town). */
   settings: string[];
   /** Preferred enrollment size: small | medium | large | any */

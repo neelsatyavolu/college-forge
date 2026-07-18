@@ -14,28 +14,46 @@ export function slugify(s: string): string {
     .slice(0, 80);
 }
 
+function sameCollege(a: College, b: College): boolean {
+  if (a.slug && b.slug && a.slug === b.slug) return true;
+  if (
+    typeof a.scorecardId === "number" &&
+    typeof b.scorecardId === "number" &&
+    a.scorecardId > 0 &&
+    a.scorecardId === b.scorecardId
+  ) {
+    return true;
+  }
+  const na = slugify(a.name || a.short || "");
+  const nb = slugify(b.name || b.short || "");
+  if (na && nb && na === nb) return true;
+  return false;
+}
+
 /**
- * Upsert a college into a workspace by slug, immutably. Shared by the AI's
- * upsert_college tool and the Explore "Add to my list" button so both behave
- * identically (same slug rules, same single-priority invariant).
+ * Upsert a college into a workspace by slug / scorecardId / name, immutably.
+ * Shared by the AI's upsert_college tool and Explore "Add to my list".
+ * Prevents duplicate campuses under slightly different slugs or names.
  */
 export function upsertCollegeInto(ws: Workspace, incoming: College): Workspace {
-  const exists = ws.colleges.some((c) => c.slug === incoming.slug);
-  const colleges = exists
-    ? ws.colleges.map((c) => {
-        if (c.slug !== incoming.slug) return c;
-        // Only overwrite fields the caller actually supplied.
-        const merged: Record<string, unknown> = { ...c };
-        for (const [k, v] of Object.entries(incoming)) {
-          if (v !== undefined && v !== null) merged[k] = v;
-        }
-        return merged as College;
-      })
-    : [...ws.colleges, incoming];
+  const slug = incoming.slug || slugify(incoming.name || "");
+  const row = { ...incoming, slug };
+  const idx = ws.colleges.findIndex((c) => sameCollege(c, row));
+  const colleges =
+    idx >= 0
+      ? ws.colleges.map((c, i) => {
+          if (i !== idx) return c;
+          const merged: Record<string, unknown> = { ...c };
+          for (const [k, v] of Object.entries(row)) {
+            if (v !== undefined && v !== null) merged[k] = v;
+          }
+          return merged as College;
+        })
+      : [...ws.colleges, row];
 
   // At most one priority (ED) school at a time.
-  const next = incoming.priority
-    ? colleges.map((c) => ({ ...c, priority: c.slug === incoming.slug }))
+  const next = row.priority
+    ? colleges.map((c) => ({ ...c, priority: sameCollege(c, row) }))
     : colleges;
 
   return { ...ws, colleges: next };

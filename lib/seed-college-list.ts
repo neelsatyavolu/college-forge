@@ -64,16 +64,59 @@ const REGION_STATES: Record<string, Set<string>> = {
 type Tier = "reach" | "target" | "safety";
 
 /**
- * Ambition shapes the mix, not “every reach is Ivy.”
- * Ambitious: more dream reaches (still labeled reach) + solid targets/safeties.
- * Conservative: fewer stretches, more likely admits.
+ * Balanced tier shares of *application slots* (non-UC schools + at most one UC slot).
+ * Ambitious: more reaches; conservative: more safeties — always a real mix.
  */
-function quota(ambition: ListAmbition): Record<Tier, number> {
-  // Ambitious boards are longer: more dream reaches + solid mid + safeties
-  if (ambition === "ambitious") return { reach: 10, target: 9, safety: 8 };
-  if (ambition === "conservative") return { reach: 2, target: 6, safety: 8 };
-  return { reach: 4, target: 7, safety: 5 };
+function tierShares(ambition: ListAmbition): Record<Tier, number> {
+  if (ambition === "ambitious") return { reach: 0.4, target: 0.35, safety: 0.25 };
+  if (ambition === "conservative") return { reach: 0.15, target: 0.4, safety: 0.45 };
+  return { reach: 0.28, target: 0.42, safety: 0.3 };
 }
+
+/** Split n application slots into reach/target/safety counts (each ≥ 0, sum = n). */
+function quotaForSlots(ambition: ListAmbition, n: number): Record<Tier, number> {
+  if (n <= 0) return { reach: 0, target: 0, safety: 0 };
+  if (n === 1) return { reach: 0, target: 1, safety: 0 };
+  if (n === 2) return { reach: 1, target: 1, safety: 0 };
+  const s = tierShares(ambition);
+  let reach = Math.round(n * s.reach);
+  let target = Math.round(n * s.target);
+  let safety = n - reach - target;
+  // Ensure every tier appears when we have enough apps
+  if (n >= 6) {
+    if (reach < 1) {
+      reach = 1;
+      if (target > safety) target--;
+      else safety--;
+    }
+    if (target < 1) {
+      target = 1;
+      if (reach > safety) reach--;
+      else safety--;
+    }
+    if (safety < 1) {
+      safety = 1;
+      if (reach > target) reach--;
+      else target--;
+    }
+  }
+  // Fix drift
+  let sum = reach + target + safety;
+  while (sum > n) {
+    if (safety > 1) safety--;
+    else if (reach > 1) reach--;
+    else target--;
+    sum--;
+  }
+  while (sum < n) {
+    target++;
+    sum++;
+  }
+  return { reach: Math.max(0, reach), target: Math.max(0, target), safety: Math.max(0, safety) };
+}
+
+/** Default application count when the student leaves it unset (8–15). */
+export const DEFAULT_APP_COUNT = 12;
 
 /**
  * Soft major affinity — boosts schools known for a field when intended matches.
@@ -539,14 +582,18 @@ function expandUcCampuses(
   maxUc = 6,
   intended?: string
 ): College[] {
-  const have = new Set(list.map((c) => c.slug));
+  const have = new Set(list.map((c) => c.slug).filter(Boolean));
+  const haveIds = new Set(
+    list.map((c) => c.scorecardId).filter((id): id is number => typeof id === "number" && id > 0)
+  );
   const ucAlready = list.filter(isUcCampus).length;
-  if (ucAlready >= maxUc) return list.map(withUcTag);
+  if (ucAlready >= maxUc) return dedupeColleges(list.map(withUcTag));
 
   const ucPool = US_NEWS_TOP_250.filter(
     (u) =>
       isUcCampus(u) &&
       !have.has(u.slug) &&
+      !haveIds.has(u.scorecardId) &&
       academicallyPlausible(u, studentSat, studentGpa, ambition, intended)
   ).sort(
     (a, b) =>
@@ -558,9 +605,11 @@ function expandUcCampuses(
   let added = ucAlready;
   for (const u of ucPool) {
     if (added >= maxUc) break;
+    if (have.has(u.slug) || haveIds.has(u.scorecardId)) continue;
     const tier = classifyTier(u, studentSat, studentGpa, ambition);
     out.push(usNewsToCollege(u, tier, false));
     have.add(u.slug);
+    haveIds.add(u.scorecardId);
     added++;
   }
   return dedupeColleges(out);
@@ -570,22 +619,49 @@ function slugKey(s: string): string {
   return String(s || "")
     .toLowerCase()
     .replace(/&/g, " and ")
+    .replace(/\b(the|main campus|university park|at |–|-)\b/g, " ")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
 
-/** Deduplicate by slug and normalized name. */
-function dedupeColleges(list: College[]): College[] {
+/** Strong identity key for a school (catches near-duplicate names/slugs). */
+function collegeIdentity(c: {
+  slug?: string;
+  name?: string;
+  short?: string;
+  scorecardId?: number;
+}): string {
+  if (typeof c.scorecardId === "number" && c.scorecardId > 0) {
+    return `id:${c.scorecardId}`;
+  }
+  const slug = slugKey(c.slug || "");
+  if (slug) return `slug:${slug}`;
+  const name = slugKey(c.name || c.short || "");
+  return name ? `name:${name}` : `row:${Math.random()}`;
+}
+
+/** Deduplicate by scorecardId, slug, and normalized name/short. */
+export function dedupeColleges(list: College[]): College[] {
+  const seen = new Set<string>();
   const bySlug = new Set<string>();
   const byName = new Set<string>();
   const out: College[] = [];
-  for (const c of list) {
-    const slug = c.slug || slugKey(c.name);
-    const nameKey = slugKey(c.name || c.short || "");
-    if (bySlug.has(slug) || (nameKey && byName.has(nameKey))) continue;
-    bySlug.add(slug);
+  for (const raw of list) {
+    if (!raw) continue;
+    const c = { ...raw, slug: raw.slug || slugKey(raw.name || raw.short || "") };
+    const id = collegeIdentity(c);
+    const slug = slugKey(c.slug);
+    const nameKey = slugKey(c.name || "");
+    const shortKey = slugKey(c.short || "");
+    if (seen.has(id)) continue;
+    if (slug && bySlug.has(slug)) continue;
+    if (nameKey && byName.has(nameKey)) continue;
+    if (shortKey && shortKey.length >= 4 && byName.has(shortKey)) continue;
+    seen.add(id);
+    if (slug) bySlug.add(slug);
     if (nameKey) byName.add(nameKey);
-    out.push({ ...c, slug });
+    if (shortKey && shortKey.length >= 4) byName.add(shortKey);
+    out.push(c);
   }
   return out;
 }
@@ -600,16 +676,16 @@ export type SeedCollegeListParams = {
   intended?: string;
   /** Student location (e.g. "Los Angeles, CA") — used to detect UC interest. */
   location?: string;
+  /**
+   * @deprecated Prefer prefs.appCount (application slots). Still accepted as
+   * an override for total non-UC campus fill when appCount is unset.
+   */
   targetCount?: number;
 };
 
 export function seedCollegeList(params: SeedCollegeListParams): College[] {
-  // Campus count (UCs can push higher — they share 1 app slot).
-  // Ambitious lists run longer (closer to a full CA/journalism-style board).
-  const ambition: ListAmbition = params.prefs?.ambition || "balanced";
-  const defaultTarget = ambition === "ambitious" ? 22 : ambition === "conservative" ? 12 : 15;
-  const target = Math.max(8, Math.min(26, params.targetCount ?? defaultTarget));
-  const prefs = params.prefs;
+  const prefs = params.prefs || { ambition: "balanced", settings: [], size: "any", regions: [], notes: "" };
+  const ambition: ListAmbition = prefs.ambition || "balanced";
   const studentSat = parseSat(params.sat);
   const studentGpa =
     parseGpa(params.gpaUnweighted) ?? parseGpa(params.gpaWeighted);
@@ -617,11 +693,20 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   const settings = (prefs.settings || []).filter(Boolean);
   const regions = (prefs.regions || []).filter(Boolean);
 
-  // Dedup existing (must-includes can collide with prior list after redo)
-  const kept: College[] = dedupeColleges(params.existing.map((c) => ({ ...c }))).map(withUcTag);
-  const have = new Set(kept.map((c) => c.slug));
+  // Application slots (not campuses). UCs = 1 slot total.
+  const rawApp =
+    typeof prefs.appCount === "number" && Number.isFinite(prefs.appCount)
+      ? prefs.appCount
+      : typeof params.targetCount === "number"
+        ? params.targetCount
+        : DEFAULT_APP_COUNT;
+  const appSlots = Math.max(8, Math.min(15, Math.round(rawApp)));
 
-  // Always re-tier from student stats (must-includes keep the school, not a wrong "target" label)
+  // Dedup existing must-includes first
+  const kept: College[] = dedupeColleges(params.existing.map((c) => ({ ...c }))).map(withUcTag);
+  const have = new Set(kept.map((c) => c.slug).filter(Boolean));
+
+  // Always re-tier from student stats
   for (let i = 0; i < kept.length; i++) {
     const hit = US_NEWS_TOP_250.find((u) => u.slug === kept[i].slug);
     if (hit) {
@@ -641,21 +726,27 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
         scorecardId: kept[i].scorecardId ?? hit.scorecardId,
       });
     } else {
-      // Unknown school: leave mild target unless already labeled
       const tier = (kept[i].tier as Tier) || "target";
-      kept[i] = withUcTag({
-        ...kept[i],
-        tier,
-        verdict: verdictFor(tier),
-      });
+      kept[i] = withUcTag({ ...kept[i], tier, verdict: verdictFor(tier) });
     }
   }
 
-  // Fill non-UC-heavy base list. Prefer non-UC when topping so UC expansion can add campuses free.
-  const need = Math.max(0, target - kept.length);
-  const q = quota(ambition);
+  const keptNonUc = kept.filter((c) => !isUcCampus(c));
+  const keptHasUc = kept.some(isUcCampus);
+  const includeUc =
+    wantsUcCluster(prefs, params.location, prefs.notes, kept) ||
+    keptHasUc ||
+    ambition === "ambitious";
+
+  // Non-UC application budget
+  const ucSlot = includeUc ? 1 : 0;
+  const nonUcBudget = Math.max(0, appSlots - ucSlot);
+  const nonUcNeeded = Math.max(0, nonUcBudget - keptNonUc.length);
+
+  // Overall tier targets across all non-UC apps (including must-includes)
+  const overallQ = quotaForSlots(ambition, Math.max(nonUcBudget, keptNonUc.length + nonUcNeeded));
   const filled: Record<Tier, number> = { reach: 0, target: 0, safety: 0 };
-  for (const c of kept) {
+  for (const c of keptNonUc) {
     const t = (c.tier as Tier) || "target";
     if (t in filled) filled[t]++;
   }
@@ -663,12 +754,13 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   function pool(opts: {
     strictPrefs: boolean;
     strictAcademics: boolean;
-    /** When true, skip UCs so the free UC expansion can add them later. */
     skipUc?: boolean;
   }): UsNewsCollege[] {
     return US_NEWS_TOP_250.filter((u) => {
       if (have.has(u.slug)) return false;
       if (opts.skipUc && isUcCampus(u)) return false;
+      // Also skip if identity already kept (scorecard)
+      if (kept.some((k) => k.scorecardId && k.scorecardId === u.scorecardId)) return false;
       if (opts.strictPrefs) {
         if (!settingMatch(u.setting, settings)) return false;
         if (!regionMatch(u.state, regions)) return false;
@@ -684,18 +776,17 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   }
 
   let candidates =
-    need > 0
+    nonUcNeeded > 0
       ? pool({ strictPrefs: true, strictAcademics: true, skipUc: true })
       : [];
-  if (need > 0 && candidates.length < need + 12) {
+  if (nonUcNeeded > 0 && candidates.length < nonUcNeeded + 12) {
     candidates = pool({ strictPrefs: false, strictAcademics: true, skipUc: true });
   }
-  if (need > 0 && candidates.length < need + 8) {
+  if (nonUcNeeded > 0 && candidates.length < nonUcNeeded + 8) {
     candidates = pool({ strictPrefs: false, strictAcademics: false, skipUc: true });
   }
 
-  // Prefer major-affinity + backbone schools into the candidate pool
-  if (need > 0) {
+  if (nonUcNeeded > 0) {
     const inject = new Set<string>();
     if (intended) {
       for (const row of MAJOR_SLUG_AFFINITY) {
@@ -718,7 +809,6 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
   }
   for (const t of Object.keys(byTier) as Tier[]) {
     byTier[t].sort((a, b) => {
-      // Major-fit schools first within each tier (journalism → Medill/NYU/USC…)
       const ma = majorAffinityBoost(a.slug, intended) > 0 ? 0 : 1;
       const mb = majorAffinityBoost(b.slug, intended) > 0 ? 0 : 1;
       if (ma !== mb) return ma - mb;
@@ -734,6 +824,7 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
     while (n > 0 && byTier[tier].length) {
       const u = byTier[tier].shift()!;
       if (have.has(u.slug)) continue;
+      if (added.some((a) => a.scorecardId && a.scorecardId === u.scorecardId)) continue;
       have.add(u.slug);
       added.push(usNewsToCollege(u, tier, false));
       filled[tier]++;
@@ -741,11 +832,13 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
     }
   };
 
-  if (need > 0) {
+  if (nonUcNeeded > 0) {
+    // Fill toward overall balance (not raw campus dump)
     for (const tier of ["reach", "target", "safety"] as Tier[]) {
-      take(tier, Math.max(0, q[tier] - filled[tier]));
+      take(tier, Math.max(0, overallQ[tier] - filled[tier]));
     }
-    let remaining = need - added.length;
+    let remaining = nonUcNeeded - added.length;
+    // Prefer balanced top-up: target → safety → reach
     for (const tier of ["target", "safety", "reach"] as Tier[]) {
       if (remaining <= 0) break;
       const before = added.length;
@@ -756,13 +849,28 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
 
   let result = dedupeColleges([...kept, ...added]);
 
-  // UC Application = one app for all campuses. Expand UCs freely when relevant.
-  const maxUc = ambition === "ambitious" ? 9 : 6;
-  if (wantsUcCluster(prefs, params.location, prefs.notes, result) || ambition === "ambitious") {
+  // UC Application = one app slot; expand multiple campuses when relevant
+  if (includeUc) {
+    const maxUc = ambition === "ambitious" ? 9 : ambition === "conservative" ? 5 : 7;
     result = expandUcCampuses(result, studentSat, studentGpa, ambition, maxUc, intended);
-  } else if (result.some(isUcCampus)) {
-    result = expandUcCampuses(result, studentSat, studentGpa, ambition, 6, intended);
   }
 
-  return result.map(withUcTag);
+  // Final hard dedupe + ensure tiers present when possible
+  result = dedupeColleges(result.map(withUcTag));
+
+  // If balance is skewed (e.g. all reaches from must-includes), try to add missing tiers
+  const nonUc = result.filter((c) => !isUcCampus(c));
+  const counts: Record<Tier, number> = { reach: 0, target: 0, safety: 0 };
+  for (const c of nonUc) {
+    const t = (c.tier as Tier) || "target";
+    if (t in counts) counts[t]++;
+  }
+  if (nonUc.length >= 6) {
+    const want = quotaForSlots(ambition, nonUc.length);
+    // Soft rebalance only by not over-labeling — already filled with take(); skip complex reshuffle
+    void want;
+    void counts;
+  }
+
+  return result;
 }

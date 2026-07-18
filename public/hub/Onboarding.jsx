@@ -515,6 +515,8 @@ function MustHaveSchools({ selected, onChange, max = 8 }) {
   );
 }
 
+const APP_COUNT_OPTIONS = [8, 9, 10, 11, 12, 13, 14, 15];
+
 // ── List preferences ─────────────────────────────────────────────────────
 function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
   const toggleIn = (key, id) => {
@@ -523,13 +525,15 @@ function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
     onChange({ ...prefs, [key]: next });
   };
 
+  const appCount = prefs.appCount; // null = auto (~12)
+
   return (
     <div>
       <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)" }}>
         College list preferences
       </h2>
       <p style={{ margin: "0 0 18px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 560 }}>
-        Tune how aggressive the preliminary list should be and what kind of campuses you want.
+        Tune how aggressive the preliminary list should be and how many applications you want.
         You’ll review everything after the AI builds the hub.
       </p>
 
@@ -544,6 +548,32 @@ function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
               blurb={o.blurb}
               onClick={() => onChange({ ...prefs, ambition: o.id })}
             />
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 22 }}>
+        <div className="cf-onboard-section-label">How many applications?</div>
+        <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--muted)", lineHeight: 1.5, maxWidth: 520 }}>
+          Count <strong style={{ color: "var(--ink)", fontWeight: 600 }}>applications</strong>, not campuses.
+          All University of California campuses share <strong style={{ color: "var(--ink)", fontWeight: 600 }}>one</strong> UC Application —
+          so 9 UCs still count as 1 toward this number.
+        </p>
+        <div className="cf-onboard-chip-row">
+          <Chip
+            active={appCount == null}
+            onClick={() => onChange({ ...prefs, appCount: null })}
+          >
+            Auto (≈12)
+          </Chip>
+          {APP_COUNT_OPTIONS.map((n) => (
+            <Chip
+              key={n}
+              active={appCount === n}
+              onClick={() => onChange({ ...prefs, appCount: n })}
+            >
+              {n}{n === 12 ? " · rec" : ""}
+            </Chip>
           ))}
         </div>
       </section>
@@ -764,6 +794,12 @@ function BuildStep({
         {row("Story", storyBits.length ? storyBits.join(" · ") : "None yet (AI can still help)")}
         {row("List strategy", ambitionLabel(prefs.ambition))}
         {row(
+          "Applications",
+          typeof prefs.appCount === "number"
+            ? `${prefs.appCount} (UCs count as 1)`
+            : "Auto ≈12 (UCs count as 1)"
+        )}
+        {row(
           "Settings",
           (prefs.settings || []).length
             ? prefs.settings.map((s) => s.replace("-", " ")).join(", ")
@@ -825,6 +861,10 @@ ${story.other.trim() || "(none)"}
   · ambitious = include stronger dream reaches (still labeled reach) that fit interests/major; not "Yale is a target"
   · balanced = classic mix; conservative = lean safer
   · Admit rates and GPA ranges are signals only — major fit matters. Hyper-selective schools stay reaches for mid GPAs.
+- Application budget: ${typeof prefs.appCount === "number" ? prefs.appCount : "auto ~12"} applications
+  · All UC campuses = ONE application. Do not treat 9 UCs as 9 apps.
+  · Keep a balanced mix of reach / target / safety across the non-UC list.
+  · Never add duplicate schools (same campus twice).
 - Campus settings: ${(prefs.settings || []).join(", ") || "any"}
 - Size: ${prefs.size || "any"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}
@@ -900,6 +940,10 @@ function Onboarding({ data, onComplete }) {
 
   const [prefs, setPrefs] = React.useState({
     ambition: existingPrefs.ambition || "balanced",
+    appCount:
+      typeof existingPrefs.appCount === "number" && existingPrefs.appCount >= 8
+        ? existingPrefs.appCount
+        : null,
     settings: existingPrefs.settings || [],
     size: existingPrefs.size || "any",
     regions: existingPrefs.regions || [],
@@ -1036,6 +1080,7 @@ function Onboarding({ data, onComplete }) {
           },
           listPrefs: {
             ambition: prefs.ambition || "balanced",
+            appCount: typeof prefs.appCount === "number" ? prefs.appCount : null,
             settings: prefs.settings || [],
             size: prefs.size || "any",
             regions: prefs.regions || [],
