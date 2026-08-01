@@ -1,6 +1,8 @@
 node_modules
 .next
-data
+# Pipeline raw/processed only — do NOT use bare "data" (it excluded public/data/rankings/)
+ranking/data
+ranking/.venv
 .env.local
 scripts
 *.tsbuildinfo

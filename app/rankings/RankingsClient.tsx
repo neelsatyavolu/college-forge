@@ -160,11 +160,22 @@ export default function RankingsClient() {
     let cancelled = false;
     (async () => {
       try {
+        const load = async (url: string) => {
+          const r = await fetch(url);
+          const ct = r.headers.get("content-type") || "";
+          if (!r.ok || !ct.includes("json")) {
+            throw new Error(
+              `Failed to load ${url} (${r.status}${ct ? `, ${ct}` : ""}). ` +
+                `Expected JSON — check that public ranking assets deployed.`
+            );
+          }
+          return r.json();
+        };
         const [t, va, mi, mr] = await Promise.all([
-          fetch("/data/rankings/top250.json").then((r) => r.json()),
-          fetch("/data/rankings/value_added.json").then((r) => r.json()),
-          fetch("/data/rankings/majors_index.json").then((r) => r.json()),
-          fetch("/data/rankings/by_major_top25.json").then((r) => r.json()),
+          load("/data/rankings/top250.json"),
+          load("/data/rankings/value_added.json"),
+          load("/data/rankings/majors_index.json"),
+          load("/data/rankings/by_major_top25.json"),
         ]);
         if (cancelled) return;
         setSchools(t.schools || []);
