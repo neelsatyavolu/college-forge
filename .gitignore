@@ -24,3 +24,8 @@ data
 .agmux
 .grok
 .claude
+
+# Purchasing-power rankings published assets (served at /data/rankings/)
+!public/data/
+!public/data/rankings/
+!public/data/rankings/**
