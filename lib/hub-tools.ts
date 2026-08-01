@@ -8,6 +8,8 @@ import {
   type College,
 } from "./store";
 import { slugify, upsertCollegeInto, removeCollegeFrom } from "./colleges";
+import { gateAiCollegeAdd, pruneLotteryColleges } from "./seed-college-list";
+import { mergeSupplements } from "./essay-supplements";
 
 // Only copy keys the caller actually provided, so partial updates never wipe
 // existing fields with undefined.
@@ -27,8 +29,12 @@ type Args = Record<string, unknown>;
  * confirmation the model relays to the user. The hub UI re-fetches the
  * workspace after each turn, so these writes show up on the page immediately.
  */
-export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeTool: ToolExecutor } {
+export function makeHubTools(
+  workspaceId: string,
+  opts?: { userText?: string }
+): { tools: ToolSpec[]; executeTool: ToolExecutor } {
   const wsTag = workspaceId.slice(0, 8);
+  const userText = opts?.userText || "";
 
   async function mutate(fn: (ws: Workspace) => Workspace): Promise<Workspace> {
     const ws = await getWorkspace(workspaceId);
@@ -167,7 +173,7 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
     {
       name: "upsert_college",
       description:
-        "Add or update a college on the user's list (matched by slug; slug is derived from the name if omitted). Set tier to 'reach' | 'target' | 'safety' and verdict for the colored badge. Fill as many fields as you can from research. For mid GPAs (~3.5 UW), do NOT flood the list with sub-8% ultra-selectives (HYP/MIT/Stanford/UChicago etc.) — prefer major-fit reaches and real targets/safeties. Prefer enriching seeded schools over replacing the list.",
+        "Add or update a college on the user's list (matched by slug). Set tier to 'reach' | 'target' | 'safety' honestly for THIS student's GPA/SAT — never mark HYP/MIT/Stanford/Yale/UChicago as target for mid GPAs. Fill researched fields (admit, deadlines, major, supps). Opens Essays-tab group (UC campuses share 'uc-application' PIQs). COUNSELING RULES: balanced list = safeties + targets (backbone) + limited reaches; ambitious ≠ lottery stack. For ~3.5 UW do NOT add pure lotteries (admit under ~5–8%) unless the student named that school; prefer major-fit reaches (e.g. Medill, Michigan, NYU) and real targets/safeties. Prefer enriching seeded schools over prestige dumps. Server may reject lottery adds — do not retry rejected schools.",
       parameters: {
         type: "object",
         properties: {
@@ -248,12 +254,16 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
     {
       name: "set_essays",
       description:
-        "Set essay prompts/editors. commonApp is a list of Common App essays; supplements maps a college slug to its supplement essays. Each essay needs id, label, prompt, limit, unit ('words').",
+        "Update essay prompts. commonApp replaces the Common App list if provided. supplements is a PARTIAL map: each college slug (or 'uc-application' for UC PIQs) you pass is merged in without wiping other schools. Each essay needs id, label, prompt, limit, unit ('words'). After adding schools, call this with researched real prompts to replace placeholders.",
       parameters: {
         type: "object",
         properties: {
           commonApp: { type: "array", items: { type: "object" } },
-          supplements: { type: "object", description: "{ '<college-slug>': [essay, …] }" },
+          supplements: {
+            type: "object",
+            description:
+              "{ '<college-slug>': [essay, …], 'uc-application': [piq, …] }. Partial — only listed slugs are updated.",
+          },
         },
         additionalProperties: false,
       },
@@ -458,7 +468,24 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
           const slug = typeof a.slug === "string" && a.slug ? a.slug : slugify(a.name);
           const short = typeof a.short === "string" && a.short ? a.short : a.name;
           const incoming = { ...a, slug, short } as unknown as College;
-          await mutate((ws) => upsertCollegeInto(ws, incoming));
+          const wsNow = await getWorkspace(workspaceId);
+          const gate = gateAiCollegeAdd({ ws: wsNow, incoming, userText });
+          if (!gate.allow) {
+            console.log(`[hub-tools] ws=${wsTag} blocked upsert "${a.name}": ${gate.reason}`);
+            return `NOT added "${a.name}": ${gate.reason} Prefer major-fit reaches (e.g. Northwestern Medill, Michigan, NYU) and real targets/safeties. Do not fill the list with HYP/MIT/Stanford/Yale/UChicago for mid GPAs.`;
+          }
+          await mutate((ws) => {
+            let next = upsertCollegeInto(ws, incoming);
+            // After list mutations, strip any pure lotteries the model already stuffed in
+            const pruned = pruneLotteryColleges(next, { userText });
+            if (pruned.removed.length) {
+              console.log(
+                `[hub-tools] ws=${wsTag} pruned lotteries: ${pruned.removed.join(", ")}`
+              );
+              next = { ...next, colleges: pruned.colleges };
+            }
+            return next;
+          });
           return `Saved "${a.name}" to the school list${a.tier ? ` as a ${a.tier}` : ""}.`;
         }
         case "remove_college": {
@@ -487,19 +514,31 @@ export function makeHubTools(workspaceId: string): { tools: ToolSpec[]; executeT
           return `Saved ${(a.dates as unknown[]).length} critical dates.`;
         }
         case "set_essays": {
-          await mutate((ws) => ({
-            ...ws,
-            essays: {
-              commonApp: Array.isArray(a.commonApp)
-                ? (a.commonApp as Workspace["essays"]["commonApp"])
-                : ws.essays.commonApp,
-              supplements:
-                a.supplements && typeof a.supplements === "object"
-                  ? (a.supplements as Workspace["essays"]["supplements"])
-                  : ws.essays.supplements,
-            },
-          }));
-          return "Updated essays.";
+          await mutate((ws) => {
+            const supplements =
+              a.supplements && typeof a.supplements === "object"
+                ? mergeSupplements(
+                    ws.essays.supplements,
+                    a.supplements as Workspace["essays"]["supplements"]
+                  )
+                : ws.essays.supplements;
+            return {
+              ...ws,
+              essays: {
+                commonApp: Array.isArray(a.commonApp)
+                  ? (a.commonApp as Workspace["essays"]["commonApp"])
+                  : ws.essays.commonApp,
+                supplements,
+              },
+            };
+          });
+          const slugs =
+            a.supplements && typeof a.supplements === "object"
+              ? Object.keys(a.supplements as object)
+              : [];
+          return slugs.length
+            ? `Updated essay prompts for: ${slugs.join(", ")}.`
+            : "Updated essays.";
         }
         case "set_recommendations": {
           if (!Array.isArray(a.recommendations)) return "set_recommendations requires a recommendations array.";

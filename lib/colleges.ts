@@ -4,6 +4,7 @@ import {
   US_NEWS_BY_SLUG,
   type UsNewsCollege,
 } from "./us-news-rankings";
+import { syncEssaySupplements } from "./essay-supplements";
 
 export function slugify(s: string): string {
   return s
@@ -56,10 +57,12 @@ export function upsertCollegeInto(ws: Workspace, incoming: College): Workspace {
     ? colleges.map((c) => ({ ...c, priority: sameCollege(c, row) }))
     : colleges;
 
-  return { ...ws, colleges: next };
+  // Keep Essays tab groups in sync (UC PIQs / per-school placeholders).
+  return syncEssaySupplements({ ...ws, colleges: next });
 }
 
 export function removeCollegeFrom(ws: Workspace, slug: string): Workspace {
+  // Leave orphaned supplement prompts/drafts; UI only lists schools on the shortlist.
   return { ...ws, colleges: ws.colleges.filter((c) => c.slug !== slug) };
 }
 

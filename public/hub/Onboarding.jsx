@@ -858,18 +858,31 @@ ${story.other.trim() || "(none)"}
 
 ## College list preferences
 - Strategy: ${prefs.ambition} (${ambitionLabel(prefs.ambition)})
-  · ambitious = mild risk: a few major-fit dream reaches (Northwestern Medill, Michigan, NYU, USC…) STILL labeled reach — NOT "Yale/MIT/Princeton/Stanford is a target" and NOT a full HYPMS stack
-  · For ~3.4–3.6 UW: prefer reaches in ~10–25% admit; at most 1–2 schools under ~8% admit, and only with clear major fit (e.g. Medill for journalism)
-  · balanced = classic mix; conservative = lean safer
-  · Hyper-selectives under ~5–6% (HYP, MIT, Stanford, UChicago, etc.) stay off the list unless the student asked for them or GPA is clearly elite (~3.85+ UW)
 - Application budget: ${typeof prefs.appCount === "number" ? prefs.appCount : "auto ~12"} applications
-  · All UC campuses = ONE application. Do not treat 9 UCs as 9 apps.
-  · Keep a balanced mix of reach / target / safety across the non-UC list (roughly 30–40% reach max for ambitious).
-  · Never add duplicate schools (same campus twice — e.g. do not list both "University of Texas" and "UT Austin").
 - Campus settings: ${(prefs.settings || []).join(", ") || "any"}
 - Size: ${prefs.size || "any"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}
 - Extra constraints: ${prefs.notes.trim() || "(none)"}
+
+## Counselor-grade list rules (MUST follow — not optional)
+These match standard US counseling practice (College Board / BigFuture balanced lists; reach–match–safety mix):
+
+1. **Balanced list required.** Every list needs real safeties, targets (backbone), and a limited number of reaches. College Board: often ~5–8 apps is enough when the mix is right; ~8–12 is fine if quality stays high.
+2. **Count applications, not campuses.** All UC campuses = ONE application.
+3. **Tier honesty for THIS student (GPA/SAT on file above):**
+   - Safety = clearly above mid-50% / high admit likelihood — and a place they'd happily attend
+   - Target = mid-50% overlap / solid but not guaranteed
+   - Reach = selective stretch that is still plausible
+   - Lottery (sub-~8%, especially sub-~5%: HYP, MIT, Stanford, Caltech, UChicago, Columbia…) = optional spice ONLY, never the bulk
+4. **Ambition mapping:**
+   - ambitious = mild extra risk + **1–2 major-fit dreams** still labeled **reach** (e.g. Northwestern Medill, Michigan, NYU, USC for journalism) — NOT a HYPMS stack
+   - balanced = classic mix; conservative = lean safer
+   - For ~3.4–3.6 UW: reaches mostly ~10–25% admit; at most 1–2 under ~8% with clear major fit; targets mostly ~30–55%
+5. **Hard ban unless student named the school:** do not add Princeton, Harvard, Yale, MIT, Stanford, Caltech, UChicago, Columbia (or similar sub-5% schools) just because ambition is "ambitious."
+6. **Never** re-label a hyper-selective school as "target" for a mid GPA. Hooks help at the margins; they do not invent mid-50% stats.
+7. Prefer major/program fit + cost + setting over prestige rank. OOS publics and impacted majors are often harder than overall admit %.
+8. At most one binding ED/REA priority school.
+9. No duplicate campuses (e.g. "University of Texas" + "UT Austin").
 
 ## Must-include schools (keep these; already on the list as priority seeds)
 ${must}
@@ -878,11 +891,12 @@ ${must}
 The server already filled a preliminary shortlist around the must-includes using the student's GPA/SAT + prefs. You will see them in the workspace snapshot.
 - **Do NOT replace, gut, or lottery-up the seeded list.** Enrich notes, majors, deadlines, and honest tiers.
 - Do NOT call remove_college on seeded schools unless they are clear duplicates.
-- Do NOT dump Princeton, MIT, Stanford, Yale, Harvard, UChicago, Columbia, Duke, etc. onto a mid-GPA list just because ambition is "ambitious."
+- If you see pure lotteries already on the list that the student did not request, **remove_college** them and strengthen targets/safeties instead.
 - Match reach/target/safety to the real academic profile (e.g. ~3.5 UW + 1500 SAT → mostly 30–55% targets, 15–30% reaches, real safeties; a couple major-fit dreams OK).
-- **UC Application = one app for all UC campuses.** You can keep Berkeley, UCLA, UCSD, Davis, Irvine, etc. — they do not each burn a Common App slot. Prefer a sensible UC mix (not every campus as "reach").
+- **UC Application = one app for all UC campuses.** Keep a sensible UC mix (not every campus as "reach").
 - Use web_search to verify admit rates, deadlines, and major strength before enriching with upsert_college.
-- You MAY add 1–3 schools that fit prefs + intended major if the list is thin on targets/safeties; prefer those tiers over more ultra-reaches.
+- You MAY add 1–3 schools if the list is thin on **targets/safeties**; prefer those tiers over more ultra-reaches.
+- If upsert_college is rejected as lottery/ultra, do **not** retry; pick a better-fit school.
 
 ## Uploads to read with read_upload if relevant
 ${uploadLine}
@@ -892,9 +906,10 @@ ${uploadLine}
 2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
 3. Parse awards → set_honors; set awards count on the snapshot.
 4. Read uploads and merge any extra structured data (coursework, more activities, etc.).
-5. Review the seeded college list: enrich tiers/deadlines/major fit; top up targets/safeties if thin. Never strip the list down to only must-includes. Never turn it into mostly sub-10% lotteries.
+5. Review the seeded college list: enrich tiers/deadlines/major fit; top up **targets/safeties** if thin. Never strip to only must-includes. Never convert the list into mostly sub-10% lotteries. Remove unsolicited HYPMS if present.
 6. Set a few critical_dates if you know real deadlines for the list.
-7. Reply with a short plain-text summary: what you saved + the school list with tiers (reach/target/safety counts should look balanced).
+7. **Essays / supplements:** The server already opened Essays-tab groups for every school (UC PIQs under slug \`uc-application\`; other schools get Why-us placeholders). When you can, web_search 2–4 priority schools' current supplement prompts and call set_essays with a *partial* supplements map (merge-safe by slug). Prefer real prompts + word limits; skip inventing full prompts for every school if short on turns.
+8. Reply with a short plain-text summary: what you saved + school list with tiers and **counts** (e.g. 4 reach / 5 target / 3 safety) + which essay groups are ready. If counts look lottery-heavy, fix before finishing.
 
 Call tools. Empty fields are better than invented numbers.`;
 }

@@ -11,6 +11,7 @@ import {
   type Honor,
 } from "@/lib/store";
 import { seedCollegeList } from "@/lib/seed-college-list";
+import { syncEssaySupplements } from "@/lib/essay-supplements";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { applyWorkspacePatch, type WorkspacePatch } from "@/lib/workspace-patch";
 import {
@@ -215,7 +216,7 @@ export async function POST(req: NextRequest) {
         ? a.awards
         : honors.length || ws.applicant.awards || 0;
 
-    const next: Workspace = {
+    let next: Workspace = {
       ...ws,
       applicant: {
         ...ws.applicant,
@@ -268,6 +269,8 @@ export async function POST(req: NextRequest) {
       intended,
       location,
     });
+    // Open Essays-tab groups for every seeded school (UC PIQs / placeholders).
+    next = syncEssaySupplements(next);
 
     next.onboarding = {
       ...next.onboarding,

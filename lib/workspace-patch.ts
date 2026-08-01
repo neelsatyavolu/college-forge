@@ -10,6 +10,7 @@ import type {
   FinancialAid,
   Essay,
 } from "./store";
+import { mergeSupplements, syncEssaySupplements } from "./essay-supplements";
 
 function assignDefined<T extends object>(base: T, patch: Record<string, unknown>): T {
   const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
@@ -97,14 +98,18 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
 
   if (patch.ed !== undefined) next = { ...next, ed: patch.ed };
   if (patch.criticalDates) next = { ...next, criticalDates: patch.criticalDates };
-  if (patch.colleges) next = { ...next, colleges: patch.colleges };
+  if (patch.colleges) {
+    next = syncEssaySupplements({ ...next, colleges: patch.colleges });
+  }
 
   if (patch.essays) {
     next = {
       ...next,
       essays: {
         commonApp: patch.essays.commonApp ?? next.essays.commonApp,
-        supplements: patch.essays.supplements ?? next.essays.supplements,
+        supplements: patch.essays.supplements
+          ? mergeSupplements(next.essays.supplements, patch.essays.supplements)
+          : next.essays.supplements,
       },
     };
   }

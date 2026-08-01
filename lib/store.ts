@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
+import { syncEssaySupplements } from "./essay-supplements";
 
 // ── Workspace data model ──────────────────────────────────────────────────
 // Mirrors the shape the hub UI renders (window.CF_DATA). Everything starts
@@ -307,7 +308,7 @@ export function newWorkspaceId(): string {
 
 function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
   const empty = emptyWorkspace();
-  return {
+  const base: Workspace = {
     ...empty,
     ...parsed,
     applicant: { ...empty.applicant, ...(parsed.applicant || {}) },
@@ -334,6 +335,8 @@ function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
     shares: parsed.shares ?? empty.shares,
     onboarding: { ...empty.onboarding, ...(parsed.onboarding || {}) },
   };
+  // Backfill Essays groups for any college already on the list (lazy migration).
+  return syncEssaySupplements(base);
 }
 
 export async function getWorkspace(id: string): Promise<Workspace> {

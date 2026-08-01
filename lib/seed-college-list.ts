@@ -939,3 +939,258 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
 
   return result;
 }
+
+// ── AI auto-add guardrails (hard, not prompt-only) ─────────────────────────
+
+/** Parse admit strings like "4%", "4.5%", "~11% (CA ~14%)". */
+export function parseAdmitRate(raw: string | number | null | undefined): number | null {
+  if (raw == null || raw === "" || raw === "—") return null;
+  if (typeof raw === "number") {
+    if (!Number.isFinite(raw)) return null;
+    return raw > 1 ? raw / 100 : raw;
+  }
+  const m = String(raw).match(/(\d+(?:\.\d+)?)\s*%?/);
+  if (!m) return null;
+  const n = Number(m[1]);
+  if (!Number.isFinite(n)) return null;
+  return n > 1 ? n / 100 : n;
+}
+
+function lookupUsNews(college: {
+  slug?: string;
+  name?: string;
+  short?: string;
+  scorecardId?: number;
+}): UsNewsCollege | undefined {
+  if (typeof college.scorecardId === "number" && college.scorecardId > 0) {
+    const byId = US_NEWS_TOP_250.find((u) => u.scorecardId === college.scorecardId);
+    if (byId) return byId;
+  }
+  const slug = slugKey(college.slug || college.name || college.short || "");
+  if (!slug) return undefined;
+  const exact = US_NEWS_TOP_250.find((u) => u.slug === slug || slugKey(u.slug) === slug);
+  if (exact) return exact;
+  // Short names: "MIT", "Yale", "UChicago"
+  const short = slugKey(college.short || college.name || "");
+  if (short.length >= 3) {
+    return US_NEWS_TOP_250.find(
+      (u) =>
+        slugKey(u.name).includes(short) ||
+        shortName(u.name).toLowerCase().replace(/[^a-z0-9]+/g, "") ===
+          short.replace(/[^a-z0-9]+/g, "")
+    );
+  }
+  return undefined;
+}
+
+/** Official admit rate from US News row when possible; else parse free-text admit. */
+export function resolveAdmitRate(college: {
+  slug?: string;
+  name?: string;
+  short?: string;
+  scorecardId?: number;
+  admit?: string;
+}): number | null {
+  const hit = lookupUsNews(college);
+  if (hit?.admitRate != null) return hit.admitRate;
+  return parseAdmitRate(college.admit);
+}
+
+function profileGpaSat(ws: {
+  applicant?: { gpaUnweighted?: string; gpaWeighted?: string; sat?: string };
+  profile?: { testing?: { sat?: string } };
+}): { gpa: number | null; sat: number | null } {
+  const gpa =
+    parseGpa(ws.applicant?.gpaUnweighted) ?? parseGpa(ws.applicant?.gpaWeighted);
+  const sat =
+    parseSat(ws.applicant?.sat) ?? parseSat(ws.profile?.testing?.sat);
+  return { gpa, sat };
+}
+
+function userNamedSchool(
+  userText: string | undefined,
+  college: { name?: string; short?: string; slug?: string }
+): boolean {
+  if (!userText || !userText.trim()) return false;
+  const t = userText.toLowerCase();
+  const names = [college.name, college.short, college.slug]
+    .filter(Boolean)
+    .map((s) => String(s).toLowerCase());
+  for (const n of names) {
+    if (n.length >= 3 && t.includes(n)) return true;
+    // "mit", "yale" as whole words
+    const token = n.replace(/university|college|of|the/gi, " ").replace(/[^a-z0-9]+/g, " ").trim();
+    for (const part of token.split(/\s+/).filter((p) => p.length >= 3)) {
+      if (new RegExp(`\\b${part}\\b`, "i").test(userText)) return true;
+    }
+  }
+  return false;
+}
+
+export type AutoAddGate = { allow: boolean; reason: string };
+
+/**
+ * Hard gate for AI upsert_college *new* adds.
+ * Mid-GPA students do not get HYPMS stacks via the copilot unless they name the school.
+ * Updates to schools already on the list are always allowed (enrichment).
+ */
+export function gateAiCollegeAdd(params: {
+  ws: {
+    colleges: College[];
+    applicant?: { gpaUnweighted?: string; gpaWeighted?: string; sat?: string };
+    profile?: { intended?: string; testing?: { sat?: string } };
+    onboarding?: { listPrefs?: { ambition?: ListAmbition } };
+  };
+  incoming: { slug?: string; name?: string; short?: string; scorecardId?: number; admit?: string; priority?: boolean };
+  userText?: string;
+}): AutoAddGate {
+  const { ws, incoming, userText } = params;
+  const slug = slugKey(incoming.slug || incoming.name || incoming.short || "");
+  const already = ws.colleges.some((c) => {
+    if (slug && slugKey(c.slug || "") === slug) return true;
+    if (
+      typeof incoming.scorecardId === "number" &&
+      incoming.scorecardId > 0 &&
+      c.scorecardId === incoming.scorecardId
+    ) {
+      return true;
+    }
+    return false;
+  });
+  if (already) return { allow: true, reason: "update existing" };
+
+  if (userNamedSchool(userText, incoming)) {
+    return { allow: true, reason: "student named school" };
+  }
+
+  const { gpa } = profileGpaSat(ws);
+  const ambition: ListAmbition = ws.onboarding?.listPrefs?.ambition || "balanced";
+  const intended = ws.profile?.intended || "";
+  const hit = lookupUsNews(incoming);
+  const admit = resolveAdmitRate(incoming);
+  const majorHit = hit ? majorAffinityBoost(hit.slug, intended) > 0 : majorAffinityBoost(slug, intended) > 0;
+
+  // No stats → still block obvious lottery names
+  if (gpa != null && gpa < 3.7) {
+    if (admit != null && admit < 0.05) {
+      return {
+        allow: false,
+        reason: `Blocked pure lottery (${Math.round(admit * 1000) / 10}% admit) for GPA ${gpa} — student must name the school to add it.`,
+      };
+    }
+    if (admit != null && admit < ULTRA_ADMIT) {
+      if (!(ambition === "ambitious" && majorHit)) {
+        return {
+          allow: false,
+          reason: `Blocked ultra-selective (${Math.round(admit * 1000) / 10}%) without major fit for this profile.`,
+        };
+      }
+      const ultraCount = ws.colleges.filter((c) => {
+        const r = resolveAdmitRate(c);
+        return r != null && r < ULTRA_ADMIT;
+      }).length;
+      const cap = ultraDreamCap(ambition, gpa);
+      if (ultraCount >= cap) {
+        return {
+          allow: false,
+          reason: `Already at max ${cap} ultra-selective dream(s) for this profile.`,
+        };
+      }
+    }
+  } else if (gpa == null && admit != null && admit < 0.05) {
+    return {
+      allow: false,
+      reason: "Blocked pure lottery school until GPA is on file (or student names the school).",
+    };
+  }
+
+  return { allow: true, reason: "ok" };
+}
+
+/**
+ * Strip AI-stuffed lottery schools for mid-GPA profiles.
+ * Keeps: priority/must-includes, schools the student named, major-fit ultras within cap.
+ * Pure lotteries (admit &lt; 5%) are always dropped unless priority or user-named.
+ */
+export function pruneLotteryColleges(
+  ws: {
+    colleges: College[];
+    applicant?: { gpaUnweighted?: string; gpaWeighted?: string; sat?: string };
+    profile?: { intended?: string; testing?: { sat?: string } };
+    onboarding?: { listPrefs?: { ambition?: ListAmbition } };
+  },
+  opts?: { userText?: string }
+): { colleges: College[]; removed: string[] } {
+  const { gpa } = profileGpaSat(ws);
+  if (gpa == null || gpa >= 3.7) {
+    return { colleges: ws.colleges, removed: [] };
+  }
+
+  const ambition: ListAmbition = ws.onboarding?.listPrefs?.ambition || "balanced";
+  const intended = ws.profile?.intended || "";
+  const cap = ultraDreamCap(ambition, gpa);
+  const removed: string[] = [];
+  const userText = opts?.userText;
+
+  // Pure lottery (&lt;5%): only priority or explicitly named schools stay
+  let kept = ws.colleges.filter((c) => {
+    if (c.priority || userNamedSchool(userText, c)) return true;
+    const admit = resolveAdmitRate(c);
+    if (admit != null && admit < 0.05) {
+      removed.push(c.short || c.name);
+      return false;
+    }
+    return true;
+  });
+
+  // Ultra band (5–8%): keep priority/named + up to `cap` major-fit dreams
+  type UltraRow = { c: College; admit: number; major: number; forced: boolean };
+  const ultras: UltraRow[] = kept
+    .map((c) => {
+      const admit = resolveAdmitRate(c);
+      if (admit == null || admit >= ULTRA_ADMIT || admit < 0.05) return null;
+      const hit = lookupUsNews(c);
+      const major = hit
+        ? majorAffinityBoost(hit.slug, intended)
+        : majorAffinityBoost(c.slug, intended);
+      return {
+        c,
+        admit,
+        major,
+        forced: !!(c.priority || userNamedSchool(userText, c)),
+      };
+    })
+    .filter((u): u is UltraRow => u != null);
+
+  const keepUltra = new Set<string>();
+  for (const u of ultras.filter((x) => x.forced)) keepUltra.add(u.c.slug);
+
+  let budget = Math.max(0, cap - keepUltra.size);
+  const optional = ultras
+    .filter((u) => !u.forced)
+    .sort((a, b) => {
+      if ((b.major > 0 ? 1 : 0) !== (a.major > 0 ? 1 : 0)) return b.major > 0 ? 1 : -1;
+      return Math.abs(a.admit - 0.07) - Math.abs(b.admit - 0.07);
+    });
+
+  for (const u of optional) {
+    // Mid-GPA: only major-fit ultras, and only within cap
+    if (u.major <= 0 || budget <= 0) {
+      removed.push(u.c.short || u.c.name);
+      continue;
+    }
+    keepUltra.add(u.c.slug);
+    budget--;
+  }
+
+  kept = kept.filter((c) => {
+    const admit = resolveAdmitRate(c);
+    if (admit == null || admit >= ULTRA_ADMIT) return true;
+    if (admit < 0.05) return true; // already filtered
+    if (keepUltra.has(c.slug)) return true;
+    if (!removed.includes(c.short || c.name)) removed.push(c.short || c.name);
+    return false;
+  });
+
+  return { colleges: kept, removed: [...new Set(removed)] };
+}

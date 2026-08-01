@@ -1,12 +1,186 @@
 const { Button } = window.CollegeForgeDesignSystem_e95e63;
 
-const STARTER_SUGGESTIONS = [
-  "Here's my transcript and resume — build my profile.",
-  "Add Stanford, MIT, and NYU to my list and tier them.",
-  "What's my strongest Early Decision option?",
-];
-
 const AI_PREFS_KEY = "cf.ai";
+
+/** True when a workspace field has real content (not blank / em dash). */
+function cfChatHasValue(v) {
+  if (v == null) return false;
+  const s = String(v).trim();
+  return s !== "" && s !== "—";
+}
+
+/**
+ * Adaptive empty-state prompts from workspace gaps (+ optional current hub view).
+ * Returns up to 3 concrete, actionable suggestions ordered by priority.
+ */
+function cfChatAdaptiveSuggestions(ws, view) {
+  const a = (ws && ws.applicant) || {};
+  const p = (ws && ws.profile) || {};
+  const colleges = (ws && ws.colleges) || [];
+  const activities = (p.activities || []).length;
+  const honors = (p.honors || []).length;
+  const aps = ((p.testing && p.testing.aps) || []).length;
+  const uploads = (ws && ws.uploads) || [];
+  const drafts = Object.keys((ws && ws.essayDrafts) || {}).filter(
+    (k) => String((ws.essayDrafts[k] || "")).trim().length > 0
+  ).length;
+  const recs = ((ws && ws.recommendations) || []).length;
+  const scholarships = ((ws && ws.scholarships) || []).length;
+  const dates = ((ws && ws.criticalDates) || []).length;
+  const fa = (ws && ws.financialAid) || {};
+  const faIdle =
+    (!fa.fafsaStatus || fa.fafsaStatus === "not_started") &&
+    (!fa.cssStatus || fa.cssStatus === "not_started" || fa.cssStatus === "n_a");
+  const hasEd = Boolean(ws && ws.ed && cfChatHasValue(ws.ed.school));
+  const hasGpa = cfChatHasValue(a.gpaUnweighted) || cfChatHasValue(a.gpaWeighted);
+  const hasSat = cfChatHasValue(a.sat) || cfChatHasValue(p.testing && p.testing.sat);
+  const hasIdentity =
+    cfChatHasValue(a.name) || cfChatHasValue(p.hs) || cfChatHasValue(p.intended) || cfChatHasValue(p.location);
+  const profileThin = !hasGpa && activities === 0 && honors === 0;
+  const reaches = colleges.filter((c) => c.tier === "reach").length;
+  const targets = colleges.filter((c) => c.tier === "target").length;
+  const safeties = colleges.filter((c) => c.tier === "safety").length;
+  const suppCount = Object.values((ws && ws.essays && ws.essays.supplements) || {}).reduce(
+    (n, arr) => n + (arr ? arr.length : 0),
+    0
+  );
+  const schoolNames = colleges
+    .slice(0, 3)
+    .map((c) => c.short || c.name)
+    .filter(Boolean);
+  const topSchool = schoolNames[0] || null;
+
+  // Priority-ordered gap prompts (push order = priority; de-duped).
+  const ranked = [];
+  const push = (s) => {
+    if (s && ranked.indexOf(s) === -1) ranked.push(s);
+  };
+
+  // 0. View-aware boosts first (student is already on that page)
+  if (view === "essays") {
+    if (drafts === 0) push("Help me pick a Common App prompt and draft a strong opening.");
+    else if (topSchool) push(`Critique my draft for ${topSchool} and suggest stronger specifics.`);
+    else push("Outline my Common App personal statement from my activities and story.");
+  }
+  if (view === "shortlist" && colleges.length > 0) {
+    push("Review my shortlist for major fit and honest tiers.");
+  }
+  if (view === "explore") {
+    push(
+      colleges.length < 8
+        ? "Suggest schools like the ones I favor that I haven't added yet."
+        : "Find a few more safeties that still fit my major and location prefs."
+    );
+  }
+  if (view === "profile") {
+    if (activities === 0) push("Help me structure my activities list for Common App (10 max).");
+    else if (activities < 5) push("Interview me to expand my activities with stronger impact bullets.");
+    else if (honors === 0) push("Add my awards and honors — I'll list them next.");
+  }
+  if (view === "planner" || view === "timeline") {
+    push("Build a week-by-week application plan until my first deadline.");
+  }
+  if (view === "track") {
+    if (faIdle) push("What should I know about FAFSA and CSS Profile for my schools?");
+    else if (scholarships === 0) push("Suggest scholarships that fit my profile and list.");
+    else if (recs === 0) push("Who should I ask for recommendations, and when should I ask?");
+  }
+
+  // 1. Profile / uploads
+  if (profileThin && uploads.length === 0) {
+    push("Here's my transcript and resume — build my profile.");
+  } else if (profileThin && uploads.length > 0) {
+    push("Read my uploads and fill GPA, coursework, testing, and activities.");
+  } else if (!hasGpa) {
+    push("Set my GPA and high school from what I tell you.");
+  } else if (activities === 0) {
+    push("Help me structure my activities list for Common App (10 max).");
+  } else if (honors === 0) {
+    push("Add my awards and honors — I'll list them next.");
+  } else if (!hasSat && aps === 0) {
+    push("Add my SAT/ACT and AP scores to the Testing section.");
+  } else if (!hasIdentity) {
+    push("Fill my profile basics: name, high school, intended major, location.");
+  }
+
+  // 2. College list
+  if (colleges.length === 0) {
+    push("Build me a balanced college list from my profile and preferences.");
+    push("Add schools I'm interested in and tier them as reach / target / safety.");
+  } else {
+    if (!hasEd) {
+      push(
+        topSchool
+          ? `What's my strongest Early Decision option — is ${topSchool} realistic?`
+          : "What's my strongest Early Decision option on this list?"
+      );
+    }
+    if (reaches >= 5 && reaches > targets + safeties) {
+      push("My list is too reach-heavy — rebalance with real targets and safeties.");
+    } else if (targets === 0 || safeties === 0) {
+      push("Find target and safety schools that fit my major and stats.");
+    }
+    if (colleges.some((c) => !c.tier)) {
+      push("Tier every school on my list as reach, target, or safety.");
+    }
+  }
+
+  // 3. Essays
+  if (colleges.length > 0 && drafts === 0) {
+    push("Outline my Common App personal statement from my activities and story.");
+  } else if (colleges.length > 0 && suppCount === 0) {
+    push(
+      topSchool
+        ? `Pull supplement essay prompts for ${schoolNames.slice(0, 2).join(" and ")}.`
+        : "Pull supplement essay prompts for schools on my list."
+    );
+  } else if (drafts > 0 && topSchool) {
+    push(`Critique my draft for ${topSchool} and suggest stronger specifics.`);
+  }
+
+  // 4. Track / logistics
+  if (colleges.length > 0 && recs === 0) {
+    push("Who should I ask for recommendations, and when should I ask?");
+  }
+  if (colleges.length > 0 && faIdle) {
+    push("What should I know about FAFSA and CSS Profile for my schools?");
+  }
+  if (colleges.length > 0 && dates === 0) {
+    push("Populate critical dates and deadlines from my shortlist.");
+  }
+
+  // Healthy-hub fallbacks
+  push("Review my hub and tell me the three highest-leverage things to do next.");
+  push("Compare my top two schools for major, fit, and admissions odds.");
+  if (hasEd && ws && ws.ed && cfChatHasValue(ws.ed.school)) {
+    push(`Help me strengthen my ${ws.ed.school} Early Decision application.`);
+  }
+
+  return ranked.slice(0, 3);
+}
+
+/** Short intro copy that matches how filled the hub is. */
+function cfChatIntroCopy(ws) {
+  const a = (ws && ws.applicant) || {};
+  const p = (ws && ws.profile) || {};
+  const colleges = (ws && ws.colleges) || [];
+  const hasGpa = cfChatHasValue(a.gpaUnweighted) || cfChatHasValue(a.gpaWeighted);
+  const activities = (p.activities || []).length;
+  const drafts = Object.keys((ws && ws.essayDrafts) || {}).filter(
+    (k) => String((ws.essayDrafts[k] || "")).trim().length > 0
+  ).length;
+
+  if (!hasGpa && activities === 0 && colleges.length === 0) {
+    return "I build and maintain your hub. Upload a transcript, resume, or award list — or tell me your profile and target schools — and I'll fill in every page.";
+  }
+  if (colleges.length === 0) {
+    return "Your profile is started. I can build a balanced college list, re-tier schools, or pull anything still missing into the hub.";
+  }
+  if (drafts === 0) {
+    return `You have ${colleges.length} school${colleges.length === 1 ? "" : "s"} on the list. I can rebalance tiers, pick an ED, draft essays, or fill any empty section.`;
+  }
+  return "Your hub is taking shape. Ask me to refine the list, strengthen essays, set deadlines, or update anything that looks off.";
+}
 
 function loadAiPrefs() {
   try {
@@ -126,7 +300,7 @@ function ConnectPanel({ status, onConnected }) {
   );
 }
 
-function AiChat({ open, onClose, onWorkspaceChange, onUserMessage }) {
+function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view }) {
   const [messages, setMessages] = React.useState([]);
   const [input, setInput] = React.useState("");
   const [busy, setBusy] = React.useState(false);
@@ -137,6 +311,12 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage }) {
   const [error, setError] = React.useState("");
   const scrollRef = React.useRef(null);
   const fileRef = React.useRef(null);
+
+  const suggestions = React.useMemo(
+    () => cfChatAdaptiveSuggestions(data, view),
+    [data, view]
+  );
+  const introCopy = React.useMemo(() => cfChatIntroCopy(data), [data]);
 
   // Returns the fresh status so callers can act on it without waiting for the
   // state update. cache:"no-store" so an expired session can't look connected.
@@ -287,12 +467,12 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage }) {
 
         {messages.length === 0 && !busy ? (
           <div style={{ fontSize: 13.5, color: "var(--body)" }}>
-            <p style={{ margin: "0 0 12px", lineHeight: 1.5 }}>I build and maintain your hub. Upload a transcript, resume, or award list — or tell me your profile and target schools — and I'll fill in every page.</p>
+            <p style={{ margin: "0 0 12px", lineHeight: 1.5 }}>{introCopy}</p>
             <div style={{ borderRadius: "var(--radius-md)", background: "var(--surface-soft)", border: "1px solid var(--hairline)", padding: 10 }}>
               <p style={{ margin: "0 0 6px", fontSize: 11, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--ink)", fontWeight: 600 }}>Try</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {STARTER_SUGGESTIONS.map((s) => (
-                  <button key={s} onClick={() => send(s)} disabled={!connected} style={{ textAlign: "left", cursor: connected ? "pointer" : "not-allowed", opacity: connected ? 1 : 0.55, border: "1px solid var(--hairline)", background: "var(--canvas)", borderRadius: "var(--radius-sm)", padding: "7px 10px", fontSize: 12.5, color: "var(--body)" }}>{s}</button>
+                {suggestions.map((s) => (
+                  <button key={s} type="button" onClick={() => send(s)} disabled={!connected} style={{ textAlign: "left", cursor: connected ? "pointer" : "not-allowed", opacity: connected ? 1 : 0.55, border: "1px solid var(--hairline)", background: "var(--canvas)", borderRadius: "var(--radius-sm)", padding: "7px 10px", fontSize: 12.5, color: "var(--body)" }}>{s}</button>
                 ))}
               </div>
             </div>

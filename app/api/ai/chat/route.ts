@@ -1,10 +1,11 @@
 import { NextRequest } from "next/server";
 import { runChat } from "@/lib/providers";
 import type { ChatEvent, ChatTurn, ProviderName } from "@/lib/chat-types";
-import { getWorkspace } from "@/lib/store";
+import { getWorkspace, saveWorkspace } from "@/lib/store";
 import { buildHubSystemPrompt } from "@/lib/hub-context";
 import { makeHubTools } from "@/lib/hub-tools";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { pruneLotteryColleges } from "@/lib/seed-college-list";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -82,7 +83,8 @@ export async function POST(req: NextRequest) {
         emit({ type: "status", stage: "context", message: "Loading your hub…" });
         const ws = await getWorkspace(workspaceId);
         const instructions = buildHubSystemPrompt(ws);
-        const { tools, executeTool } = makeHubTools(workspaceId);
+        const lastUserText = [...turns].reverse().find((t) => t.role === "user")?.content || "";
+        const { tools, executeTool } = makeHubTools(workspaceId, { userText: lastUserText });
 
         console.log(
           `[ai-chat] start ws=${wsTag} turns=${turns.length} uploads=${ws.uploads.length} ` +
@@ -92,8 +94,10 @@ export async function POST(req: NextRequest) {
         // Count tool calls so the logs distinguish "model wrote to the hub"
         // from "model only talked about writing to the hub".
         let toolCalls = 0;
+        let collegeTools = 0;
         const countingExecuteTool: typeof executeTool = (name, argsJson) => {
           toolCalls++;
+          if (name === "upsert_college" || name === "remove_college") collegeTools++;
           return executeTool(name, argsJson);
         };
 
@@ -109,7 +113,25 @@ export async function POST(req: NextRequest) {
           executeTool: countingExecuteTool,
         });
 
-        const after = await getWorkspace(workspaceId);
+        // After any list edits (or onboarding-style list talk), strip pure lotteries
+        // the model stuffed in despite prompts.
+        let after = await getWorkspace(workspaceId);
+        const listIntent =
+          collegeTools > 0 ||
+          /\b(college list|school list|shortlist|re-?tier|rebalance|onboard|reach|target|safety|add schools?|build.*(list|hub))\b/i.test(
+            lastUserText
+          );
+        if (listIntent) {
+          const pruned = pruneLotteryColleges(after, { userText: lastUserText });
+          if (pruned.removed.length) {
+            after = { ...after, colleges: pruned.colleges };
+            await saveWorkspace(workspaceId, after);
+            console.log(
+              `[ai-chat] ws=${wsTag} pruned lotteries: ${pruned.removed.join(", ")}`
+            );
+          }
+        }
+
         console.log(
           `[ai-chat] done ws=${wsTag} provider=${result.provider} model=${result.model ?? "?"} ` +
             `rounds=${result.rounds} toolCalls=${toolCalls} ` +

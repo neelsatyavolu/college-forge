@@ -200,9 +200,12 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
             {browseLoading && !searchMode ? (
               <div style={{ fontSize: 14, color: "var(--muted)", fontStyle: "italic", padding: "8px 0" }}>Loading U.S. News top 250…</div>
             ) : list.length === 0 ? (
-              <div style={{ fontSize: 14, color: "var(--muted)", fontStyle: "italic", padding: "8px 0" }}>
-                {searching ? "Searching…" : "No schools match these filters."}
-              </div>
+              // Status line already shows "Searching…" — don't repeat it here.
+              searching ? null : (
+                <div style={{ fontSize: 14, color: "var(--muted)", fontStyle: "italic", padding: "8px 0" }}>
+                  No schools match these filters.
+                </div>
+              )
             ) : list.map((c) => (
               <CollegeCard key={c.slug} name={c.name} location={c.location} rank={c.rank}
                 admit={dash(c.admit)} satRange={dash(c.satRange)} gpa={dash(c.gpa)} photo={c.photo} tags={c.tags}

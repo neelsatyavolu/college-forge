@@ -75,6 +75,9 @@ function HubNav({ view, theme, onToggleTheme, onOpenChat, onNavigate }) {
         </a>
         {tabs}
         <div className="cf-hub-nav__right">
+          <a href="/rankings" className="cf-hub-nav__tab" style={{ textDecoration: "none" }} title="Purchasing-power rankings">
+            Rankings
+          </a>
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <Button size="sm" variant="secondary" onClick={onOpenChat} className="cf-press">Copilot ✱</Button>
         </div>
@@ -281,7 +284,7 @@ function App() {
       ) : null}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 50 }}>
         <div style={{ position: "absolute", inset: 0, pointerEvents: chatOpen ? "auto" : "none" }}>
-          <AiChat open={chatOpen} onClose={() => setChatOpen(false)} onWorkspaceChange={refresh} />
+          <AiChat open={chatOpen} onClose={() => setChatOpen(false)} onWorkspaceChange={refresh} data={data} view={view} />
         </div>
       </div>
     </div>
