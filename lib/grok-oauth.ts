@@ -8,10 +8,10 @@ export const GROK_API_BASE = process.env.GROK_API_BASE_URL ?? "https://api.x.ai/
 const SCOPE = "openid profile email offline_access grok-cli:access api:access";
 
 export const GROK_MODELS = [
-  { id: "grok-4.5", label: "Grok 4.5", tier: "" },
+  { id: "grok-4.6", label: "Grok 4.6", tier: "" },
   { id: "grok-4.3", label: "Grok 4.3", tier: "" },
 ] as const;
-export const DEFAULT_GROK_MODEL = process.env.GROK_MODEL ?? "grok-4.5";
+export const DEFAULT_GROK_MODEL = process.env.GROK_MODEL ?? "grok-4.6";
 
 function base64url(buf: Buffer): string {
   return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
