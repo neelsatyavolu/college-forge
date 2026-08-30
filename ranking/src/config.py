@@ -33,6 +33,11 @@ REP_RESIDUALIZE_THRESHOLD = 0.50  # Pearson r
 # Geography
 RADIUS_MI_DEFAULT = 40.0
 RADIUS_MI_SENS = (25.0, 40.0, 50.0)
+# Extra shelter weight on top of BEA all-items (young renters spend more on housing
+# than the all-items basket). 0.10 ≈ +10pp shelter share.
+HOUSING_EXTRA_WEIGHT = 0.10
+RPP_LINE_ALL = 1.0
+RPP_LINE_HOUSING = 3.0
 
 # Bootstrap
 N_BOOT = 400  # full 1000 is slow; methodology allows ~1000 — raise for final publish
@@ -51,6 +56,9 @@ COUNTY_POP = RAW / "co-est2023-alldata.csv"
 CBSA_XLSX = RAW / "cbsa_delineation.xlsx"
 PSEO_FLOWS = RAW / "pseo" / "pseof_all.csv.gz"
 PSEO_INST = RAW / "pseo" / "pseo_all_institutions.csv"
+PSEO_DEST_CACHE = PROCESSED / "pseo_dest_div.csv"
+PSEO_RETENTION_CACHE = PROCESSED / "pseo_retention.csv"
 ADM_CSV = RAW / "ipeds" / "adm2023" / "adm2023.csv"
+PUBLIC_RANKINGS = ROOT.parent / "public" / "data" / "rankings"
 
 OPENALEX_MAILTO = "mailto:college-forge-ranking@example.com"

@@ -1,9 +1,10 @@
 # Purchasing-Power College Ranking
 
-Executable pipeline for the methodology in  
-`/Users/neel/Downloads/college-ranking-methodology.md` (v1.1).
+Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v1.2).
 
 **Headline question:** If I graduate from this school, how far will my paycheck go where I’m likely to end up living — and how well-regarded is the place that got me there?
+
+Earnings are deflated by BEA prices with extra housing weight. Stayers are priced near campus; movers use PSEO Census-division destinations when observed, otherwise a modeled destination mix (not a flat national 100).
 
 Not an ROI ranking: net price is reported, not scored.
 
@@ -77,7 +78,7 @@ The pipeline **does not silently reverse** design decisions. Two conditions requ
 1. **Value–reputation correlation r ≥ 0.5** → residualize reputation (auto-handled when true).
 2. **Modeled retention > 50% of universe**, or **> 15% of schools below FoS coverage floor** → scope problem.
 
-Check `out/diagnostics.json` after every run.
+Check `out/diagnostics.json` after every run. `python -m unittest tests.test_rpp` covers the COL math.
 
 ## API keys
 

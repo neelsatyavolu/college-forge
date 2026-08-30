@@ -60,7 +60,7 @@ See `.env.example`. Optional:
 
 ## Deploy
 
-Live: **https://college-forge.vercel.app**
+Live: **https://forge.n3el.dev**
 
 ```bash
 vercel deploy --prod
@@ -71,5 +71,5 @@ vercel env pull .env.local
 
 ```bash
 node scripts/verify.mjs
-BASE=https://college-forge.vercel.app node scripts/verify.mjs
+BASE=https://forge.n3el.dev node scripts/verify.mjs
 ```

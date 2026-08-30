@@ -19,6 +19,7 @@ type School = {
   value_metric?: number | null;
   rpp_grad?: number | null;
   rpp_local?: number | null;
+  rpp_source?: string | null;
   grad_feeder_flag?: boolean | string;
   value_added?: number | null;
   value_added_rank?: number;
@@ -326,10 +327,11 @@ export default function RankingsClient() {
 
         <header className="rk-masthead">
           <p className="rk-kicker">Purchasing-power ranking · 2026</p>
-          <h1 className="rk-title">What a degree is worth where graduates actually live</h1>
+          <h1 className="rk-title">What a degree is worth after rent</h1>
           <p className="rk-lede">
-            Earnings deflated by the cost of living in the places graduates work — not near campus —
-            then blended with an objective reputation measure. Tuition does not enter the score.
+            Median pay, adjusted for cost of living where graduates work — campus prices for those
+            who stay, Census-division destinations for those who leave, with extra weight on housing.
+            Tuition does not enter the score.
           </p>
           <div className="rk-stats" role="group" aria-label="Summary stats">
             <div className="rk-stat">
@@ -588,7 +590,20 @@ export default function RankingsClient() {
                           <td className="num" title={money(s.earnings_actual_mix, false)}>
                             {money(s.earnings_actual_mix)}
                           </td>
-                          <td className="num">{s.rpp_grad != null ? s.rpp_grad.toFixed(1) : "—"}</td>
+                          <td
+                            className="num"
+                            title={
+                              s.rpp_source === "pseo_dest"
+                                ? "PSEO destination mix"
+                                : s.rpp_source === "pseo_instate"
+                                  ? "PSEO in-state share × leaver pool"
+                                  : s.rpp_source === "modeled"
+                                    ? "Modeled destination prices"
+                                    : undefined
+                            }
+                          >
+                            {s.rpp_grad != null ? s.rpp_grad.toFixed(1) : "—"}
+                          </td>
                           <td className="num">{pct1(s.value_pctile)}</td>
                           <td className="num">{pct1(s.reputation_pctile)}</td>
                         </>
@@ -789,16 +804,18 @@ export default function RankingsClient() {
             you there?
           </p>
           <div className="rk-formula">
-            Composite = 0.70 × percentile(earnings ÷ graduate-weighted RPP)
+            Composite = 0.70 × percentile(earnings ÷ graduate RPP)
             <br />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.30 × percentile(reputation)
           </div>
           <p>
             <strong style={{ color: "var(--ink)", fontWeight: 500 }}>Value (70%).</strong> Median
             bachelor&apos;s earnings four years after completion (College Scorecard field-of-study),
-            weighted by each school&apos;s major mix, deflated by BEA Regional Price Parities weighted
-            toward where graduates actually work (Census PSEO where available; modeled retention
-            otherwise). Dollars are in 2024 national-average purchasing power.
+            weighted by each school&apos;s actual major mix. Prices are BEA Regional Price Parities
+            with extra weight on housing. Graduates who stay are priced at the campus labor market;
+            graduates who leave are priced at Census-division destinations from PSEO when those
+            flows exist, otherwise a modeled destination mix (not a flat US average of 100). Dollars
+            are in 2024 national-average purchasing power.
           </p>
           <p>
             <strong style={{ color: "var(--ink)", fontWeight: 500 }}>Reputation (30%).</strong> Yield
@@ -810,7 +827,11 @@ export default function RankingsClient() {
             above the 80th percentile for non-working share at the four-year mark — often graduate
             school. Their four-year earnings understate eventual outcomes; we flag, not adjust.
           </p>
-          <p>Tuition and net price are shown for context only. They never enter the score.</p>
+          <p>
+            Tuition and net price are shown for context only. They never enter the score. State
+            income tax is not deducted. PSEO does not cover every state — California destinations are
+            modeled.
+          </p>
 
           <h2 style={{ marginTop: 36 }}>Disclosures</h2>
           <ol>
@@ -819,8 +840,8 @@ export default function RankingsClient() {
               especially at wealthy institutions.
             </li>
             <li>
-              Graduate employment locations are observed for a subset of schools (PSEO) and modeled
-              for the rest.
+              Graduate destinations are Census divisions from PSEO when the school participates, and
+              modeled otherwise. In-state is not the same as metro. California is not in PSEO.
             </li>
             <li>Earnings reflect cohorts who graduated several years ago.</li>
             <li>Rank differences within overlapping intervals are not meaningful.</li>
@@ -841,8 +862,8 @@ export default function RankingsClient() {
 
         <footer className="rk-footer">
           <span>
-            Composite = 70% purchasing-power value + 30% reputation · for-profits excluded · top 250 of
-            eligible universe
+            Composite = 70% purchasing-power value + 30% reputation · housing-tilted BEA prices ·
+            for-profits excluded · top 250 of eligible universe
           </span>
           <span>
             <a href="/hub/index.html" style={{ color: "var(--muted)" }}>

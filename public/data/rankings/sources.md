@@ -1,6 +1,6 @@
 # Sources
 
-Access date (UTC): **2026-08-01**
+Access date (UTC): **2026-08-30**
 Reference year for dollars: **2024**
 PCE deflator factor (2022→2024): **1.065165**
 
@@ -20,12 +20,16 @@ PCE deflator factor (2022→2024): **1.065165**
 
 ## Coverage notes
 
-- PSEO matched schools: 296 / 782 (37.9%)
-- Retention model CV R²: 0.1772074556217999
+- PSEO retention matched: 296 / 782 (37.9%)
+- PSEO destination mix matched: 296 / 782 (37.9%)
+- Retention model CV R²: 0.16271953286300558
+- RPP-grad model CV R²: 0.9270382402701832
 - Modeled retention share: 62.1%
-- Value–reputation Pearson r: 0.213
+- Implied out-of-state leaver-pool RPP: 99.88
+- Housing extra weight: 0.1
+- Value–reputation Pearson r: 0.230
 - Residualized reputation: False
 
 ## Methodology
 
-See `college-ranking-methodology.md` v1.1. For-profit institutions excluded because earnings data is dominated by large chains and Title IV coverage differs sharply from nonprofits.
+See `ranking/METHODOLOGY.md` v1.2. For-profit institutions excluded because earnings data is dominated by large chains and Title IV coverage differs sharply from nonprofits.
