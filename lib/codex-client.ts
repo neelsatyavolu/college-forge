@@ -11,7 +11,8 @@ import {
 } from "./chat-status";
 
 export const CODEX_MODELS = [
-  { id: "gpt-5.6-sol", label: "GPT-5.6 Sol", tier: "flagship" },
+  { id: "gpt-6-astra", label: "GPT-6 Astra", tier: "flagship" },
+  { id: "gpt-5.6-sol", label: "GPT-5.6 Sol", tier: "" },
   { id: "gpt-5.6-terra", label: "GPT-5.6 Terra", tier: "balanced" },
   { id: "gpt-5.6-luna", label: "GPT-5.6 Luna", tier: "fast" },
   { id: "gpt-5.5", label: "GPT-5.5", tier: "" },
@@ -30,7 +31,7 @@ export function isKnownCodexModel(id: string): boolean {
 
 /** GPT-5.5+ reasoning models need a low effort setting on the Codex backend. */
 function isReasoningCodexModel(model: string): boolean {
-  return model.startsWith("gpt-5.5") || model.startsWith("gpt-5.6");
+  return model.startsWith("gpt-5.5") || model.startsWith("gpt-5.6") || model.startsWith("gpt-6");
 }
 
 type InputItem =
