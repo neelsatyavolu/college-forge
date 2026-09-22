@@ -158,7 +158,9 @@ export async function runGrokChat(params: {
   const tools = params.tools ?? DEFAULT_TOOLS;
   const exec = params.executeTool ?? defaultExecuteTool;
   const models = await providerModels("grok");
-  const model = params.model && models.some((m) => m.id === params.model) ? params.model : DEFAULT_GROK_MODEL;
+  const model = params.model && models.some((m) => m.id === params.model)
+    ? params.model
+    : models.find((m) => m.id === DEFAULT_GROK_MODEL)?.id ?? models[0]?.id ?? DEFAULT_GROK_MODEL;
   const messages: GrokMessage[] = [
     { role: "system", content: params.instructions },
     ...params.turns.map((t) => ({ role: t.role, content: t.content }) as GrokMessage),

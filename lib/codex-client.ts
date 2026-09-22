@@ -11,7 +11,7 @@ import {
   friendlyToolBudgetNote,
 } from "./chat-status";
 
-export const DEFAULT_CODEX_MODEL = process.env.CODEX_MODEL ?? "gpt-5.6-sol";
+export const DEFAULT_CODEX_MODEL = process.env.CODEX_MODEL ?? "gpt-6-astra";
 const MAX_ROUNDS = 6;
 // A single reasoning-model round should never legitimately need this long.
 // If the ChatGPT backend stalls past this we abort with a clear error,
@@ -394,7 +394,9 @@ export async function runCodexChat(params: {
   const tools = params.tools ?? DEFAULT_TOOLS;
   const exec = params.executeTool ?? defaultExecuteTool;
   const models = await providerModels("codex");
-  const model = params.model && models.some((m) => m.id === params.model) ? params.model : DEFAULT_CODEX_MODEL;
+  const model = params.model && models.some((m) => m.id === params.model)
+    ? params.model
+    : models.find((m) => m.id === DEFAULT_CODEX_MODEL)?.id ?? models[0]?.id ?? DEFAULT_CODEX_MODEL;
   const input: InputItem[] = turnsToInput(params.turns);
   let accumulated = "";
   let lastFinishReason: string | null = null;
