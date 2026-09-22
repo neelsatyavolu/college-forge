@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  if (state && pkce.state !== state) {
+  if (pkce.state !== state) {
     return NextResponse.json({ error: "OAuth state mismatch." }, { status: 400 });
   }
 

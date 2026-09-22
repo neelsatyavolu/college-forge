@@ -10,16 +10,15 @@ import {
 import {
   DEFAULT_GROK_MODEL,
   GROK_API_BASE,
-  GROK_MODELS,
-  isKnownGrokModel,
   type GrokTokens,
 } from "./grok-oauth";
+import { providerModels } from "./ai-models";
 
 // Hub builds need several tool rounds (web_search × N + set_* + upsert_college).
 const MAX_ROUNDS = 10;
 const UPSTREAM_TIMEOUT_MS = 90_000;
 
-export { DEFAULT_GROK_MODEL, GROK_MODELS, isKnownGrokModel };
+export { DEFAULT_GROK_MODEL };
 
 type AssistantToolCall = {
   id: string;
@@ -158,7 +157,8 @@ export async function runGrokChat(params: {
   const { emit } = params;
   const tools = params.tools ?? DEFAULT_TOOLS;
   const exec = params.executeTool ?? defaultExecuteTool;
-  const model = params.model && isKnownGrokModel(params.model) ? params.model : DEFAULT_GROK_MODEL;
+  const models = await providerModels("grok");
+  const model = params.model && models.some((m) => m.id === params.model) ? params.model : DEFAULT_GROK_MODEL;
   const messages: GrokMessage[] = [
     { role: "system", content: params.instructions },
     ...params.turns.map((t) => ({ role: t.role, content: t.content }) as GrokMessage),

@@ -1,7 +1,8 @@
 import { getActiveCodexSession } from "./codex-session";
-import { CODEX_MODELS, DEFAULT_CODEX_MODEL, runCodexChat } from "./codex-client";
+import { DEFAULT_CODEX_MODEL, runCodexChat } from "./codex-client";
 import { getActiveGrokSession } from "./grok-session";
-import { DEFAULT_GROK_MODEL, GROK_MODELS, runGrokChat } from "./grok-client";
+import { DEFAULT_GROK_MODEL, runGrokChat } from "./grok-client";
+import { providerModels } from "./ai-models";
 import {
   DEFAULT_OPENCODE_MODEL,
   OPENCODE_MODELS,
@@ -41,6 +42,7 @@ export async function resolveProviderStatus(): Promise<ProviderStatus> {
   const codexConnected = Boolean(session);
   const grokConnected = Boolean(grokSession);
   const opencodeAvailable = Boolean(getOpencodeKey());
+  const [codexModels, grokModels] = await Promise.all([providerModels("codex"), providerModels("grok")]);
   const active: ProviderName | null = grokConnected
     ? "grok"
     : codexConnected
@@ -53,9 +55,9 @@ export async function resolveProviderStatus(): Promise<ProviderStatus> {
     grokConnected,
     opencodeAvailable,
     active,
-    codexModels: CODEX_MODELS.map((m) => ({ id: m.id, label: m.label, tier: m.tier })),
+    codexModels: codexModels.map((m) => ({ id: m.id, label: m.label, tier: m.tier ?? "" })),
     defaultCodexModel: DEFAULT_CODEX_MODEL,
-    grokModels: GROK_MODELS.map((m) => ({ id: m.id, label: m.label, tier: m.tier })),
+    grokModels: grokModels.map((m) => ({ id: m.id, label: m.label, tier: m.tier ?? "" })),
     defaultGrokModel: DEFAULT_GROK_MODEL,
     opencodeModels: OPENCODE_MODELS.map((m) => ({ id: m.id, label: m.label, tier: m.tier })),
     defaultOpencodeModel: DEFAULT_OPENCODE_MODEL,

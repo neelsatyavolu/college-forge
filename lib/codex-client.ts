@@ -1,4 +1,5 @@
 import { CODEX_BACKEND_BASE, type CodexTokens } from "./codex-oauth";
+import { providerModels } from "./ai-models";
 import type { ChatTurn, ChatEmitter, ToolSpec, ToolExecutor } from "./chat-types";
 import { READ_FILE_TOOL, readContextFile } from "./file-tool";
 import { WEB_SEARCH_TOOL, WEB_FETCH_TOOL, runWebSearch, runWebFetch } from "./web-search-tool";
@@ -10,24 +11,12 @@ import {
   friendlyToolBudgetNote,
 } from "./chat-status";
 
-export const CODEX_MODELS = [
-  { id: "gpt-6-astra", label: "GPT-6 Astra", tier: "flagship" },
-  { id: "gpt-5.6-sol", label: "GPT-5.6 Sol", tier: "" },
-  { id: "gpt-5.6-terra", label: "GPT-5.6 Terra", tier: "balanced" },
-  { id: "gpt-5.6-luna", label: "GPT-5.6 Luna", tier: "fast" },
-  { id: "gpt-5.5", label: "GPT-5.5", tier: "" },
-] as const;
-
 export const DEFAULT_CODEX_MODEL = process.env.CODEX_MODEL ?? "gpt-5.6-sol";
 const MAX_ROUNDS = 6;
 // A single reasoning-model round should never legitimately need this long.
 // If the ChatGPT backend stalls past this we abort with a clear error,
 // instead of leaving the request (and the user's spinner) hanging forever.
 const UPSTREAM_TIMEOUT_MS = 90_000;
-
-export function isKnownCodexModel(id: string): boolean {
-  return CODEX_MODELS.some((m) => m.id === id);
-}
 
 /** GPT-5.5+ reasoning models need a low effort setting on the Codex backend. */
 function isReasoningCodexModel(model: string): boolean {
@@ -404,8 +393,8 @@ export async function runCodexChat(params: {
   const { emit } = params;
   const tools = params.tools ?? DEFAULT_TOOLS;
   const exec = params.executeTool ?? defaultExecuteTool;
-  const model =
-    params.model && isKnownCodexModel(params.model) ? params.model : DEFAULT_CODEX_MODEL;
+  const models = await providerModels("codex");
+  const model = params.model && models.some((m) => m.id === params.model) ? params.model : DEFAULT_CODEX_MODEL;
   const input: InputItem[] = turnsToInput(params.turns);
   let accumulated = "";
   let lastFinishReason: string | null = null;
