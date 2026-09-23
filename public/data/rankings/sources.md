@@ -1,35 +1,26 @@
 # Sources
 
-Access date (UTC): **2026-08-30**
-Reference year for dollars: **2024**
-PCE deflator factor (2022→2024): **1.065165**
+Methodology: **v2.0** (`ranking/METHODOLOGY.md`)
+Access date (UTC): **2026-09-23**
+Dollars: **2024** (PCE factor 2022→2024: 1.0652)
 
-| Dataset | Release / vintage | Path / URL |
+| Dataset | Release / vintage | URL |
 |---|---|---|
-| College Scorecard Institution | Most-Recent-Cohorts_06102026 | `data/raw/institution/` · ed-public-download.scorecard.network |
-| College Scorecard Field of Study | Most-Recent-Cohorts_06102026 | `data/raw/fos/` |
-| BEA Regional Price Parities (metro) | 2008-2024, year used=2024 | apps.bea.gov/regional/zip/MARPP.zip |
-| BEA Regional Price Parities (state) | 2008-2024, year used=2024 | apps.bea.gov/regional/zip/SARPP.zip |
-| Census LEHD PSEO Flows | R2025Q4 / latest_release 2025Q4 | lehd.ces.census.gov/data/pseo/latest_release/all/pseof_all.csv.gz |
-| IPEDS Admissions | ADM2023 | nces.ed.gov/ipeds/datacenter/data/ADM2023.zip |
-| OpenAlex Institutions API | live at access date | api.openalex.org |
+| College Scorecard Institution | Most-Recent-Cohorts_06102026 | ed-public-download.scorecard.network |
+| College Scorecard Field of Study | Most-Recent-Cohorts_06102026 | ed-public-download.scorecard.network |
+| BEA Regional Price Parities (metro + state) | 2008-2024, year used=2024 | apps.bea.gov/regional/zip/ |
+| Census LEHD PSEO Flows | R2025Q4 / latest_release 2025Q4 | lehd.ces.census.gov/data/pseo/ |
 | FRED PCE Price Index | PCEPI | fred.stlouisfed.org |
-| Census county centroids | CenPop2020 | www2.census.gov/geo/docs/reference/cenpop2020/county/ |
-| Census county population | co-est2023 | www2.census.gov/programs-surveys/popest/ |
-| CBSA delineation | 2023 list1 | www2.census.gov/programs-surveys/metro-micro/ |
+| Census county centroids / population / CBSA | CenPop2020, co-est2023, 2023 delineation | www2.census.gov |
 
-## Coverage notes
+## Coverage
 
-- PSEO retention matched: 296 / 782 (37.9%)
-- PSEO destination mix matched: 296 / 782 (37.9%)
-- Retention model CV R²: 0.16271953286300558
-- RPP-grad model CV R²: 0.9270382402701832
-- Modeled retention share: 62.1%
-- Implied out-of-state leaver-pool RPP: 99.88
-- Housing extra weight: 0.1
-- Value–reputation Pearson r: 0.230
-- Residualized reputation: False
+- Overall ranking: 1,289 schools scored
+- Per-major rankings: 161 bachelors, 93 masters
+- Graduate cost of living: 1,740 schools; PSEO destinations observed for 460; modeled for 73%
+- Implied out-of-state destination price level: 99.7
 
-## Methodology
+## Partial pooling
 
-See `ranking/METHODOLOGY.md` v1.2. For-profit institutions excluded because earnings data is dominated by large chains and Title IV coverage differs sharply from nonprofits.
+- bachelors: 27,963 programs at 1,600 schools · school-effect SD τ=0.144 · program SD ω=0.059
+- masters: 11,013 programs at 1,284 schools · school-effect SD τ=0.130 · program SD ω=0.110

@@ -1,12 +1,10 @@
-# Purchasing-Power College Ranking
+# Forge Career Outcomes Ranking
 
-Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v1.2).
+Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v2.0). Published at `/rankings`.
 
-**Headline question:** If I graduate from this school, how far will my paycheck go where I’m likely to end up living — and how well-regarded is the place that got me there?
+**Question:** if you study a given major at this school, how do graduates do in their careers compared with people who studied the same thing elsewhere?
 
-Earnings are deflated by BEA prices with extra housing weight. Stayers are priced near campus; movers use PSEO Census-division destinations when observed, otherwise a modeled destination mix (not a flat national 100).
-
-Not an ROI ranking: net price is reported, not scored.
+The score uses outcomes only: early-career earnings vs. the same major nationally (40%), long-run earnings vs. the school's major mix (20%), graduation (25%) and employment (15%). Earnings are adjusted for the cost of living where graduates work. Selectivity, yield, research, spending and reputation are not scored. Net price is reported, not scored.
 
 ## Quick start
 
@@ -15,24 +13,45 @@ cd ranking
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# Data must already be under data/raw/ (see scripts below or re-download)
+# Data must already be under data/raw/ (see downloads below)
 python src/run_all.py
+python -m unittest tests.test_scoring tests.test_rpp
 ```
 
-Outputs land in `out/`:
+## Modules (`src/`)
+
+| Module | Role |
+|---|---|
+| `institutions.py` | Scorecard institution records, overall and per-major universes, employment rate |
+| `programs.py` | Program earnings premiums, branch-campus collapse, school effects, per-major shrinkage |
+| `destinations.py` | Graduate cost of living (BEA RPP × PSEO destinations, modeled fallback) |
+| `geo.py`, `pseo.py` | Price parities, campus-local prices, PSEO retention/destinations |
+| `overall.py` | Composite score, rank intervals, beats-expectations residual, sensitivity |
+| `majors.py` | Per-major rankings (bachelor's and master's) |
+| `export.py`, `reports.py` | Public JSON, `sources.md`, `DISCLOSURE.md` |
+| `run_all.py` | Orchestration |
+
+## Outputs
+
+`out/` (local, for review):
 
 | File | Description |
 |---|---|
-| `ranking.csv` | Full scored universe |
-| `ranking_top250.csv` | Published cut |
-| `ranking_by_major.csv` | Per-CIP value rankings (§12) |
-| `ranking_value_added_top250.csv` | Residual-on-selectivity table (§7) |
-| `exclusions.csv` | Every dropped school + reason |
-| `sensitivity.csv` | §8 variants |
-| `sources.md` | Pinned vintages + access date |
-| `field_mapping.csv` | Source variable map |
-| `DISCLOSURE.md` | Required disclosure block |
-| `diagnostics.json` | Escalation flags, correlations, model R² |
+| `ranking.csv` | Every scored school with components, ranks and intervals |
+| `ranking_by_major.csv` | Every ranked program |
+| `exclusions.csv` | Every excluded school and the first rule it failed |
+| `sensitivity.csv` | Spearman vs. headline under alternative weights and no cost-of-living adjustment |
+| `diagnostics.json`, `sources.md`, `DISCLOSURE.md` | Run diagnostics and published notes |
+
+`public/data/rankings/` (served to the app):
+
+| File | Description |
+|---|---|
+| `top250.json` | Overall top 250 |
+| `value_added.json` | Top 250 by beats-expectations |
+| `majors/index.json` | All ranked majors (bachelor's and master's) |
+| `majors/{bachelors,masters}-{cip}.json` | Top 250 per major |
+| `majors/bachelors_by_school.json` | Major ranks for overall top-250 schools (recommendation engine) |
 
 ## Data downloads (once)
 
@@ -51,8 +70,6 @@ curl -L -o data/raw/pseo/pseof_all.csv.gz \
   https://lehd.ces.census.gov/data/pseo/latest_release/all/pseof_all.csv.gz
 curl -L -o data/raw/pseo/pseo_all_institutions.csv \
   https://lehd.ces.census.gov/data/pseo/latest_release/all/pseo_all_institutions.csv
-# IPEDS yield
-curl -L -o data/raw/ipeds/ADM2023.zip https://nces.ed.gov/ipeds/datacenter/data/ADM2023.zip
 # Geo + PCE
 curl -L -o data/raw/PCEPI.csv 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=PCEPI'
 curl -L -o data/raw/CenPop2020_Mean_CO.txt \
@@ -66,22 +83,11 @@ unzip -o data/raw/Most-Recent-Cohorts-Institution.zip -d data/raw/institution
 unzip -o data/raw/Most-Recent-Cohorts-Field-of-Study.zip -d data/raw/fos
 unzip -o data/raw/MARPP.zip -d data/raw/marpp
 unzip -o data/raw/SARPP.zip -d data/raw/sarpp
-unzip -o data/raw/ipeds/ADM2023.zip -d data/raw/ipeds/adm2023
 ```
 
-OpenAlex research metrics are fetched at runtime and cached in `data/processed/openalex_research.csv`.
+## Review checklist after each run
 
-## Escalations (methodology §11)
-
-The pipeline **does not silently reverse** design decisions. Two conditions require human review before treating results as publishable:
-
-1. **Value–reputation correlation r ≥ 0.5** → residualize reputation (auto-handled when true).
-2. **Modeled retention > 50% of universe**, or **> 15% of schools below FoS coverage floor** → scope problem.
-
-Check `out/diagnostics.json` after every run. `python -m unittest tests.test_rpp` covers the COL math.
-
-## API keys
-
-- **College Scorecard API** is optional for this bulk pipeline (CSV downloads are used).
-- **OpenAlex** needs no key (polite pool via User-Agent mailto).
-- Project Vercel env (for the College Forge app, not this batch job): `COLLEGE_SCORECARD_API_KEY`, `EXA_API_KEY`, `TINYFISH_API_KEY`, `BLOB_READ_WRITE_TOKEN`.
+1. `sensitivity.csv`: every variant should keep Spearman ≥ 0.85 with the headline. A large drop means one component is driving the ranking.
+2. `exclusions.csv`: check that exclusion counts by reason are stable between data releases.
+3. Spot-check per-major tables for programs whose rank comes from very few earners (wide rank ranges are expected; a tight range with few earners is a bug).
+4. Weights in `config.py` are fixed a priori. Change them only with a written rationale in `METHODOLOGY.md`, never to make results look familiar.

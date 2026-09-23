@@ -1,19 +1,19 @@
 # Disclosure (publish with any public ranking)
 
-1. Earnings cover only federal aid recipients and are not representative of all graduates, especially at wealthy institutions.
-2. Cost of living uses BEA Regional Price Parities with extra weight on housing. Stayers are priced at the campus labor market. Movers are priced at Census-division destinations from PSEO when those flows exist; otherwise destinations are modeled. PSEO does not cover every state (California is absent).
-3. In-state vs out-of-state is not the same as metro of employment. Division destinations are coarser than city.
-4. Earnings reflect cohorts who graduated several years ago and may not describe current outcomes.
-5. Rank differences within overlapping intervals are not meaningful.
-6. Reputation is constructed from public data (IPEDS yield, OpenAlex citations, retention/completion) and is not a survey of anyone's opinion.
-7. Only bachelor's degrees are scored. Schools marked as graduate-school feeders send an unusually large share of graduates into further education, and their four-year earnings understate eventual outcomes.
-8. For-profit institutions are excluded.
-9. Headline earnings follow each school's actual major mix. A nursing-heavy campus will outrank a similar school with more humanities graduates.
-10. This ranking measures purchasing-power earnings and prestige. It does not measure teaching quality, wellbeing, net price, or whether a school is a good fit for any individual student. State income taxes are not deducted.
+1. **Outcomes, not inputs.** Scores use graduate earnings, graduation and employment. Admit rate, test scores, yield, research output, spending and reputation surveys are not scored.
+2. **Same-major comparisons.** Earnings are compared with the national median for the same major and credential, so a school is not rewarded or penalized for which majors it offers.
+3. **Federal data only covers federal aid recipients.** Earnings and employment come from College Scorecard, which tracks students who received federal grants or loans. At wealthy schools this is a minority of students.
+4. **Cohorts are several years old.** Early-career earnings are 1, 4 and 5 years after graduation; long-run earnings are 10 years after entry. They may not describe current graduates.
+5. **Cost of living** uses BEA Regional Price Parities with extra weight on housing, priced where graduates actually work (Census PSEO destinations) or a modeled mix where PSEO does not report (for example, California). State income taxes are not deducted.
+6. **Small programs are shrunk, not dropped.** Estimates from few graduates are pulled toward the school's overall pattern and then toward the national average in proportion to their uncertainty. Rank ranges (5th–95th percentile) are published; ranks inside overlapping ranges are not meaningfully different.
+7. **Only published cells are ranked.** Programs whose earnings are suppressed for privacy are not ranked in the per-major tables. Nothing is imputed.
+8. **Selection is not removed from the headline score.** Schools that admit students with more advantages will tend to show better outcomes. The "Beats expectations" view shows outcomes relative to what the incoming student body predicts.
+9. **Excluded:** for-profit institutions, online-only institutions, and schools in U.S. territories (no BEA price data; separate labor markets).
+10. **Not measured:** teaching quality, wellbeing, fit, or price. Net price is shown for context only.
 
-## Per-major ranking additional disclosures
+## Per-major tables
 
-1. CIP coding is inconsistent across institutions; a 2-digit CIP family view is provided via `cip_family`.
-2. Selection bias is sharper at major level (into school, then into major).
-3. Sample sizes are smaller; rank intervals are wide.
-4. Per-major rows still use the school's overall destination RPP, not a major-specific destination mix.
+1. Majors are 4-digit CIP codes as reported by each school; coding varies across schools.
+2. Selection is sharper at the major level (into the school, then into the major).
+3. Per-major cost of living uses the school's overall graduate destinations, not a major-specific mix.
+4. Master's programs use the same graduate cost-of-living estimate as the school's bachelor's graduates.

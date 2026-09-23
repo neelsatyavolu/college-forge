@@ -2,31 +2,34 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Purchasing-Power Rankings — College Forge",
+  title: "Career rankings · College Forge",
   description:
-    "U.S. colleges ranked by what a graduate’s earnings are actually worth where they live, blended with an objective reputation measure.",
+    "U.S. colleges ranked on graduate outcomes: earnings compared with the same major elsewhere, adjusted for cost of living, plus graduation and employment. Selectivity is not scored.",
   openGraph: {
-    title: "Purchasing-Power College Rankings",
-    description:
-      "What a degree is worth where graduates actually live — not near campus, and not just prestige.",
+    title: "Where graduates do best · College Forge",
+    description: "College and major rankings built on outcomes, not prestige.",
   },
 };
 
+// Same bootstrap as public/hub/index.html so the saved theme applies before first paint.
+const THEME_BOOTSTRAP = `(function(){try{var s=localStorage.getItem("cf.theme");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;
+
 export default function RankingsLayout({ children }: { children: ReactNode }) {
-  // Fonts + global tokens load from public/ (hub is static and bypasses this layout).
+  // Shares the hub's stylesheets (the hub is static and bypasses this layout).
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-page-custom-font, @next/next/no-css-tags */}
+      <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
-      {/* eslint-disable-next-line @next/next/no-page-custom-font, @next/next/no-css-tags */}
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      {/* eslint-disable-next-line @next/next/no-page-custom-font, @next/next/no-css-tags */}
+      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       />
       {/* eslint-disable-next-line @next/next/no-css-tags */}
       <link rel="stylesheet" href="/styles.css" />
+      {/* eslint-disable-next-line @next/next/no-css-tags */}
+      <link rel="stylesheet" href="/hub/workspace.css" />
       {children}
     </>
   );

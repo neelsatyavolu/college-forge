@@ -1,54 +1,89 @@
-# Purchasing-power college ranking — methodology v1.2
+# Forge career-outcomes ranking — methodology v2.0
 
-Headline question: if you graduate from this school, how far does a typical bachelor’s paycheck go where graduates actually work — and how well-regarded is the school?
+**Question:** if you study a given major at this school, how do graduates do in their careers compared with people who studied the same thing elsewhere?
 
-Not an ROI ranking. Net price is reported, not scored.
+The ranking scores **outcomes only**. Nothing about how hard a school is to get into, how much it spends, how much research it publishes, or what anyone thinks of it enters the score. Weights were fixed before any results were looked at and are not tuned to make the list look familiar.
 
-## Score
+## 1. Principles
+
+1. **Outcomes, not inputs.** Admit rate, test scores, yield, research output, spending and reputation surveys reward exclusivity and wealth, not what a school does for its students.
+2. **Compare like with like.** A school's graduates are compared with graduates of the *same major and credential* nationally. A school is not rewarded for teaching more engineers or penalized for teaching more teachers.
+3. **Money means purchasing power.** Earnings are adjusted for the cost of living where graduates actually work.
+4. **Noise is modeled, not hidden.** Small programs are partially pooled toward what the rest of the data implies. Every rank has a published range.
+5. **Nothing is imputed.** Core components are required; a missing optional component (long-run earnings, employment) is left out of that school's weighted average. Suppressed programs are not ranked.
+
+## 2. Universes
+
+| Table | Who is included |
+|---|---|
+| Overall | Public and private nonprofit in the 50 states or DC, currently operating, main campus, predominantly bachelor's, ≥500 undergraduates, not online-only; ≥30% of bachelor's completions in programs with published earnings; a first-time-student graduation rate |
+| Per major (bachelor's, master's) | Any operating public or private nonprofit school in the 50 states or DC that is not online-only, for each 4-digit CIP major with ≥20 ranked schools; top 250 published |
+
+For-profit institutions are excluded. Schools in U.S. territories are excluded because BEA publishes no price parities for them and their graduates work in separate labor markets; comparing them with mainland national medians would measure the territory, not the school. Scorecard publishes field-of-study earnings per OPEID6, so branch campuses that repeat their parent's figures are collapsed into one program credited to the main campus.
+
+## 3. Program earnings premium
+
+For each program (school × 4-digit CIP × credential) and each horizon Scorecard publishes (1, 4 and 5 years after completion):
 
 ```
-composite = 0.70 × percentile(value) + 0.30 × percentile(reputation)
-value     = earnings / (RPP_grad / 100)
+premium_h = ln(program median earnings_h / national median_h for the same major and credential)
 ```
 
-Dollars are in 2024 national-average purchasing power (PCE from Scorecard-vintage dollars).
+National medians are Scorecard's `EARN_MDN_4YR_NAT` for the 4-year horizon and earner-weighted medians across all institutions for the others. Horizons are pooled by precision (earner counts); the 1-year horizon counts half because first-year pay is a weaker career signal.
 
-## Earnings
+**Partial pooling (two-level empirical Bayes).** Program premium = school effect + program deviation + sampling noise. The sampling variance of a median is `(1.2533 · 0.70)² / n`. Program estimates shrink toward their **own school's** effect, and the school effect shrinks toward the national average in proportion to how little data the school has. Variance components (τ for schools, ω for programs) are estimated by method of moments, separately for bachelor's and master's.
 
-College Scorecard median bachelor’s earnings four years after completion, weighted by the school’s actual major mix (field-of-study completions). Schools below 30% field-of-study coverage are dropped; 30–50% fall back to institution-level earnings.
+Shrinking every program straight to the national mean (a common shortcut) is wrong here: it erases the signal from strong schools whose programs are individually small.
 
-This is the paycheck of a typical graduate, not a quality-held-constant ranking. A nursing- or CS-heavy campus will outrank a similar school with more humanities graduates. A fixed-mix (same majors everywhere) table is in `sensitivity.csv`.
+**Cost of living.** `premium_pp = premium − ln(RPP_grad / 100)`. `RPP_grad` is the BEA Regional Price Parity where graduates work, with 10 extra percentage points of housing weight for young renters. Stayers are priced at the campus labor market (population-weighted counties within 40 miles). Movers are priced at Census-division destinations from PSEO where observed, otherwise modeled (see v1.2 notes in `destinations.py`). State income tax is not deducted.
 
-Federal-aid recipients only.
+## 4. Overall score
 
-## Cost of living (`RPP_grad`)
+| Component | Weight | Measure |
+|---|---|---|
+| Early-career earnings | 40% | School effect from §3 (bachelor's), cost-of-living adjusted |
+| Long-run earnings | 20% | ln(median earnings 10 years after entry, cost-of-living adjusted ÷ national 5-year median for the school's bachelor's major mix) |
+| Graduation | 25% | Six-year completion rate (`C150_4`) |
+| Employment | 15% | Working share of graduates not enrolled, 3 years after completion |
 
-BEA Regional Price Parities, **renter-tilted**: all-items RPP plus 10 percentage points of extra housing weight (`housing RPP − all-items RPP`). Young graduates spend more on rent than the all-items basket.
+Each component becomes a z-score across the ranked universe (clipped at ±3). The composite is the weighted mean of the components a school has. Early-career earnings and graduation are required: the overall table is for students starting college, so health-science centers, upper-division and graduate-only schools (which report no first-time-student graduation rate) appear only in the per-major tables instead of being scored on a subset of components. The published 0–100 score rescales the composite so the top school is 100 and the lowest is 0.
 
-**Stayers** (in-state employment share from Census PSEO, or modeled): campus-area RPP (population-weighted counties within 40 miles). Intra-state labor markets differ — Riverside is not Berkeley.
+Why these weights: earnings are the most direct career measure and get 60% in total, weighted toward early career because it is observed for every major. Graduation gets 25% because a degree only pays if you finish. Employment gets 15% because it varies less across schools and partly reflects local labor markets.
 
-**Movers:** Census-division employment mix from PSEO destination rows (`geo_level=D`, bachelor’s, all CIP, pooled cohort), priced at population-weighted young RPP of that division. The in-state slice of the home division is repriced from the division average to campus-local RPP.
+Scorecard's 10-years-after-entry *employment* counts are not used: they report, for example, 38% of Babson entrants working versus 96% of its graduates three years after completion, which tracks self-employment and living abroad more than career access.
 
-**If PSEO destinations are missing** but in-state share is observed: `s × campus RPP + (1−s) × leaver_pool`, where `leaver_pool` is the implied destination RPP of out-of-state graduates at PSEO schools — **not** the national average of 100.
+## 5. Per-major rankings
 
-**If neither is observed:** OLS on observed `RPP_grad` with control, admit rate, SAT, SAT-missing flag, enrollment, and campus RPP. Unknown SAT is not imputed as “average SAT.”
+Within one major and credential, schools are ranked on the pooled, cost-of-living-adjusted premium from §3. Because everyone in the table is compared with the same national median, this is the same ordering as cost-of-living-adjusted earnings. Only the program's own outcomes are scored; the school's overall score is shown for context.
 
-PSEO does not include every state. California schools are modeled.
+## 6. Uncertainty
 
-v1.1 used `s × campus RPP + (1−s) × 100`. That underpriced coastal job markets for graduates leaving cheap campuses. `legacy_two_dest` in `sensitivity.csv` is that older formula.
+Rank ranges are the 5th–95th percentiles over 500 redraws of each earnings estimate from its posterior uncertainty. Graduation and employment rates are treated as fixed. Schools whose ranges overlap are not meaningfully different.
 
-## Reputation (30%)
+## 7. Beats expectations
 
-IPEDS yield (40%), OpenAlex field-weighted citation impact within Carnegie class (40%), first-year retention + six-year completion (20%). Residualized on value only if Pearson r ≥ 0.5.
+A secondary table regresses the overall composite on incoming-student characteristics (SAT/ACT with a missing flag, admit rate, Pell share, first-generation share) and ranks schools by the residual. It answers a different question: which schools' graduates do better than their student body alone would predict. It does not replace the headline score.
 
-## What is not in the score
+## 8. Sensitivity (`sensitivity.csv`)
 
-Tuition / net price, state income tax, teaching quality, wellbeing, fit. Graduate-school feeders (high non-working share at four years) are flagged, not adjusted.
+Spearman correlation with the headline ranking under equal weights, earnings-only, early-earnings-only, no graduation, no employment, and no cost-of-living adjustment. All are published with every run.
 
-## Universe
+## 9. Known limitations
 
-US main-campus, currently operating, public or private nonprofit, predominantly bachelor’s, undergraduate enrollment ≥ 500. For-profits excluded.
+- Scorecard earnings cover federal aid recipients only; at wealthy schools that is a minority of students.
+- 4-digit CIP codes can bundle specialties (for example, nurse anesthesia sits inside registered nursing).
+- Majors dominated by students without federal aid (for example, many master's in computer science programs) have few published cells.
+- State labor markets matter: California nursing graduates out-earn the national median even after cost of living, and that shows up in the table.
+- Master's programs use the school's bachelor's graduate destinations for cost of living.
 
-## Uncertainty
+## Changes from v1.2
 
-Bootstrap rank intervals (5th–95th) from noisy earnings. Rank gaps inside overlapping intervals are not meaningful.
+| v1.2 | v2.0 | Why |
+|---|---|---|
+| Earnings weighted by each school's actual major mix | Earnings compared with the same major nationally | Actual-mix rewarded schools for which majors they teach (e.g. University of Providence #55 → #939 once compared within major) |
+| 30% "reputation" from yield, OpenAlex citations, retention/completion | Removed; graduation and employment scored directly as outcomes | Reputation is an input. OpenAlex name-matching also failed for 691 of 782 schools, which were silently set to the median |
+| Per-major: bachelor's only, 50-completion floor, top 25, 66 majors | Bachelor's and master's, all published cells, partial pooling, top 250, 254 majors | The floor discarded most data and small programs were unshrunk |
+| 4-year earnings only | 1-, 4- and 5-year horizons pooled | More coverage, less noise |
+| "Grad-school feeder" flag from not-working counts | Removed | Those counts exclude enrolled students; the flag did not measure grad school |
+| Branch campuses repeated parent earnings | Collapsed by OPEID6 | Double counting |
+| Territories priced with a modeled mainland price level | Excluded with reason | No BEA price data; separate labor markets |
