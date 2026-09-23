@@ -442,10 +442,6 @@ button:focus-visible {
   min-height: 0;
   flex-shrink: 0;
 }
-.cf-split--explore .cf-split__list {
-  width: 32%;
-  max-width: 380px;
-}
 .cf-split__detail {
   flex: 1 1 auto;
   min-width: 0;

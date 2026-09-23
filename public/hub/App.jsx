@@ -43,7 +43,8 @@ function loadFavorites() {
   try { const values = JSON.parse(localStorage.getItem("cf.favorites") || "[]"); return Array.isArray(values) ? values : []; } catch (e) { return []; }
 }
 function readView() {
-  const h = window.location.hash.slice(1);
+  // "#explore/<slug>" opens a school inside Explore; the view is the part before "/".
+  const h = window.location.hash.slice(1).split("/")[0];
   return NAV.some(n => n.id === h) ? h : "overview";
 }
 
@@ -111,7 +112,7 @@ function App() {
   }, [menuOpen]);
   React.useEffect(() => {
     const onHash = () => {
-      const id = window.location.hash.slice(1);
+      const id = window.location.hash.slice(1).split("/")[0];
       if (!id || NAV.some(n => n.id === id)) setView(readView());
       setMenuOpen(false);
     };

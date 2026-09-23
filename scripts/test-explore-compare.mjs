@@ -7,14 +7,17 @@ try {
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.setViewport({width:1440,height:1000});
   await page.goto(base+'/hub/index.html#explore',{waitUntil:'networkidle2'});
-  await page.waitForSelector('.cf-split__detail h2',{timeout:60000});
+  await page.waitForSelector('.cf-explore-card',{timeout:60000});
   const clickText = text => page.evaluate(text=>[...document.querySelectorAll('button')].find(button=>button.textContent===text).click(),text);
   for (const width of [1440,930,768,390]) {
     await page.setViewport({width,height:950});
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Explore page overflow at ${width}`);
-    if(width<=960) assert.ok(await page.evaluate(()=>document.querySelector('.cf-split__list').getBoundingClientRect().width>=document.querySelector('.cf-split').getBoundingClientRect().width-2),`Explore results must fill stacked width at ${width}`);
+    assert.ok(await page.evaluate(()=>document.querySelector('.cf-explore-grid').getBoundingClientRect().right<=innerWidth),`Explore grid must fit the viewport at ${width}`);
     await page.screenshot({path:`/tmp/forge-explore-after-${width}.png`});
   }
+  await page.click('.cf-explore-card__open');
+  await page.waitForSelector('.cf-explore-page__title',{timeout:60000});
+  assert.ok((await page.evaluate(()=>location.hash)).startsWith('#explore/'),'Opening a school gives it its own URL');
   await clickText('Add to shortlist');
   await page.waitForFunction(()=>document.body.innerText.includes('Remove from shortlist'));
   await clickText('Remove from shortlist');
@@ -24,6 +27,8 @@ try {
   await clickText('Remove from shortlist');
   await clickText('Confirm removal');
   await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='Add to shortlist'));
+  await page.goBack();
+  await page.waitForSelector('.cf-explore-card',{timeout:10000});
   const schoolCount = await page.evaluate(async()=>{
     const response = await fetch('/api/colleges/search?browse=1'); const body = await response.json();
     const colleges = body.data.slice(0,6);
@@ -57,5 +62,5 @@ try {
     await page.screenshot({path:`/tmp/forge-compare-${width}.png`});
   }
   assert.deepEqual(errors,[]);
-  console.log('PASS real Explore browse/add/confirmed removal, full-width stacked list, sparse Compare hydration, five-school limit, detail error/retry, desktop/mobile layout, no runtime errors.');
+  console.log('PASS real Explore grid, school page add/confirmed removal and Back, sparse Compare hydration, five-school limit, detail error/retry, desktop/mobile layout, no runtime errors.');
 } finally {await browser.close();}
