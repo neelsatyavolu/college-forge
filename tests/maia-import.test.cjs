@@ -35,6 +35,18 @@ test('reads token and ids from the storage shapes Maia might use', () => {
  assert.equal(none.token, null);
 });
 
+test('storage diagnostics describe shapes without leaking values', () => {
+ const h = helpers();
+ const token = jwt({ uid: 1513688 });
+ const d = JSON.parse(JSON.stringify(h.describeStorage(storage({ userAccessKey: JSON.stringify(token), sel_school: JSON.stringify({ nid: '11237322', title: 'Palo Alto High' }), authBlob: 'opaque-secret-value' }))));
+ const text = JSON.stringify(d);
+ for (const secret of [token, '11237322', 'Palo Alto High', 'opaque-secret-value']) assert.equal(text.includes(secret), false, secret);
+ assert.deepEqual(d.find((x) => x.key === 'userAccessKey'), { key: 'userAccessKey', kind: 'json-string', len: token.length + 2, jwt: true, digitsOnly: false });
+ assert.deepEqual(d.find((x) => x.key === 'sel_school').fields, ['nid:string(digits)', 'title:string']);
+ assert.equal(d.find((x) => x.key === 'sel_user').kind, 'missing');
+ assert.equal(d.find((x) => x.key === 'authBlob').kind, 'text');
+});
+
 test('normalizes Maia scattergram responses', () => {
  const h = helpers();
  const n = h.normalizeScatter({

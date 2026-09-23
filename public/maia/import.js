@@ -64,6 +64,33 @@
     return { token: token, schoolId: schoolId, studentUid: studentUid };
   }
 
+  /**
+   * Shape of the storage entries readSession looks at — key names, types and
+   * lengths only, never values — so a failed run can be diagnosed without
+   * exposing the student's session.
+   */
+  function describeStorage(storage) {
+    var keys = ["userAccessKey", "userToken", "userRefreshKey", "sel_school", "sel_user"];
+    for (var i = 0; i < storage.length; i++) {
+      var k = storage.key(i);
+      if (keys.indexOf(k) < 0 && /token|auth|user|school|session/i.test(k)) keys.push(k);
+    }
+    return keys.slice(0, 20).map(function (key) {
+      var raw = storage.getItem(key);
+      if (raw == null) return { key: key, kind: "missing" };
+      var v = parseStored(raw);
+      var shape = { key: key, kind: v === raw ? "text" : "json-" + (Array.isArray(v) ? "array" : typeof v), len: raw.length, jwt: Boolean(findJwt(v)) };
+      if (typeof v === "string" || typeof v === "number") shape.digitsOnly = /^\d+$/.test(String(v).trim());
+      if (v && typeof v === "object" && !Array.isArray(v)) {
+        shape.fields = Object.keys(v).slice(0, 15).map(function (f) {
+          var t = v[f] === null ? "null" : Array.isArray(v[f]) ? "array" : typeof v[f];
+          return f.slice(0, 30) + ":" + t + (/^\d+$/.test(String(v[f])) ? "(digits)" : "");
+        });
+      }
+      return shape;
+    });
+  }
+
   function num(v) {
     if (v === null || v === undefined || v === "" || v === "null") return null;
     var n = Number(v);
@@ -101,7 +128,7 @@
     return close || (items.length === 1 ? items[0] : null);
   }
 
-  var helpers = { readSession: readSession, normalizeScatter: normalizeScatter, pickSearchHit: pickSearchHit, findJwt: findJwt, findId: findId };
+  var helpers = { readSession: readSession, describeStorage: describeStorage, normalizeScatter: normalizeScatter, pickSearchHit: pickSearchHit, findJwt: findJwt, findId: findId };
   if (typeof window !== "undefined" && window.__CF_MAIA_TEST__) { window.__CF_MAIA_TEST__ = helpers; return; }
 
   // ── Run in the browser ─────────────────────────────────────────────────
@@ -153,7 +180,12 @@
     try {
       var session = readSession(localStorage);
       if (!session.token || !session.schoolId || !session.studentUid) {
-        send({ type: "cf-maia:error", error: "Couldn't find your Maia sign-in on this page. Open the Universities tab in Maia, reload, then click the bookmark again." });
+        var lacking = [!session.token && "sign-in token", !session.schoolId && "school ID", !session.studentUid && "student ID"].filter(Boolean);
+        send({
+          type: "cf-maia:error",
+          error: "Couldn't find your Maia " + lacking.join(", ") + " on this page. Open the Universities tab in Maia, reload, then click the bookmark again.",
+          diagnostic: describeStorage(localStorage),
+        });
         return;
       }
       var out = [], missing = [], student = null;

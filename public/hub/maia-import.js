@@ -69,6 +69,10 @@
       setStatus(msg.name ? "Checking " + msg.name + " (" + (msg.done + 1) + " of " + msg.total + ")…" : "Finishing up…");
     } else if (msg.type === "cf-maia:error") {
       finish(String(msg.error || "Something went wrong in Maia."), true);
+      if (Array.isArray(msg.diagnostic)) {
+        el("diagnostic-text").textContent = msg.diagnostic.map(function (d) { return JSON.stringify(d); }).join("\n").slice(0, 4000);
+        el("diagnostic").hidden = false;
+      }
     } else if (msg.type === "cf-maia:result" && msg.payload && Array.isArray(msg.payload.colleges)) {
       save(msg.payload, msg.missing, msg.cancelled);
     }
