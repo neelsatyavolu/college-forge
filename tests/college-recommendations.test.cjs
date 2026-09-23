@@ -103,3 +103,24 @@ test('a college without comparable academic evidence is not an automatic target'
  const school={...US_NEWS_TOP_250.find(x=>x.slug==='arizona-state-university'),gpa:null,sat25:null,sat75:null};
  assert.equal(assessAcademicFit(school,profile()).tier,null);
 });
+const midGpaStrongSat = () => { const ws=profile();ws.applicant.gpaUnweighted='3.48';ws.applicant.sat='1510';ws.profile.intended='Journalism';
+ ws.onboarding.listPrefs={ambition:'balanced',appCount:null,settings:[],size:'any',regions:['midwest','south','mid-atlantic','northeast'],notes:''};return ws; };
+test('a GPA just under 3.5 can still earn likely suggestions', () => {
+ const result=recommendColleges(midGpaStrongSat());
+ assert.ok(result.recommendations.some(x=>x.fit.tier==='safety'));
+ assert.ok(!result.limitations.some(x=>/No likely option/.test(x)));
+});
+test('a GPA gap alone does not make a high-admit school a reach when the SAT is above its range', () => {
+ const iowa=US_NEWS_TOP_250.find(x=>x.slug==='university-of-iowa');
+ assert.equal(assessAcademicFit(iowa,midGpaStrongSat()).tier,'target');
+});
+test('a GPA gap still makes a high-admit school a reach without a strong SAT', () => {
+ const iowa=US_NEWS_TOP_250.find(x=>x.slug==='university-of-iowa');
+ const ws=midGpaStrongSat();ws.applicant.sat='1250';
+ assert.equal(assessAcademicFit(iowa,ws).tier,'reach');
+});
+test('a strong SAT does not rescue a GPA gap at a selective school', () => {
+ const wisconsin=US_NEWS_TOP_250.find(x=>x.slug==='university-of-wisconsin-madison');
+ const ws=midGpaStrongSat();ws.applicant.sat='1600';
+ assert.equal(assessAcademicFit(wisconsin,ws).tier,'reach');
+});

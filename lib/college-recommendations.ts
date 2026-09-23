@@ -44,17 +44,19 @@ export function assessAcademicFit(school: UsNewsCollege | undefined, ws: Workspa
       !(sat !== null && school.sat25 !== null && school.sat75 !== null)) {
     return { tier: null, label: "Research", reasons: [...reasons, "No comparable GPA or usable SAT range is available for this profile and college."], cautions };
   }
+  const strongSat = sat !== null && school.sat75 !== null && sat >= school.sat75;
   if (sat !== null && school.sat25 !== null && school.sat75 !== null) {
     reasons.push(`Your SAT ${sat} compared with the reported ${school.sat25}–${school.sat75} middle 50%.`);
     if (sat < school.sat25) tier = "reach";
   }
+  const gpaBelow = gpa !== null && comparableGpa !== null && gpa < comparableGpa - 0.3;
   if (gpa !== null && comparableGpa !== null) {
     reasons.push(`Your unweighted GPA ${gpa} compared with the reported unweighted average ${comparableGpa}.`);
-    if (gpa < comparableGpa - 0.3) tier = "reach";
+    // At high-admit schools an SAT at or above the 75th percentile holds a GPA gap at target, not reach.
+    if (gpaBelow && !(school.admitRate >= 0.65 && strongSat)) tier = "reach";
   }
-  const aboveAcademicSignal = gpa !== null && gpa >= 3.5 && (
-    (comparableGpa !== null && gpa >= comparableGpa + 0.15) ||
-    (sat !== null && school.sat75 !== null && sat >= school.sat75)
+  const aboveAcademicSignal = gpa !== null && !gpaBelow && (
+    (comparableGpa !== null && gpa >= comparableGpa + 0.15) || strongSat
   );
   if (tier !== "reach" && school.admitRate >= 0.65 && aboveAcademicSignal &&
       !(sat !== null && school.sat25 !== null && sat < school.sat25)) tier = "safety";
