@@ -1,4 +1,4 @@
-"""Pinned paths and constants for the Forge Career Outcomes Ranking (methodology v2.0)."""
+"""Pinned paths and constants for the Forge Career Outcomes Ranking (methodology v2.1)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,15 +8,29 @@ RAW = ROOT / "data" / "raw"
 PROCESSED = ROOT / "data" / "processed"
 OUT = ROOT / "out"
 
-METHODOLOGY_VERSION = "2.0"
+METHODOLOGY_VERSION = "2.1"
 
 # Access / release pins (recorded in sources.md at run time)
 SCORECARD_RELEASE = "Most-Recent-Cohorts_06102026"
 PSEO_RELEASE = "R2025Q4 / latest_release 2025Q4"
 BEA_RPP_YEARS = "2008-2024"
 RPP_YEAR = "2024"  # most recent BEA RPP column
-REFERENCE_YEAR = 2024  # deflate nominal earnings to this year via PCE
-EARNINGS_DOLLAR_YEAR = 2022  # Scorecard earnings ≈ 2021–2022 dollars; pinned for transparency
+REFERENCE_YEAR = 2024  # every dollar figure is restated in this year's dollars via PCE
+# Source dollar year per field for SCORECARD_RELEASE, from the Scorecard data dictionary
+# (FieldOfStudy_Cohort_Map / Most_Recent_Inst_Cohort_Map). Re-check on every release.
+FIELD_DOLLAR_YEAR = {
+    "EARN_MDN_1YR": 2022,       # AY2018-19, AY2019-20 completers, measured CY2020-21
+    "EARN_MDN_4YR": 2024,       # AY2017-18, AY2018-19 completers, measured CY2022-23
+    "EARN_MDN_4YR_NAT": 2024,
+    "EARN_MDN_5YR": 2022,       # AY2014-15, AY2015-16 completers, measured CY2020-21
+    "MD_EARN_WNE_P10": 2022,    # AY2009-10, AY2010-11 entrants, measured CY2020-21
+}
+EARNINGS_COHORTS = {
+    "1yr": "2018–20 graduates, earnings in 2020–21",
+    "4yr": "2017–19 graduates, earnings in 2022–23",
+    "5yr": "2014–16 graduates, earnings in 2020–21",
+    "10yr_entry": "students who started in 2009–11, earnings in 2020–21",
+}
 
 # Overall-ranking universe (§2)
 UGDS_MIN = 500

@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Career rankings · College Forge",
   description:
-    "U.S. colleges ranked on graduate outcomes: earnings compared with the same major elsewhere, adjusted for cost of living, plus graduation and employment. Selectivity is not scored.",
+    "A historical comparison of U.S. colleges' graduate outcomes: earnings compared with the same major elsewhere, plus graduation and employment. No direct weight on selectivity.",
   openGraph: {
-    title: "Where graduates do best · College Forge",
+    title: "Where graduates did best · College Forge",
     description: "College and major rankings built on outcomes, not prestige.",
   },
 };

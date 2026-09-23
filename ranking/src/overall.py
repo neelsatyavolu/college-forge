@@ -13,7 +13,7 @@ from config import (
     REQUIRED_COMPONENTS,
     Z_CLIP,
 )
-from util import ols_residuals
+from util import crossfit_residuals
 
 COMPONENTS = list(OVERALL_WEIGHTS)
 
@@ -38,6 +38,7 @@ def components(
     out["long_premium_sd"] = 1.2533 * LOG_EARNINGS_SD / np.sqrt(df["COUNT_WNE_P10"].clip(lower=10))
     out["graduation"] = df["C150_4"]
     out["employment"] = df["employment_rate"]
+    out["col_sd"] = rpp["rpp_log_sd"].reindex(df.index).fillna(0.0) if "rpp_log_sd" in rpp else 0.0
     return out
 
 
@@ -80,15 +81,22 @@ def score_table(comp: pd.DataFrame) -> pd.DataFrame:
 
 
 def rank_intervals(table: pd.DataFrame, n_boot: int = N_BOOT, seed: int = RANDOM_SEED) -> pd.DataFrame:
-    """5th–95th percentile ranks when earnings components are redrawn from their uncertainty."""
+    """
+    5th–95th percentile ranks when earnings estimates and the modeled graduate price
+    level are redrawn from their uncertainty (the price error shifts both earnings
+    components together). Conditional on this model; weights, the price basket and
+    other specification choices are covered by sensitivity(), not by these ranges.
+    """
     rng = np.random.default_rng(seed)
     base = table[COMPONENTS]
+    col_sd = table["col_sd"].fillna(0).to_numpy() if "col_sd" in table else np.zeros(len(table))
     ranks = np.empty((n_boot, len(table)), dtype=np.int32)
     for b in range(n_boot):
         draw = base.copy()
+        price_err = rng.normal(0.0, 1.0, len(base)) * col_sd
         for c in ("early_premium", "long_premium"):
             sd = table[f"{c}_sd"].fillna(0).to_numpy()
-            draw[c] = base[c] + rng.normal(0.0, 1.0, len(base)) * sd
+            draw[c] = base[c] + rng.normal(0.0, 1.0, len(base)) * sd - price_err
         c = composite(draw, ref=base).to_numpy()
         order = np.argsort(-c)
         rk = np.empty(len(c), dtype=np.int32)
@@ -103,8 +111,9 @@ def rank_intervals(table: pd.DataFrame, n_boot: int = N_BOOT, seed: int = RANDOM
 
 def beats_expectations(table: pd.DataFrame, schools: pd.DataFrame) -> pd.Series:
     """
-    §7: score minus what incoming students predict (SAT/ACT, admit rate, Pell, first-gen),
-    in score points. Positive = graduates do better than the student body alone would suggest.
+    §7: score minus the score a student-profile model predicts (SAT/ACT, admit rate,
+    Pell, first-gen), in score points. Predictions are cross-fitted, so no school's own
+    outcome shapes its prediction. Descriptive, not a causal value-added estimate.
     """
     s = schools.set_index("UNITID").reindex(table.index)
     sat = s["SAT_AVG"].fillna(s["ACTCMMID"] * 40 + 200)  # concordance-style ACT→SAT
@@ -115,7 +124,7 @@ def beats_expectations(table: pd.DataFrame, schools: pd.DataFrame) -> pd.Series:
         "pell": s["PCTPELL"],
         "first_gen": s["FIRST_GEN"].fillna(s["FIRST_GEN"].median()),
     }, index=table.index)
-    return ols_residuals(table["score"], X).rename("beats_expectations")
+    return crossfit_residuals(table["score"], X).rename("beats_expectations")
 
 
 def sensitivity(

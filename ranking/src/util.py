@@ -78,19 +78,21 @@ def top_n_churn(rank_a: pd.Series, rank_b: pd.Series, n: int = 25) -> int:
     return len(a - b)
 
 
-def ols_residuals(y: pd.Series, X: pd.DataFrame) -> pd.Series:
-    """OLS residual via normal equations; drops rows with any NA."""
+def crossfit_residuals(y: pd.Series, X: pd.DataFrame, folds: int = 10, seed: int = 42) -> pd.Series:
+    """Out-of-fold OLS residuals: each row is predicted by a model fit without its fold."""
     df = pd.concat([y.rename("y"), X], axis=1).dropna()
-    if len(df) < X.shape[1] + 3:
-        return pd.Series(np.nan, index=y.index)
-    yy = df["y"].to_numpy(dtype=float)
-    xx = df.drop(columns=["y"]).to_numpy(dtype=float)
-    # add intercept
-    xx = np.column_stack([np.ones(len(xx)), xx])
-    beta, *_ = np.linalg.lstsq(xx, yy, rcond=None)
-    resid = yy - xx @ beta
     out = pd.Series(np.nan, index=y.index, dtype=float)
-    out.loc[df.index] = resid
+    if len(df) < folds * (X.shape[1] + 3):
+        return out
+    fold = np.random.default_rng(seed).permutation(len(df)) % folds
+    xx = np.column_stack([np.ones(len(df)), df.drop(columns=["y"]).to_numpy(dtype=float)])
+    yy = df["y"].to_numpy(dtype=float)
+    pred = np.empty(len(df))
+    for k in range(folds):
+        test = fold == k
+        beta, *_ = np.linalg.lstsq(xx[~test], yy[~test], rcond=None)
+        pred[test] = xx[test] @ beta
+    out.loc[df.index] = yy - pred
     return out
 
 

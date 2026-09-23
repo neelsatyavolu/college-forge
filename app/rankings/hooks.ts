@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Credential, Filters, View } from "./types";
+import type { Credential, Filters, PriceMode, View } from "./types";
 
 const cache = new Map<string, Promise<unknown>>();
 
@@ -63,9 +63,9 @@ export function useTheme(): [string, () => void] {
   return [theme, toggle];
 }
 
-export type RankingsQuery = Filters & { view: View; credential: Credential; major: string };
+export type RankingsQuery = Filters & { view: View; credential: Credential; major: string; prices: PriceMode };
 
-const DEFAULTS: RankingsQuery = { view: "overall", credential: "bachelors", major: "", q: "", state: "", control: "" };
+const DEFAULTS: RankingsQuery = { view: "overall", credential: "bachelors", major: "", q: "", state: "", control: "", prices: "adjusted" };
 const VIEWS: View[] = ["overall", "majors", "beats"];
 
 function readQuery(): RankingsQuery {
@@ -80,6 +80,7 @@ function readQuery(): RankingsQuery {
     q: p.get("q") || "",
     state: (p.get("state") || "").toUpperCase().slice(0, 2),
     control: control === "public" || control === "private" ? control : "",
+    prices: p.get("prices") === "nominal" ? "nominal" : "adjusted",
   };
 }
 
@@ -104,6 +105,7 @@ export function useRankingsQuery(): [RankingsQuery, (patch: Partial<RankingsQuer
       if (next.q) p.set("q", next.q);
       if (next.state) p.set("state", next.state);
       if (next.control) p.set("control", next.control);
+      if (next.prices === "nominal" && next.view !== "beats") p.set("prices", "nominal");
       const s = p.toString();
       window.history.replaceState(null, "", s ? `?${s}` : window.location.pathname);
       return next;

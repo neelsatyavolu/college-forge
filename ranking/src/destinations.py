@@ -96,5 +96,9 @@ def graduate_rpp(schools: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
         "leaver_pool_rpp": float(leaver_pool),
         "division_rpp": {str(k): v for k, v in div_rpp.items()},
     }
-    cols = ["UNITID", "rpp_grad", "rpp_local", "rpp_source", "retention_share", "retention_source"]
+    # Price-level uncertainty for the rank ranges: modeled destinations carry the model's
+    # held-out error. Observed (PSEO) destinations carry none here; their division/campus
+    # approximation error is not quantified and is disclosed instead.
+    df["rpp_log_sd"] = (df["rpp_source"] != "pseo_dest") * rpp_meta.get("log_rmse_cv", 0.0)
+    cols = ["UNITID", "rpp_grad", "rpp_local", "rpp_source", "rpp_log_sd", "retention_share", "retention_source"]
     return df[cols].set_index("UNITID"), diag

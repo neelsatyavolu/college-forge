@@ -116,7 +116,7 @@ export function recommendColleges(ws: Workspace) {
     if (settings.length) fit.reasons.unshift(`Matches your ${admissions!.setting} campus preference.`);
     if (major) fit.reasons.unshift(`#${major.rank} of ${major.of} colleges for ${major.name} graduates' earnings versus the same major nationally.`);
     else if (codes.size) fit.cautions.push("No published earnings for a matching major at this college. This does not mean the program is absent or weak; verify its curriculum.");
-    if (row.rpp_source === "modeled") fit.cautions.push("Graduate cost of living is modeled for this institution.");
+    if (!row.location_observed) fit.cautions.push("Where graduates work (used for cost of living) is modeled for this institution, not observed.");
     const college: College = {
       slug: admissions?.slug || slugify(row.institution), name: row.institution, short: row.institution,
       scorecardId: row.unitid, location: `${row.city}, ${row.state}`, setting: admissions?.setting,
@@ -127,7 +127,7 @@ export function recommendColleges(ws: Workspace) {
       netPrice: row.net_price != null ? `$${Math.round(row.net_price).toLocaleString("en-US")}` : undefined,
       tags: [{label:"Fair-ranking evidence",tone:"teal"}],
     };
-    const adjustedEarnings = row.typical_salary != null && row.rpp_grad != null ? Math.round(row.typical_salary / (row.rpp_grad / 100)) : null;
+    const adjustedEarnings = row.typical_earnings != null && row.rpp_grad != null ? Math.round(row.typical_earnings / (row.rpp_grad / 100)) : null;
     const score = row.score * 0.75 + (major ? 25 * (1 - (major.rank - 1) / major.of) : 0);
     return [{ college, fit, score, onList: ws.colleges.some(c => c.scorecardId === row.unitid || c.slug === college.slug), evidence: {
       fairRank: row.rank, rankLow: row.rank_low, rankHigh: row.rank_high,

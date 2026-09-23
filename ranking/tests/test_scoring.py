@@ -12,7 +12,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from institutions import employment_rate  # noqa: E402
 from overall import composite, coverage  # noqa: E402
-from programs import collapse_branch_campuses, major_estimates, program_premiums, school_effects  # noqa: E402
+from programs import collapse_branch_campuses, major_estimates, price_slope, program_premiums, school_effects  # noqa: E402
+from util import crossfit_residuals  # noqa: E402
 
 
 def _program(unitid, cip, e4, n4, nat=100_000.0, cred="bachelors", completions=50.0):
@@ -52,8 +53,11 @@ class TestShrinkage(unittest.TestCase):
                 rows.append(_program(school, f"{1000 + major}", 100_000 * np.exp(y), 25 if small else 200))
         return program_premiums(pd.DataFrame(rows))
 
+    NO_PRICE = pd.Series(dtype=float)
+    ZERO_BETA = {"bachelors": 0.0}
+
     def test_school_effect_pools_programs_and_shrinks_with_less_data(self):
-        schools, _ = school_effects(self._panel())
+        schools, _ = school_effects(self._panel(), self.NO_PRICE, self.ZERO_BETA)
         s = schools.set_index("UNITID")
         self.assertTrue((s["mu_sd"] > 0).all())
         self.assertTrue(np.all(np.abs(s["mu_hat"]) <= np.abs(s["m"]) + 1e-12))
@@ -61,17 +65,47 @@ class TestShrinkage(unittest.TestCase):
 
     def test_program_never_inherits_its_schools_strength(self):
         # School 0 is excellent overall, but its small major-1000 program is exactly national median.
-        progs = major_estimates(self._panel(strong_school_small_program=0.0))
+        progs = major_estimates(self._panel(strong_school_small_program=0.0), self.NO_PRICE, self.ZERO_BETA)
         small = progs[(progs["UNITID"] == 0) & (progs["CIPCODE"] == "1000")].iloc[0]
         self.assertAlmostEqual(small["y_major"], 0.0, places=6)
 
     def test_noisy_programs_shrink_more_toward_national_median(self):
-        progs = major_estimates(self._panel(strong_school_small_program=0.6))
+        progs = major_estimates(self._panel(strong_school_small_program=0.6), self.NO_PRICE, self.ZERO_BETA)
         major = progs[progs["CIPCODE"] == "1000"]
         small = major[major["UNITID"] == 0].iloc[0]
         big = major[major["UNITID"] != 0].iloc[0]
         self.assertLess(small["y_major"] / small["y_raw"], big["y_major"] / big["y_raw"])
         self.assertGreater(small["y_major"], 0.0)
+
+
+class TestPriceAwarePrior(unittest.TestCase):
+    def test_slope_recovers_how_pay_tracks_prices(self):
+        rng = np.random.default_rng(1)
+        price = pd.Series(rng.normal(0, 0.1, 300), index=range(300))
+        rows = [_program(u, "1107", 100_000 * np.exp(0.6 * price[u]), 400) for u in price.index]
+        beta = price_slope(program_premiums(pd.DataFrame(rows)), price)
+        self.assertAlmostEqual(beta["bachelors"], 0.6, places=2)
+
+    def test_data_poor_program_lands_on_price_prior_not_zero(self):
+        price = pd.Series({u: 0.2 if u == 0 else 0.0 for u in range(40)})
+        rows = [_program(u, "1107", 100_000 * np.exp(0.05 * (u % 3)), 400) for u in range(1, 40)]
+        rows.append(_program(0, "1107", 100_000, 10))
+        progs = program_premiums(pd.DataFrame(rows))
+        progs.loc[progs["UNITID"] == 0, "se2"] = 1e6  # effectively no information
+        est = major_estimates(progs, price, {"bachelors": 0.5})
+        self.assertAlmostEqual(est.loc[est["UNITID"] == 0, "y_major"].iloc[0], 0.5 * 0.2, places=3)
+
+
+class TestCrossFit(unittest.TestCase):
+    def test_prediction_never_uses_the_schools_own_outcome(self):
+        rng = np.random.default_rng(2)
+        X = pd.DataFrame({"a": rng.normal(size=200), "b": rng.normal(size=200)})
+        y = X["a"] * 2 + rng.normal(size=200)
+        before = y - crossfit_residuals(y, X)
+        y2 = y.copy()
+        y2.iloc[7] += 1000
+        after = y2 - crossfit_residuals(y2, X)
+        self.assertAlmostEqual(before.iloc[7], after.iloc[7], places=9)
 
 
 class TestBranchCampuses(unittest.TestCase):

@@ -3,7 +3,8 @@ from __future__ import annotations
 
 from config import (
     BEA_RPP_YEARS,
-    EARNINGS_DOLLAR_YEAR,
+    EARNINGS_COHORTS,
+    FIELD_DOLLAR_YEAR,
     METHODOLOGY_VERSION,
     PSEO_RELEASE,
     REFERENCE_YEAR,
@@ -11,44 +12,53 @@ from config import (
     SCORECARD_RELEASE,
 )
 
-DISCLOSURE = """# Disclosure (publish with any public ranking)
+DISCLOSURE = f"""# Disclosure (publish with any public ranking)
 
-1. **Outcomes, not inputs.** Scores use graduate earnings, graduation and employment. Admit rate, test scores, yield, research output, spending and reputation surveys are not scored.
+This is a **historical comparison of past graduates' outcomes**. It describes students who received federal aid and graduated several years ago. It has not been validated as a predictor of any future student's career, and it does not measure what a college causes.
+
+1. **Outcomes, no direct weight on selectivity.** The score uses earnings, graduation and employment. Admit rate, test scores, yield, research, spending and reputation are not scored. Admissions variables are used in two places: the model that predicts where graduates work (when that is not observed) and the separate "Beats expectations" view.
 2. **Same-major comparisons.** Earnings are compared with the national median for the same major and credential, so a school is not rewarded or penalized for which majors it offers.
-3. **Federal data only covers federal aid recipients.** Earnings and employment come from College Scorecard, which tracks students who received federal grants or loans. At wealthy schools this is a minority of students.
-4. **Cohorts are several years old.** Early-career earnings are 1, 4 and 5 years after graduation; long-run earnings are 10 years after entry. They may not describe current graduates.
-5. **Cost of living** uses BEA Regional Price Parities with extra weight on housing, priced where graduates actually work (Census PSEO destinations) or a modeled mix where PSEO does not report (for example, California). State income taxes are not deducted.
-6. **Small programs are shrunk, not dropped.** Estimates from few graduates are pulled toward the school's overall pattern and then toward the national average in proportion to their uncertainty. Rank ranges (5th–95th percentile) are published; ranks inside overlapping ranges are not meaningfully different.
-7. **Only published cells are ranked.** Programs whose earnings are suppressed for privacy are not ranked in the per-major tables. Nothing is imputed.
-8. **Selection is not removed from the headline score.** Schools that admit students with more advantages will tend to show better outcomes. The "Beats expectations" view shows outcomes relative to what the incoming student body predicts.
-9. **Excluded:** for-profit institutions, online-only institutions, and schools in U.S. territories (no BEA price data; separate labor markets).
-10. **Not measured:** teaching quality, wellbeing, fit, or price. Net price is shown for context only.
+3. **Federal aid recipients only.** Scorecard earnings and employment cover students who received federal grants or loans. At wealthy colleges that can be a minority of students. International students are not included.
+4. **Cohorts are old.** {EARNINGS_COHORTS['4yr']} (4-year earnings); {EARNINGS_COHORTS['5yr']} (5-year); {EARNINGS_COHORTS['1yr']} (1-year, partly pandemic years); {EARNINGS_COHORTS['10yr_entry']} (later earnings). The page refresh date is not the outcome date.
+5. **Dollars.** Every figure is restated in {REFERENCE_YEAR} dollars from each field's own source year using the PCE price index. Earnings are annual W-2 wages and self-employment earnings, not base salary.
+6. **Cost of living** uses BEA Regional Price Parities with 10 extra percentage points of housing weight (a young-renter basket). Where graduates work is observed from Census PSEO for a minority of schools (broad Census divisions plus in-state share, priced at campus-local prices for in-state workers) and modeled for the rest. Most top-ranked schools are modeled. Dividing a median by a price index is an approximation. State taxes are not deducted. A version without this adjustment is published alongside.
+7. **Uncertainty is conditional on the model.** Rank ranges (5th–95th percentile) redraw each school's earnings estimates and, where location is modeled, its price level. They do not cover the choice of weights, the housing basket, baselines, variance assumptions, or future labor markets. Overlapping ranges are a reason not to over-read the exact order; they do not prove two schools are equal.
+8. **Small programs are shrunk.** Overall: a school's programs are pooled into one school effect. Per major: each program is shrunk toward what the national median implies at its local price level, and never borrows the school's results in other majors.
+9. **Only published cells are ranked.** A school missing from a major table may not offer the major, may report it under a related code, may have suppressed earnings, or may rank below the top 250 shown.
+10. **"Beats expectations" is not causal.** It is the gap between a school's score and a cross-fitted prediction from SAT/ACT, admit rate, Pell share and first-generation share. Unmeasured student differences and model error can drive it.
+11. **Excluded:** for-profit and online-only institutions, and schools in U.S. territories (no BEA price data). The overall table requires a first-time-student graduation rate.
+12. **Not measured:** teaching quality, job quality or fit, wellbeing, upper-tail outcomes, or price. Net price is shown for context only.
 
 ## Per-major tables
 
-1. Majors are 4-digit CIP codes as reported by each school; coding varies across schools.
-2. Selection is sharper at the major level (into the school, then into the major).
-3. Per-major cost of living uses the school's overall graduate destinations, not a major-specific mix.
-4. Master's programs use the same graduate cost-of-living estimate as the school's bachelor's graduates.
+1. Majors are 4-digit federal CIP categories; they may not match catalog program names, and one code can bundle specialties (for example, nurse anesthesia sits inside registered nursing).
+2. Degree earnings are not occupation outcomes: a journalism graduate working in marketing counts toward journalism earnings.
+3. Per-major cost of living uses the school's bachelor's-graduate destinations for every major and for master's programs. **Master's tables are experimental**: graduate students' locations, ages and prior experience can differ sharply from undergraduates'.
+4. Pooled horizons combine different graduating cohorts; they are not one class's career path.
 """
 
 
-def sources_md(access_date: str, pce: float, geo_diag: dict, pool_diag: dict, n_ranked: int, n_majors: dict) -> str:
+def sources_md(access_date: str, geo_diag: dict, pool_diag: dict, beta: dict, n_ranked: int, n_majors: dict) -> str:
     pool_lines = "\n".join(
-        f"- {cred}: {d['programs']:,} programs at {d['schools']:,} schools · school-effect SD τ={d['tau']:.3f} · program SD ω={d['omega']:.3f}"
+        f"- {cred}: {d['programs']:,} programs at {d['schools']:,} schools · school-effect SD τ={d['tau']:.3f} · program SD ω={d['omega']:.3f} · price slope β={beta[cred]:.2f}"
         for cred, d in pool_diag.items()
     )
+    dollar_lines = "\n".join(f"- `{f}`: {y} dollars" for f, y in FIELD_DOLLAR_YEAR.items())
     majors_line = ", ".join(f"{v} {k}" for k, v in n_majors.items())
+    rpp_model = geo_diag["rpp_grad_model"]
     return f"""# Sources
 
 Methodology: **v{METHODOLOGY_VERSION}** (`ranking/METHODOLOGY.md`)
 Access date (UTC): **{access_date}**
-Dollars: **{REFERENCE_YEAR}** (PCE factor {EARNINGS_DOLLAR_YEAR}→{REFERENCE_YEAR}: {pce:.4f})
+Dollars: every figure restated in **{REFERENCE_YEAR}** dollars (PCE) from each field's source year:
+
+{dollar_lines}
 
 | Dataset | Release / vintage | URL |
 |---|---|---|
 | College Scorecard Institution | {SCORECARD_RELEASE} | ed-public-download.scorecard.network |
 | College Scorecard Field of Study | {SCORECARD_RELEASE} | ed-public-download.scorecard.network |
+| College Scorecard data dictionary (dollar years, cohorts) | June 10, 2026 | collegescorecard.ed.gov/files/CollegeScorecardDataDictionary.xlsx |
 | BEA Regional Price Parities (metro + state) | {BEA_RPP_YEARS}, year used={RPP_YEAR} | apps.bea.gov/regional/zip/ |
 | Census LEHD PSEO Flows | {PSEO_RELEASE} | lehd.ces.census.gov/data/pseo/ |
 | FRED PCE Price Index | PCEPI | fred.stlouisfed.org |
@@ -59,9 +69,10 @@ Dollars: **{REFERENCE_YEAR}** (PCE factor {EARNINGS_DOLLAR_YEAR}→{REFERENCE_YE
 - Overall ranking: {n_ranked:,} schools scored
 - Per-major rankings: {majors_line}
 - Graduate cost of living: {geo_diag['n_schools']:,} schools; PSEO destinations observed for {geo_diag['n_pseo_destinations']:,}; modeled for {geo_diag['modeled_share']:.0%}
+- Graduate price model: cross-validated R² {rpp_model.get('r2_cv', float('nan')):.3f}, held-out log error {rpp_model.get('log_rmse_cv', float('nan')):.3f} (used in rank ranges for modeled schools)
 - Implied out-of-state destination price level: {geo_diag['leaver_pool_rpp']:.1f}
 
-## Partial pooling
+## Shrinkage
 
 {pool_lines}
 """

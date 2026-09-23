@@ -11,9 +11,9 @@ with a different target for each question:
   toward the national average by how much data the school has. Shrinking each
   program to the national mean first would erase strong schools whose programs
   are individually small.
-- Program estimate (per-major ranking): shrink toward the national average for
-  that major. A program earns its rank from its own graduates; it never inherits
-  its school's strength in other majors.
+- Program estimate (per-major ranking): shrink toward what the national median for
+  that major implies at the program's local price level. A program earns its rank
+  from its own graduates; it never inherits its school's strength in other majors.
 """
 from __future__ import annotations
 
@@ -26,6 +26,7 @@ from config import (
     LOG_EARNINGS_SD,
     MIN_PROGRAM_VARIANCE,
 )
+from dollars import to_reference_dollars
 from util import to_num
 
 HORIZONS = {"1yr": "1YR", "4yr": "4YR", "5yr": "5YR"}
@@ -70,6 +71,7 @@ def load_programs() -> pd.DataFrame:
     df = df[df["CREDLEV"].isin(CREDENTIALS)].copy()
     for c in cols[7:]:
         df[c] = to_num(df[c])
+    df = to_reference_dollars(df, [f"EARN_MDN_{h}" for h in HORIZONS.values()] + ["EARN_MDN_4YR_NAT"])
     df["credential"] = df["CREDLEV"].map(CREDENTIALS)
     df["CIPCODE"] = df["CIPCODE"].astype(str).str.replace(r"\.0$", "", regex=True).str.zfill(4)
     df["CIPDESC"] = df["CIPDESC"].astype(str).str.strip().str.rstrip(".")
@@ -117,12 +119,13 @@ def program_premiums(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def school_effects(progs: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+def school_effects(progs: pd.DataFrame, log_price: pd.Series, beta: dict[str, float]) -> tuple[pd.DataFrame, dict]:
     """
-    School effect per credential (two-level empirical Bayes).
+    School effect per credential (two-level empirical Bayes), nominal log premium.
 
     y_pj = μ_j + ε_pj + e_pj ;  ε ~ N(0, ω²) program deviation ; e ~ N(0, se²) sampling
-    μ_j ~ N(0, τ²) school effect. Returns schools with mu_hat/mu_sd, plus diagnostics.
+    μ_j ~ N(β·ln(RPP_j/100), τ²) school effect, the same price-aware prior as major_estimates.
+    Returns schools with mu_hat/mu_sd, plus diagnostics.
     """
     parts, diag = [], {}
     for cred, g in progs.dropna(subset=["y_raw"]).groupby("credential"):
@@ -142,9 +145,10 @@ def school_effects(progs: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
             }),
             include_groups=False,
         )
-        tau2 = max(float(sch["m"].var() - sch["var_m"].mean()), MIN_PROGRAM_VARIANCE)
+        prior = beta[cred] * sch.index.map(log_price).to_series(index=sch.index).fillna(0.0)
+        tau2 = max(float((sch["m"] - prior).var() - sch["var_m"].mean()), MIN_PROGRAM_VARIANCE)
         b = tau2 / (tau2 + sch["var_m"])
-        sch["mu_hat"] = b * sch["m"]
+        sch["mu_hat"] = prior + b * (sch["m"] - prior)
         sch["mu_sd"] = np.sqrt(b * sch["var_m"])
         sch["credential"] = cred
         parts.append(sch.reset_index())
@@ -153,26 +157,47 @@ def school_effects(progs: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     return pd.concat(parts, ignore_index=True), diag
 
 
-def major_estimates(progs: pd.DataFrame, min_programs: int = 20) -> pd.DataFrame:
+def price_slope(progs: pd.DataFrame, log_price: pd.Series) -> dict[str, float]:
     """
-    Per-major program estimate: shrink y_raw toward 0 (the national median for that
-    major) by b = τ_m² / (τ_m² + se²). τ_m is the between-program SD within the major;
-    majors with too few programs use the credential's median τ_m.
+    Per credential: how much a program's nominal premium rises with the local price
+    level (precision-weighted slope through the national point, where both are 0).
+    """
+    df = progs.assign(x=progs["UNITID"].map(log_price)).dropna(subset=["y_raw", "x"])
+    out = {}
+    for cred, g in df.groupby("credential"):
+        w = 1.0 / (g["se2"] + MIN_PROGRAM_VARIANCE * 10)
+        out[cred] = float((w * g["x"] * g["y_raw"]).sum() / (w * g["x"] ** 2).sum())
+    return out
+
+
+def major_estimates(
+    progs: pd.DataFrame, log_price: pd.Series, beta: dict[str, float], min_programs: int = 20
+) -> pd.DataFrame:
+    """
+    Per-major program estimate (nominal log premium).
+
+    Prior mean is β·ln(RPP/100): what a program with no data would be expected to earn
+    given where its graduates work (β from price_slope). A plain zero prior would assume
+    pay ignores local prices, which pushes data-poor programs in cheap regions up and in
+    expensive regions down once the cost-of-living adjustment is applied. The estimate
+    shrinks toward that prior by b = τ_m² / (τ_m² + se²), where τ_m is the spread of
+    programs around the prior within the major (credential median when the major has
+    too few programs). It never borrows the school's results in other majors.
     """
     out = progs.copy()
-    has = out["y_raw"].notna()
+    out["prior"] = out["credential"].map(beta) * out["UNITID"].map(log_price).fillna(0.0)
+    out["resid"] = out["y_raw"] - out["prior"]
     keys = ["credential", "CIPCODE"]
-    g = out[has].groupby(keys)
-    tau2 = (g["y_raw"].var() - g["se2"].mean()).clip(lower=MIN_PROGRAM_VARIANCE)
+    g = out[out["resid"].notna()].groupby(keys)
+    tau2 = (g["resid"].var() - g["se2"].mean()).clip(lower=MIN_PROGRAM_VARIANCE)
     enough = g.size() >= min_programs
     fallback = tau2[enough].groupby(level="credential").median()
     tau2 = tau2.where(enough, tau2.index.get_level_values("credential").map(fallback).to_numpy())
-    t2 = pd.Series(tau2, name="tau2_major").reset_index()
-    out = out.merge(t2, on=keys, how="left")
+    out = out.merge(pd.Series(tau2, name="tau2_major").reset_index(), on=keys, how="left")
     b = out["tau2_major"] / (out["tau2_major"] + out["se2"])
-    out["y_major"] = b * out["y_raw"]
+    out["y_major"] = out["prior"] + b * out["resid"]
     out["y_major_sd"] = np.sqrt(b * out["se2"])
-    return out
+    return out.drop(columns=["resid"])
 
 
 def expected_earnings(progs: pd.DataFrame, horizon: str = "5yr") -> pd.Series:

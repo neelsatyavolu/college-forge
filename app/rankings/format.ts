@@ -1,4 +1,4 @@
-import type { Control, Credential, Filters } from "./types";
+import type { Control, Credential, Filters, PriceMode } from "./types";
 
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
@@ -38,7 +38,19 @@ export function credentialLabel(c: Credential): string {
 }
 
 export function horizonLabel(h: string): string {
-  return h === "1yr" ? "1 yr after" : h === "5yr" ? "5 yrs after" : h === "4yr" ? "4 yrs after" : "";
+  return h === "1yr" ? "1 yr after graduating" : h === "5yr" ? "5 yrs after graduating" : h === "4yr" ? "4 yrs after graduating" : "";
+}
+
+type RankFields = {
+  rank: number; rank_low: number; rank_high: number;
+  rank_nominal: number; rank_nominal_low: number; rank_nominal_high: number;
+};
+
+/** Rank and 5th–95th percentile range for the active cost-of-living mode. */
+export function rankFor(row: RankFields, mode: PriceMode): { rank: number; low: number; high: number } {
+  return mode === "nominal"
+    ? { rank: row.rank_nominal, low: row.rank_nominal_low, high: row.rank_nominal_high }
+    : { rank: row.rank, low: row.rank_low, high: row.rank_high };
 }
 
 export function ordinalPct(p: number | null | undefined): string {

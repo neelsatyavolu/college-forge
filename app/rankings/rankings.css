@@ -19,7 +19,10 @@ body { background: var(--canvas); color: var(--ink); font-family: var(--font-san
 .rk-tab:hover { color: var(--ink); }
 .rk-tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--workspace-accent); }
 .rk-tab:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: 4px; border-radius: 2px; }
-.rk-tabblurb { font-size: 13px; color: var(--muted); margin: 14px 0 22px; line-height: 1.6; }
+.rk-tabbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px 28px; flex-wrap: wrap; margin: 14px 0 22px; }
+.rk-tabblurb { flex: 1 1 360px; font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; max-width: 720px; }
+.rk-pricetoggle { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+.rk-pricetoggle .rk-pills { min-height: 0; }
 
 /* Filters — matches Explore's inputs and pills */
 .rk-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 16px; margin-bottom: 14px; }
@@ -108,6 +111,11 @@ button.rk-row:hover { background: var(--surface-soft); }
 .rk-majorhead { margin-bottom: 18px; }
 .rk-majorhead h2 { font: 500 36px/1.1 var(--font-display); margin: 8px 0 8px; letter-spacing: -0.5px; }
 .rk-majorhead p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.rk-majorhead__how { margin-top: 10px !important; max-width: 760px; font-size: 12px !important; }
+.rk-related { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--muted); }
+.rk-related .rk-pill { height: 28px; font-size: 12px; font-weight: 400; }
+.rk-legend { margin: 0 0 10px; font-size: 11px; color: var(--muted); }
+.rk-reasons { text-align: left; display: inline-block; margin: 0 0 12px; padding-left: 18px; font-size: 13px; line-height: 1.7; }
 .rk-majorhead .rk-note { margin-top: 12px; padding: 12px 14px; border-radius: 8px; background: var(--surface-soft); border: 1px solid var(--hairline); color: var(--body); }
 
 /* Methodology */
@@ -119,6 +127,13 @@ button.rk-row:hover { background: var(--surface-soft); }
 .rk-weight__pct { font: 500 34px/1 var(--font-display); color: var(--workspace-accent); font-variant-numeric: lining-nums; }
 .rk-weight h3 { margin: 12px 0 8px; font-size: 14px; font-weight: 600; }
 .rk-weight p { margin: 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.rk-method__note { font-size: 12px; color: var(--muted); line-height: 1.7; margin: -14px 0 28px; max-width: 760px; }
+.rk-sens { margin-top: 30px; }
+.rk-sens h3 { margin: 0 0 12px; font: 500 23px/1.2 var(--font-display); }
+.rk-sens table { width: 100%; max-width: 640px; border-collapse: collapse; font-size: 13px; }
+.rk-sens th, .rk-sens td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--hairline); font-variant-numeric: tabular-nums; }
+.rk-sens th { font-size: 10px; letter-spacing: 1.1px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.rk-sens p { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
 .rk-method__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
 .rk-method__cols h3 { margin: 0 0 10px; font: 500 23px/1.2 var(--font-display); }
 .rk-method ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--body); }
@@ -134,12 +149,11 @@ button.rk-row:hover { background: var(--surface-soft); }
   .rk-list--major .rk-row { grid-template-columns: 48px minmax(0, 1fr) 88px 104px 112px 60px; }
   .rk-list--beats .rk-row { grid-template-columns: 48px minmax(0, 1fr) 104px 88px 88px 60px; }
   .rk-scorebar__track { max-width: 52px; }
-  .rk-majors { grid-template-columns: 240px minmax(0, 1fr); gap: 20px; }
   .rk-metrics, .rk-context, .rk-weights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rk-detail { padding-left: 14px; padding-right: 14px; }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1280px) {
   .rk-majors { grid-template-columns: 1fr; }
   .rk-picker { position: static; }
   .rk-picker__desktop { display: none; }

@@ -4,7 +4,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_predict, cross_val_score
 
 from config import PSEO_DEST_CACHE, PSEO_FLOWS, PSEO_INST, PROCESSED
 from util import opeid6, opeid8, to_num
@@ -394,10 +394,13 @@ def fit_rpp_grad_model(
     X = _design_matrix(train, feats, med)
     model = LinearRegression()
     r2_cv = float("nan")
+    log_rmse_cv = float("nan")
     if len(train) >= 40:
         cv = min(5, max(2, len(train) // 20))
         scores = cross_val_score(model, X, y_train, cv=cv, scoring="r2")
         r2_cv = float(np.mean(scores))
+        held_out = cross_val_predict(model, X, y_train, cv=cv)
+        log_rmse_cv = float(np.sqrt(np.mean((np.log(held_out) - np.log(y_train)) ** 2)))
     model.fit(X, y_train)
 
     pred = pd.Series(model.predict(_design_matrix(df, feats, med)), index=df.index)
@@ -413,6 +416,7 @@ def fit_rpp_grad_model(
 
     meta = {
         "r2_cv": r2_cv,
+        "log_rmse_cv": log_rmse_cv,
         "n_train": int(len(train)),
         "coef": dict(zip(feats, [float(x) for x in model.coef_])),
         "intercept": float(model.intercept_),

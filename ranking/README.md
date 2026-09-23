@@ -1,6 +1,8 @@
 # Forge Career Outcomes Ranking
 
-Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v2.0). Published at `/rankings`.
+Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v2.1). Published at `/rankings`.
+
+A historical comparison of past graduates' outcomes: not validated as a predictor of future careers, and not a causal estimate (see METHODOLOGY §10).
 
 **Question:** if you study a given major at this school, how do graduates do in their careers compared with people who studied the same thing elsewhere?
 
@@ -15,13 +17,14 @@ pip install -r requirements.txt
 
 # Data must already be under data/raw/ (see downloads below)
 python src/run_all.py
-python -m unittest tests.test_scoring tests.test_rpp
+python -m unittest tests.test_scoring tests.test_rpp tests.test_data_contract
 ```
 
 ## Modules (`src/`)
 
 | Module | Role |
 |---|---|
+| `dollars.py` | Restates each earnings field from its documented source dollar year to 2024 dollars |
 | `institutions.py` | Scorecard institution records, overall and per-major universes, employment rate |
 | `programs.py` | Program earnings premiums, branch-campus collapse, school effects, per-major shrinkage |
 | `destinations.py` | Graduate cost of living (BEA RPP × PSEO destinations, modeled fallback) |
@@ -47,7 +50,8 @@ python -m unittest tests.test_scoring tests.test_rpp
 
 | File | Description |
 |---|---|
-| `top250.json` | Overall top 250 |
+| `top250.json` | Overall top 250 after cost of living (recommendation engine) |
+| `overall.json` | Top 250 under either ordering (after / before cost of living), for the page |
 | `value_added.json` | Top 250 by beats-expectations |
 | `majors/index.json` | All ranked majors (bachelor's and master's) |
 | `majors/{bachelors,masters}-{cip}.json` | Top 250 per major |
@@ -62,6 +66,9 @@ curl -L -o data/raw/Most-Recent-Cohorts-Institution.zip \
   https://ed-public-download.scorecard.network/downloads/Most-Recent-Cohorts-Institution_06102026.zip
 curl -L -o data/raw/Most-Recent-Cohorts-Field-of-Study.zip \
   https://ed-public-download.scorecard.network/downloads/Most-Recent-Cohorts-Field-of-Study_06102026.zip
+# Scorecard data dictionary (source dollar years and cohorts per field)
+curl -L --create-dirs -o data/raw/docs/CollegeScorecardDataDictionary.xlsx \
+  https://collegescorecard.ed.gov/files/CollegeScorecardDataDictionary.xlsx
 # BEA RPP
 curl -L -o data/raw/MARPP.zip https://apps.bea.gov/regional/zip/MARPP.zip
 curl -L -o data/raw/SARPP.zip https://apps.bea.gov/regional/zip/SARPP.zip
@@ -87,7 +94,8 @@ unzip -o data/raw/SARPP.zip -d data/raw/sarpp
 
 ## Review checklist after each run
 
-1. `sensitivity.csv`: every variant should keep Spearman ≥ 0.85 with the headline. A large drop means one component is driving the ranking.
-2. `exclusions.csv`: check that exclusion counts by reason are stable between data releases.
-3. Spot-check per-major tables for programs whose rank comes from very few earners (wide rank ranges are expected; a tight range with few earners is a bug).
-4. Weights in `config.py` are fixed a priori. Change them only with a written rationale in `METHODOLOGY.md`, never to make results look familiar.
+1. `tests/test_data_contract.py` must pass: published earnings match the official Scorecard file. On a new Scorecard release, re-check `config.FIELD_DOLLAR_YEAR` against the data dictionary's cohort maps first.
+2. `sensitivity.csv`: every variant should keep Spearman ≥ 0.85 with the headline. A large drop means one component is driving the ranking.
+3. `exclusions.csv`: check that exclusion counts by reason are stable between data releases.
+4. Spot-check per-major tables for programs whose rank comes from very few earners (wide rank ranges are expected; a tight range with few earners is a bug).
+5. Weights in `config.py` are fixed a priori. Change them only with a written rationale in `METHODOLOGY.md`, never to make results look familiar.

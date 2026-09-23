@@ -2,26 +2,46 @@
 
 import { useCallback, useMemo } from "react";
 import BeatsView from "./BeatsView";
-import { formatDate, matchesFilters } from "./format";
+import { formatDate, matchesFilters, rankFor } from "./format";
 import { useJson, useRankingsQuery, useTheme, type RankingsQuery } from "./hooks";
 import MajorsView from "./MajorsView";
 import Methodology from "./Methodology";
 import OverallView from "./OverallView";
 import { EmptyState, FilterBar } from "./parts";
-import type { MajorIndexFile, OverallFile, View } from "./types";
+import type { MajorIndexFile, OverallFile, PriceMode, View } from "./types";
 import WorkspaceShell from "./WorkspaceShell";
 import "./rankings.css";
 
 const TABS: { id: View; label: string; blurb: string }[] = [
-  { id: "overall", label: "Overall", blurb: "Colleges where graduates do best across earnings, graduation and employment." },
-  { id: "majors", label: "By major", blurb: "Colleges where graduates of one major out-earn graduates of the same major elsewhere." },
-  { id: "beats", label: "Beats expectations", blurb: "Colleges whose graduates do better than their incoming students would predict." },
+  { id: "overall", label: "Overall", blurb: "Colleges whose past graduates did best across earnings, graduation and employment. If you know your major, the By major tab is more relevant." },
+  { id: "majors", label: "By major", blurb: "Colleges whose graduates in one major out-earned graduates of the same major elsewhere." },
+  { id: "beats", label: "Beats expectations", blurb: "Colleges whose outcomes beat what a model predicts from their incoming students. Useful for spotting overlooked colleges; not proof that a college caused the difference." },
 ];
+
+const PRICE_OPTIONS: { id: PriceMode; label: string }[] = [
+  { id: "adjusted", label: "After cost of living" },
+  { id: "nominal", label: "Before cost of living" },
+];
+
+function PriceToggle({ value, onChange }: { value: PriceMode; onChange: (v: PriceMode) => void }) {
+  return (
+    <div className="rk-pricetoggle" role="group" aria-label="Cost of living">
+      <span>Earnings</span>
+      <div className="rk-pills">
+        {PRICE_OPTIONS.map((o) => (
+          <button key={o.id} type="button" className="rk-pill" aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function RankingsClient() {
   const [theme, toggleTheme] = useTheme();
   const [query, setQuery] = useRankingsQuery();
-  const overall = useJson<OverallFile>("/data/rankings/top250.json");
+  const overall = useJson<OverallFile>("/data/rankings/overall.json");
   const beats = useJson<OverallFile>(query.view === "beats" ? "/data/rankings/value_added.json" : null);
   const index = useJson<MajorIndexFile>("/data/rankings/majors/index.json");
 
@@ -32,7 +52,16 @@ export default function RankingsClient() {
     document.getElementById("rankings-top")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const list = query.view === "beats" ? beats.data?.schools : overall.data?.schools;
+  const isBeats = query.view === "beats";
+  const list = useMemo(() => {
+    if (isBeats) return beats.data?.schools;
+    const schools = overall.data?.schools;
+    if (!schools) return undefined;
+    // overall.json holds the top 250 under either ordering; show the top 250 of the active one.
+    return schools
+      .filter((s) => rankFor(s, query.prices).rank <= 250)
+      .sort((a, b) => rankFor(a, query.prices).rank - rankFor(b, query.prices).rank);
+  }, [isBeats, beats.data, overall.data, query.prices]);
   const states = useMemo(() => [...new Set((list ?? []).map((s) => s.state))].sort(), [list]);
   const shown = useMemo(() => (list ?? []).filter((s) => matchesFilters(s, query)), [list, query]);
 
@@ -49,15 +78,15 @@ export default function RankingsClient() {
   const tab = TABS.find((t) => t.id === query.view) ?? TABS[0];
 
   return (
-    <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={meta ? `Data updated ${formatDate(meta.generated)}` : "Outcomes, not prestige"}>
+    <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={meta ? `Ranking rebuilt ${formatDate(meta.generated)}` : "Outcomes, not prestige"}>
       <div className="cf-page rk-page" id="rankings-top">
         <header className="rk-header">
-          <div className="cf-eyebrow">CAREER OUTCOMES RANKING{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
-          <h1 className="cf-page-title">Where graduates do best</h1>
+          <div className="cf-eyebrow">CAREER OUTCOMES · HISTORICAL COMPARISON{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
+          <h1 className="cf-page-title">Where graduates did best</h1>
           <p className="cf-page-lede rk-lede">
-            Colleges ranked on what happens after graduation: earnings compared with people who studied the same major
-            elsewhere, adjusted for cost of living, plus graduation and employment rates. How hard a college is to get into
-            is not part of the score.
+            How past graduates fared: earnings compared with people who studied the same major elsewhere, plus graduation
+            and employment, from federal records of students who received financial aid. Selectivity and prestige get no
+            direct weight. Use it to discover and compare colleges, not to decide on rank alone.
           </p>
         </header>
 
@@ -65,7 +94,7 @@ export default function RankingsClient() {
           <div><span className="cf-progress-value">{meta ? meta.n_ranked.toLocaleString() : "—"}</span><span>colleges scored</span></div>
           <div><span className="cf-progress-value">{counts.bachelors || "—"}</span><span>bachelor’s majors</span></div>
           <div><span className="cf-progress-value">{counts.masters || "—"}</span><span>master’s majors</span></div>
-          <div><span className="cf-progress-value">0%</span><span>weight on selectivity</span></div>
+          <div><span className="cf-progress-value">0%</span><span>direct weight on selectivity</span></div>
         </div>
 
         <div className="rk-tabs" role="tablist" aria-label="Ranking view">
@@ -75,34 +104,42 @@ export default function RankingsClient() {
             </button>
           ))}
         </div>
-        <p className="rk-tabblurb">{tab.blurb}</p>
+        <div className="rk-tabbar">
+          <p className="rk-tabblurb">{tab.blurb}</p>
+          {!isBeats && <PriceToggle value={query.prices} onChange={(prices) => update({ prices })} />}
+        </div>
 
         {error && <div className="cf-notice" role="alert">{error}</div>}
 
         {query.view === "majors" ? (
-          index.data && (
-            <MajorsView index={index.data.majors} credential={query.credential} major={query.major} filters={query} onChange={update} />
+          index.data &&
+          meta && (
+            <MajorsView
+              index={index.data.majors}
+              cohorts={meta.cohorts}
+              credential={query.credential}
+              major={query.major}
+              prices={query.prices}
+              filters={query}
+              onChange={update}
+            />
           )
         ) : (
           <>
             <FilterBar filters={query} states={states} onChange={update} />
             <p className="rk-resultline">
-              {list ? (
-                query.view === "beats" ? (
-                  <>Showing <strong>{shown.length}</strong> of the {list.length} colleges that most exceed expectations. Points are on the 0–100 career-score scale.</>
-                ) : (
-                  <>Showing <strong>{shown.length}</strong> of the top {list.length}. Ranks inside overlapping ranges aren’t meaningfully different.</>
-                )
-              ) : (
-                "Loading rankings…"
-              )}
+              {!list
+                ? "Loading rankings…"
+                : isBeats
+                  ? <>Showing <strong>{shown.length}</strong> of the {list.length} colleges furthest above prediction. Points are on the 0–100 score scale.</>
+                  : <>Showing <strong>{shown.length}</strong> of the top {list.length}. Small numbers under each rank are its likely range within this model; overlapping ranges mean the exact order is uncertain.</>}
             </p>
             {list && shown.length === 0 && <EmptyState onClear={clearFilters} />}
-            {list && shown.length > 0 && (query.view === "beats" ? <BeatsView schools={shown} /> : <OverallView schools={shown} onOpenMajor={openMajor} />)}
+            {list && shown.length > 0 && (isBeats ? <BeatsView schools={shown} /> : <OverallView schools={shown} prices={query.prices} onOpenMajor={openMajor} />)}
           </>
         )}
 
-        {meta && <Methodology weights={meta.weights} />}
+        {meta && <Methodology weights={meta.weights} cohorts={meta.cohorts} />}
       </div>
     </WorkspaceShell>
   );

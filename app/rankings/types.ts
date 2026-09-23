@@ -1,6 +1,8 @@
 export type Control = "public" | "private_nonprofit";
 export type Credential = "bachelors" | "masters";
 export type View = "overall" | "majors" | "beats";
+/** Whether earnings are adjusted for the cost of living where graduates work. */
+export type PriceMode = "adjusted" | "nominal";
 
 export type Weights = {
   early_premium: number;
@@ -9,31 +11,46 @@ export type Weights = {
   employment: number;
 };
 
-export type RankingMeta = {
+export type Cohorts = { "1yr": string; "4yr": string; "5yr": string; "10yr_entry": string };
+
+type BaseMeta = {
   generated: string;
   methodology_version: string;
-  weights: Weights;
+  dollar_year: number;
+  cohorts: Cohorts;
 };
 
-export type School = {
+export type RankingMeta = BaseMeta & { weights: Weights };
+export type MajorMeta = BaseMeta & { scoring: string };
+
+type Ranked = {
   rank: number;
   rank_low: number;
   rank_high: number;
+  rank_nominal: number;
+  rank_nominal_low: number;
+  rank_nominal_high: number;
+};
+
+export type School = Ranked & {
   unitid: number;
   institution: string;
   city: string | null;
   state: string;
   control: Control;
   score: number;
+  score_nominal: number;
   early_premium_pct: number;
+  early_premium_nominal_pct: number;
   long_premium_pct: number | null;
+  long_premium_nominal_pct: number | null;
   graduation_rate: number;
   employment_rate: number | null;
-  typical_salary: number | null;
-  salary_10yr: number | null;
+  typical_earnings: number | null;
+  earnings_10yr: number | null;
   rpp_grad: number | null;
-  rpp_source: string | null;
-  coverage: number;
+  location_observed: boolean;
+  program_coverage: number;
   net_price: number | null;
   cost_of_attendance: number | null;
   pct_pell: number | null;
@@ -61,27 +78,31 @@ export type MajorSummary = {
   graduates: number;
 };
 
-export type MajorIndexFile = RankingMeta & { majors: MajorSummary[] };
+export type MajorIndexFile = MajorMeta & { majors: MajorSummary[] };
 
-export type MajorRow = {
-  rank: number;
-  rank_low: number;
-  rank_high: number;
+export type Horizon = "1yr" | "4yr" | "5yr" | "";
+
+export type MajorRow = Ranked & {
   unitid: number;
   institution: string;
   city: string | null;
   state: string;
   control: Control;
   premium_pct: number;
-  salary: number | null;
-  salary_horizon: "1yr" | "4yr" | "5yr" | "";
-  salary_adjusted: number | null;
-  graduates: number;
-  earners: number | null;
+  premium_nominal_pct: number;
+  earnings: number | null;
+  earnings_horizon: Horizon;
+  earnings_count: number | null;
+  earnings_adjusted: number | null;
+  earners_1yr: number | null;
+  earners_4yr: number | null;
+  earners_5yr: number | null;
+  completions: number | null;
+  location_observed: boolean;
   overall_rank: number | null;
 };
 
-export type MajorFile = RankingMeta & {
+export type MajorFile = MajorMeta & {
   credential: Credential;
   cip: string;
   name: string;
@@ -92,10 +113,12 @@ export type MajorFile = RankingMeta & {
 };
 
 /** unitid → [cip, rank, n_ranked][] for overall top-250 schools (bachelor's). */
-export type SchoolMajorsFile = RankingMeta & {
+export type SchoolMajorsFile = MajorMeta & {
   majors: Record<string, string>;
   ranks: Record<string, [string, number, number][]>;
 };
+
+export type SensitivityRow = { variant: string; spearman_vs_headline: number; top25_overlap: number };
 
 export type Filters = {
   q: string;

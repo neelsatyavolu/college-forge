@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 from config import CONTROL_ALLOWED, INST_CSV, PREDDEG_BACHELORS, UGDS_MIN
+from dollars import to_reference_dollars
 from geo import STATE_TO_DIVISION
 from util import to_num
 
@@ -28,7 +29,7 @@ def load_institutions() -> pd.DataFrame:
         if c in df.columns:
             df[c] = to_num(df[c])
     df["net_price"] = df["NPT4_PUB"].fillna(df["NPT4_PRIV"])
-    return df
+    return to_reference_dollars(df, ["MD_EARN_WNE_P10"])
 
 
 def _exclusion_rows(inst: pd.DataFrame, mask: pd.Series, reason: str, field: str) -> pd.DataFrame:
