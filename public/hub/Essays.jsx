@@ -3,6 +3,89 @@ const { Badge, Button } = window.CollegeForgeDesignSystem_e95e63;
 const UC_APPLICATION_SLUG = "uc-application";
 
 const wordCount = (s) => (s.trim() ? s.trim().split(/\s+/).length : 0);
+const essayCount = (it, text) => /character/i.test(it.unit) ? Array.from(text).length : wordCount(text);
+
+// This queue outlives page navigation. The namespace is random public metadata,
+// never the HttpOnly workspace cookie or a recovery credential.
+const essayQueues = new Map();
+function getEssayQueue(key) {
+  if (key && essayQueues.has(key)) return essayQueues.get(key);
+  const queue = { key, drafts: {}, timer: null, inFlight: false, error: "", storageError: false, listeners: new Set(), onSaved: null };
+  if (key) {
+    try {
+      const stored = JSON.parse(localStorage.getItem("cf.essay-recovery." + key) || "{}");
+      for (const [id, text] of Object.entries(stored)) if (typeof text === "string") queue.drafts[id] = text;
+    } catch (_) { queue.storageError = true; }
+    essayQueues.set(key, queue);
+  }
+  return queue;
+}
+function journalEssayQueue(queue) {
+  if (!queue.key) { queue.storageError = true; return; }
+  try {
+    const key = "cf.essay-recovery." + queue.key;
+    if (Object.keys(queue.drafts).length) localStorage.setItem(key, JSON.stringify(queue.drafts));
+    else localStorage.removeItem(key);
+    queue.storageError = false;
+  } catch (_) { queue.storageError = true; }
+}
+function notifyEssayQueue(queue) { queue.listeners.forEach((notify) => notify()); }
+async function flushEssayQueue(queue) {
+  if (queue.key && window.CF_DATA && window.CF_DATA.draftStorageKey !== queue.key) return;
+  clearTimeout(queue.timer);
+  if (queue.inFlight || !Object.keys(queue.drafts).length) return;
+  const drafts = {...queue.drafts};
+  queue.inFlight = true;
+  queue.error = "";
+  notifyEssayQueue(queue);
+  try {
+    const ws = await window.cfApi.patch({essayDrafts:drafts});
+    Object.entries(drafts).forEach(([id,text]) => {
+      if (queue.drafts[id] === text) delete queue.drafts[id];
+    });
+    journalEssayQueue(queue);
+    // A recovery-code switch must never receive an older workspace's response.
+    if (queue.onSaved && (!window.CF_DATA || window.CF_DATA.draftStorageKey === queue.key)) queue.onSaved(ws);
+    queue.inFlight = false;
+    if (Object.keys(queue.drafts).length) return flushEssayQueue(queue);
+  } catch (error) {
+    queue.inFlight = false;
+    queue.error = error.message || "Save failed";
+  }
+  notifyEssayQueue(queue);
+}
+// Exports and workspace switching must wait for the current draft queue.
+window.cfFlushEssayDrafts = async () => {
+  const key = window.CF_DATA && window.CF_DATA.draftStorageKey;
+  if (!key) return;
+  const queue = getEssayQueue(key);
+  await new Promise((resolve, reject) => {
+    const settle = () => {
+      if (queue.inFlight) return;
+      if (window.CF_DATA.draftStorageKey !== key) {
+        queue.listeners.delete(settle);
+        reject(new Error("Your workspace changed. Please try again."));
+      } else if (queue.error) {
+        queue.listeners.delete(settle);
+        reject(new Error(queue.error));
+      } else if (!Object.keys(queue.drafts).length) {
+        queue.listeners.delete(settle);
+        resolve();
+      }
+    };
+    queue.listeners.add(settle);
+    flushEssayQueue(queue).then(settle, (error) => {
+      queue.listeners.delete(settle);
+      reject(error);
+    });
+  });
+};
+window.addEventListener("beforeunload", (event) => {
+  if ([...essayQueues.values()].some((queue) => Object.keys(queue.drafts).length)) {
+    event.preventDefault();
+    event.returnValue = "";
+  }
+});
 
 function isUcCampus(c) {
   if (!c) return false;
@@ -245,9 +328,9 @@ function GroupHeader({ group, open, onToggle, startedCount, totalCount }) {
 }
 
 function Editor({ it, value, onChange, saveState, schoolLabel }) {
-  const count = wordCount(value);
+  const count = essayCount(it, value);
   const over = count > it.limit;
-  const underMin = it.limit >= 650 && count > 0 && count < 250;
+  const underMin = /^ca-ps-/.test(it.id) && count > 0 && count < 250;
   const pct = Math.min(100, Math.round((count / it.limit) * 100));
   const badge = schoolLabel || it.group || "Supplement";
 
@@ -261,7 +344,7 @@ function Editor({ it, value, onChange, saveState, schoolLabel }) {
           <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>
             Limit {it.limit} {it.unit}
           </span>
-          {it.limit >= 650 ? (
+          {/^ca-ps-/.test(it.id) ? (
             <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted-soft)" }}>
               min 250
             </span>
@@ -293,8 +376,10 @@ function Editor({ it, value, onChange, saveState, schoolLabel }) {
         </p>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, padding: "20px 28px", overflowY: "auto" }}>
+      <div className="cf-essay-writing-area" style={{ flex: 1, minHeight: 0, padding: "20px 28px", overflowY: "auto" }}>
         <textarea
+          className="cf-essay-textarea"
+          aria-label={it.label + " draft"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Start writing, or paste a draft. The copilot can outline, tighten, or fact-check any paragraph. Drafts save to your hub (all devices with your recovery code)."
@@ -304,7 +389,6 @@ function Editor({ it, value, onChange, saveState, schoolLabel }) {
             minHeight: "100%",
             boxSizing: "border-box",
             border: "none",
-            outline: "none",
             resize: "none",
             background: "transparent",
             color: "var(--ink)",
@@ -415,16 +499,20 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     [groups]
   );
   const serverDrafts = data.essayDrafts || {};
+  const queue = React.useMemo(() => getEssayQueue(data.draftStorageKey), [data.draftStorageKey]);
+  const [, redrawQueue] = React.useState(0);
+  const saveState = queue.error ? "error" : Object.keys(queue.drafts).length ? "saving" : "saved";
   const [local, setLocal] = React.useState(() => {
     const init = {};
     allItems.forEach((it) => {
-      init[it.id] = serverDrafts[it.id] != null ? serverDrafts[it.id] : it.starter || "";
+      init[it.id] = queue.drafts[it.id] != null ? queue.drafts[it.id] : serverDrafts[it.id] != null ? serverDrafts[it.id] : it.starter || "";
     });
     return init;
   });
-  const [saveState, setSaveState] = React.useState("saved");
+  const [promptForm, setPromptForm] = React.useState(null);
+  const [promptSaving, setPromptSaving] = React.useState(false);
+  const [promptError, setPromptError] = React.useState("");
   const [activeId, setActiveId] = React.useState(allItems[0] ? allItems[0].id : null);
-  const timer = React.useRef(null);
   const active = allItems.find((it) => it.id === activeId) || allItems[0];
 
   // Collapsed university sections — default: Common App open, schools with drafts open, first school open
@@ -465,43 +553,32 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
 
   // Sync when workspace reloads from server
   React.useEffect(() => {
-    setLocal((prev) => {
-      const next = { ...prev };
-      allItems.forEach((it) => {
-        if (serverDrafts[it.id] != null && prev[it.id] !== serverDrafts[it.id]) {
-          if (saveState === "saved") next[it.id] = serverDrafts[it.id];
-        } else if (next[it.id] == null) {
-          next[it.id] = serverDrafts[it.id] || it.starter || "";
-        }
-      });
-      return next;
-    });
+    setLocal(() => Object.fromEntries(allItems.map((it) => [it.id, queue.drafts[it.id] ?? serverDrafts[it.id] ?? it.starter ?? ""])));
     if (activeId && !allItems.some((it) => it.id === activeId) && allItems[0]) {
       setActiveId(allItems[0].id);
     }
-  }, [data.essayDrafts, allItems.length]);
+  }, [data.essayDrafts, allItems, queue]);
 
-  const persist = (id, text) => {
-    setSaveState("saving");
-    clearTimeout(timer.current);
-    timer.current = setTimeout(async () => {
-      try {
-        const ws = await window.cfApi.patch({ essayDraft: { id, text } });
-        if (onWorkspaceChange) onWorkspaceChange(ws);
-        setSaveState("saved");
-      } catch (e) {
-        setSaveState("error");
-      }
-    }, 600);
+  const flush = () => flushEssayQueue(queue);
+  const handleChange = (id, text) => {
+    setLocal((drafts) => ({...drafts,[id]:text}));
+    queue.drafts[id] = text;
+    queue.error = "";
+    journalEssayQueue(queue);
+    notifyEssayQueue(queue);
+    clearTimeout(queue.timer);
+    queue.timer = setTimeout(flush, 600);
   };
-
-  const handleChange = (id, v) => {
-    setLocal((d) => ({ ...d, [id]: v }));
-    setSaveState("saving");
-    persist(id, v);
-  };
-
-  React.useEffect(() => () => clearTimeout(timer.current), []);
+  React.useEffect(() => {
+    const notify = () => redrawQueue((version) => version + 1);
+    queue.listeners.add(notify);
+    queue.onSaved = onWorkspaceChange;
+    if (Object.keys(queue.drafts).length) flushEssayQueue(queue);
+    return () => {
+      queue.listeners.delete(notify);
+      flushEssayQueue(queue);
+    };
+  }, [queue, onWorkspaceChange]);
 
   const notes = (data.advisorNotes || []).filter((n) => n.essayId === (active && active.id));
   const schoolCount = groups.filter((g) => g.kind === "school" || g.kind === "uc").length;
@@ -516,29 +593,84 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     });
   };
 
+  const savePrompt = async (event) => {
+    event.preventDefault();
+    if (!promptForm.label.trim() || !promptForm.prompt.trim()) return;
+    const group = groups.find((g) => g.key === promptForm.groupKey);
+    if (!group) return;
+    const item = { id: promptForm.id || "custom-" + crypto.randomUUID(), label: promptForm.label.trim(), prompt: promptForm.prompt.trim(), limit: Number(promptForm.limit), unit: promptForm.unit };
+    const items = promptForm.id ? group.items.map((it) => it.id === item.id ? {...it,...item} : it) : [...group.items,item];
+    setPromptSaving(true);
+    setPromptError("");
+    try {
+      const essays = group.key === "common" ? {commonApp:items} : {supplements:{[group.key]:items}};
+      const ws = await window.cfApi.patch({essays});
+      if (onWorkspaceChange) onWorkspaceChange(ws);
+      setActiveId(item.id);
+      setOpenKeys((prev)=>new Set([...prev,group.key]));
+      setPromptForm(null);
+    } catch(e) { setPromptError(e.message || "Could not save the prompt. Please try again."); }
+    finally { setPromptSaving(false); }
+  };
+
   return (
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">Essays</h1>
           <p className="cf-page-lede">
-            Common App prompts (2026–27) plus school supplements grouped by university. Expand a school to see its essays.
+            Common App and school supplements, organized by university. Check each prompt against the current application before writing.
             Personal statement: 250–650 words. Drafts save to your hub — not just this browser.
           </p>
         </div>
-        <Button variant="secondary" size="sm" onClick={onAsk}>
-          Ask copilot to draft ✱
-        </Button>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to draft ✱</Button>
+          <Button size="sm" onClick={()=>{setPromptError("");setPromptForm({groupKey:active ? active._groupKey : "common",label:"",prompt:"",limit:250,unit:"words"});}}>Add prompt</Button>
+          {active ? <Button variant="secondary" size="sm" onClick={()=>{setPromptError("");setPromptForm({...active,groupKey:active._groupKey});}}>Edit prompt</Button> : null}
+        </div>
       </header>
 
+      {promptForm ? (
+        <form onSubmit={savePrompt} style={{padding:20,border:"1px solid var(--hairline)",borderRadius:"var(--radius-md)",display:"grid",gap:12,marginBottom:20}}>
+          <h2 className="cf-display" style={{margin:0,fontSize:20}}>{promptForm.id ? "Edit essay prompt" : "Add essay prompt"}</h2>
+          <p style={{margin:0,color:"var(--muted)",fontSize:13}}>Copy the exact prompt and limit from the current application. Editing a prompt keeps your draft.</p>
+          <label>Application<select aria-label="Prompt application" disabled={!!promptForm.id} value={promptForm.groupKey} onChange={(e)=>setPromptForm({...promptForm,groupKey:e.target.value})} style={{display:"block",padding:10,width:"100%"}}>{groups.map((g)=><option key={g.key} value={g.key}>{g.title}</option>)}</select></label>
+          <label>Title<input aria-label="Prompt title" required maxLength={160} value={promptForm.label} onChange={(e)=>setPromptForm({...promptForm,label:e.target.value})} style={{display:"block",width:"100%",padding:10,boxSizing:"border-box"}} /></label>
+          <label>Prompt<textarea aria-label="Essay prompt" required rows={3} value={promptForm.prompt} onChange={(e)=>setPromptForm({...promptForm,prompt:e.target.value})} style={{display:"block",width:"100%",padding:10,boxSizing:"border-box"}} /></label>
+          <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+            <label>Limit<input aria-label="Prompt limit" type="number" min="1" max="50000" required value={promptForm.limit} onChange={(e)=>setPromptForm({...promptForm,limit:e.target.value})} style={{display:"block",padding:10,width:110}} /></label>
+            <label>Count<select aria-label="Prompt count unit" value={promptForm.unit} onChange={(e)=>setPromptForm({...promptForm,unit:e.target.value})} style={{display:"block",padding:10}}><option value="words">Words</option><option value="characters">Characters</option></select></label>
+          </div>
+          {promptError ? <p role="alert" style={{color:"var(--error)"}}>{promptError}</p> : null}
+          <div style={{display:"flex",gap:8}}><Button type="submit" disabled={promptSaving}>{promptSaving ? "Saving…" : "Save prompt"}</Button><Button variant="secondary" disabled={promptSaving} onClick={()=>setPromptForm(null)}>Cancel</Button></div>
+        </form>
+      ) : null}
+      {queue.storageError && saveState !== "error" && Object.keys(queue.drafts).length ? <p role="alert" style={{color:"var(--error)"}}>Browser draft recovery is unavailable. Keep this tab open until your draft saves, or copy it before leaving.</p> : null}
+      {saveState === "error" ? (
+        <div role="alert" style={{ marginBottom: 16, padding: 16, border: "1px solid var(--error)", borderRadius: "var(--radius-md)", color: "var(--error)" }}>
+          Your latest changes haven’t saved to the hub. {queue.storageError ? "Browser recovery is unavailable; keep this tab open or copy your draft." : "A recovery copy is kept in this browser."}
+          <Button variant="secondary" size="sm" onClick={flush}>Retry saving</Button>
+        </div>
+      ) : null}
       {allItems.length === 0 && schoolCount === 0 ? (
         <div className="cf-empty">
           No essay prompts yet. Common App prompts should load automatically — refresh, or add schools to your list so
           supplement tabs open, then ask the copilot to load real prompts.
         </div>
       ) : (
+        <React.Fragment>
+        <label className="cf-mobile-essay-picker">Choose an essay
+          <select aria-label="Choose an essay" value={activeId || ""} onChange={(event) => {
+            const item = allItems.find(essay => essay.id === event.target.value);
+            if (item) selectEssay(item, item._groupKey);
+          }}>
+            {groups.filter(group => group.items.length).map(group => <optgroup key={group.key} label={group.title}>
+              {group.items.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+            </optgroup>)}
+          </select>
+        </label>
         <div
-          className="cf-split"
+          className="cf-split cf-split--essays"
           style={{
             border: "1px solid var(--hairline)",
             borderRadius: "var(--radius-lg)",
@@ -591,7 +723,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                             lineHeight: 1.4,
                           }}
                         >
-                          No prompts yet. Ask the copilot to load supplements for this school.
+                          No prompts yet. Use Add prompt to paste one from this school’s application.
                         </div>
                       ) : (
                         items.map((it) => (
@@ -599,7 +731,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                             key={it.id}
                             it={it}
                             active={activeId === it.id}
-                            count={wordCount(local[it.id] || "")}
+                            count={essayCount(it, local[it.id] || "")}
                             onClick={() => selectEssay(it, g.key)}
                           />
                         ))
@@ -674,6 +806,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
             ) : null}
           </div>
         </div>
+        </React.Fragment>
       )}
     </div>
   );

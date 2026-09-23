@@ -136,6 +136,10 @@ export type ShareMeta = {
 };
 
 export type Workspace = {
+  /** Increases with each committed mutation for ordering responses in the UI. */
+  revision: number;
+  /** Non-secret namespace for recovering unsaved drafts in this browser. */
+  draftStorageKey: string;
   applicant: {
     name: string; cycle: string; year: string;
     gpaWeighted: string; gpaUnweighted: string; sat: string; satNote: string; awards: number;
@@ -173,6 +177,8 @@ export type Workspace = {
 
 export function emptyWorkspace(): Workspace {
   return {
+    revision: 0,
+    draftStorageKey: randomUUID(),
     applicant: {
       name: "", cycle: "", year: "",
       gpaWeighted: "—", gpaUnweighted: "—", sat: "—", satNote: "", awards: 0,
@@ -256,22 +262,40 @@ function dataDir(): string {
     : path.join(process.cwd(), "data");
 }
 
-async function readText(key: string): Promise<string | null> {
-  if (useBlob()) {
-    try {
-      const { get } = await import("@vercel/blob");
-      // useCache:false is REQUIRED for read-your-writes datastore semantics.
-      const res = await get(key, { access: "private", useCache: false });
-      if (!res || res.statusCode !== 200 || !res.stream) return null;
-      return await new Response(res.stream).text();
-    } catch {
-      return null;
-    }
+async function readBlobText(key: string): Promise<{ text: string; etag: string } | null> {
+  const { get } = await import("@vercel/blob");
+  // Bypass the cache: the body and ETag must describe the same current version.
+  // Compressed JSON responses carry a weak transfer ETag, which cannot be used
+  // for ifMatch. Identity encoding preserves the stored blob’s strong ETag.
+  const res = await get(key, { access: "private", useCache: false, headers: { "accept-encoding": "identity" } });
+  if (res === null) return null;
+  if (res.statusCode !== 200 || !res.stream) {
+    throw new Error(`Unexpected workspace storage response: ${res.statusCode}`);
   }
+  return { text: await new Response(res.stream).text(), etag: res.blob.etag };
+}
+
+async function readText(key: string): Promise<string | null> {
+  if (useBlob()) return (await readBlobText(key))?.text ?? null;
   try {
     return await fs.readFile(path.join(dataDir(), key), "utf8");
-  } catch {
-    return null;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function writeLocalText(key: string, text: string): Promise<void> {
+  const full = path.join(dataDir(), key);
+  await fs.mkdir(path.dirname(full), { recursive: true });
+  const temporary = `${full}.${randomUUID()}.tmp`;
+  try {
+    await fs.writeFile(temporary, text, { encoding: "utf8", flag: "wx", mode: 0o600 });
+    await fs.rename(temporary, full);
+  } finally {
+    await fs.unlink(temporary).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== "ENOENT") throw error;
+    });
   }
 }
 
@@ -286,9 +310,7 @@ async function writeText(key: string, text: string, contentType: string): Promis
     });
     return;
   }
-  const full = path.join(dataDir(), key);
-  await fs.mkdir(path.dirname(full), { recursive: true });
-  await fs.writeFile(full, text, "utf8");
+  await writeLocalText(key, text);
 }
 
 function safeId(id: string): string {
@@ -311,6 +333,8 @@ function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
   const base: Workspace = {
     ...empty,
     ...parsed,
+    revision: Number.isSafeInteger(parsed.revision) && Number(parsed.revision) >= 0 ? Number(parsed.revision) : 0,
+    draftStorageKey: typeof parsed.draftStorageKey === "string" && parsed.draftStorageKey ? parsed.draftStorageKey : empty.draftStorageKey,
     applicant: { ...empty.applicant, ...(parsed.applicant || {}) },
     profile: {
       ...empty.profile,
@@ -339,33 +363,137 @@ function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
   return syncEssaySupplements(base);
 }
 
-export async function getWorkspace(id: string): Promise<Workspace> {
-  const raw = await readText(workspaceKey(id));
-  if (!raw) return emptyWorkspace();
+type WorkspaceMutation = (workspace: Workspace) => Workspace | Promise<Workspace>;
+const WORKSPACE_RETRIES = 12;
+const LOCAL_LOCK_WAIT_MS = 5000;
+const wait = (milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
+
+function decodeWorkspace(raw: string | null): { workspace: Workspace; needsWrite: boolean } {
+  if (raw === null) return { workspace: emptyWorkspace(), needsWrite: true };
+  let parsed: Partial<Workspace>;
   try {
-    return normalizeWorkspace(JSON.parse(raw) as Partial<Workspace>);
+    parsed = JSON.parse(raw) as Partial<Workspace>;
   } catch {
-    return emptyWorkspace();
+    throw new Error("Stored workspace JSON is invalid; existing data was not changed.");
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("Stored workspace must be a JSON object; existing data was not changed.");
+  }
+  const workspace = normalizeWorkspace(parsed);
+  return { workspace, needsWrite: parsed.draftStorageKey !== workspace.draftStorageKey };
+}
+
+async function withWorkspaceLock<T>(key: string, operation: () => Promise<T>): Promise<T> {
+  const lockPath = path.join(dataDir(), key) + ".lock";
+  await fs.mkdir(path.dirname(lockPath), { recursive: true });
+  const deadline = Date.now() + LOCAL_LOCK_WAIT_MS;
+  let handle;
+  while (!handle) {
+    try {
+      handle = await fs.open(lockPath, "wx", 0o600);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      if (Date.now() >= deadline) {
+        throw new Error("Workspace is busy: timed out waiting for its storage lock. Please retry. If this persists, an interrupted writer may require operator recovery.");
+      }
+      await wait(15 + Math.floor(Math.random() * 25));
+    }
+  }
+  // Never steal an existing lock: a paused or slow process may still own it.
+  // After a process crash, an operator must confirm no writers remain before
+  // removing its abandoned .lock file; automatic age-based removal is unsafe.
+  try {
+    return await operation();
+  } finally {
+    await handle.close();
+    await fs.unlink(lockPath);
   }
 }
 
-export async function saveWorkspace(id: string, ws: Workspace): Promise<void> {
-  await writeText(workspaceKey(id), JSON.stringify(ws, null, 2), "application/json");
+// Share the queue across route bundles in the same Node process. CAS below still
+// protects writers in other processes/instances; this only avoids local contention.
+const queueGlobal = globalThis as typeof globalThis & { __cfWorkspaceWrites?: Map<string, Promise<void>> };
+const workspaceWriteQueues = queueGlobal.__cfWorkspaceWrites ??= new Map<string, Promise<void>>();
+async function queueWorkspaceMutation(id: string, mutate?: WorkspaceMutation): Promise<Workspace> {
+  const key = `${useBlob() ? "blob" : dataDir()}:${workspaceKey(id)}`;
+  const previous = workspaceWriteQueues.get(key) ?? Promise.resolve();
+  let release!: () => void;
+  const current = new Promise<void>((resolve) => { release = resolve; });
+  workspaceWriteQueues.set(key, current);
+  await previous;
+  try {
+    return await mutateWorkspace(id, mutate);
+  } finally {
+    release();
+    if (workspaceWriteQueues.get(key) === current) workspaceWriteQueues.delete(key);
+  }
+}
+
+async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<Workspace> {
+  const key = workspaceKey(id);
+  if (!useBlob()) {
+    return withWorkspaceLock(key, async () => {
+      const { workspace, needsWrite } = decodeWorkspace(await readText(key));
+      const revision = workspace.revision;
+      const next = mutate ? { ...await mutate(workspace), revision: revision + 1 } : workspace;
+      if (mutate || needsWrite) await writeLocalText(key, JSON.stringify(next, null, 2));
+      return next;
+    });
+  }
+
+  const { put, BlobError, BlobPreconditionFailedError } = await import("@vercel/blob");
+  for (let attempt = 0; attempt < WORKSPACE_RETRIES; attempt++) {
+    const snapshot = await readBlobText(key);
+    const { workspace, needsWrite } = decodeWorkspace(snapshot?.text ?? null);
+    if (!mutate && !needsWrite) return workspace;
+    if (snapshot && !snapshot.etag) throw new Error("Workspace storage did not return an ETag; update was not attempted.");
+    if (snapshot && /^W\//i.test(snapshot.etag)) throw new Error("Workspace storage returned a weak ETag; conditional update was not attempted.");
+    const revision = workspace.revision;
+    const next = mutate ? { ...await mutate(workspace), revision: revision + 1 } : workspace;
+    try {
+      await put(key, JSON.stringify(next, null, 2), {
+        access: "private",
+        contentType: "application/json",
+        addRandomSuffix: false,
+        ...(snapshot ? { allowOverwrite: true, ifMatch: snapshot.etag } : { allowOverwrite: false }),
+      });
+      return next;
+    } catch (error) {
+      const versionConflict = error instanceof BlobPreconditionFailedError;
+      // SDK 2.x reports create-only collisions as BlobError, not a distinct class.
+      const createConflict = !snapshot && error instanceof BlobError && /already exists/i.test(error.message);
+      const operationConflict = error instanceof BlobError && error.message ===
+        "Vercel Blob: The conditional request cannot succeed due to a conflicting operation against this resource.";
+      if (!versionConflict && !createConflict && !operationConflict) throw error;
+      if (attempt === WORKSPACE_RETRIES - 1) {
+        throw new Error("Workspace changed too often to save after repeated conflicts. Please retry.");
+      }
+      await wait(Math.min(100, 5 * 2 ** attempt) + Math.floor(Math.random() * 20));
+    }
+  }
+  throw new Error("Workspace update retry limit reached.");
+}
+
+/** Read without writing unless initialization or a persisted namespace migration is needed. */
+export async function getWorkspace(id: string): Promise<Workspace> {
+  const { workspace, needsWrite } = decodeWorkspace(await readText(workspaceKey(id)));
+  return needsWrite ? queueWorkspaceMutation(id) : workspace;
+}
+
+/** Mutations must be replayable: Blob conflicts re-read current data and run them again. */
+export async function updateWorkspace(id: string, mutate: WorkspaceMutation): Promise<Workspace> {
+  return queueWorkspaceMutation(id, mutate);
 }
 
 export async function resetWorkspace(id: string): Promise<Workspace> {
-  const empty = emptyWorkspace();
-  await saveWorkspace(id, empty);
-  return empty;
+  return updateWorkspace(id, () => emptyWorkspace());
 }
 
 export async function saveUpload(id: string, name: string, text: string): Promise<UploadMeta> {
   const file = safeName(name);
   await writeText(uploadKey(id, file), text, "text/plain");
   const meta: UploadMeta = { name: file, chars: text.length, uploadedAt: Date.now() };
-  const ws = await getWorkspace(id);
-  const uploads = [...ws.uploads.filter((u) => u.name !== file), meta];
-  await saveWorkspace(id, { ...ws, uploads });
+  await updateWorkspace(id, (ws) => ({ ...ws, uploads: [...ws.uploads.filter((u) => u.name !== file), meta] }));
   return meta;
 }
 

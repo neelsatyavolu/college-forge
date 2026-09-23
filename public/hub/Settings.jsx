@@ -35,16 +35,17 @@ function Panel({ title, children, action }) {
 }
 
 function Select({ label, value, onChange, options, hint }) {
+  const hintId = React.useId();
   return (
     <label style={{ display: "block" }}>
       <div style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--muted)", marginBottom: 4 }}>{label}</div>
-      <select value={value} onChange={(e) => onChange(e.target.value)}
+      <select aria-label={label} aria-describedby={hint ? hintId : undefined} value={value} onChange={(e) => onChange(e.target.value)}
         style={{ width: "100%", maxWidth: 360, boxSizing: "border-box", padding: "8px 10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", fontSize: 14, fontFamily: "var(--font-body)" }}>
         {options.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
-      {hint ? <div style={{ marginTop: 6, fontSize: 12.5, color: "var(--muted)", lineHeight: 1.45 }}>{hint}</div> : null}
+      {hint ? <div id={hintId} style={{ marginTop: 6, fontSize: 12.5, color: "var(--muted)", lineHeight: 1.45 }}>{hint}</div> : null}
     </label>
   );
 }
@@ -99,7 +100,7 @@ function ConnectFlow({ provider, label, onDone }) {
     return (
       <div>
         <Button size="sm" onClick={start} disabled={busy}>{busy ? "Opening…" : "Connect " + label}</Button>
-        {err ? <p style={{ margin: "8px 0 0", color: "var(--error)", fontSize: 12 }}>{err}</p> : null}
+        {err ? <p role="alert" style={{ margin: "8px 0 0", color: "var(--error)", fontSize: 12 }}>{err}</p> : null}
       </div>
     );
   }
@@ -111,18 +112,18 @@ function ConnectFlow({ provider, label, onDone }) {
         {" "}(<a href={authUrl} target="_blank" rel="noopener noreferrer">reopen</a>):
         <ol style={{ margin: "6px 0 0", paddingLeft: 18 }}>
           <li>Approve the request.</li>
-          <li>You’ll land on a page that fails to load (localhost). That’s expected.</li>
-          <li>Copy that page’s full URL and paste it below.</li>
+          <li>{provider === "grok" ? "Copy the displayed authorization code or full callback URL." : "You’ll land on a page that fails to load (localhost). That’s expected."}</li>
+          <li>{provider === "grok" ? "Paste the code or URL below." : "Copy that page’s full URL and paste it below."}</li>
         </ol>
       </div>
-      <input value={callback} onChange={(e) => setCallback(e.target.value)}
-        placeholder="Paste the localhost URL from the address bar…"
+      <input aria-label={label + " sign-in response"} autoComplete="off" spellCheck={false} onKeyDown={(e) => { if (e.key === "Enter" && !busy) { e.preventDefault(); complete(); } }} value={callback} onChange={(e) => setCallback(e.target.value)}
+        placeholder={provider === "grok" ? "Paste the authorization code or callback URL…" : "Paste the localhost URL from the address bar…"}
         style={{ width: "100%", boxSizing: "border-box", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 10px", fontSize: 12.5, color: "var(--ink)", outline: "none", fontFamily: "var(--font-body)" }} />
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <Button size="sm" onClick={complete} disabled={busy || !callback.trim()}>Finish sign-in</Button>
         <Button size="sm" variant="secondary" onClick={() => { setAuthUrl(""); setErr(""); }} disabled={busy}>Cancel</Button>
       </div>
-      {err ? <p style={{ margin: 0, color: "var(--error)", fontSize: 12 }}>{err}</p> : null}
+      {err ? <p role="alert" style={{ margin: 0, color: "var(--error)", fontSize: 12 }}>{err}</p> : null}
     </div>
   );
 }
@@ -171,12 +172,17 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
   const [msg, setMsg] = React.useState("");
   const [err, setErr] = React.useState("");
   const [loading, setLoading] = React.useState(true);
+  const [statusError, setStatusError] = React.useState("");
 
   const loadStatus = React.useCallback(async () => {
+    setLoading(true); setStatusError("");
     try {
       const res = await fetch("/api/ai/status", { credentials: "same-origin", cache: "no-store" });
-      if (res.ok) setStatus(await res.json());
-    } catch (e) { /* ignore */ }
+      if (!res.ok) throw new Error("Couldn’t check AI connections. Please retry.");
+      const next = await res.json();
+      setStatus(next);
+      setStatusError(Object.values(next.connectionErrors || {}).join(" "));
+    } catch (e) { setStatus(null); setStatusError(e.message || "Couldn’t check AI connections. Please retry."); }
     setLoading(false);
   }, []);
 
@@ -215,6 +221,7 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
     if (!ok) return;
     setBusy("reset"); setErr(""); setMsg("");
     try {
+      if (window.cfFlushEssayDrafts) await window.cfFlushEssayDrafts();
       const res = await fetch("/api/workspace", {
         method: "POST",
         credentials: "same-origin",
@@ -233,20 +240,19 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
     setBusy("");
   };
 
-  const activeLabel = !status || !status.active
-    ? "None"
-    : status.active === "grok" ? "Grok"
-      : status.active === "codex" ? "ChatGPT"
-        : status.active === "opencode" ? "OpenCode"
-          : status.active;
+  const chosenProvider = prefs.preferred !== "auto" ? prefs.preferred : status?.active;
+  const providerLabel = { grok: "Grok", codex: "ChatGPT", opencode: "OpenCode" };
+  const chosenAvailable = chosenProvider === "grok" ? status?.grokConnected : chosenProvider === "codex" ? status?.codexConnected : status?.opencodeAvailable;
+  const activeLabel = !status ? "Unknown" : !chosenProvider ? "None" : `${providerLabel[chosenProvider]}${chosenAvailable ? "" : " · unavailable"}`;
+
 
   const preferredOptions = [
     { value: "auto", label: "Auto (use first available)" },
-    { value: "grok", label: "Prefer Grok" },
-    { value: "codex", label: "Prefer ChatGPT" },
+    { value: "grok", label: "Use Grok" },
+    { value: "codex", label: "Use ChatGPT" },
   ];
   if (status && status.opencodeAvailable) {
-    preferredOptions.push({ value: "opencode", label: "Prefer OpenCode" });
+    preferredOptions.push({ value: "opencode", label: "Use OpenCode" });
   }
 
   return (
@@ -260,18 +266,19 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
         </div>
       </header>
 
-      {err ? <div style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--error) 12%, transparent)", color: "var(--error)", fontSize: 13 }}>{err}</div> : null}
-      {msg ? <div style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--accent-teal, #2a9d8f) 12%, transparent)", color: "var(--ink)", fontSize: 13 }}>{msg}</div> : null}
+      {statusError ? <div role="alert" className="cf-notice">{statusError} <button type="button" onClick={loadStatus} disabled={loading}>Retry connections</button></div> : null}
+      {err ? <div role="alert" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--error) 12%, transparent)", color: "var(--error)", fontSize: 13 }}>{err}</div> : null}
+      {msg ? <div role="status" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--accent-teal, #2a9d8f) 12%, transparent)", color: "var(--ink)", fontSize: 13 }}>{msg}</div> : null}
 
       <Panel title="AI providers" action={
         loading ? null : (
           <span style={{ fontSize: 12, color: "var(--muted)" }}>
-            Active: <strong style={{ color: "var(--ink)" }}>{activeLabel}</strong>
+            Selected: <strong style={{ color: "var(--ink)" }}>{activeLabel}</strong>
           </span>
         )
       }>
         <p style={{ margin: "0 0 4px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
-          The copilot runs on <strong style={{ color: "var(--ink)" }}>your own</strong> Grok or ChatGPT account. Connect at least one to chat, upload transcripts, and update your hub.
+          The copilot runs on <strong style={{ color: "var(--ink)" }}>your own</strong> Grok or ChatGPT account. Connect an account to chat with the advisor. Your profile, recommendations, uploads and planning tools work without AI.
         </p>
         {!loading && status ? (
           <p style={{
@@ -288,19 +295,8 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
           }}>
             <strong style={{ color: "var(--ink)" }}>Web research: </strong>
             {status.webSearchAvailable
-              ? status.webSearchProvider === "exa+tinyfish"
-                ? "Exa + TinyFish — search, merge results, and deep-read top pages for admit rates, deadlines, and school facts."
-                : status.webSearchProvider === "exa"
-                  ? "Exa is configured for live search. Add TINYFISH_API_KEY for full-page fetch (higher quality)."
-                  : status.webSearchProvider === "tinyfish"
-                    ? "TinyFish is configured (search + page fetch). Add EXA_API_KEY for neural search ranking."
-                    : "Configured."
-              : "Not configured. Set EXA_API_KEY and/or TINYFISH_API_KEY on the server (Vercel env or .env.local)."}
-            {status.webFetchAvailable
-              ? " Full-page fetch is on."
-              : status.webSearchAvailable
-                ? " Full-page fetch needs TINYFISH_API_KEY."
-                : ""}
+              ? "Available for checking current admissions information and college websites."
+              : "Unavailable in this installation. Recommendations use the dated dataset; verify current requirements on college websites."}
           </p>
         ) : null}
 
@@ -311,7 +307,7 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
             <ProviderRow
               name="grok"
               label="Grok (xAI)"
-              blurb="Sign in with your xAI / Grok account. Best for long-context planning and hub edits."
+              blurb="Sign in with your xAI / Grok account. Use it for college research and application planning."
               connected={!!(status && status.grokConnected)}
               models={status && status.grokModels}
               defaultModel={status && status.defaultGrokModel}
@@ -324,7 +320,7 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
             <ProviderRow
               name="codex"
               label="ChatGPT"
-              blurb="Sign in with your ChatGPT / OpenAI account (Codex OAuth). Same flow as the AiChat app."
+              blurb="Sign in with your ChatGPT / OpenAI account. Use your existing subscription for AI guidance."
               connected={!!(status && status.codexConnected)}
               models={status && status.codexModels}
               defaultModel={status && status.defaultCodexModel}
@@ -352,11 +348,11 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
 
             <div style={{ marginTop: 8, paddingTop: 16, borderTop: "1px solid var(--hairline)" }}>
               <Select
-                label="Preferred provider"
+                label="Provider for new messages"
                 value={prefs.preferred || "auto"}
                 onChange={(v) => updatePrefs({ preferred: v })}
                 options={preferredOptions}
-                hint="When more than one is connected, the preferred provider is tried first. Auto uses Grok → ChatGPT → OpenCode."
+                hint="A selected provider must be available; messages are never sent through a different account. Auto uses the first available: Grok → ChatGPT → OpenCode."
               />
             </div>
           </>
@@ -368,7 +364,7 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
           <div>
             <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Theme</div>
             <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
-              College Forge ships a designed dark theme — not a browser invert. Current: <strong style={{ color: "var(--ink)" }}>{theme === "dark" ? "Dark" : "Light"}</strong>
+              Choose a comfortable reading theme. Current: <strong style={{ color: "var(--ink)" }}>{theme === "dark" ? "Dark" : "Light"}</strong>
             </p>
           </div>
           <Button size="sm" variant="secondary" onClick={onToggleTheme}>
@@ -383,7 +379,7 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
             <div style={{ flex: "1 1 220px", minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Redo onboarding</div>
               <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
-                Re-run the setup wizard (story, list prefs, AI hub build). Existing hub data is kept and used as prefill; finishing overwrites fields the wizard saves.
+                Review your story, academics, and college preferences. Your existing answers are prefilled; finishing saves your changes.
               </p>
             </div>
             <Button size="sm" onClick={redoOnboarding} disabled={busy === "reset"}>
@@ -407,14 +403,14 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
       <Panel title="About this hub">
         <SectionLabel style={{ marginBottom: 8 }}>Data & privacy</SectionLabel>
         <ul style={{ margin: "0 0 16px", paddingLeft: 18, fontSize: 13.5, color: "var(--body)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: 6 }}>
-          <li>Your workspace is stored server-side and keyed to a browser cookie.</li>
-          <li>AI provider tokens live in secure cookies on this device — we don’t store Common App passwords or session cookies.</li>
-          <li>Model / provider preferences above are saved only in localStorage on this browser.</li>
+          <li>Your work is saved online. Keep a recovery code so you can open it from another browser or device.</li>
+          <li>AI sign-ins stay in this browser. Only connect the account you want the copilot to use.</li>
+          <li>Your model and appearance preferences are saved in this browser.</li>
         </ul>
         <SectionLabel style={{ marginBottom: 8 }}>Tips</SectionLabel>
         <p style={{ margin: 0, fontSize: 13.5, color: "var(--body)", lineHeight: 1.55 }}>
           Use <strong style={{ color: "var(--ink)" }}>Share</strong> for multi-device recovery codes and advisor links.
-          Export paste-ready packs there for Common App — we never reverse-engineer Common App.
+          Download drafts and an application pack there to use in your college applications.
         </p>
       </Panel>
     </div>

@@ -2,13 +2,14 @@ import type { ToolSpec, ToolExecutor } from "./chat-types";
 import { runWebSearch, runWebFetch } from "./web-search-tool";
 import {
   getWorkspace,
-  saveWorkspace,
+  updateWorkspace,
   readUpload,
   type Workspace,
   type College,
 } from "./store";
 import { slugify, upsertCollegeInto, removeCollegeFrom } from "./colleges";
-import { gateAiCollegeAdd, pruneLotteryColleges } from "./seed-college-list";
+import { gateAiCollegeAdd } from "./seed-college-list";
+import { recommendColleges } from "./college-recommendations";
 import { mergeSupplements } from "./essay-supplements";
 
 // Only copy keys the caller actually provided, so partial updates never wipe
@@ -31,15 +32,28 @@ type Args = Record<string, unknown>;
  */
 export function makeHubTools(
   workspaceId: string,
-  opts?: { userText?: string }
+  opts?: { userText?: string; draftStorageKey?: string }
 ): { tools: ToolSpec[]; executeTool: ToolExecutor } {
   const wsTag = workspaceId.slice(0, 8);
   const userText = opts?.userText || "";
 
-  async function mutate(fn: (ws: Workspace) => Workspace): Promise<Workspace> {
+  function assertWorkspaceScope(ws: Workspace): void {
+    if (opts?.draftStorageKey && ws.draftStorageKey !== opts.draftStorageKey) {
+      throw new Error("This workspace was reset or changed. Start a new chat before using workspace tools.");
+    }
+  }
+
+  async function scopedWorkspace(): Promise<Workspace> {
     const ws = await getWorkspace(workspaceId);
-    const next = fn(ws);
-    await saveWorkspace(workspaceId, next);
+    assertWorkspaceScope(ws);
+    return ws;
+  }
+
+  async function mutate(fn: (ws: Workspace) => Workspace): Promise<Workspace> {
+    const next = await updateWorkspace(workspaceId, (ws) => {
+      assertWorkspaceScope(ws);
+      return fn(ws);
+    });
     console.log(
       `[hub-tools] ws=${wsTag} persisted colleges=${next.colleges.length} ` +
         `activities=${next.profile.activities.length} honors=${next.profile.honors.length} ` +
@@ -49,6 +63,11 @@ export function makeHubTools(
   }
 
   const tools: ToolSpec[] = [
+    {
+      name: "get_college_recommendations",
+      description: "Read personalized college suggestions grounded in Forge's fair ranking, federal outcomes and stored admissions data. Call before recommending a college list. Returns real schools, evidence, provisional academic categories, sources and limitations. Does not change the list. Never invent absent data or call outcome rankings personal admission chances.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
     {
       name: "read_upload",
       description:
@@ -173,15 +192,16 @@ export function makeHubTools(
     {
       name: "upsert_college",
       description:
-        "Add or update a college on the user's list (matched by slug). Set tier to 'reach' | 'target' | 'safety' honestly for THIS student's GPA/SAT — never mark HYP/MIT/Stanford/Yale/UChicago as target for mid GPAs. Fill researched fields (admit, deadlines, major, supps). Opens Essays-tab group (UC campuses share 'uc-application' PIQs). COUNSELING RULES: balanced list = safeties + targets (backbone) + limited reaches; ambitious ≠ lottery stack. For ~3.5 UW do NOT add pure lotteries (admit under ~5–8%) unless the student named that school; prefer major-fit reaches (e.g. Medill, Michigan, NYU) and real targets/safeties. Prefer enriching seeded schools over prestige dumps. Server may reject lottery adds — do not retry rejected schools.",
+        "Add or update a real college on the saved list, matched by canonical slug or Scorecard ID. For recommendations, call get_college_recommendations first and copy its college fields. Preserve provisional categories; omit tier for Research/unknown. Save only sourced facts. Never invent admission probabilities or use a fair rank as a US News rank. Adding a college opens its essay group. Existing choices are preserved. Server may reject unsupported ultra-selective additions; do not retry rejected schools.",
       parameters: {
         type: "object",
         properties: {
           name: { type: "string" }, short: { type: "string", description: "Short display name, e.g. 'MIT'" },
+          scorecardId: { type: "integer", description: "Federal UNITID from grounded evidence." },
           slug: { type: "string" }, location: { type: "string", description: "'City, ST · Setting'" },
           setting: { type: "string", description: "urban | suburban | town" }, rank: { type: "number" },
           admit: { type: "string" }, satRange: { type: "string" }, gpa: { type: "string" },
-          tier: { type: "string", description: "reach | target | safety" },
+          tier: { type: "string", description: "reach | target | safety (Likely). Omit when evidence says Research/unknown." },
           verdict: {
             type: "object",
             properties: { tone: { type: "string", description: "top | good | caution" }, label: { type: "string" } },
@@ -393,13 +413,12 @@ export function makeHubTools(
   ];
 
   const executeTool: ToolExecutor = async (name, argsJson) => {
-    // Logged so `vercel logs` shows exactly which tools the model invoked and
-    // with what — the fastest way to tell "AI claimed it updated" from
-    // "AI actually called a tool".
-    console.log(`[hub-tools] ws=${wsTag} CALL ${name} args=${(argsJson || "{}").slice(0, 300)}`);
+    // Log the operation, not student details or URLs contained in arguments.
+    console.log(`[hub-tools] ws=${wsTag} CALL ${name}`);
     let a: Args;
     try {
       a = JSON.parse(argsJson || "{}");
+      if (!a || typeof a !== "object" || Array.isArray(a)) return `Invalid JSON object arguments for ${name}.`;
     } catch {
       console.error(`[hub-tools] ws=${wsTag} ${name} — invalid JSON args`);
       return `Invalid JSON arguments for ${name}.`;
@@ -407,8 +426,12 @@ export function makeHubTools(
 
     try {
       switch (name) {
+        case "get_college_recommendations": {
+          return JSON.stringify(recommendColleges(await scopedWorkspace()));
+        }
         case "read_upload": {
           if (typeof a.name !== "string") return "read_upload requires a string 'name'.";
+          await scopedWorkspace();
           const text = await readUpload(workspaceId, a.name);
           return text === null ? `No upload named "${a.name}" was found.` : text;
         }
@@ -468,23 +491,11 @@ export function makeHubTools(
           const slug = typeof a.slug === "string" && a.slug ? a.slug : slugify(a.name);
           const short = typeof a.short === "string" && a.short ? a.short : a.name;
           const incoming = { ...a, slug, short } as unknown as College;
-          const wsNow = await getWorkspace(workspaceId);
-          const gate = gateAiCollegeAdd({ ws: wsNow, incoming, userText });
-          if (!gate.allow) {
-            console.log(`[hub-tools] ws=${wsTag} blocked upsert "${a.name}": ${gate.reason}`);
-            return `NOT added "${a.name}": ${gate.reason} Prefer major-fit reaches (e.g. Northwestern Medill, Michigan, NYU) and real targets/safeties. Do not fill the list with HYP/MIT/Stanford/Yale/UChicago for mid GPAs.`;
-          }
           await mutate((ws) => {
-            let next = upsertCollegeInto(ws, incoming);
-            // After list mutations, strip any pure lotteries the model already stuffed in
-            const pruned = pruneLotteryColleges(next, { userText });
-            if (pruned.removed.length) {
-              console.log(
-                `[hub-tools] ws=${wsTag} pruned lotteries: ${pruned.removed.join(", ")}`
-              );
-              next = { ...next, colleges: pruned.colleges };
-            }
-            return next;
+            // The gate must inspect the same latest version that is committed.
+            const gate = gateAiCollegeAdd({ ws, incoming, userText });
+            if (!gate.allow) throw new Error(`NOT added "${a.name}": ${gate.reason} Do not retry this rejected school.`);
+            return upsertCollegeInto(ws, incoming);
           });
           return `Saved "${a.name}" to the school list${a.tier ? ` as a ${a.tier}` : ""}.`;
         }

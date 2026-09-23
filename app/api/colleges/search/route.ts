@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
       const onList = new Set(ws.colleges.map((c) => c.slug));
       const data = US_NEWS_TOP_250.map((u) => {
         const college = usNewsToCollege(u);
-        const { tags, tier } = fitFor(college, applicantSat);
+        const { tags, tier } = fitFor(college, applicantSat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
         return {
           ...college,
           scorecardId: u.scorecardId,
@@ -209,7 +209,7 @@ export async function GET(req: NextRequest) {
         const sc = toScorecardCollege(r);
         // scorecardToCollege already attaches US News rank + photo when known.
         const college = withUsNews(scorecardToCollege(sc), sc.id);
-        const { tags, tier } = fitFor(college, applicantSat);
+        const { tags, tier } = fitFor(college, applicantSat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
         // scorecardId lets the detail panel fetch the heavy per-school record.
         return { ...college, scorecardId: sc.id, tags, tier, onList: onList.has(college.slug) };
       });

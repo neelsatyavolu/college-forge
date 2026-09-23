@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getWorkspace, saveWorkspace, type College } from "@/lib/store";
+import { updateWorkspace, type College } from "@/lib/store";
 import { upsertCollegeInto, removeCollegeFrom, slugify } from "@/lib/colleges";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     return json({ success: false, error: "Invalid JSON body." }, 400, setCookie);
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) return json({ success: false, error: "A JSON object is required." }, 400, setCookie);
   const c = body.college;
   if (!c || typeof c.name !== "string" || !c.name.trim()) {
     return json({ success: false, error: "A college with a name is required." }, 400, setCookie);
@@ -38,9 +39,7 @@ export async function POST(req: NextRequest) {
     short: typeof c.short === "string" && c.short ? c.short : c.name,
   } as College;
 
-  const ws = await getWorkspace(id);
-  const next = upsertCollegeInto(ws, incoming);
-  await saveWorkspace(id, next);
+  const next = await updateWorkspace(id, (ws) => upsertCollegeInto(ws, incoming));
   console.log(`[workspace/colleges] ws=${id.slice(0, 8)} added "${incoming.name}" -> ${next.colleges.length} total`);
   return json({ success: true, data: next }, 200, setCookie);
 }
@@ -51,9 +50,7 @@ export async function DELETE(req: NextRequest) {
   const slug = (req.nextUrl.searchParams.get("slug") ?? "").trim();
   if (!slug) return json({ success: false, error: "slug is required." }, 400, setCookie);
 
-  const ws = await getWorkspace(id);
-  const next = removeCollegeFrom(ws, slug);
-  await saveWorkspace(id, next);
+  const next = await updateWorkspace(id, (ws) => removeCollegeFrom(ws, slug));
   console.log(`[workspace/colleges] ws=${id.slice(0, 8)} removed "${slug}" -> ${next.colleges.length} total`);
   return json({ success: true, data: next }, 200, setCookie);
 }

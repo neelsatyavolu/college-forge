@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { getWorkspace } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
-import { exportPlainText, exportCounselorBrief, exportIcs } from "@/lib/export";
+import { exportPlainText, exportCounselorBrief, exportCalendar } from "@/lib/export";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,7 +25,10 @@ export async function GET(req: NextRequest) {
   if (format === "ics") {
     headers["content-type"] = "text/calendar; charset=utf-8";
     headers["content-disposition"] = `attachment; filename="college-forge-deadlines.ics"`;
-    return new Response(exportIcs(ws), { headers });
+    const calendar = exportCalendar(ws);
+    headers["x-calendar-events"] = String(calendar.included);
+    headers["x-calendar-skipped"] = String(calendar.skipped);
+    return new Response(calendar.text, { headers });
   }
 
   if (format === "brief" || format === "md") {
@@ -34,8 +37,12 @@ export async function GET(req: NextRequest) {
     return new Response(exportCounselorBrief(ws), { headers });
   }
 
-  // default: plain text Common App pack
+  if (format !== "txt") return Response.json({ error: "Choose txt, brief, ics, or json." }, { status: 400, headers });
+  const essayId = req.nextUrl.searchParams.get("essayId") || undefined;
+  if (essayId && !ws.essays.commonApp.some((essay) => essay.id === essayId)) return Response.json({ error: "That essay is no longer available. Refresh and choose again." }, { status: 400, headers });
+
+  // Plain text Common App pack with optional explicit personal-statement choice.
   headers["content-type"] = "text/plain; charset=utf-8";
   headers["content-disposition"] = `attachment; filename="college-forge-export-${name}.txt"`;
-  return new Response(exportPlainText(ws), { headers });
+  return new Response(exportPlainText(ws, essayId), { headers });
 }

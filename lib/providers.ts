@@ -23,6 +23,7 @@ export type ProviderStatus = {
   grokConnected: boolean;
   opencodeAvailable: boolean;
   active: ProviderName | null;
+  connectionErrors: Partial<Record<ProviderName, string>>;
   codexModels: { id: string; label: string; tier: string }[];
   defaultCodexModel: string;
   grokModels: { id: string; label: string; tier: string }[];
@@ -36,9 +37,23 @@ export type ProviderStatus = {
   webFetchAvailable: boolean;
 };
 
+async function connections(preferred?: ProviderName) {
+  const [codex, grok] = await Promise.allSettled([
+    preferred && preferred !== "codex" ? Promise.resolve(null) : getActiveCodexSession(),
+    preferred && preferred !== "grok" ? Promise.resolve(null) : getActiveGrokSession(),
+  ]);
+  const connectionErrors: Partial<Record<ProviderName, string>> = {};
+  if (codex.status === "rejected") connectionErrors.codex = "ChatGPT connection could not be refreshed. Retry or reconnect in Settings.";
+  if (grok.status === "rejected") connectionErrors.grok = "Grok connection could not be refreshed. Retry or reconnect in Settings.";
+  return {
+    session: codex.status === "fulfilled" ? codex.value : null,
+    grokSession: grok.status === "fulfilled" ? grok.value : null,
+    connectionErrors,
+  };
+}
+
 export async function resolveProviderStatus(): Promise<ProviderStatus> {
-  const session = await getActiveCodexSession();
-  const grokSession = await getActiveGrokSession();
+  const { session, grokSession, connectionErrors } = await connections();
   const codexConnected = Boolean(session);
   const grokConnected = Boolean(grokSession);
   const opencodeAvailable = Boolean(getOpencodeKey());
@@ -55,6 +70,7 @@ export async function resolveProviderStatus(): Promise<ProviderStatus> {
     grokConnected,
     opencodeAvailable,
     active,
+    connectionErrors,
     codexModels: codexModels.map((m) => ({ id: m.id, label: m.label, tier: m.tier ?? "" })),
     defaultCodexModel: codexModels.find((m) => m.id === DEFAULT_CODEX_MODEL)?.id ?? codexModels[0]?.id ?? DEFAULT_CODEX_MODEL,
     grokModels: grokModels.map((m) => ({ id: m.id, label: m.label, tier: m.tier ?? "" })),
@@ -87,8 +103,7 @@ export async function runChat(params: {
   tools?: ToolSpec[];
   executeTool?: ToolExecutor;
 }): Promise<RunChatResult> {
-  const session = await getActiveCodexSession();
-  const grokSession = await getActiveGrokSession();
+  const { session, grokSession, connectionErrors } = await connections(params.preferred);
   const apiKey = getOpencodeKey();
 
   const wantOpencode = params.preferred === "opencode" && apiKey;
@@ -154,6 +169,10 @@ export async function runChat(params: {
     };
   };
 
+  if (params.preferred && !wantOpencode && !wantCodex && !wantGrok) {
+    const label = params.preferred === "codex" ? "ChatGPT" : params.preferred === "grok" ? "Grok" : "OpenCode";
+    throw new Error(connectionErrors[params.preferred] || `${label} is not connected or available. Connect it in Settings or choose Auto. Your message was not sent to another provider.`);
+  }
   if (wantOpencode) return runOpencode();
   if (wantCodex) return runCodex(session!);
   if (wantGrok) return runGrok(grokSession!);
@@ -161,7 +180,5 @@ export async function runChat(params: {
   if (session) return runCodex(session);
   if (apiKey) return runOpencode();
 
-  throw new Error(
-    "No AI provider available. Connect Grok, connect ChatGPT, or set OPENCODE_API_KEY in website/.env.local."
-  );
+  throw new Error(Object.values(connectionErrors).join(" ") || "No AI provider available. Connect Grok or ChatGPT in Settings to use the copilot.");
 }

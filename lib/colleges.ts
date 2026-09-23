@@ -258,10 +258,14 @@ export function scorecardToCollege(r: ScorecardCollege): College {
  * hub scores fit: above 75th = strong, inside the band = close, below 25th
  * = reach.
  */
-export function fitFor(college: College, applicantSat: string | undefined) {
+export function isTestOptionalNote(note: string | undefined): boolean {
+  return /test[- ]optional|not (?:submitting|reporting)(?: test)? scores/i.test(note || "");
+}
+
+export function fitFor(college: College, applicantSat: string | undefined, satNote?: string) {
   const sat = Number(String(applicantSat ?? "").replace(/[^\d]/g, ""));
   const band = String(college.satRange ?? "").match(/(\d+)\D+(\d+)/);
-  if (!sat || !band) return { tags: [] as { label: string; tone: string }[], tier: undefined as College["tier"] };
+  if (!sat || sat < 400 || sat > 1600 || !band || college.slug?.startsWith("university-of-california-") || isTestOptionalNote(satNote)) return { tags: [] as { label: string; tone: string }[], tier: undefined as College["tier"] };
 
   const lo = Number(band[1]);
   const hi = Number(band[2]);
@@ -269,12 +273,13 @@ export function fitFor(college: College, applicantSat: string | undefined) {
   const label = `SAT: ${tone}`;
 
   // Admit rate dominates the tier call; SAT position adjusts it.
-  const admit = Number(String(college.admit ?? "").replace(/[^\d]/g, ""));
+  const admitText = String(college.admit ?? "").match(/(\d+(?:\.\d+)?)\s*%/);
+  const admit = admitText ? Number(admitText[1]) : null;
   let tier: College["tier"] | undefined;
-  if (admit) {
+  if (admit !== null && admit >= 0 && admit <= 100) {
     if (admit < 20) tier = "reach";
     else if (admit < 50) tier = tone === "strong" ? "target" : "reach";
-    else tier = tone === "reach" ? "target" : "safety";
+    else tier = admit >= 65 && tone === "strong" ? "safety" : "target";
   }
   return { tags: [{ label, tone }], tier };
 }

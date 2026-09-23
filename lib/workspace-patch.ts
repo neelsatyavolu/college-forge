@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type {
   Workspace,
+  OnboardingListPrefs,
   Activity,
   Honor,
   Recommendation,
@@ -21,6 +22,7 @@ function assignDefined<T extends object>(base: T, patch: Record<string, unknown>
 }
 
 export type WorkspacePatch = {
+  listPrefs?: Partial<OnboardingListPrefs>;
   applicant?: Partial<Workspace["applicant"]>;
   profile?: Partial<{
     intended: string;
@@ -66,6 +68,22 @@ export type WorkspacePatch = {
 
 export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Workspace {
   let next: Workspace = { ...ws };
+
+  if (patch.listPrefs && typeof patch.listPrefs === "object") {
+    const p = patch.listPrefs;
+    const listPrefs: OnboardingListPrefs = {
+      ambition: "balanced", settings: [], size: "any", regions: [], notes: "",
+      ...next.onboarding.listPrefs,
+    };
+    if (["balanced", "ambitious", "conservative"].includes(p.ambition as string)) listPrefs.ambition = p.ambition!;
+    if (["small", "medium", "large", "any"].includes(p.size as string)) listPrefs.size = p.size!;
+    if (Array.isArray(p.settings)) listPrefs.settings = [...new Set(p.settings.filter(s => ["urban", "suburban", "rural", "college-town"].includes(s)))];
+    if (Array.isArray(p.regions)) listPrefs.regions = [...new Set(p.regions.filter(r => ["northeast", "mid-atlantic", "south", "midwest", "west", "any"].includes(r)))];
+    if (typeof p.notes === "string") listPrefs.notes = p.notes.trim().slice(0, 4000);
+    if (p.appCount === null) listPrefs.appCount = null;
+    else if (typeof p.appCount === "number" && Number.isFinite(p.appCount)) listPrefs.appCount = Math.max(8, Math.min(15, Math.round(p.appCount)));
+    next = { ...next, onboarding: { ...next.onboarding, listPrefs } };
+  }
 
   if (patch.applicant) {
     next = { ...next, applicant: assignDefined(next.applicant, patch.applicant as Record<string, unknown>) };

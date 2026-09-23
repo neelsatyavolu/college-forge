@@ -1,13 +1,18 @@
 const { Button } = window.CollegeForgeDesignSystem_e95e63;
 
-const MONTHS = { Nov: 10, Dec: 11, Jan: 0, Feb: 1, Mar: 2 };
-// Build a sortable key from a "Mon D" string, wrapping Jan+ into the next year.
-function orderKey(label) {
-  const m = label.match(/([A-Za-z]{3})\s+(\d+)/);
-  if (!m) return 9999;
-  const mo = MONTHS[m[1]] ?? 6;
-  const yearBump = mo <= 5 ? 12 : 0; // Nov/Dec first, then Jan..
-  return (mo + yearBump) * 31 + parseInt(m[2], 10);
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+function timelineDate(label, graduationYear) {
+  const iso = String(label).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const named = String(label).match(/^([A-Za-z]+)\s+(\d{1,2})(?:,?\s+(\d{4}))?$/);
+  if (!iso && !named) return null;
+  const month = iso ? Number(iso[2]) - 1 : MONTHS.indexOf(named[1].slice(0, 3).toLowerCase());
+  const day = Number(iso ? iso[3] : named[2]);
+  const explicitYear = iso ? iso[1] : named[3];
+  const year = Number(explicitYear || (graduationYear ? graduationYear - (month >= 6 ? 1 : 0) : 0));
+  if (!year || month < 0 || month > 11) return null;
+  const date = new Date(year, month, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) return null;
+  return { date, inferred: !explicitYear };
 }
 
 const PLAN_TONE = (plan) =>
@@ -17,19 +22,44 @@ const PLAN_TONE = (plan) =>
   : /Scholarship|priority/i.test(plan) ? { bg: "var(--warning)", fg: "var(--ink)", label: "$" }
   : { bg: "var(--surface-cream-strong)", fg: "var(--muted)", label: "RD" };
 
-function Timeline({ data, onAsk }) {
+function Timeline({ data, onAsk, onWorkspaceChange }) {
+  const [editing, setEditing] = React.useState(null);
+  const [form, setForm] = React.useState({ date: "", label: "", detail: "" });
+  const [saving, setSaving] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const graduationYear = Number(data.profile && data.profile.gradYear) || null;
+  const dates = data.criticalDates || [];
+  const saveDates = async (next) => {
+    setSaving(true);
+    setError("");
+    try {
+      const ws = await window.cfApi.patch({ criticalDates: next });
+      if (onWorkspaceChange) onWorkspaceChange(ws);
+      setEditing(null);
+    } catch (e) { setError(e.message || "Could not save dates. Please try again."); }
+    finally { setSaving(false); }
+  };
+  const startEdit = (index) => {
+    const existing = index >= 0 ? dates[index] : {date:"",label:"",detail:""};
+    const parsed = timelineDate(existing.date, graduationYear);
+    const date = parsed ? [parsed.date.getFullYear(), String(parsed.date.getMonth()+1).padStart(2,"0"), String(parsed.date.getDate()).padStart(2,"0")].join("-") : "";
+    setForm({...existing, date});
+    setEditing(index);
+    setError("");
+  };
   // Merge critical dates + every school deadline into one sorted stream.
   const events = [];
-  data.criticalDates.forEach((m) => events.push({ date: m.date, title: m.label, detail: m.detail, kind: "milestone" }));
-  data.colleges.forEach((c) =>
+  dates.forEach((m, index) => events.push({ date: m.date, title: m.label, detail: m.detail, kind: "milestone", index }));
+  (data.colleges || []).forEach((c) =>
     (c.deadlines || []).forEach((d) => events.push({ date: d.date, title: `${c.short} — ${d.plan}`, detail: c.major, plan: d.plan, kind: "deadline" }))
   );
-  events.sort((a, b) => orderKey(a.date) - orderKey(b.date));
+  events.forEach((event) => { event.parsed = timelineDate(event.date, graduationYear); });
+  events.sort((a, b) => (a.parsed ? a.parsed.date.getTime() : Infinity) - (b.parsed ? b.parsed.date.getTime() : Infinity));
 
   // Group by month label.
   const byMonth = [];
   events.forEach((e) => {
-    const mon = (e.date.match(/^[A-Za-z]{3}/) || ["—"])[0];
+    const mon = e.parsed ? e.parsed.date.toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Check date";
     let g = byMonth.find((x) => x.mon === mon);
     if (!g) { g = { mon, items: [] }; byMonth.push(g); }
     g.items.push(e);
@@ -42,12 +72,31 @@ function Timeline({ data, onAsk }) {
           <h1 className="cf-page-title">Timeline</h1>
           <p className="cf-page-lede">Every milestone and application deadline across your cycle, in order. ED/EA/REA plans are flagged.</p>
         </div>
-        <Button variant="secondary" size="sm" onClick={onAsk}>Ask about a date ✱</Button>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <Button variant="secondary" size="sm" onClick={onAsk}>Ask about a date ✱</Button>
+          <Button size="sm" onClick={() => startEdit(-1)}>Add a milestone</Button>
+        </div>
       </header>
 
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>Confirm school deadlines on the official admissions site. Dates without a year use your graduation year’s application cycle; set a full date to remove ambiguity.</p>
+      {error ? <p role="alert" style={{color:"var(--error)"}}>{error}</p> : null}
+      {editing !== null ? (
+        <form onSubmit={(event) => {
+          event.preventDefault();
+          if (!form.label.trim() || !timelineDate(form.date, graduationYear)) return;
+          const milestone = {...form, label:form.label.trim()};
+          saveDates(editing < 0 ? [...dates,milestone] : dates.map((date,index) => index === editing ? milestone : date));
+        }} style={{padding:20,border:"1px solid var(--hairline)",borderRadius:"var(--radius-md)",marginBottom:24,display:"grid",gap:12}}>
+          <h2 className="cf-display" style={{margin:0,fontSize:20}}>{editing < 0 ? "New milestone" : "Edit milestone"}</h2>
+          <label>Title<input required aria-label="Milestone title" maxLength={160} value={form.label} onChange={(e)=>setForm({...form,label:e.target.value})} style={{display:"block",width:"100%",padding:10,boxSizing:"border-box"}} placeholder="Request teacher recommendations" /></label>
+          <label>Date<input required aria-label="Milestone date" type="date" value={form.date} onChange={(e)=>setForm({...form,date:e.target.value})} style={{display:"block",padding:10}} /></label>
+          <label>Notes (optional)<input aria-label="Milestone notes" value={form.detail} onChange={(e)=>setForm({...form,detail:e.target.value})} style={{display:"block",width:"100%",padding:10,boxSizing:"border-box"}} /></label>
+          <div style={{display:"flex",gap:8}}><Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save milestone"}</Button><Button variant="secondary" disabled={saving} onClick={()=>setEditing(null)}>Cancel</Button></div>
+        </form>
+      ) : null}
       {byMonth.length === 0 ? (
         <div className="cf-empty">
-          No dates yet. Add schools or ask the copilot to set your key deadlines — they’ll appear here in order.
+          No dates yet. Add your first milestone above, or add schools with verified deadlines to your list.
         </div>
       ) : (
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -65,7 +114,7 @@ function Timeline({ data, onAsk }) {
                     <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                          <span className="cf-nums" style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--muted)" }}>{e.date}</span>
+                          <span className="cf-nums" style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--muted)" }}>{e.parsed ? e.parsed.date.toLocaleDateString("en-US", {month:"short",day:"numeric",year:"numeric"}) : e.date}{e.parsed && e.parsed.inferred ? " · year inferred" : ""}</span>
                           <span className="cf-display" style={{ fontSize: 17, color: "var(--ink)" }}>{e.title}</span>
                         </div>
                         {e.detail ? <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{e.detail}</div> : null}
@@ -75,6 +124,7 @@ function Timeline({ data, onAsk }) {
                       ) : (
                         <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--muted-soft)" }}>Milestone</span>
                       )}
+                      {e.kind === "milestone" ? <div style={{display:"flex",gap:8}}><Button variant="secondary" size="sm" disabled={saving} onClick={()=>startEdit(e.index)}>Edit</Button><Button variant="ghost" size="sm" disabled={saving} onClick={()=>saveDates(dates.filter((_,index)=>index !== e.index))}>Remove</Button></div> : null}
                     </div>
                   </div>
                 );
@@ -87,4 +137,5 @@ function Timeline({ data, onAsk }) {
     </div>
   );
 }
+window.cfTimelineDate = timelineDate;
 window.Timeline = Timeline;

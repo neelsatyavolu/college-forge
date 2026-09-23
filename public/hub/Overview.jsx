@@ -1,146 +1,39 @@
-const { Card, Badge, SectionLabel, Button } = window.CollegeForgeDesignSystem_e95e63;
+const { Button } = window.CollegeForgeDesignSystem_e95e63;
 
-function prettyDate(iso) {
-  const d = new Date(iso + "T00:00:00");
-  return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
-function Overview({ data, onNavigate, onAsk }) {
-  const { applicant, ed, criticalDates, colleges } = data;
-  const reaches = colleges.filter((c) => c.tier === "reach");
-  const targets = colleges.filter((c) => c.tier === "target");
-  const safeties = colleges.filter((c) => c.tier === "safety");
-  const tiers = [
-    { label: "Reaches", items: reaches },
-    { label: "Targets", items: targets },
-    { label: "Safeties", items: safeties },
+function Overview({ data, onNavigate, onAsk, onStart }) {
+  const { applicant, colleges } = data;
+  const hasProfile = Boolean(applicant.name && data.profile.intended);
+  const draftCount = Object.values(data.essayDrafts || {}).filter(text => String(text).trim()).length;
+  const submitted = Object.values(data.applications || {}).filter(a => ["submitted", "accepted", "rejected", "waitlisted", "deferred"].includes(a.status)).length;
+  const firstName = (applicant.name || "").trim().split(/\s+/)[0];
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const allDates = [
+    ...(data.criticalDates || []),
+    ...colleges.flatMap(college => (college.deadlines || []).map(deadline => ({ date: deadline.date, label: `${college.short || college.name} — ${deadline.plan}`, detail: college.major || "Confirm on the admissions website" }))),
+  ].map(item => ({ ...item, parsed: window.cfTimelineDate(item.date, Number(data.profile.gradYear) || null) }));
+  const dates = allDates.filter(item => item.parsed && item.parsed.date >= today).sort((a, b) => a.parsed.date - b.parsed.date).slice(0, 3);
+  const undatedCount = allDates.filter(item => !item.parsed).length;
+  const steps = [
+    { id: "profile", number: "01", title: "Tell your story", text: "Your academics, interests, and everything that makes you you.", done: hasProfile, action: "Build your profile" },
+    { id: "recommendations", number: "02", title: "Find your kind of college", text: "Explore options through real outcomes, your interests, and fit.", done: colleges.length > 0, action: "Find colleges" },
+    { id: "essays", number: "03", title: "Make your application yours", text: "Start a draft, make a plan, and take it one step at a time.", done: draftCount > 0, action: "Start writing" },
   ];
-  const snapshot = [
-    { label: "Weighted GPA", value: applicant.gpaWeighted || "—", hint: "school formula" },
-    { label: "Unweighted GPA", value: applicant.gpaUnweighted || "—", hint: "4.0 scale" },
-    { label: "SAT", value: applicant.sat || "—", hint: applicant.satNote || "from testing" },
-    { label: "Awards", value: String(applicant.awards ?? 0), hint: "parsed from uploads" },
-  ];
-  const hasCycle = Boolean(applicant.cycle);
-  const hasYear = Boolean(applicant.year);
-
+  const next = steps.find(s => !s.done) || { id: "planner", title: "Keep your momentum", text: "Review your application checklist and choose your next task.", action: "Open your plan" };
   return (
-    <div className="cf-page">
-      {/* Hero */}
-      <section style={{ paddingBottom: 32, marginBottom: 32, borderBottom: "1px solid var(--hairline)" }}>
-        {(hasCycle || hasYear) ? (
-          <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
-            {hasCycle ? <Badge variant="coral" uppercase>Cycle {applicant.cycle}</Badge> : null}
-            {hasYear ? <Badge variant="cream" uppercase>{applicant.year}</Badge> : null}
-          </div>
-        ) : null}
-        <div className="cf-grid-hero">
-          <h1 className="cf-page-title">
-            Your college<br />applications.
-          </h1>
-          <p className="cf-page-lede" style={{ paddingBottom: 8, margin: 0 }}>
-            Everything parsed from your uploads and kept in sync. Ask the copilot to change anything, or use the quick buttons.
-          </p>
-        </div>
+    <div className="cf-page cf-overview">
+      <header className="cf-home-header"><div className="cf-eyebrow">YOUR NEXT CHAPTER</div><h1 className="cf-page-title">{firstName ? `You’ve got this, ${firstName}.` : "A college path that feels like you."}</h1><p className="cf-page-lede">From the first possibility to the final application. A little direction, one step at a time.</p></header>
+      <section className="cf-next-step" aria-labelledby="next-step-title">
+        <div><div className="cf-eyebrow">{hasProfile ? "YOUR NEXT STEP" : "LET’S START WITH YOU"}</div><h2 id="next-step-title">{next.title}</h2><p>{next.text}</p><div className="cf-inline-actions"><Button onClick={() => !applicant.name ? onStart() : onNavigate(next.id)}>{!applicant.name ? "Set up my workspace" : next.action} <span aria-hidden="true">→</span></Button>{!applicant.name && <a href="#recommendations">Explore colleges first</a>}</div></div>
+        <div className="cf-path-art" aria-hidden="true"><span className="cf-path-orbit orbit-one" /><span className="cf-path-orbit orbit-two" /><span className="cf-path-star">✳</span><span className="cf-path-caption">YOUR PATH.<br />YOUR PACE.</span></div>
       </section>
-
-      {/* Snapshot + ED priority */}
-      <section className="cf-grid-snapshot" style={{ marginBottom: 56 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <SectionLabel>Snapshot</SectionLabel>
-          {snapshot.map((s) => (
-            <div key={s.label} style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", padding: "16px 18px", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "baseline" }}>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)", marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 12, color: "var(--muted-soft)" }}>{s.hint}</div>
-              </div>
-              <div className="cf-display cf-nums" style={{ fontSize: 32, lineHeight: 1, letterSpacing: "-0.5px", color: "var(--ink)" }}>{s.value}</div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          {ed ? (
-          <Card variant="coral" style={{ padding: 28 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <SectionLabel style={{ color: "rgba(255,255,255,0.85)", marginBottom: 10 }}>Priority — Early Decision (Binding)</SectionLabel>
-                <h2 className="cf-display" style={{ margin: "0 0 10px", fontSize: "clamp(24px, 3vw, 32px)", lineHeight: 1.15, letterSpacing: "-0.5px", textWrap: "balance" }}>{ed.school}</h2>
-                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, opacity: 0.9 }}>{ed.reason}</p>
-              </div>
-              <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <div className="cf-display cf-nums" style={{ fontSize: 56, lineHeight: 1, letterSpacing: "-1.5px" }}>{ed.daysLeft}</div>
-                <div style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "rgba(255,255,255,0.85)", marginTop: 4 }}>days to ED</div>
-              </div>
-            </div>
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 13, opacity: 0.9 }}>ED deadline <strong style={{ fontWeight: 500 }}>{ed.deadline ? prettyDate(ed.deadline) : "—"}</strong></span>
-              <Button variant="onColor" size="sm" arrow onClick={() => onNavigate("planner")}>Open the plan</Button>
-            </div>
-          </Card>
-          ) : null}
-
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, gap: 12, flexWrap: "wrap" }}>
-              <SectionLabel>Critical dates</SectionLabel>
-              <a href="#planner" onClick={(e) => { e.preventDefault(); onNavigate("planner"); }} style={{ fontSize: 13, fontWeight: 500 }}>Full timeline →</a>
-            </div>
-            <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)" }}>
-              {criticalDates.length === 0 ? (
-                <div className="cf-empty-soft" style={{ margin: 0, border: "none", borderRadius: "var(--radius-lg)" }}>No dates yet — add deadlines via the copilot.</div>
-              ) : criticalDates.map((m, i) => (
-                <div key={m.label} style={{ display: "grid", gridTemplateColumns: "minmax(88px, 110px) 1fr", gap: 16, alignItems: "baseline", padding: "14px 20px", borderTop: i === 0 ? "none" : "1px solid var(--hairline)" }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)" }}>{m.date}</div>
-                  <div>
-                    <div className="cf-display" style={{ fontSize: 17, lineHeight: 1.3, color: "var(--ink)", marginBottom: 2 }}>{m.label}</div>
-                    <div style={{ fontSize: 13, color: "var(--muted)" }}>{m.detail}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      <section className="cf-progress-strip" aria-label="Application progress">
+        {[["Schools saved", colleges.length, "shortlist"], ["Drafts started", draftCount, "essays"], ["Applications sent", submitted, "shortlist"]].map(([label, value, target]) => <a key={label} href={"#" + target}><span className="cf-progress-value">{String(value).padStart(2, "0")}</span><span>{label}</span><span aria-hidden="true">↗</span></a>)}
       </section>
-
-      {/* Tier strip */}
-      <section style={{ marginBottom: 56 }}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 16, gap: 12, flexWrap: "wrap" }}>
-          <SectionLabel>School list — {colleges.length} total</SectionLabel>
-          <a href="#shortlist" onClick={(e) => { e.preventDefault(); onNavigate("shortlist"); }} style={{ fontSize: 13, fontWeight: 500 }}>Compare all →</a>
-        </div>
-        <div className="cf-grid-3">
-          {tiers.map((t) => (
-            <button key={t.label} type="button" onClick={() => onNavigate("shortlist")} className="cf-press"
-              style={{ textAlign: "left", cursor: "pointer", background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", padding: 20 }}>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
-                <span style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)" }}>{t.label}</span>
-                <span className="cf-display cf-nums" style={{ fontSize: 36, lineHeight: 1, letterSpacing: "-0.5px", color: "var(--ink)" }}>{t.items.length}</span>
-              </div>
-              {t.items.length === 0 ? (
-                <div style={{ fontSize: 13, color: "var(--muted-soft)" }}>None yet</div>
-              ) : (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {t.items.map((s) => (
-                    <span key={s.slug} style={{ fontSize: 12, padding: "2px 8px", background: "var(--surface-card)", borderRadius: "var(--radius-xs)", color: "var(--ink)" }}>{s.short}</span>
-                  ))}
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Strategy callout */}
-      <section>
-        <Card variant="dark" style={{ padding: "clamp(24px, 4vw, 32px)" }}>
-          <SectionLabel style={{ color: "rgba(250,249,245,0.7)", marginBottom: 12 }}>Copilot summary</SectionLabel>
-          <h2 className="cf-display" style={{ margin: "0 0 12px", fontSize: "clamp(24px, 3vw, 32px)", lineHeight: 1.15, letterSpacing: "-0.5px", textWrap: "balance" }}>Apply where the department fits. Let the AI keep it current.</h2>
-          <p style={{ margin: "0 0 20px", fontSize: 15, lineHeight: 1.55, opacity: 0.9, maxWidth: 760, textWrap: "pretty" }}>
-            Upload a transcript, a resume, or an award list and College Forge parses it into your hub. The copilot can reshape your school list, rewrite a supplement plan, or answer any deadline question — and every change stays in sync.
-          </p>
-          <Button variant="onColor" onClick={onAsk}>Ask the copilot ✱</Button>
-        </Card>
-      </section>
+      <section className="cf-home-section"><div className="cf-section-heading"><h2>Your path, in three steps</h2><span>No need to do it all today.</span></div><div className="cf-journey-grid">{steps.map(step => <a key={step.id} href={"#" + step.id} className="cf-journey-card"><div className="cf-journey-top"><span>{step.number}</span><span className={step.done ? "cf-step-done" : ""}>{step.done ? "Started ✓" : "↗"}</span></div><h3>{step.title}</h3><p>{step.text}</p><span className="cf-text-action">{step.action} →</span></a>)}</div></section>
+      <div className="cf-home-columns">
+        <section className="cf-home-section"><div className="cf-section-heading"><h2>Coming up</h2><a href="#timeline">All dates →</a></div><div className="cf-agenda">{dates.length ? dates.map((date, i) => <a href="#timeline" className="cf-agenda-row" key={i}><div className="cf-date-block"><span>{date.parsed.date.toLocaleDateString("en-US", { month: "short" })}</span><strong>{date.parsed.date.getDate()}</strong></div><div><h3>{date.label}</h3><p>{(date.detail || String(date.parsed.date.getFullYear())) + (date.parsed.inferred ? " · year inferred" : "")}</p></div></a>) : <div className="cf-friendly-empty"><span aria-hidden="true">□</span><h3>A little planning goes a long way.</h3><p>{undatedCount ? `${undatedCount} saved date${undatedCount === 1 ? " needs" : "s need"} a year or clearer date. Review your timeline to place them here.` : "Add a deadline or a personal milestone. You’ll see what’s coming here."}</p><a href="#timeline">Review your dates →</a></div>}</div></section>
+        <section className="cf-home-section"><div className="cf-section-heading"><h2>A better starting point</h2></div><div className="cf-insight-card"><div className="cf-eyebrow">BEYOND A PRESTIGE LIST</div><h3>Good outcomes.<br />Room for your priorities.</h3><p>Our college recommendations use graduate purchasing power and reputation data. See the evidence, weigh the tradeoffs, and make the list your own.</p><a href="#recommendations" className="cf-text-action">See colleges for you →</a><button type="button" className="cf-quiet-button" onClick={() => onAsk("Help me build a balanced college list from my profile and the ranking evidence. Explain the evidence and what we still need to verify.")}>Talk it through with the copilot ↗</button></div></section>
+      </div>
     </div>
   );
 }

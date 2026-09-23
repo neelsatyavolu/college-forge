@@ -102,9 +102,9 @@ export async function getActiveGrokSession(): Promise<GrokTokens | null> {
     const refreshed = await refreshGrokTokens(session.refreshToken);
     writeGrokSessionCookie(refreshed);
     return refreshed;
-  } catch (err) {
-    console.error("[grok-session] token refresh failed:", err);
-    clearGrokSessionCookie();
-    return null;
+  } catch {
+    // A transient refresh outage must not delete a recoverable session. The
+    // connection status reports the failure and lets the user retry/reconnect.
+    throw new Error("Could not refresh your Grok connection. Retry or reconnect in Settings.");
   }
 }

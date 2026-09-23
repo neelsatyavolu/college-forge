@@ -24,9 +24,9 @@ ok([307, 308, 302, 301].includes(root.status) && (root.headers.get("location") |
 const html = await hit("/hub/index.html");
 const htmlText = await html.text();
 ok(html.status === 200 && htmlText.includes("College Forge"), "GET /hub/index.html renders");
-ok(htmlText.includes("./App.jsx") && htmlText.includes("../../_ds_bundle.js"), "index.html references app + bundle");
+ok(htmlText.includes("./compiled/hub.js") && htmlText.includes("../../_ds_bundle.js"), "index.html references compiled app + design bundle");
 
-for (const p of ["/styles.css", "/_ds_bundle.js", "/hub/App.jsx", "/hub/AiChat.jsx", "/hub/data.js", "/assets/mark.svg"]) {
+for (const p of ["/styles.css", "/_ds_bundle.js", "/hub/compiled/hub.js", "/hub/compiled/share.js", "/hub/compiled/react.production.min.js", "/hub/compiled/react-dom.production.min.js", "/hub/data.js", "/assets/mark.svg"]) {
   const r = await hit(p);
   ok(r.status === 200, `GET ${p} (${r.status})`);
 }

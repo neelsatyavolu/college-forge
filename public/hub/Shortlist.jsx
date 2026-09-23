@@ -3,7 +3,7 @@ const { Badge, VerdictBadge, SectionLabel, Button } = window.CollegeForgeDesignS
 const TIER_META = {
   reach: { label: "Reaches", dot: "var(--error)" },
   target: { label: "Targets", dot: "var(--accent-amber)" },
-  safety: { label: "Safeties", dot: "var(--accent-teal)" },
+  safety: { label: "Likely", dot: "var(--accent-teal)" },
 };
 
 const APP_STATUSES = [
@@ -23,14 +23,15 @@ function SuppPill({ load }) {
   );
 }
 
-function SchoolRow({ s, last, status, onTier, onStatus }) {
+function SchoolRow({ s, last, status, onTier, onStatus, onRemove, busy, error }) {
+  const [confirmRemove, setConfirmRemove] = React.useState(false);
   return (
     <div style={{ display: "block", background: s.priority ? "color-mix(in srgb, var(--coral) 5%, transparent)" : "transparent", borderBottom: last ? "none" : "1px solid var(--hairline)" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 16, alignItems: "center", padding: "16px 20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16, alignItems: "center", padding: "16px 20px" }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-            <h3 className="cf-display" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "var(--ink)" }}>{s.short}</h3>
-            {s.priority ? <Badge variant="coral" uppercase>Priority ED</Badge> : null}
+            <h3 className="cf-display" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "var(--ink)" }}>{s.name || s.short}</h3>
+            {s.priority ? <Badge variant="coral" uppercase>Priority</Badge> : null}
             {isUcCampus(s) ? <Badge variant="teal" uppercase>UC Application</Badge> : null}
           </div>
           <div style={{ fontSize: 13, color: "var(--body)", marginBottom: 6 }}>
@@ -42,28 +43,38 @@ function SchoolRow({ s, last, status, onTier, onStatus }) {
             {s.deadline ? (
               <span style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)" }}>{s.deadline}</span>
             ) : null}
-            {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>admit {s.admit}</span> : null}
+            {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Overall admission rate: {s.admit}</span> : null}
           </div>
           <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
             <label style={{ fontSize: 11, color: "var(--muted)", display: "flex", alignItems: "center", gap: 6 }}>
               Tier
-              <select value={s.tier || "target"} onChange={(e) => onTier(s.slug, e.target.value)}
+              <select disabled={busy} value={TIER_META[s.tier] ? s.tier : ""} onChange={(e) => onTier(s.slug, e.target.value)}
                 style={{ fontSize: 12, padding: "4px 8px", borderRadius: "var(--radius-xs)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)" }}>
-                <option value="reach">reach</option>
-                <option value="target">target</option>
-                <option value="safety">safety</option>
+                <option value="" disabled>Not assessed</option>
+                <option value="reach">Reach</option>
+                <option value="target">Target</option>
+                <option value="safety">Likely</option>
               </select>
             </label>
             <label style={{ fontSize: 11, color: "var(--muted)", display: "flex", alignItems: "center", gap: 6 }}>
               Status
-              <select value={status || "researching"} onChange={(e) => onStatus(s.slug, e.target.value)}
+              <select disabled={busy} value={status || "researching"} onChange={(e) => onStatus(s.slug, e.target.value)}
                 style={{ fontSize: 12, padding: "4px 8px", borderRadius: "var(--radius-xs)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)" }}>
                 {APP_STATUSES.map((st) => <option key={st} value={st}>{st}</option>)}
               </select>
             </label>
+            {!confirmRemove ? <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirmRemove(true)}>Remove school</Button> : null}
           </div>
+          {confirmRemove ? <div style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-sm)" }}>
+            <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--body)" }}>Remove {s.name || s.short} from your list? Saved essay drafts will remain.</p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <Button size="sm" disabled={busy} onClick={() => onRemove(s.slug)}>Confirm removal</Button>
+              <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirmRemove(false)}>Keep school</Button>
+            </div>
+          </div> : null}
+          {error ? <p role="alert" style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
         </div>
-        {s.verdict ? <VerdictBadge tone={s.verdict.tone}>{s.verdict.label}</VerdictBadge> : null}
+        {s.verdict ? <div><VerdictBadge tone={s.verdict.tone}>{s.verdict.label}</VerdictBadge></div> : null}
       </div>
     </div>
   );
@@ -91,6 +102,9 @@ function applicationSlotCount(colleges) {
 
 function Shortlist({ data, onAsk, onWorkspaceChange }) {
   const [filter, setFilter] = React.useState("all");
+  const [busy, setBusy] = React.useState(false);
+  const [error, setError] = React.useState(null);
+  const [notice, setNotice] = React.useState("");
   const apps = data.applications || {};
   const byTier = {
     reach: data.colleges.filter((c) => c.tier === "reach"),
@@ -103,21 +117,29 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
   const appSlots = applicationSlotCount(data.colleges);
   const FILTERS = [
     { id: "all", label: "All" }, { id: "reach", label: "Reaches" },
-    { id: "target", label: "Targets" }, { id: "safety", label: "Safeties" },
+    { id: "target", label: "Targets" }, { id: "safety", label: "Likely" },
   ];
 
-  const onTier = async (slug, tier) => {
+  const saveChange = async (slug, action, message) => {
+    setBusy(true);
+    setError(null);
+    setNotice("");
     try {
-      const ws = await window.cfApi.patch({ collegePatch: { slug, tier } });
+      const ws = await action();
       if (onWorkspaceChange) onWorkspaceChange(ws);
-    } catch (e) { /* ignore */ }
+      setNotice(message);
+    } catch (e) {
+      setError({ slug, message: e.message || "Could not save this change. Please try again." });
+    } finally { setBusy(false); }
   };
-  const onStatus = async (slug, status) => {
-    try {
-      const ws = await window.cfApi.patch({ application: { slug, status } });
-      if (onWorkspaceChange) onWorkspaceChange(ws);
-    } catch (e) { /* ignore */ }
-  };
+  const onTier = (slug, tier) => saveChange(slug, () => window.cfApi.patch({ collegePatch: { slug, tier } }), "School tier updated.");
+  const onStatus = (slug, status) => saveChange(slug, () => window.cfApi.patch({ application: { slug, status } }), "Application status updated.");
+  const onRemove = (slug) => saveChange(slug, async () => {
+    const response = await fetch(`/api/workspace/colleges?slug=${encodeURIComponent(slug)}`, { method: "DELETE", credentials: "same-origin" });
+    const result = await response.json();
+    if (!response.ok || !result.success || !result.data) throw new Error(result.error || "Could not remove this school. Please try again.");
+    return result.data;
+  }, "School removed from your list.");
 
   return (
     <div className="cf-page">
@@ -125,7 +147,7 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
         <div>
           <h1 className="cf-page-title">School list</h1>
           <p className="cf-page-lede">
-            Tiers and application status are editable here. Copilot can re-tier from your profile; export a pack from Share &amp; export for Common App paste.
+            Track your schools and application progress. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds.
             {ucCount > 0
               ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
               : ""}
@@ -133,6 +155,8 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
         </div>
         <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to adjust ✱</Button>
       </header>
+
+      <div role="status" aria-live="polite" style={{ fontSize: 13, color: "var(--muted)", marginBottom: notice || busy ? 16 : 0 }}>{busy ? "Saving change…" : notice}</div>
 
       {data.colleges.length > 0 ? (
         <div className="cf-grid-short-stats" style={{ marginBottom: 28 }}>
@@ -181,21 +205,23 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
                   {list.map((s, i) => (
                     <SchoolRow key={s.slug} s={s} last={i === list.length - 1}
                       status={apps[s.slug] && apps[s.slug].status}
-                      onTier={onTier} onStatus={onStatus} />
+                      onTier={onTier} onStatus={onStatus} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                   ))}
                 </div>
               </section>
             );
           })}
 
+          {filter !== "all" && byTier[filter].length === 0 ? <div className="cf-empty">No schools in this category yet. Choose All to see your full list.</div> : null}
+
           {filter === "all" && untiered.length > 0 ? (
             <section style={{ marginBottom: 40 }}>
-              <h2 className="cf-display" style={{ margin: "0 0 16px", fontSize: 22, color: "var(--ink)" }}>Untiered</h2>
+              <h2 className="cf-display" style={{ margin: "0 0 16px", fontSize: 22, color: "var(--ink)" }}>Not assessed yet</h2>
               <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                 {untiered.map((s, i) => (
                   <SchoolRow key={s.slug} s={s} last={i === untiered.length - 1}
                     status={apps[s.slug] && apps[s.slug].status}
-                    onTier={onTier} onStatus={onStatus} />
+                    onTier={onTier} onStatus={onStatus} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                 ))}
               </div>
             </section>

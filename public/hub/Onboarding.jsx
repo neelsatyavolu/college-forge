@@ -229,7 +229,7 @@ function ConnectStep({ status, onConnected }) {
           {activeLabel} connected
         </h2>
         <p style={{ margin: 0, fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
-          The copilot will use your {activeLabel} account to build your hub at the end.
+          You can optionally use your {activeLabel} account to enrich your profile at the end.
         </p>
       </div>
     );
@@ -238,11 +238,11 @@ function ConnectStep({ status, onConnected }) {
   return (
     <div>
       <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)" }}>
-        Connect an AI provider
+        Connect an AI provider (optional)
       </h2>
       <p style={{ margin: "0 0 20px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
-        College Forge runs on <strong style={{ color: "var(--ink)" }}>your own</strong> Grok (xAI) or ChatGPT account.
-        You’ll need one so we can structure your profile and draft a college list.
+        Your profile, college recommendations, and planning tools work without an AI account.
+        Connect Grok or ChatGPT for optional research and writing help, or continue now.
       </p>
 
       {!flow ? (
@@ -307,7 +307,7 @@ function StoryStep({ story, onChange }) {
       <p style={{ margin: "0 0 10px", fontSize: 14, color: "var(--body)", lineHeight: 1.65, maxWidth: 560 }}>
         This is the fuel for your hub. Dump <strong style={{ color: "var(--ink)" }}>as much as you want</strong> —
         activities, clubs, sports, jobs, research, volunteering, family responsibilities, summer programs,
-        awards, and anything that makes you you. Messy bullets are fine; the AI will organize them.
+        awards, and anything that makes you you. Your notes are saved; optional AI can help organize them.
       </p>
       <div className="cf-onboard-nudge" role="note">
         More detail → a stronger profile and a smarter college list. Don’t self-edit yet.
@@ -449,7 +449,7 @@ function MustHaveSchools({ selected, onChange, max = 8 }) {
 
   return (
     <div>
-      <OnboardFieldLabel hint="Optional. The AI will keep these and fill around them.">
+      <OnboardFieldLabel hint="Optional. Recommendations will keep these and fill around them.">
         Must-include schools
       </OnboardFieldLabel>
 
@@ -507,7 +507,7 @@ function MustHaveSchools({ selected, onChange, max = 8 }) {
         </div>
       ) : (
         <p className="cf-onboard-meta" style={{ margin: "8px 0 0" }}>
-          Max {max} must-includes — the AI will still expand the full list.
+          Max {max} must-includes — recommendations will fill the rest of your list.
         </p>
       )}
       {error ? <p style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
@@ -686,7 +686,7 @@ function UploadStep({ uploads, onUploaded }) {
         <OnboardBadge variant="cream" uppercase>Optional</OnboardBadge>
       </h2>
       <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
-        Transcript, resume, or activities list. The AI will read these when it builds your hub. You can skip.
+        Save a transcript, resume, or activities list for reference. A connected AI can use these with your permission. You can skip.
       </p>
       <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
         <input
@@ -756,7 +756,7 @@ function BuildStep({
         <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
           {buildStatus === "done"
             ? "Profile, activities, and a preliminary college list are in place. You can refine anything with the copilot."
-            : "Sending your story and preferences to the AI. This usually takes a minute."}
+            : "Saving your profile and preparing recommendations. Optional AI enrichment can take a little longer."}
         </p>
         <div className="cf-onboard-card cf-onboard-build-panel">
           <div className="cf-onboard-build-status">
@@ -778,11 +778,11 @@ function BuildStep({
         Review & build
       </h2>
       <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 560 }}>
-        Confirm the snapshot below, then send everything to {providerLabel || "your AI"}.
-        It will structure your profile and draft a preliminary college list from your prefs.
+        Confirm your answers to save your profile and build a preliminary list from college data and your preferences.
+        Fit labels are estimates, not admission or affordability guarantees.
       </p>
       <div className="cf-onboard-card" style={{ maxWidth: 520 }}>
-        {row("AI", providerLabel || "Connected")}
+        {row("AI", providerLabel || "Not connected · optional")}
         {row("Name", draft.name)}
         {row("Grad year", draft.gradYear)}
         {row("High school", draft.hs)}
@@ -864,39 +864,18 @@ ${story.other.trim() || "(none)"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}
 - Extra constraints: ${prefs.notes.trim() || "(none)"}
 
-## Counselor-grade list rules (MUST follow — not optional)
-These match standard US counseling practice (College Board / BigFuture balanced lists; reach–match–safety mix):
+## College recommendations — preserve the data-backed starting list
+The server has already selected a preliminary list using the student's academics, preferences, and the Fair College Ranking dataset.
+- Call get_college_recommendations to inspect the evidence, profile gaps, cautions, and source links before discussing fit.
+- Preserve the seeded list and the student's must-includes. Do not replace evidence-based selections with remembered prestige rankings or arbitrary GPA/admit-rate rules.
+- Describe reach, target, and likely as rough screening categories, never admission probabilities or guarantees. Overall admission rates do not establish major-specific or nonresident odds.
+- Test-blind schools must not use SAT as a fit signal. Do not convert weighted GPA to unweighted GPA.
+- Affordability needs actual aid and residency information. Do not call a school financially safe without a verified affordable cost.
+- Use web_search to verify current official deadlines, program information, and essay prompts before adding them. Retain uncertainty when verification is unavailable.
+- Count all UC campuses as one application; never invent dates, numerical outcomes, or student facts.
 
-1. **Balanced list required.** Every list needs real safeties, targets (backbone), and a limited number of reaches. College Board: often ~5–8 apps is enough when the mix is right; ~8–12 is fine if quality stays high.
-2. **Count applications, not campuses.** All UC campuses = ONE application.
-3. **Tier honesty for THIS student (GPA/SAT on file above):**
-   - Safety = clearly above mid-50% / high admit likelihood — and a place they'd happily attend
-   - Target = mid-50% overlap / solid but not guaranteed
-   - Reach = selective stretch that is still plausible
-   - Lottery (sub-~8%, especially sub-~5%: HYP, MIT, Stanford, Caltech, UChicago, Columbia…) = optional spice ONLY, never the bulk
-4. **Ambition mapping:**
-   - ambitious = mild extra risk + **1–2 major-fit dreams** still labeled **reach** (e.g. Northwestern Medill, Michigan, NYU, USC for journalism) — NOT a HYPMS stack
-   - balanced = classic mix; conservative = lean safer
-   - For ~3.4–3.6 UW: reaches mostly ~10–25% admit; at most 1–2 under ~8% with clear major fit; targets mostly ~30–55%
-5. **Hard ban unless student named the school:** do not add Princeton, Harvard, Yale, MIT, Stanford, Caltech, UChicago, Columbia (or similar sub-5% schools) just because ambition is "ambitious."
-6. **Never** re-label a hyper-selective school as "target" for a mid GPA. Hooks help at the margins; they do not invent mid-50% stats.
-7. Prefer major/program fit + cost + setting over prestige rank. OOS publics and impacted majors are often harder than overall admit %.
-8. At most one binding ED/REA priority school.
-9. No duplicate campuses (e.g. "University of Texas" + "UT Austin").
-
-## Must-include schools (keep these; already on the list as priority seeds)
+## Must-include schools (already saved)
 ${must}
-
-## College list — ALREADY SEEDED (academically matched) — AUTHORITATIVE STRUCTURE
-The server already filled a preliminary shortlist around the must-includes using the student's GPA/SAT + prefs. You will see them in the workspace snapshot.
-- **Do NOT replace, gut, or lottery-up the seeded list.** Enrich notes, majors, deadlines, and honest tiers.
-- Do NOT call remove_college on seeded schools unless they are clear duplicates.
-- If you see pure lotteries already on the list that the student did not request, **remove_college** them and strengthen targets/safeties instead.
-- Match reach/target/safety to the real academic profile (e.g. ~3.5 UW + 1500 SAT → mostly 30–55% targets, 15–30% reaches, real safeties; a couple major-fit dreams OK).
-- **UC Application = one app for all UC campuses.** Keep a sensible UC mix (not every campus as "reach").
-- Use web_search to verify admit rates, deadlines, and major strength before enriching with upsert_college.
-- You MAY add 1–3 schools if the list is thin on **targets/safeties**; prefer those tiers over more ultra-reaches.
-- If upsert_college is rejected as lottery/ultra, do **not** retry; pick a better-fit school.
 
 ## Uploads to read with read_upload if relevant
 ${uploadLine}
@@ -906,16 +885,16 @@ ${uploadLine}
 2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
 3. Parse awards → set_honors; set awards count on the snapshot.
 4. Read uploads and merge any extra structured data (coursework, more activities, etc.).
-5. Review the seeded college list: enrich tiers/deadlines/major fit; top up **targets/safeties** if thin. Never strip to only must-includes. Never convert the list into mostly sub-10% lotteries. Remove unsolicited HYPMS if present.
+5. Review the seeded college list with get_college_recommendations. Explain the evidence and tradeoffs; keep the list intact. Enrich only facts you can verify.
 6. Set a few critical_dates if you know real deadlines for the list.
 7. **Essays / supplements:** The server already opened Essays-tab groups for every school (UC PIQs under slug \`uc-application\`; other schools get Why-us placeholders). When you can, web_search 2–4 priority schools' current supplement prompts and call set_essays with a *partial* supplements map (merge-safe by slug). Prefer real prompts + word limits; skip inventing full prompts for every school if short on turns.
-8. Reply with a short plain-text summary: what you saved + school list with tiers and **counts** (e.g. 4 reach / 5 target / 3 safety) + which essay groups are ready. If counts look lottery-heavy, fix before finishing.
+8. Reply with a short summary of what you saved, the recommendation evidence, missing information, and which essay groups are verified.
 
 Call tools. Empty fields are better than invented numbers.`;
 }
 
 // ── Main wizard ──────────────────────────────────────────────────────────
-function Onboarding({ data, onComplete }) {
+function Onboarding({ data, onComplete, onCancel }) {
   const [step, setStep] = React.useState(0);
   const [provider, setProvider] = React.useState(null);
   const [mustHave, setMustHave] = React.useState(() => {
@@ -929,6 +908,7 @@ function Onboarding({ data, onComplete }) {
   const [busy, setBusy] = React.useState(false);
   const [buildStatus, setBuildStatus] = React.useState("idle"); // idle | building | done
   const [buildLog, setBuildLog] = React.useState("");
+  const [useAi, setUseAi] = React.useState(true);
 
   const a = (data && data.applicant) || {};
   const p = (data && data.profile) || {};
@@ -1003,27 +983,35 @@ function Onboarding({ data, onComplete }) {
     draft.hs.trim() &&
     draft.intended.trim() &&
     (draft.gradYear.trim() || draft.cycle.trim());
-  const academicsOk = present(draft.gpaWeighted) || present(draft.gpaUnweighted);
+  const validNumber = (value, min, max) => /^\d+(?:\.\d+)?$/.test(value.trim()) && Number(value) >= min && Number(value) <= max;
+  const academicError = !present(draft.gpaWeighted) && !present(draft.gpaUnweighted)
+    ? "Enter at least one GPA (weighted or unweighted)."
+    : present(draft.gpaUnweighted) && !validNumber(draft.gpaUnweighted, 0, 4)
+      ? "Unweighted GPA must be a number from 0 to 4."
+      : present(draft.gpaWeighted) && !validNumber(draft.gpaWeighted, 0, 6)
+        ? "Weighted GPA must be a number from 0 to 6."
+        : !draft.testOptional && present(draft.sat) && (!/^\d+$/.test(draft.sat.trim()) || !validNumber(draft.sat, 400, 1600))
+          ? "SAT must be a whole number from 400 to 1600, or left blank."
+          : "";
+  const academicsOk = !academicError;
 
   const canNext = () => {
     const id = STEPS[step].id;
     if (id === "welcome") return true;
-    if (id === "connect") return Boolean(connected);
+    if (id === "connect") return true;
     if (id === "identity") return Boolean(identityOk);
     if (id === "academics") return Boolean(academicsOk);
     if (id === "story") return true;
     if (id === "prefs") return true;
     if (id === "upload") return true;
-    if (id === "build") return Boolean(connected) && identityOk && academicsOk;
+    if (id === "build") return identityOk && academicsOk;
     return false;
   };
 
   const stepError = () => {
     const id = STEPS[step].id;
-    if (id === "connect" && !connected) return "Connect Grok or ChatGPT to continue.";
     if (id === "identity" && !identityOk) return "Name, high school, intended major, and grad year are required.";
-    if (id === "academics" && !academicsOk) return "Enter at least one GPA (weighted or unweighted).";
-    if (id === "build" && !connected) return "AI connection required to build the hub.";
+    if (id === "academics" && !academicsOk) return academicError;
     return "";
   };
 
@@ -1048,12 +1036,6 @@ function Onboarding({ data, onComplete }) {
       setErr(stepError() || "Fill required fields first.");
       return;
     }
-    const fresh = await loadStatus();
-    if (!fresh || !fresh.active) {
-      setErr("AI connection lost. Go back to Connect and sign in again.");
-      setStep(1);
-      return;
-    }
     if (!identityOk || !academicsOk) {
       setErr("Some required fields are missing. Go back and complete them.");
       return;
@@ -1063,6 +1045,7 @@ function Onboarding({ data, onComplete }) {
     setErr("");
     setBuildStatus("building");
     setBuildLog("Saving your answers…");
+    let savedWs = null;
 
     try {
       const sat = draft.testOptional ? "—" : draft.sat.trim() || "—";
@@ -1109,7 +1092,18 @@ function Onboarding({ data, onComplete }) {
       if (!saveRes.ok || saveJ.success === false) {
         throw new Error(saveJ.error || "Could not save onboarding.");
       }
-      const savedWs = saveJ.data || saveJ;
+      savedWs = saveJ.data || saveJ;
+      if (!connected || !useAi) {
+        setBuildStatus("done");
+        if (onComplete) await onComplete(savedWs);
+        return;
+      }
+      const fresh = await loadStatus();
+      if (!fresh || !fresh.active) {
+        setBuildStatus("done");
+        if (onComplete) await onComplete(savedWs);
+        return;
+      }
       const seededN = (savedWs.colleges && savedWs.colleges.length) || 0;
       setBuildLog(
         seededN
@@ -1180,6 +1174,7 @@ function Onboarding({ data, onComplete }) {
 
       setBuildLog("Loading your hub…");
       const wsRes = await fetch("/api/workspace", { credentials: "same-origin", cache: "no-store" });
+      if (!wsRes.ok) throw new Error("Could not refresh your hub.");
       const ws = await wsRes.json();
       setBuildStatus("done");
       setBuildLog("Done");
@@ -1187,20 +1182,26 @@ function Onboarding({ data, onComplete }) {
       await new Promise((r) => setTimeout(r, 600));
       if (onComplete) await onComplete(ws.data || ws);
     } catch (e) {
-      setBuildStatus("idle");
-      setBuildLog("");
-      setErr(e.message || "Could not build hub.");
-      // Basics may already be saved; still try to unlock if workspace is complete
-      try {
-        const wsRes = await fetch("/api/workspace", { credentials: "same-origin", cache: "no-store" });
-        const ws = await wsRes.json();
-        const dataWs = ws.data || ws;
-        if (dataWs && dataWs.onboarding && dataWs.onboarding.completed && onComplete) {
-          // Offer path forward via error + allow manual open — do not auto-complete on failure mid-build
-        }
-      } catch (e2) {}
+      if (savedWs) {
+        // The data-backed workspace is usable even when optional AI is unavailable.
+        let current = savedWs;
+        try {
+          const res = await fetch("/api/workspace", {credentials:"same-origin",cache:"no-store"});
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success !== false) current = json.data || json;
+          }
+        } catch (_) {}
+        setBuildStatus("done");
+        if (onComplete) await onComplete(current);
+      } else {
+        setBuildStatus("idle");
+        setBuildLog("");
+        setErr(e.message || "Could not save your hub. Please try again.");
+      }
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   };
 
   const id = STEPS[step].id;
@@ -1216,6 +1217,7 @@ function Onboarding({ data, onComplete }) {
             <span className="cf-display" style={{ fontSize: 20, color: "var(--ink)" }}>College Forge</span>
           </div>
           <Progress step={step} />
+          {onCancel && !building ? <OnboardButton size="sm" variant="secondary" onClick={onCancel}>Return to workspace</OnboardButton> : null}
         </header>
 
         <main className="cf-onboard__main">
@@ -1228,14 +1230,14 @@ function Onboarding({ data, onComplete }) {
                 Set up your applications hub
               </h1>
               <p style={{ margin: "0 0 20px", fontSize: 15, lineHeight: 1.65, color: "var(--body)", maxWidth: 540, textWrap: "pretty" }}>
-                Connect an AI, share who you are and as much of your story as you want, tune college-list preferences,
-                then let the copilot build your hub and a preliminary school list.
+                Share your academics and interests to get a balanced, data-backed starting list.
+                Organize your applications, deadlines, and essays. AI help is optional.
               </p>
               <ul className="cf-onboard-checklist">
-                <li>Connect Grok or ChatGPT</li>
+                <li>Optional: connect Grok or ChatGPT</li>
                 <li>Basics, academics, activities, awards — pile on detail</li>
                 <li>List strategy: ambitious, just right, or conservative</li>
-                <li>AI builds profile + preliminary college list</li>
+                <li>Get a college list with fit explanations and clear uncertainties</li>
               </ul>
             </div>
           ) : null}
@@ -1279,10 +1281,10 @@ function Onboarding({ data, onComplete }) {
                 At least one GPA is required. SAT is optional — mark test-optional if you’re not reporting scores.
               </p>
               <div style={{ maxWidth: 440 }}>
-                <OnboardField label="Weighted GPA" required={!present(draft.gpaUnweighted)}>
+                <OnboardField label="Weighted GPA" required={!present(draft.gpaUnweighted)} hint="0–6 scale">
                   <OnboardInput value={draft.gpaWeighted} onChange={set("gpaWeighted")} placeholder="4.28" inputMode="decimal" />
                 </OnboardField>
-                <OnboardField label="Unweighted GPA" required={!present(draft.gpaWeighted)}>
+                <OnboardField label="Unweighted GPA" required={!present(draft.gpaWeighted)} hint="0–4 scale">
                   <OnboardInput value={draft.gpaUnweighted} onChange={set("gpaUnweighted")} placeholder="3.95" inputMode="decimal" />
                 </OnboardField>
                 <div style={{ marginBottom: 12 }}>
@@ -1305,6 +1307,7 @@ function Onboarding({ data, onComplete }) {
                     </OnboardField>
                   </>
                 ) : null}
+                {academicError ? <p role="status" style={{fontSize:13,color:"var(--muted)"}}>{academicError}</p> : null}
               </div>
             </div>
           ) : null}
@@ -1334,6 +1337,7 @@ function Onboarding({ data, onComplete }) {
             />
           ) : null}
 
+          {id === "build" && connected && !building ? <label style={{display:"flex",gap:8,marginBottom:16,color:"var(--body)",fontSize:14}}><input type="checkbox" checked={useAi} onChange={(e)=>setUseAi(e.target.checked)} />Enrich my saved profile with {providerLabel} (optional)</label> : null}
           {id === "build" ? (
             <BuildStep
               draft={draft}
@@ -1378,7 +1382,7 @@ function Onboarding({ data, onComplete }) {
               )
             ) : (
               <OnboardButton size="md" onClick={goNext} disabled={busy || building || !canNext()}>
-                Continue
+                {id === "connect" && !connected ? "Continue without AI" : "Continue"}
               </OnboardButton>
             )}
           </div>

@@ -3,7 +3,14 @@ node_modules
 # Pipeline raw/processed only — do NOT use bare "data" (it excluded public/data/rankings/)
 ranking/data
 ranking/.venv
-.env.local
-scripts
+.env
+.env.*
+!.env.example
+scripts/*
+!scripts/build-hub.mjs
 *.tsbuildinfo
 .DS_Store
+
+# Private local workspace data and regenerated browser assets
+/data/
+/public/hub/compiled/

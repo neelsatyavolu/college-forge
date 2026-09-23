@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/build-hub.mjs --dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predev": "node scripts/build-hub.mjs",
+    "prebuild": "node scripts/build-hub.mjs",
+    "build:hub": "node scripts/build-hub.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.cjs && node scripts/test-hub-build.mjs"
   },
   "dependencies": {
     "@neelsatyavolu/shared-ai-auth": "https://codeload.github.com/neelsatyavolu/shared-ai-auth/tar.gz/f79707ed304ea612a309bfd849a4581c8a4c44d3",

@@ -161,7 +161,7 @@ export async function GET(req: NextRequest) {
 
     const base = scorecardToCollege(toScorecardCollege(r));
     const ws = await getWorkspace(wsId);
-    const { tags, tier } = fitFor(base, ws.profile.testing.sat || ws.applicant.sat);
+    const { tags, tier } = fitFor(base, ws.profile.testing.sat || ws.applicant.sat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
     // Anything the copilot already researched for this school (deadlines,
     // admit-by-plan, transfer policy) wins — the federal dataset has none of it.
     const saved = ws.colleges.find((c) => c.slug === base.slug);

@@ -29,3 +29,6 @@ data
 !public/data/
 !public/data/rankings/
 !public/data/rankings/**
+
+# Generated local React runtime and compiled hub JSX
+/public/hub/compiled/

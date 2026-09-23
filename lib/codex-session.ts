@@ -115,11 +115,9 @@ export async function getActiveCodexSession(): Promise<CodexTokens | null> {
     };
     writeSessionCookie(merged);
     return merged;
-  } catch (err) {
-    // Surface the real cause (expired refresh token, network failure, or a
-    // changed OAuth flow) instead of silently logging the user out.
-    console.error("[codex-session] token refresh failed:", err);
-    clearSessionCookie();
-    return null;
+  } catch {
+    // A transient refresh outage must not delete a recoverable session. The
+    // connection status reports the failure and lets the user retry/reconnect.
+    throw new Error("Could not refresh your ChatGPT connection. Retry or reconnect in Settings.");
   }
 }

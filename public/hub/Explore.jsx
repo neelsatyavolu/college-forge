@@ -1,4 +1,4 @@
-const { CollegeCard, Chip, Input } = window.CollegeForgeDesignSystem_e95e63;
+const { CollegeCard, Chip } = window.CollegeForgeDesignSystem_e95e63;
 
 const SETTINGS = [
   { id: "all", label: "All" },
@@ -10,7 +10,7 @@ const SETTINGS = [
 
 // Missing Scorecard fields render as em dash — never a raw 0/empty string.
 const dash = (v) =>
-  v === undefined || v === null || v === "" || v === 0 || v === "0" || v === "0%"
+  v === undefined || v === null || v === ""
     ? "—"
     : v;
 
@@ -88,7 +88,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   // Load the full per-school record on demand (programs, tuition, retention…).
   // Keyed by Scorecard id; the light search row renders instantly meanwhile.
   React.useEffect(() => {
-    if (!currentId) { setDetail(null); return; }
+    if (!currentId) { setDetail(null); setDetailLoading(false); return; }
     let cancelled = false;
     setDetailLoading(true);
     setDetail(null);
@@ -156,13 +156,14 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
 
   return (
     <div className="cf-page">
+      <style>{`@media (max-width: 960px) { .cf-split--explore .cf-split__list { width: 100%; max-width: none; } }`}</style>
       <header className="cf-page-header" style={{ borderBottom: "none", paddingBottom: 0, marginBottom: 16 }}>
         <div>
           <h1 className="cf-page-title">Explore colleges</h1>
           <p className="cf-page-lede">
             Browse the U.S. News National Universities top 250, or search any U.S. college. Admit rates, SAT/ACT,
             net price, graduation rate, and earnings come from the College Scorecard. Ranks and campus photos are
-            from U.S. News 2026. Add a school to your list, then let the copilot fill in deadlines and supplements.
+            from U.S. News 2026. Add schools to your list to compare them. Confirm application details with each college.
           </p>
         </div>
       </header>
@@ -171,8 +172,11 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
         {/* Left: search + list */}
         <div className="cf-split__list">
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <Input type="search" placeholder="Search any U.S. college — e.g. Stanford, MIT, UCLA…" value={q}
-              onChange={(e) => { setQ(e.target.value); setSelected(null); }} />
+            <label style={{ display: "block", fontSize: 12, color: "var(--muted)" }}>Search colleges
+              <input type="search" placeholder="College name, e.g. UCLA" value={q}
+                style={{ display: "block", width: "100%", boxSizing: "border-box", marginTop: 6, padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", font: "inherit", fontSize: 14 }}
+                onChange={(e) => { setQ(e.target.value); setSelected(null); }} />
+            </label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
               {SETTINGS.map((s) => (
                 <Chip key={s.id} active={setting === s.id} onClick={() => setSetting(s.id)}>{s.label}</Chip>
@@ -210,7 +214,10 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
               <CollegeCard key={c.slug} name={c.name} location={c.location} rank={c.rank}
                 admit={dash(c.admit)} satRange={dash(c.satRange)} gpa={dash(c.gpa)} photo={c.photo} tags={c.tags}
                 favorite={favorites.includes(c.slug)} selected={current && current.slug === c.slug}
-                onToggleFavorite={() => onToggleFavorite(c.slug)} onSelect={() => setSelected(c.slug)} />
+                onToggleFavorite={() => onToggleFavorite(c.slug)} onSelect={() => {
+                  setSelected(c.slug);
+                  if (window.matchMedia("(max-width: 960px)").matches) document.querySelector(".cf-split__detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }} />
             ))}
           </div>
         </div>
@@ -218,7 +225,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
         {/* Right: detail — takes remaining width */}
         <div className="cf-split__detail">
           {current ? (
-            <ExploreDetail c={current} detail={detail} loading={detailLoading}
+            <ExploreDetail key={current.slug} c={current} detail={detail} savedCollege={myList.find((school) => school.slug === current.slug)} loading={detailLoading}
               favorite={favorites.includes(current.slug)}
               onToggleFavorite={() => onToggleFavorite(current.slug)}
               onAdd={addCollege} onRemove={removeCollege}

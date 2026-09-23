@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { Workspace } from "./store";
 
 function line(s: string): string {
@@ -5,7 +6,7 @@ function line(s: string): string {
 }
 
 /** Plain-text pack sized for paste into Common App / counselor email. */
-export function exportPlainText(ws: Workspace): string {
+export function exportPlainText(ws: Workspace, commonAppEssayId?: string): string {
   const a = ws.applicant;
   const p = ws.profile;
   const out: string[] = [];
@@ -45,8 +46,8 @@ export function exportPlainText(ws: Workspace): string {
   for (const c of ws.colleges) {
     const st = ws.applications?.[c.slug]?.status || "researching";
     out.push(
-      `• ${c.name} (${c.tier || "?"}) · ${c.deadline || "deadline TBD"} · status: ${st}` +
-        (c.admit ? ` · admit ${c.admit}` : "")
+      `• ${c.name} (${c.tier === "safety" ? "likely" : c.tier || "not assessed"}) · ${c.deadline || "deadline TBD"} · status: ${st}` +
+        (c.admit ? ` · overall admit ${c.admit}` : "")
     );
   }
   if (ws.ed) out.push(`\nEarly Decision (binding): ${ws.ed.school} by ${ws.ed.deadline || "—"}`);
@@ -83,14 +84,14 @@ export function exportPlainText(ws: Workspace): string {
   out.push("ESSAY DRAFTS");
   out.push("-".repeat(40));
   const allEssays = [
-    ...ws.essays.commonApp,
+    ...ws.essays.commonApp.filter((essay) => !commonAppEssayId || essay.id === commonAppEssayId),
     ...Object.entries(ws.essays.supplements).flatMap(([slug, items]) =>
       items.map((e) => ({ ...e, group: e.group || slug }))
     ),
   ];
   for (const e of allEssays) {
-    const draft = ws.essayDrafts?.[e.id] || e.starter || "";
-    out.push(`\n## ${e.label}`);
+    const draft = ws.essayDrafts?.[e.id] ?? e.starter ?? "";
+    out.push(`\n## ${e.group ? `${e.group} — ` : ""}${e.label}`);
     out.push(`Prompt: ${e.prompt}`);
     out.push(`Limit: ${e.limit} ${e.unit}`);
     out.push(draft.trim() ? draft : "(empty draft)");
@@ -132,13 +133,18 @@ export function exportCounselorBrief(ws: Workspace): string {
   for (const tier of ["reach", "target", "safety"] as const) {
     const group = ws.colleges.filter((c) => c.tier === tier);
     if (!group.length) continue;
-    lines.push(`### ${tier[0].toUpperCase()}${tier.slice(1)}s`);
+    lines.push(`### ${{ reach: "Reaches", target: "Targets", safety: "Likely" }[tier]}`);
     for (const c of group) {
       const st = ws.applications?.[c.slug]?.status || "researching";
       lines.push(`- **${c.short || c.name}** — ${c.deadline || "TBD"} · ${st}${c.admit ? ` · ${c.admit} admit` : ""}`);
     }
   }
   lines.push("");
+  const unassessed = ws.colleges.filter((college) => !college.tier);
+  if (unassessed.length) {
+    lines.push("### Not assessed");
+    unassessed.forEach((college) => lines.push(`- **${college.name}** — ${college.deadline || "deadline TBD"}`));
+  }
   lines.push("## Top activities");
   for (const act of [...p.activities].sort((x, y) => x.rank - y.rank).slice(0, 5)) {
     lines.push(`${act.rank}. **${act.name}** — ${act.role || ""} (${act.hpw || "?"} hr/wk)`);
@@ -160,81 +166,74 @@ export function exportCounselorBrief(ws: Workspace): string {
 }
 
 function icsEscape(s: string): string {
-  return s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  return s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r\n|\r|\n/g, "\\n");
 }
 
-function toIcsDate(raw: string): string | null {
-  // ISO YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-    return raw.replace(/-/g, "");
+function toIcsDate(raw: string, graduationYear: number): string | null {
+  const iso = raw.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const named = raw.trim().match(/^([A-Za-z]+)\s+(\d{1,2})(?:,?\s+(\d{4}))?$/);
+  if (!iso && !named) return null;
+  const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+  const monthName = named?.[1].toLowerCase();
+  const month = iso ? Number(iso[2]) - 1 : months.findIndex((name) => name === monthName || name.slice(0, 3) === monthName);
+  const day = Number(iso ? iso[3] : named![2]);
+  const explicitYear = iso ? iso[1] : named![3];
+  const year = explicitYear ? Number(explicitYear) : graduationYear ? graduationYear - (month >= 6 ? 1 : 0) : 0;
+  if (!Number.isInteger(year) || year < 1900 || year > 9999 || month < 0 || month > 11) return null;
+  const date = new Date(Date.UTC(year, month, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month || date.getUTCDate() !== day) return null;
+  return `${year}${String(month + 1).padStart(2, "0")}${String(day).padStart(2, "0")}`;
+}
+
+// RFC 5545: fold content lines at 75 octets without splitting UTF-8 characters.
+function foldIcsLine(line: string): string {
+  const result: string[] = [];
+  let current = "";
+  for (const character of line) {
+    if (Buffer.byteLength(current + character, "utf8") > 75) {
+      result.push(current);
+      current = " ";
+    }
+    current += character;
   }
-  // "Nov 1" / "Nov 1, 2026" style — approximate current cycle year
-  const m = raw.match(/([A-Za-z]{3})\s+(\d{1,2})(?:,?\s*(\d{4}))?/);
-  if (!m) return null;
-  const months: Record<string, string> = {
-    Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
-    Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12",
-  };
-  const mo = months[m[1]];
-  if (!mo) return null;
-  const day = m[2].padStart(2, "0");
-  const year = m[3] || guessCycleYear(mo);
-  return `${year}${mo}${day}`;
+  result.push(current);
+  return result.join("\r\n");
 }
 
-function guessCycleYear(mo: string): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  // Nov–Dec of senior year fall; Jan–Mar of following spring
-  if (["01", "02", "03", "04", "05"].includes(mo)) return String(y + (now.getMonth() >= 6 ? 1 : 0));
-  return String(now.getMonth() >= 6 ? y : y);
-}
-
-/** Calendar (.ics) of deadlines and critical dates. */
-export function exportIcs(ws: Workspace): string {
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//College Forge//EN",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    "X-WR-CALNAME:College Forge deadlines",
-  ];
+/** Calendar content and an explicit count of dates that need correction. */
+export function exportCalendar(ws: Workspace): { text: string; included: number; skipped: number } {
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//College Forge//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:College Forge deadlines"];
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-
   const events: { date: string; title: string; detail?: string }[] = [];
-  for (const d of ws.criticalDates || []) {
-    events.push({ date: d.date, title: d.label, detail: d.detail });
+  for (const date of ws.criticalDates || []) events.push({ date: date.date, title: date.label, detail: date.detail });
+  for (const college of ws.colleges || []) {
+    for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name });
+    if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name });
   }
-  for (const c of ws.colleges || []) {
-    for (const d of c.deadlines || []) {
-      events.push({ date: d.date, title: `${c.short || c.name} — ${d.plan}`, detail: c.name });
-    }
-    if (c.deadline && !c.deadlines?.length) {
-      events.push({ date: c.deadline, title: `${c.short || c.name} — application`, detail: c.name });
-    }
+  for (const scholarship of ws.scholarships || []) {
+    if (scholarship.deadline) events.push({ date: scholarship.deadline, title: `Scholarship: ${scholarship.name}`, detail: scholarship.notes });
   }
-  for (const s of ws.scholarships || []) {
-    if (s.deadline) events.push({ date: s.deadline, title: `Scholarship: ${s.name}`, detail: s.notes });
+  for (const recommendation of ws.recommendations || []) {
+    if (recommendation.deadline) events.push({ date: recommendation.deadline, title: `Rec letter: ${recommendation.name}`, detail: recommendation.type });
   }
-  for (const r of ws.recommendations || []) {
-    if (r.deadline) events.push({ date: r.deadline, title: `Rec letter: ${r.name}`, detail: r.type });
-  }
-
-  let i = 0;
-  for (const e of events) {
-    const dt = toIcsDate(e.date);
-    if (!dt) continue;
-    i += 1;
-    lines.push("BEGIN:VEVENT");
-    lines.push(`UID:cf-${i}-${dt}@college-forge`);
-    lines.push(`DTSTAMP:${stamp}`);
-    lines.push(`DTSTART;VALUE=DATE:${dt}`);
-    lines.push(`SUMMARY:${icsEscape(e.title)}`);
-    if (e.detail) lines.push(`DESCRIPTION:${icsEscape(e.detail)}`);
+  const seen = new Set<string>();
+  let included = 0;
+  let skipped = 0;
+  for (const event of events) {
+    const date = toIcsDate(event.date, Number(ws.profile.gradYear));
+    if (!date) { skipped += 1; continue; }
+    const uid = createHash("sha256").update(JSON.stringify([ws.draftStorageKey, date, event.title, event.detail || ""])).digest("hex").slice(0, 32);
+    if (seen.has(uid)) continue;
+    seen.add(uid);
+    included += 1;
+    lines.push("BEGIN:VEVENT", `UID:cf-${uid}@college-forge`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${date}`, `SUMMARY:${icsEscape(event.title)}`);
+    if (event.detail) lines.push(`DESCRIPTION:${icsEscape(event.detail)}`);
     lines.push("END:VEVENT");
   }
-
   lines.push("END:VCALENDAR");
-  return lines.join("\r\n");
+  return { text: lines.map(foldIcsLine).join("\r\n") + "\r\n", included, skipped };
+}
+
+export function exportIcs(ws: Workspace): string {
+  return exportCalendar(ws).text;
 }

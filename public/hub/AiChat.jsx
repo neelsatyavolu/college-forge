@@ -267,7 +267,7 @@ function ConnectPanel({ status, onConnected }) {
     <div style={{ borderRadius: "var(--radius-md)", background: "var(--surface-soft)", border: "1px solid var(--hairline)", padding: 14, fontSize: 13 }}>
       <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--ink)", fontWeight: 600, marginBottom: 8 }}>Connect an AI to power the copilot</div>
       <p style={{ margin: "0 0 10px", color: "var(--muted)", lineHeight: 1.5 }}>
-        The copilot runs on <strong style={{ color: "var(--ink)" }}>your own</strong> Grok (xAI) or ChatGPT account. Nothing works until one is connected.
+        The copilot runs on <strong style={{ color: "var(--ink)" }}>your own</strong> Grok (xAI) or ChatGPT account. Connect to chat; the rest of your hub works without AI.
       </p>
       {!flow ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -282,12 +282,12 @@ function ConnectPanel({ status, onConnected }) {
             <ol style={{ margin: "6px 0 0", paddingLeft: 18, display: "flex", flexDirection: "column", gap: 3 }}>
               <li>Approve the request.</li>
               <li>
-                You’ll land on a <strong style={{ color: "var(--ink)" }}>page that fails to load</strong> (localhost). That’s expected.
+                {flow === "grok" ? "Copy the displayed authorization code or full callback URL." : <>You’ll land on a <strong style={{ color: "var(--ink)" }}>page that fails to load</strong> (localhost). That’s expected.</>}
               </li>
-              <li>Copy that page’s full URL from the address bar and paste it below.</li>
+              <li>{flow === "grok" ? "Paste the code or URL below." : "Copy that page’s full URL from the address bar and paste it below."}</li>
             </ol>
           </div>
-          <input value={callback} onChange={(e) => setCallback(e.target.value)} placeholder="Paste the localhost URL from the address bar…"
+          <input aria-label="AI sign-in response" autoComplete="off" spellCheck={false} value={callback} onChange={(e) => setCallback(e.target.value)} placeholder={flow === "grok" ? "Paste the authorization code or callback URL…" : "Paste the localhost URL from the address bar…"}
             style={{ width: "100%", boxSizing: "border-box", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 10px", fontSize: 12.5, color: "var(--ink)", outline: "none", fontFamily: "var(--font-body)" }} />
           <div style={{ display: "flex", gap: 8 }}>
             <Button size="sm" onClick={complete} disabled={busy || !callback.trim()}>Finish sign-in</Button>
@@ -295,12 +295,12 @@ function ConnectPanel({ status, onConnected }) {
           </div>
         </div>
       )}
-      {err ? <p style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 12 }}>{err}</p> : null}
+      {err ? <p role="alert" style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 12 }}>{err}</p> : null}
     </div>
   );
 }
 
-function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view }) {
+function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view, initialPrompt, returnFocusRef }) {
   const [messages, setMessages] = React.useState([]);
   const [input, setInput] = React.useState("");
   const [busy, setBusy] = React.useState(false);
@@ -311,6 +311,17 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
   const [error, setError] = React.useState("");
   const scrollRef = React.useRef(null);
   const fileRef = React.useRef(null);
+  const inputRef = React.useRef(null);
+  const sendingRef = React.useRef(false);
+  const [connectionError, setConnectionError] = React.useState("");
+  React.useEffect(() => {
+    if (!open) return;
+    const previous = returnFocusRef?.current || document.activeElement;
+    const timer = setTimeout(() => inputRef.current?.focus(), 0);
+    return () => { clearTimeout(timer); if (previous?.isConnected) previous.focus(); };
+  }, [open]);
+
+  React.useEffect(() => { if (initialPrompt) setInput(initialPrompt.text); }, [initialPrompt]);
 
   const suggestions = React.useMemo(
     () => cfChatAdaptiveSuggestions(data, view),
@@ -323,11 +334,14 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
   const loadStatus = React.useCallback(async () => {
     try {
       const res = await fetch("/api/ai/status", { credentials: "same-origin", cache: "no-store" });
-      if (!res.ok) return null;
+      if (!res.ok) throw new Error("Couldn’t check AI connections. Please retry.");
       const j = await res.json();
       setProvider(j);
+      setConnectionError(Object.values(j.connectionErrors || {}).join(" "));
       return j;
     } catch (e) {
+      setProvider(null);
+      setConnectionError(e.message || "Couldn’t check AI connections. Please retry.");
       return null;
     }
   }, []);
@@ -337,7 +351,10 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, busy, status]);
 
-  const connected = provider && provider.active;
+  const selected = loadAiPrefs().preferred;
+  const choice = selected && selected !== "auto" ? selected : provider?.active;
+  const available = (state, name) => name === "codex" ? state?.codexConnected : name === "grok" ? state?.grokConnected : name === "opencode" ? state?.opencodeAvailable : false;
+  const connected = available(provider, choice);
 
   const appendToLastAssistant = (text) => {
     setMessages((m) => {
@@ -366,90 +383,78 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
 
   const send = async (textArg) => {
     const text = (textArg != null ? textArg : input).trim();
-    if ((!text && attachments.length === 0) || busy) return;
-    // Re-check with the server rather than trusting cached client state: if the
-    // OAuth session expired, the composer may still look enabled.
-    const fresh = await loadStatus();
-    if (!fresh || !fresh.active) {
-      setError("No AI is connected. Connect Grok or ChatGPT above, then send again.");
-      return;
-    }
-    setError("");
-    if (onUserMessage) onUserMessage();
-
-    const userContent =
-      text ||
-      `I uploaded ${attachments.map((a) => a.name).join(", ")}. Please read them and populate my hub.`;
-    const attachNote = attachments.length && text
-      ? `${text}\n\n(Attached files: ${attachments.map((a) => a.name).join(", ")} — read them and update my hub.)`
-      : userContent;
-
-    const outgoing = [...messages, { role: "user", content: attachNote }];
-    setMessages([...outgoing, { role: "assistant", content: "" }]);
-    setInput(""); setAttachments([]); setBusy(true); setStatus("Thinking…");
-
+    if ((!text && attachments.length === 0) || sendingRef.current || uploading) return;
+    sendingRef.current = true; setBusy(true); setStatus("Checking connection…"); setError("");
+    const sentAttachments = attachments;
+    let submitted = false;
     try {
+      const fresh = await loadStatus();
+      if (!fresh) throw new Error("Couldn’t check AI connections. Retry connections, then send again.");
       const prefs = loadAiPrefs();
+      const chosen = prefs.preferred && prefs.preferred !== "auto" ? prefs.preferred : fresh.active;
+      if (!available(fresh, chosen)) throw new Error(`${chosen === "codex" ? "ChatGPT" : chosen === "grok" ? "Grok" : "AI"} is not available. Connect it in Settings or select Auto. Your message has not been sent.`);
+      if (onUserMessage) onUserMessage();
+      const userContent = text || `I uploaded ${sentAttachments.map(a => a.name).join(", ")}. Please read them and populate my hub.`;
+      const attachNote = sentAttachments.length && text ? `${text}\n\n(Attached files: ${sentAttachments.map(a => a.name).join(", ")} — read them and update my hub.)` : userContent;
+      const outgoing = [...messages, { role: "user", content: attachNote }];
+      setMessages([...outgoing, { role: "assistant", content: "" }]);
+      setInput(""); setAttachments([]); setStatus("Thinking…"); submitted = true;
       const body = { messages: outgoing };
       if (prefs.preferred && prefs.preferred !== "auto") body.provider = prefs.preferred;
       if (prefs.grokModel) body.grokModel = prefs.grokModel;
       if (prefs.codexModel) body.codexModel = prefs.codexModel;
       if (prefs.opencodeModel) body.opencodeModel = prefs.opencodeModel;
-
       const res = await fetch("/api/ai/chat", {
         method: "POST", credentials: "same-origin",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
+        headers: { "content-type": "application/json" }, body: JSON.stringify(body),
       });
       if (!res.ok || !res.body) {
-        let msg = `Request failed (${res.status}).`;
-        try { const j = await res.json(); if (j.error) msg = j.error; } catch (e) {}
-        throw new Error(msg);
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || `Request failed (${res.status}).`);
       }
       const reader = res.body.getReader();
       const dec = new TextDecoder();
-      let buf = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let idx;
-        while ((idx = buf.indexOf("\n")) >= 0) {
-          const line = buf.slice(0, idx); buf = buf.slice(idx + 1);
-          if (!line.trim()) continue;
-          let ev; try { ev = JSON.parse(line); } catch (e) { continue; }
-          if (ev.type === "delta") appendToLastAssistant(ev.text);
-          else if (ev.type === "status") {
-            const soft = window.cfChatStatus && window.cfChatStatus.softenStatusMessage
-              ? window.cfChatStatus.softenStatusMessage(ev.message)
-              : ev.message;
-            setStatus(soft || "Working…");
-          } else if (ev.type === "tool") {
-            const label = window.cfChatStatus && window.cfChatStatus.friendlyToolMessage
-              ? window.cfChatStatus.friendlyToolMessage(ev.name, ev.path)
-              : "Updating your hub…";
-            setStatus(label);
-          }
-          else if (ev.type === "error") { appendToLastAssistant(`⚠️ ${ev.message}`); }
-          else if (ev.type === "done") setStatus("");
+      let buf = "", completed = false;
+      const event = line => {
+        if (!line.trim()) return;
+        const ev = JSON.parse(line);
+        if (ev.type === "delta") appendToLastAssistant(ev.text);
+        else if (ev.type === "status") setStatus(window.cfChatStatus?.softenStatusMessage?.(ev.message) || ev.message || "Working…");
+        else if (ev.type === "tool") setStatus(window.cfChatStatus?.friendlyToolMessage?.(ev.name, ev.path) || "Updating your hub…");
+        else if (ev.type === "error") throw new Error(ev.message || "The provider could not finish the response.");
+        else if (ev.type === "done") completed = true;
+      };
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+          let idx;
+          while ((idx = buf.indexOf("\n")) >= 0) { const line = buf.slice(0, idx); buf = buf.slice(idx + 1); event(line); }
         }
-      }
+        buf += dec.decode();
+        if (buf.trim()) event(buf);
+        if (!completed) throw new Error("The connection ended before the response finished.");
+      } finally { await reader.cancel().catch(() => {}); }
     } catch (e) {
-      appendToLastAssistant(`⚠️ ${e.message}`);
+      setError(`${e.message || "Couldn’t send your message."}${submitted ? " Your prompt is ready to edit or resend. Review any saved hub changes before retrying." : ""}`);
+      setInput(current => current || text);
+      setAttachments(current => current.length ? current : sentAttachments);
+    } finally {
+      sendingRef.current = false; setBusy(false); setStatus("");
+      if (submitted && onWorkspaceChange) onWorkspaceChange();
+      inputRef.current?.focus();
     }
-    setBusy(false); setStatus("");
-    if (onWorkspaceChange) onWorkspaceChange();
-    loadStatus();
   };
 
   if (!open) return null;
 
   const activeLabel = connected
-    ? (provider.active === "grok" ? "Grok" : provider.active === "codex" ? "ChatGPT" : "AI")
-    : "not connected";
+    ? (choice === "grok" ? "Grok" : choice === "codex" ? "ChatGPT" : "OpenCode")
+    : choice ? `${choice === "codex" ? "ChatGPT" : choice === "grok" ? "Grok" : "OpenCode"} unavailable` : "not connected";
 
   return (
-    <div className="cf-chat-panel" style={{ position: "absolute", bottom: 16, right: 16, zIndex: 50, display: "flex", flexDirection: "column", borderRadius: "var(--radius-xl)", border: "1px solid var(--hairline)", background: "var(--canvas)", boxShadow: "var(--shadow-lg)", overflow: "hidden" }}>
+    <div role="dialog" aria-label="College advisor" onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } }} className="cf-chat-panel" style={{ position: "absolute", pointerEvents: "auto", bottom: 16, right: 16, zIndex: 50, display: "flex", flexDirection: "column", borderRadius: "var(--radius-xl)", border: "1px solid var(--hairline)", background: "var(--canvas)", boxShadow: "var(--shadow-lg)", overflow: "hidden" }}>
       {/* Header */}
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderBottom: "1px solid var(--hairline)", background: "var(--surface-card)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
@@ -463,7 +468,8 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
 
       {/* Messages */}
       <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-        {!connected ? <ConnectPanel status={provider} onConnected={loadStatus} /> : null}
+        {connectionError ? <div role="alert">{connectionError} <button type="button" onClick={loadStatus} disabled={busy}>Retry connections</button></div> : null}
+        {!connected && provider ? <ConnectPanel status={provider} onConnected={loadStatus} /> : null}
 
         {messages.length === 0 && !busy ? (
           <div style={{ fontSize: 13.5, color: "var(--body)" }}>
@@ -472,7 +478,7 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
               <p style={{ margin: "0 0 6px", fontSize: 11, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--ink)", fontWeight: 600 }}>Try</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {suggestions.map((s) => (
-                  <button key={s} type="button" onClick={() => send(s)} disabled={!connected} style={{ textAlign: "left", cursor: connected ? "pointer" : "not-allowed", opacity: connected ? 1 : 0.55, border: "1px solid var(--hairline)", background: "var(--canvas)", borderRadius: "var(--radius-sm)", padding: "7px 10px", fontSize: 12.5, color: "var(--body)" }}>{s}</button>
+                  <button key={s} type="button" onClick={() => send(s)} disabled={!connected || busy || uploading} style={{ textAlign: "left", cursor: connected ? "pointer" : "not-allowed", opacity: connected ? 1 : 0.55, border: "1px solid var(--hairline)", background: "var(--canvas)", borderRadius: "var(--radius-sm)", padding: "7px 10px", fontSize: 12.5, color: "var(--body)" }}>{s}</button>
                 ))}
               </div>
             </div>
@@ -514,7 +520,7 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
               ))}
             </div>
           ) : null}
-          {error ? <div style={{ fontSize: 12, color: "var(--error)" }}>{error}</div> : null}
+          {error ? <div role="alert" style={{ fontSize: 12, color: "var(--error)" }}>{error}</div> : null}
         </div>
       ) : null}
 
@@ -532,10 +538,9 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view })
               <AttachIcon size={18} />
             )}
           </button>
-          <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={connected ? "Ask, or upload files to populate your hub…" : "Connect an AI above to begin…"}
-            disabled={!connected}
+          <input ref={inputRef} aria-label="Message to college advisor" value={input} onChange={(e) => setInput(e.target.value)} placeholder={connected ? "Ask, or upload files to populate your hub…" : "Connect an AI above to begin…"}
             style={{ flex: 1, borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 12px", fontSize: 13.5, color: "var(--ink)", outline: "none", fontFamily: "var(--font-body)" }} />
-          <Button type="submit" size="md" disabled={busy || !connected || (!input.trim() && attachments.length === 0)}>{busy ? "…" : "Send"}</Button>
+          <Button type="submit" size="md" disabled={busy || uploading || !connected || (!input.trim() && attachments.length === 0)}>{busy ? "…" : "Send"}</Button>
         </div>
       </form>
     </div>
