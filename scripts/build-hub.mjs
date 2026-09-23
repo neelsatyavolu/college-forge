@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { Script } from 'node:vm';
 import ts from 'typescript';
+import { stampAssetVersions } from './hub-version.mjs';
 
 const require = createRequire(import.meta.url);
 const hub = fileURLToPath(new URL('../public/hub/', import.meta.url));
@@ -51,6 +52,18 @@ async function buildHub() {
 }
 
 await buildHub();
+
+// Vercel builds only (local builds keep the tracked HTML unchanged): give each
+// deploy fresh asset URLs so browsers never pair old hub code with a new API.
+if (process.env.VERCEL) {
+  const version = (process.env.VERCEL_GIT_COMMIT_SHA || process.env.VERCEL_DEPLOYMENT_ID || String(Date.now())).slice(0, 12);
+  for (const page of ['index.html', 'share.html', 'maia-import.html']) {
+    const file = join(hub, page);
+    await writeFile(file, stampAssetVersions(await readFile(file, 'utf8'), version));
+  }
+  console.log(`Stamped hub asset URLs with ?v=${version}`);
+}
+
 if (process.argv.includes('--watch') || process.argv.includes('--dev')) {
   let timer;
   let queue = Promise.resolve();
