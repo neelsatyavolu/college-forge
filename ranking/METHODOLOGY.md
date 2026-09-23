@@ -12,7 +12,7 @@ A **comparison of past graduates' outcomes**, from federal administrative data o
 
 1. **Outcomes, not inputs.** Admit rate, test scores, yield, research, spending and reputation get no direct weight. (Admissions variables appear only in the graduate-destination model for the cost-of-living view, §4, and in the separate expectations view, §8.)
 2. **Compare like with like.** Graduates are compared with graduates of the same major and credential nationally.
-3. **Fewest unvalidated assumptions in the headline.** The headline ranks earnings as reported and uses **no geography at all**. The cost-of-living ordering is published alongside; it depends on where graduates work, which is modeled for about three-quarters of schools and not externally validated (§4).
+3. **Two orderings, clearly labeled.** The page shows the **cost-of-living ordering by default** (a product choice). It depends on where graduates work, which is modeled for about three-quarters of schools and not externally validated (§4). The **as-reported ordering** uses no geography at all and is one click away. It is the ordering the backtest validates (§10), and it is the reference for the sensitivity table (§9).
 4. **Model choices are made by prediction, not by how the list looks.** Where the data can decide (error scale, how much to shrink, whether to pool with the school), the choice was made by next-class prediction on development institutions (§10). Component weights are value judgments fixed before results were inspected.
 5. **Nothing is imputed.** Suppressed programs are not ranked; unknown completion counts stay unknown.
 
@@ -38,9 +38,9 @@ Territories are excluded (no BEA price parities). Programs are identified by OPE
 
 Dollar years come from the data dictionary's cohort maps (`config.FIELD_DOLLAR_YEAR`); every field is restated in **2024 dollars** at load. `tests/test_data_contract.py` checks published figures against the official file for both modeled horizons, both credentials and a branch-campus group. "Earnings" are annual W-2 wages plus positive self-employment earnings for federal aid recipients working and not enrolled — not base salaries, and not international students.
 
-## 4. Cost of living (alternative ordering only)
+## 4. Cost of living (the page's default ordering)
 
-BEA Regional Price Parities with 10 extra percentage points of housing weight (a young-renter basket). In-state graduates are priced at the campus labor market (counties within 40 miles); leavers at Census-division destinations from PSEO. **Destinations are observed for 460 of 1,740 schools and modeled for the rest** (held-out log error ≈ 0.016). That model reconstructs a target built from coarse destinations and campus-local prices, so its fit is not external validation, and in-state is not the same as near campus. State taxes are not deducted. For these reasons geography is used only in the alternative ordering.
+BEA Regional Price Parities with 10 extra percentage points of housing weight (a young-renter basket). In-state graduates are priced at the campus labor market (counties within 40 miles); leavers at Census-division destinations from PSEO. **Destinations are observed for 460 of 1,740 schools and modeled for the rest** (held-out log error ≈ 0.016). That model reconstructs a target built from coarse destinations and campus-local prices, so its fit is not external validation, and in-state is not the same as near campus. State taxes are not deducted. The as-reported ordering avoids all of these assumptions.
 
 ## 5. Program estimates
 
@@ -58,7 +58,7 @@ The 4-year baseline is Scorecard's official national median (`EARN_MDN_4YR_NAT`)
 
 **Two-level model (selected by backtest).** Program premium = school effect + program deviation + noise.
 
-- **School effect** (overall ranking): a school's programs are pooled, then shrunk toward a prior in proportion to how little data the school has. The prior is the typical premium α (≈ 0) for the headline. For the cost-of-living view it is `α + β·ln(RPP/100)` (β ≈ 0.82 bachelor's, 0.99 master's: nominal pay rises with local prices).
+- **School effect** (overall ranking): a school's programs are pooled, then shrunk toward a prior in proportion to how little data the school has. The prior is the typical premium α (≈ 0) for the as-reported ordering. For the cost-of-living view it is `α + β·ln(RPP/100)` (β ≈ 0.82 bachelor's, 0.99 master's: nominal pay rises with local prices).
 - **Program estimate** (per-major rankings): the program's own premium, shrunk toward its school's effect by `b = ω² / (ω² + k·se²)`, with **k = 1.5 bachelor's, 2 master's** chosen by next-class prediction.
 
 **A program therefore borrows from its own school's results in other majors**, in proportion to how noisy its own data are. v2.1 did not, on the intuition that a program should stand on its own graduates. The backtest showed that borrowing predicts the next class better. What is borrowed is measured graduate outcomes, not reputation, and a program with plenty of graduates keeps mostly its own result.
@@ -79,11 +79,11 @@ Components are z-scored across the ranked universe (clipped at ±3). The composi
 
 ## 7. Per-major rankings
 
-Within one major and credential, schools are ordered by the program estimate (§5): as reported by default, or with the price-aware prior and divided by the graduate price level in the alternative. Because estimates shrink by noise, the order is not the same as sorting the displayed earnings figure. Graduation and employment are not scored in major tables. Degree earnings are not occupation outcomes.
+Within one major and credential, schools are ordered by the program estimate (§5): by default with the price-aware prior and divided by the graduate price level, or as reported. Because estimates shrink by noise, the order is not the same as sorting the displayed earnings figure. Graduation and employment are not scored in major tables. Degree earnings are not occupation outcomes.
 
 ## 8. Beats expectations
 
-The headline score minus a 10-fold cross-fitted prediction from SAT/ACT (with a missing flag), admit rate, Pell share and first-generation share. The student-profile model explains **about 61% of score variation out of fold; a typical college lands within about ±9 points of its prediction**. Only the regression is cross-fitted; score normalization and a few median-filled predictors use the full universe. It describes outcomes above or below a student-profile model; it is not a causal value-added estimate. Per-school uncertainty is not yet published, so small gaps should be read loosely.
+The as-reported score minus a 10-fold cross-fitted prediction from SAT/ACT (with a missing flag), admit rate, Pell share and first-generation share. The student-profile model explains **about 61% of score variation out of fold; a typical college lands within about ±9 points of its prediction**. Only the regression is cross-fitted; score normalization and a few median-filled predictors use the full universe. It describes outcomes above or below a student-profile model; it is not a causal value-added estimate. Per-school uncertainty is not yet published, so small gaps should be read loosely.
 
 ## 9. Uncertainty and sensitivity
 
@@ -91,7 +91,7 @@ The headline score minus a 10-fold cross-fitted prediction from SAT/ACT (with a 
 
 **Rank ranges** are 5th–95th percentiles over 500 redraws of those estimates, plus, in the cost-of-living ordering only, the graduate price level where it is modeled. A price error ε moves an adjusted estimate by `(loading − 1)·ε`, with `loading = (1 − b)·β` through the prior. Graduation and employment are held fixed. **Rank ranges are conditional on the model and are not themselves empirically calibrated.** Weights and similar choices are covered by sensitivity:
 
-| Alternative | Rank correlation with headline | Same top 25 | Median school moves |
+| Alternative (vs. the as-reported ordering) | Rank correlation | Same top 25 | Median school moves |
 |---|---|---|---|
 | Equal weights | 0.977 | 18 | 43 places |
 | Early earnings only | 0.901 | 23 | 80 |
@@ -105,7 +105,7 @@ The coverage-floor rows only show that re-standardizing on a smaller universe ba
 
 ## 10. Validation (`src/backtest.py` → `out/backtest.json`)
 
-**Design.** Predict the 4-year earnings premium of **2017–19 graduates** (current release) from **2014–16 graduates' 4-year earnings, else 5-year** (historical files `FieldOfStudyData1819_1920` and `…1920_2021`), using the production observation model and the headline's flat prior. Completion years do not overlap; programs are matched on OPEID6 × CIP × credential. Evaluated on programs with ≥50 target earners.
+**Design.** Predict the 4-year earnings premium of **2017–19 graduates** (current release) from **2014–16 graduates' 4-year earnings, else 5-year** (historical files `FieldOfStudyData1819_1920` and `…1920_2021`), using the production observation model and the as-reported ordering's flat prior. Completion years do not overlap; programs are matched on OPEID6 × CIP × credential. Evaluated on programs with ≥50 target earners.
 
 **Protocol.** Institutions are split 80/20 by a fixed hash of their OPEID6. On the development 80% only, the error scale is calibrated, then a fixed grid is searched: estimator ∈ {shrink toward the major only, two-level school + program} × k ∈ {0.5, 1, 1.5, 2, 3, 4, 6, 8, 12}. The criterion is within-major RMSE, which removes each major's mean error. That offset comes from the two files building national medians differently and is shared by every estimator. The frozen choice is scored once on the 20% test institutions.
 
@@ -141,7 +141,7 @@ v3 improves prediction error for both credentials and within-major ordering for 
 ## Changes
 
 **v3.0**
-- Headline ranks earnings as reported and uses no geography; cost of living is the alternative.
+- Two orderings: as reported (no geography; validated by the backtest) and after cost of living (the page default since v3.0.1).
 - Removed the 10-years-after-entry earnings component from the score (population mismatch); weights renormalized.
 - Observation model: 4-year earnings, else 5-year; 1-year no longer scored.
 - Error scale, floor and shrinkage multiplier calibrated and selected by a held-out next-class backtest; per-major estimates borrow from the school in proportion to their noise.

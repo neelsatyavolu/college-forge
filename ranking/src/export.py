@@ -142,10 +142,12 @@ def export_all(
     base = {"generated": generated, "methodology_version": METHODOLOGY_VERSION,
             "dollar_year": REFERENCE_YEAR, "cohorts": EARNINGS_COHORTS}
     meta = {**base, "weights": OVERALL_WEIGHTS}
-    # top250.json: headline top 250 (the recommendation engine's candidate pool).
+    # top250.json: top 250 in the page's default ordering (after cost of living); the
+    # recommendation engine's candidate pool, so its ranks match what the page shows.
+    default_top = rows[rows["rank_adjusted"] <= OVERALL_TOP_N].sort_values("rank_adjusted")
     _write(PUBLIC_RANKINGS / "top250.json", {
-        **meta, "n_ranked": int(len(rows)), "n_eligible": n_eligible,
-        "schools": _records(rows.head(OVERALL_TOP_N)),
+        **meta, "n_ranked": int(len(rows)), "n_eligible": n_eligible, "default_ordering": "adjusted",
+        "schools": _records(default_top),
     })
     # overall.json: top 250 under either ordering, for the page's cost-of-living toggle.
     _write(PUBLIC_RANKINGS / "overall.json", {
@@ -156,7 +158,7 @@ def export_all(
     _write(PUBLIC_RANKINGS / "value_added.json", {**meta, "fit": beats_fit, "schools": _records(beats.head(OVERALL_TOP_N))})
 
     overall_rank = rows.set_index("unitid")["rank"]
-    top_ids = set(rows.head(OVERALL_TOP_N)["unitid"])
+    top_ids = set(default_top["unitid"])
     major_meta = {**base, "scoring": MAJOR_SCORING}
     by_school: dict[str, list] = {}
     for (cred, cip), g in majors.groupby(["credential", "CIPCODE"]):
@@ -169,7 +171,8 @@ def export_all(
         })
         if cred == "bachelors":
             for r in g[g["UNITID"].isin(top_ids)].itertuples():
-                by_school.setdefault(str(int(r.UNITID)), []).append([cip, int(r.rank), int(r.n_ranked)])
+                # Default (after cost of living) program ranks, matching the page's default view.
+                by_school.setdefault(str(int(r.UNITID)), []).append([cip, int(r.rank_adjusted), int(r.n_ranked)])
 
     idx = index.rename(columns={"CIPCODE": "cip"}).assign(national_median=lambda d: d["national_median"].round(-2))
     _write(majors_dir / "index.json", {**major_meta, "majors": _records(idx)})

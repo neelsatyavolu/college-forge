@@ -19,8 +19,8 @@ const TABS: { id: View; label: string; blurb: string }[] = [
 ];
 
 const PRICE_OPTIONS: { id: PriceMode; label: string }[] = [
-  { id: "nominal", label: "As reported" },
   { id: "adjusted", label: "After cost of living" },
+  { id: "nominal", label: "As reported" },
 ];
 
 function PriceToggle({ value, onChange }: { value: PriceMode; onChange: (v: PriceMode) => void }) {
@@ -84,9 +84,9 @@ export default function RankingsClient() {
           <div className="cf-eyebrow">CAREER OUTCOMES · BACKTESTED{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
           <h1 className="cf-page-title">Where graduates did best</h1>
           <p className="cf-page-lede rk-lede">
-            How past graduates fared: earnings compared with people who studied the same major elsewhere, plus graduation
-            and employment, from federal records of students who received financial aid. Selectivity and prestige get no
-            direct weight. We checked the earnings estimates against a later graduating class they never saw. Use it to
+            How past graduates fared: earnings compared with people who studied the same major elsewhere and adjusted for
+            living costs where graduates work, plus graduation and employment, from federal records of students who
+            received financial aid. Selectivity and prestige get no direct weight. We checked the earnings estimates against a later graduating class they never saw. Use it to
             discover and compare colleges, not to decide on rank alone.
           </p>
         </header>

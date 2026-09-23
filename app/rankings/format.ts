@@ -46,7 +46,7 @@ type RankFields = {
   rank_adjusted: number; rank_adjusted_low: number; rank_adjusted_high: number;
 };
 
-/** Rank and 5th–95th percentile range for the active ordering (as reported by default). */
+/** Rank and 5th–95th percentile range for the active ordering (after cost of living by default). */
 export function rankFor(row: RankFields, mode: PriceMode): { rank: number; low: number; high: number } {
   return mode === "adjusted"
     ? { rank: row.rank_adjusted, low: row.rank_adjusted_low, high: row.rank_adjusted_high }

@@ -108,7 +108,7 @@ export default function Methodology({ weights, cohorts }: { weights: Weights; co
           <h3>What’s left out on purpose</h3>
           <ul>
             <li><strong>Selectivity and prestige get no direct weight.</strong> Admit rates, test scores, reputation, research and spending describe who gets in, not how graduates do. (Admissions data does help estimate where graduates live for the cost-of-living view, and it drives “Beats expectations.”)</li>
-            <li><strong>Cost of living isn’t in the headline.</strong> The headline uses no location data at all. Where graduates work is estimated for about three-quarters of colleges and hasn’t been checked against better data yet, so it’s an alternative view. Access to expensive, high-paying job markets can itself be a career advantage.</li>
+            <li><strong>Cost of living is an estimate.</strong> Rankings are shown after cost of living by default, but where graduates work is estimated for about three-quarters of colleges and hasn’t been checked against better data yet. Switch to “As reported” to rank on earnings alone, with no location data. That’s the version our backtest checks. Access to expensive, high-paying job markets can itself be a career advantage.</li>
             <li><strong>Price, job quality and fit.</strong> Net price is shown but never scored; medians say nothing about hours, satisfaction or the chance of an exceptional career.</li>
           </ul>
         </div>
@@ -143,7 +143,7 @@ export default function Methodology({ weights, cohorts }: { weights: Weights; co
             </tbody>
           </table>
           <p>
-            Similarity is a rank correlation (1.00 = identical order) among the colleges in both lists. The coverage rows
+            Similarity is a rank correlation (1.00 = identical order) with the as-reported ordering, among the colleges in both lists. The coverage rows
             only show that dropping colleges with thinner data barely reorders the rest.
           </p>
         </div>
