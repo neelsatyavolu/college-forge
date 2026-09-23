@@ -2,7 +2,7 @@
 // to see which tabs actually carry an active pill background.
 import puppeteer from "puppeteer-core";
 
-const BASE = process.env.BASE || "https://college-forge.vercel.app";
+const BASE = process.env.BASE || "https://forge.n3el.dev";
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: "new" });
