@@ -7,7 +7,7 @@ import {
   withUsNews,
   type ScorecardCollege,
 } from "@/lib/colleges";
-import { US_NEWS_TOP_250 } from "@/lib/us-news-rankings";
+import { US_NEWS_EDITION, US_NEWS_TOP_250 } from "@/lib/us-news-rankings";
 import { getWorkspace } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
@@ -167,7 +167,7 @@ export async function GET(req: NextRequest) {
           onList: onList.has(college.slug),
         };
       });
-      return json({ success: true, data, source: "us-news-top-250" }, 200, setCookie);
+      return json({ success: true, data, edition: US_NEWS_EDITION, source: "us-news-top-250" }, 200, setCookie);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Browse failed.";
       return json({ success: false, error: message }, 502, setCookie);

@@ -1,5 +1,3 @@
-const { CollegeCard, Chip } = window.CollegeForgeDesignSystem_e95e63;
-
 const SETTINGS = [
   { id: "all", label: "All" },
   { id: "urban", label: "Urban" },
@@ -8,11 +6,42 @@ const SETTINGS = [
   { id: "rural", label: "Rural" },
 ];
 
-// Missing Scorecard fields render as em dash — never a raw 0/empty string.
-const dash = (v) =>
-  v === undefined || v === null || v === ""
-    ? "—"
-    : v;
+const SearchIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+  </svg>
+);
+
+function Thumb({ name, photo }) {
+  const [failed, setFailed] = React.useState(false);
+  return (
+    <span className="cf-explore-thumb cf-img-outline" aria-hidden="true">
+      {photo && !failed ? <img src={photo} alt="" loading="lazy" onError={() => setFailed(true)} /> : window.collegeInitials(name)}
+    </span>
+  );
+}
+
+function SchoolRow({ c, selected, favorite, onSelect, onToggleFavorite }) {
+  const ranked = typeof c.rank === "number" && c.rank > 0;
+  const stats = [c.admit ? `Admit ${c.admit}` : null, c.satRange ? `SAT ${c.satRange}` : null].filter(Boolean).join(" · ");
+  const fit = (c.tags || [])[0];
+  return (
+    <div className="cf-explore-row" role="listitem" aria-current={selected ? "true" : undefined}>
+      <button type="button" className="cf-explore-pick" onClick={onSelect}>
+        <span className={"cf-explore-rank" + (ranked ? "" : " is-unranked")} aria-label={ranked ? `Rank ${c.rank}` : "Unranked"}>{ranked ? c.rank : "—"}</span>
+        <Thumb name={c.name} photo={c.photo} />
+        <span className="cf-explore-text">
+          <span className="cf-explore-name">{c.name}</span>
+          <span className="cf-explore-sub">{c.location || "Location unavailable"}{c.onList ? <> · <strong>On your list</strong></> : null}</span>
+          {stats || fit ? <span className="cf-explore-sub">{stats}{fit ? <>{stats ? " · " : ""}<strong>{fit.label}</strong></> : null}</span> : null}
+        </span>
+      </button>
+      <button type="button" className="cf-explore-fav cf-press" aria-pressed={favorite} aria-label={`${favorite ? "Unfavorite" : "Favorite"} ${c.name}`} onClick={onToggleFavorite}>
+        {favorite ? "★" : "☆"}
+      </button>
+    </div>
+  );
+}
 
 function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   const [q, setQ] = React.useState("");
@@ -21,6 +50,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   const [selected, setSelected] = React.useState(null);
   // Browse = US News top ~250. Search replaces this when q ≥ 2.
   const [browse, setBrowse] = React.useState(null); // null = loading browse
+  const [edition, setEdition] = React.useState("");
   const [results, setResults] = React.useState(null); // null = not searching
   const [searching, setSearching] = React.useState(false);
   const [browseLoading, setBrowseLoading] = React.useState(true);
@@ -43,6 +73,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
         if (cancelled) return;
         if (!res.ok || !j.success) throw new Error(j.error || `Browse failed (${res.status}).`);
         setBrowse(j.data || []);
+        setEdition(j.edition || "");
         setError("");
       } catch (e) {
         if (!cancelled) { setError(e.message); setBrowse([]); }
@@ -146,103 +177,92 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
     setBusySlug(null);
   };
 
+  const rankingName = `U.S. News ${edition ? edition + " " : ""}National Universities`;
+  const count = `${list.length} ${searchMode ? "result" : "school"}${list.length === 1 ? "" : "s"}`;
   const listLabel = searching
     ? "Searching…"
     : searchMode
-      ? `${list.length} result${list.length === 1 ? "" : "s"}`
+      ? `${count} for “${q.trim()}”`
       : browseLoading
-        ? "Loading top schools…"
-        : `US News top 250 — ${list.length} school${list.length === 1 ? "" : "s"}`;
+        ? "Loading the ranking…"
+        : `${count} · ranked by ${rankingName}`;
+
+  const selectSchool = (slug) => {
+    setSelected(slug);
+    if (window.matchMedia("(max-width: 960px)").matches) document.querySelector(".cf-split__detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="cf-page">
-      <style>{`@media (max-width: 960px) { .cf-split--explore .cf-split__list { width: 100%; max-width: none; } }`}</style>
-      <header className="cf-page-header" style={{ borderBottom: "none", paddingBottom: 0, marginBottom: 16 }}>
+      <header className="cf-page-header">
         <div>
+          <div className="cf-eyebrow" style={{ marginBottom: 10 }}>{edition ? `U.S. NEWS ${edition} RANKINGS · ANY U.S. COLLEGE` : "RANKINGS · ANY U.S. COLLEGE"}</div>
           <h1 className="cf-page-title">Explore colleges</h1>
-          <p className="cf-page-lede">
-            Browse the U.S. News National Universities top 250, or search any U.S. college. Admit rates, SAT/ACT,
-            net price, graduation rate, and earnings come from the College Scorecard. Ranks and campus photos are
-            from U.S. News 2026. Add schools to your list to compare them. Confirm application details with each college.
-          </p>
+          <p className="cf-page-lede">Browse the national ranking or search any U.S. college. Open a school to see cost, outcomes, and programs, then add it to your shortlist.</p>
         </div>
       </header>
 
+      <div className="cf-explore-toolbar">
+        <label className="cf-explore-search">
+          <span className="cf-sr-only">Search colleges</span>
+          <SearchIcon />
+          <input type="search" placeholder="Search any U.S. college, e.g. UCLA" value={q}
+            onChange={(e) => { setQ(e.target.value); setSelected(null); }} />
+        </label>
+        <div className="cf-explore-filters" role="group" aria-label="Filter schools">
+          {SETTINGS.map((s) => (
+            <button key={s.id} type="button" aria-pressed={setting === s.id} className={"cf-filter-pill cf-press" + (setting === s.id ? " is-active" : "")}
+              onClick={() => setSetting(s.id)}>{s.label}</button>
+          ))}
+          <span className="cf-explore-divider" aria-hidden="true" />
+          <button type="button" aria-pressed={favOnly} className={"cf-filter-pill cf-press" + (favOnly ? " is-active" : "")}
+            onClick={() => setFavOnly((v) => !v)}>★ Favorites{favorites.length ? ` (${favorites.length})` : ""}</button>
+        </div>
+      </div>
+
+      {error ? <div className="cf-notice" role="alert">{error}</div> : null}
+
       <div className="cf-split cf-split--explore">
-        {/* Left: search + list */}
         <div className="cf-split__list">
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ display: "block", fontSize: 12, color: "var(--muted)" }}>Search colleges
-              <input type="search" placeholder="College name, e.g. UCLA" value={q}
-                style={{ display: "block", width: "100%", boxSizing: "border-box", marginTop: 6, padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", font: "inherit", fontSize: 14 }}
-                onChange={(e) => { setQ(e.target.value); setSelected(null); }} />
-            </label>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-              {SETTINGS.map((s) => (
-                <Chip key={s.id} active={setting === s.id} onClick={() => setSetting(s.id)}>{s.label}</Chip>
-              ))}
-              <span aria-hidden style={{ width: 1, height: 16, background: "var(--hairline)" }} />
-              <Chip active={favOnly} onClick={() => setFavOnly((v) => !v)}>★ Favorites{favorites.length ? ` (${favorites.length})` : ""}</Chip>
-            </div>
+          <div className="cf-explore-meta">
+            <span role="status">{listLabel}</span>
+            {searchMode ? <button type="button" onClick={() => setQ("")}>← Back to ranking</button> : null}
           </div>
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, margin: "12px 0" }}>
-            <p className="cf-nums" style={{ fontSize: 14, color: "var(--muted)", margin: 0 }}>{listLabel}</p>
-            {searchMode ? (
-              <button type="button" onClick={() => setQ("")} className="cf-press"
-                style={{ border: "none", background: "none", cursor: "pointer", fontSize: 13, fontWeight: 500, color: "var(--coral)", minHeight: 32, padding: "4px 6px" }}>
-                Back to top 250
-              </button>
-            ) : null}
-          </div>
-
-          {error ? (
-            <div role="alert" style={{ marginBottom: 8, borderRadius: "var(--radius-sm)", border: "1px solid var(--error)", background: "color-mix(in srgb, var(--error) 8%, transparent)", padding: "8px 10px", fontSize: 12.5, color: "var(--error)" }}>{error}</div>
-          ) : null}
-
-          <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, paddingRight: 4, minHeight: 0 }}>
+          <div className="cf-explore-list" role="list" aria-label="Colleges">
             {browseLoading && !searchMode ? (
-              <div style={{ fontSize: 14, color: "var(--muted)", fontStyle: "italic", padding: "8px 0" }}>Loading U.S. News top 250…</div>
+              <div className="cf-explore-empty">Loading the U.S. News ranking…</div>
             ) : list.length === 0 ? (
-              // Status line already shows "Searching…" — don't repeat it here.
-              searching ? null : (
-                <div style={{ fontSize: 14, color: "var(--muted)", fontStyle: "italic", padding: "8px 0" }}>
-                  No schools match these filters.
-                </div>
-              )
+              // The status line already says "Searching…" — don't repeat it here.
+              searching ? null : <div className="cf-explore-empty">No schools match these filters.</div>
             ) : list.map((c) => (
-              <CollegeCard key={c.slug} name={c.name} location={c.location} rank={c.rank}
-                admit={dash(c.admit)} satRange={dash(c.satRange)} gpa={dash(c.gpa)} photo={c.photo} tags={c.tags}
-                favorite={favorites.includes(c.slug)} selected={current && current.slug === c.slug}
-                onToggleFavorite={() => onToggleFavorite(c.slug)} onSelect={() => {
-                  setSelected(c.slug);
-                  if (window.matchMedia("(max-width: 960px)").matches) document.querySelector(".cf-split__detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }} />
+              <SchoolRow key={c.slug} c={c} selected={current && current.slug === c.slug}
+                favorite={favorites.includes(c.slug)} onToggleFavorite={() => onToggleFavorite(c.slug)}
+                onSelect={() => selectSchool(c.slug)} />
             ))}
           </div>
         </div>
 
-        {/* Right: detail — takes remaining width */}
         <div className="cf-split__detail">
           {current ? (
             <ExploreDetail key={current.slug} c={current} detail={detail} savedCollege={myList.find((school) => school.slug === current.slug)} loading={detailLoading}
+              edition={edition}
               favorite={favorites.includes(current.slug)}
               onToggleFavorite={() => onToggleFavorite(current.slug)}
               onAdd={addCollege} onRemove={removeCollege}
               onList={onListSlugs.has(current.slug)}
               busy={busySlug === current.slug} />
           ) : (
-            <div style={{ height: "100%", minHeight: 280, display: "grid", placeItems: "center", padding: 24, textAlign: "center" }}>
-              <div style={{ maxWidth: 320 }}>
-                <div aria-hidden style={{ color: "var(--coral)", fontSize: 28, lineHeight: 1, marginBottom: 10 }}>✱</div>
-                <p style={{ margin: 0, fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6, textWrap: "pretty" }}>
-                  Select a school from the U.S. News top 250, or search for any U.S. college.
-                </p>
-              </div>
+            <div className="cf-explore-placeholder">
+              <div><span aria-hidden="true">✱</span>Pick a school from the ranking, or search for any U.S. college.</div>
             </div>
           )}
         </div>
       </div>
+
+      <details className="cf-methodology">
+        <summary>About this data</summary>
+        <p>Ranks, average GPA, and campus photos come from the {rankingName} list. Admission rates, SAT/ACT ranges, cost, graduation, and earnings come from the U.S. Department of Education’s College Scorecard. A rank is one publication’s judgment, not a measure of fit. Confirm deadlines and requirements with each college.</p>
+      </details>
     </div>
   );
 }

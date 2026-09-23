@@ -11,6 +11,7 @@
     "prebuild": "node scripts/build-hub.mjs",
     "build:hub": "node scripts/build-hub.mjs",
     "fetch:supplements": "node scripts/fetch-supplements.mjs",
+    "fetch:rankings": "node --env-file=.env.local scripts/fetch-usnews-rankings.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.cjs && node scripts/test-hub-build.mjs"
   },

@@ -153,3 +153,73 @@ button:disabled { cursor: wait; }
 @media (max-width: 600px) {
   .cf-workspace .cf-grid-short-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 }
+
+.cf-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Explore: ranked list on the left, the open school on the right. */
+.cf-explore-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
+.cf-explore-search { position: relative; flex: 1 1 300px; max-width: 440px; }
+.cf-explore-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.cf-explore-search input { width: 100%; padding: 11px 14px 11px 38px; border: 1px solid var(--hairline); border-radius: 8px; background: var(--canvas); color: var(--ink); font-size: 14px; }
+.cf-explore-search input::placeholder { color: var(--muted); }
+.cf-explore-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.cf-explore-filters .cf-filter-pill { min-height: 34px; padding: 6px 13px; }
+.cf-explore-divider { width: 1px; height: 18px; margin: 0 6px; background: var(--hairline); }
+.cf-explore-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cf-explore-meta button { border: none; background: none; padding: 4px 0; color: var(--workspace-accent); font-size: 12px; font-weight: 500; }
+.cf-explore-list { flex: 1; min-height: 0; overflow-y: auto; border: 1px solid var(--hairline); border-radius: 12px; background: var(--canvas); }
+.cf-explore-empty { padding: 22px 18px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+.cf-explore-row { position: relative; display: flex; align-items: stretch; border-bottom: 1px solid var(--hairline-soft); }
+.cf-explore-row:last-child { border-bottom: none; }
+.cf-explore-row[aria-current="true"] { background: var(--workspace-accent-soft); }
+.cf-explore-row[aria-current="true"]::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--workspace-accent); }
+.cf-explore-pick { flex: 1; min-width: 0; display: grid; grid-template-columns: 30px 44px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 4px 12px 14px; border: none; background: none; text-align: left; color: var(--ink); }
+.cf-explore-row:not([aria-current="true"]) .cf-explore-pick:hover { background: var(--surface-soft); }
+.cf-explore-pick:focus-visible, .cf-explore-fav:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: -2px; }
+.cf-explore-rank { font-size: 14px; font-weight: 600; line-height: 1; color: var(--body); text-align: right; font-variant-numeric: tabular-nums; }
+.cf-explore-rank.is-unranked { font-size: 13px; color: var(--muted); }
+.cf-explore-thumb { width: 44px; height: 44px; border-radius: 8px; overflow: hidden; display: grid; place-items: center; background: color-mix(in srgb, var(--workspace-accent) 10%, var(--canvas)); color: var(--workspace-accent); font: 500 16px/1 var(--font-display); }
+.cf-explore-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cf-explore-text { min-width: 0; display: grid; gap: 3px; }
+.cf-explore-name { font-size: 13.5px; font-weight: 500; line-height: 1.3; }
+.cf-explore-sub { font-size: 11.5px; color: var(--muted); line-height: 1.4; font-variant-numeric: tabular-nums; }
+.cf-explore-sub strong { font-weight: 500; color: var(--workspace-accent); }
+.cf-explore-fav { flex-shrink: 0; width: 40px; border: none; background: none; color: var(--muted); font-size: 16px; }
+.cf-explore-fav[aria-pressed="true"], .cf-explore-fav:hover { color: var(--coral); }
+
+.cf-explore-detail { height: 100%; overflow-y: auto; }
+.cf-explore-hero { position: relative; overflow: hidden; height: 180px; background: color-mix(in srgb, var(--workspace-accent) 10%, var(--canvas)); color: var(--workspace-accent); display: grid; place-items: center; font: 500 54px/1 var(--font-display); border-bottom: 1px solid var(--hairline); }
+.cf-explore-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.cf-explore-body { padding: 26px 30px 30px; }
+.cf-explore-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+.cf-explore-head h2 { margin: 8px 0 6px; font: 500 clamp(28px, 3vw, 36px)/1.08 var(--font-display); color: var(--ink); text-wrap: balance; }
+.cf-explore-place { margin: 0; font-size: 13px; color: var(--muted); }
+.cf-explore-place a { color: var(--workspace-accent); }
+.cf-explore-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.cf-explore-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cf-explore-confirm { margin-top: 16px; padding: 14px 16px; border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface-soft); font-size: 13px; }
+.cf-explore-confirm p { margin: 0 0 10px; }
+.cf-explore-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 18px 16px; margin: 22px 0 0; padding: 18px 0; border-block: 1px solid var(--hairline); }
+.cf-explore-stats div { min-width: 0; }
+.cf-explore-stats dt { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.cf-explore-stats dd { margin: 5px 0 0; font-size: 22px; letter-spacing: -.5px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.cf-explore-stats--compact { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-top: 0; border-top: none; padding-top: 0; }
+.cf-explore-stats--compact dd { font-size: 18px; }
+.cf-explore-note { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.cf-explore-note strong { color: var(--ink); font-weight: 500; }
+.cf-explore-note a { color: var(--workspace-accent); }
+.cf-explore-section { margin-top: 30px; }
+.cf-explore-section .cf-section-heading { margin-bottom: 12px; }
+.cf-explore-section .cf-section-heading h3 { margin: 0; font: 500 22px/1.2 var(--font-display); color: var(--ink); }
+.cf-explore-footnote { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--hairline); font-size: 11.5px; color: var(--muted); line-height: 1.6; }
+.cf-explore-placeholder { height: 100%; min-height: 280px; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.cf-explore-placeholder span { display: block; color: var(--coral); font-size: 26px; margin-bottom: 8px; }
+@media (max-width: 960px) {
+  .cf-split--explore .cf-split__list { width: 100%; max-width: none; max-height: 420px; }
+  .cf-explore-body { padding: 22px 20px 24px; }
+  .cf-explore-hero { height: 150px; }
+}
+@media (max-width: 600px) {
+  .cf-explore-search { max-width: none; flex-basis: 100%; }
+  .cf-explore-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

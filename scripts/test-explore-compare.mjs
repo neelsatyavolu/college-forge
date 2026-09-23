@@ -15,15 +15,15 @@ try {
     if(width<=960) assert.ok(await page.evaluate(()=>document.querySelector('.cf-split__list').getBoundingClientRect().width>=document.querySelector('.cf-split').getBoundingClientRect().width-2),`Explore results must fill stacked width at ${width}`);
     await page.screenshot({path:`/tmp/forge-explore-after-${width}.png`});
   }
-  await clickText('+ Add to my list');
-  await page.waitForFunction(()=>document.body.innerText.includes('Remove from list'));
-  await clickText('Remove from list');
+  await clickText('Add to shortlist');
+  await page.waitForFunction(()=>document.body.innerText.includes('Remove from shortlist'));
+  await clickText('Remove from shortlist');
   await page.waitForFunction(()=>document.body.innerText.includes('Confirm removal'));
   await clickText('Keep school');
-  assert.ok((await page.evaluate(()=>document.body.innerText)).includes('Remove from list'));
-  await clickText('Remove from list');
+  assert.ok((await page.evaluate(()=>document.body.innerText)).includes('Remove from shortlist'));
+  await clickText('Remove from shortlist');
   await clickText('Confirm removal');
-  await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='+ Add to my list'));
+  await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='Add to shortlist'));
   const schoolCount = await page.evaluate(async()=>{
     const response = await fetch('/api/colleges/search?browse=1'); const body = await response.json();
     const colleges = body.data.slice(0,6);

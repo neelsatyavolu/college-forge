@@ -1,4 +1,4 @@
-const { Tile, Badge, VerdictBadge, Button } = window.CollegeForgeDesignSystem_e95e63;
+const { Badge, VerdictBadge, Button } = window.CollegeForgeDesignSystem_e95e63;
 
 // Missing Scorecard fields render as em dash — never a raw 0/empty string.
 const dash = (v) =>
@@ -15,15 +15,28 @@ function initialsOf(name) {
   return (words.length ? words : all).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 }
 
+window.collegeInitials = initialsOf;
+
 function Section({ title, note, children }) {
   return (
-    <section style={{ marginTop: 24 }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-        <h3 className="cf-display" style={{ margin: 0, fontSize: 16, color: "var(--ink)" }}>{title}</h3>
-        {note ? <span style={{ fontSize: 12.5, color: "var(--muted)" }}>{note}</span> : null}
+    <section className="cf-explore-section">
+      <div className="cf-section-heading">
+        <h3>{title}</h3>
+        {note ? <span>{note}</span> : null}
       </div>
       {children}
     </section>
+  );
+}
+
+/** Label/value pairs in the workspace's metric style; missing values read "—". */
+function Stats({ items, compact }) {
+  return (
+    <dl className={"cf-explore-stats" + (compact ? " cf-explore-stats--compact" : "")}>
+      {items.map(([label, value]) => (
+        <div key={label}><dt>{label}</dt><dd>{dash(value)}</dd></div>
+      ))}
+    </dl>
   );
 }
 
@@ -50,11 +63,7 @@ function Table({ head, rows }) {
   );
 }
 
-const NoteBox = ({ children }) => (
-  <div style={{ borderRadius: "var(--radius-md)", border: "1px dashed var(--hairline)", background: "var(--surface-soft)", padding: 12 }}>
-    <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>{children}</p>
-  </div>
-);
+const NoteBox = ({ children }) => <p className="cf-empty-soft" style={{ margin: 0, fontSize: 13 }}>{children}</p>;
 
 /** Schools & programs — bachelor's programs grouped by field-of-study area. */
 function Programs({ programs }) {
@@ -141,7 +150,7 @@ function FieldEarnings({ programs }) {
   );
 }
 
-function ExploreDetail({ c, detail, savedCollege, loading, favorite, onToggleFavorite, onAdd, onRemove, onList, busy }) {
+function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, onToggleFavorite, onAdd, onRemove, onList, busy }) {
   // `c` is the light search row (instant); `detail` is the full record (async).
   const [confirmRemove, setConfirmRemove] = React.useState(false);
   const [photoFailed, setPhotoFailed] = React.useState(false);
@@ -149,135 +158,118 @@ function ExploreDetail({ c, detail, savedCollege, loading, favorite, onToggleFav
   for (const key of ["tier", "verdict", "plans", "deadlines", "transfer"]) {
     if (savedCollege?.[key]) d[key] = savedCollege[key];
   }
-  const initials = initialsOf(d.name);
   const setting = d.setting ? d.setting[0].toUpperCase() + d.setting.slice(1) : null;
   const programs = (detail && detail.programs) || [];
+  const ranked = typeof d.rank === "number" && d.rank > 0;
+  const eyebrow = [ranked ? `U.S. News ${edition ? edition + " " : ""}#${d.rank}` : null, d.ownership].filter(Boolean).join(" · ") || "U.S. Dept. of Education data";
+  const hasPlans = d.plans && d.plans.length > 0;
+  const hasDeadlines = d.deadlines && d.deadlines.length > 0;
 
   return (
-    <div style={{ height: "100%", overflowY: "auto", padding: "clamp(14px, 3vw, 24px)", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ minWidth: 0, flex: "1 1 200px" }}>
-          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "1px", color: "var(--muted)", fontWeight: 500 }}>
-            {[
-              typeof d.rank === "number" && d.rank > 0 ? `U.S. News #${d.rank}` : null,
-              d.ownership,
-            ].filter(Boolean).join(" · ") || "US Dept. of Education"}
-          </div>
-          <h2 className="cf-display" style={{ margin: "2px 0 0", fontSize: "clamp(24px, 3vw, 32px)", lineHeight: 1.1, color: "var(--ink)", textWrap: "balance" }}>{d.name}</h2>
-          <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            {d.verdict ? <VerdictBadge tone={d.verdict.tone}>{d.verdict.label}</VerdictBadge> : null}
-            {d.tier ? <Badge variant="cream">{d.tier === "safety" ? "Likely" : d.tier[0].toUpperCase() + d.tier.slice(1)}</Badge> : null}
-            {(d.tags || []).map((t, i) => <Badge key={i} variant="cream">{t.label}</Badge>)}
-            {d.url ? (
-              <a href={d.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5 }}>Website ↗</a>
+    <div className="cf-explore-detail">
+      <div className="cf-explore-hero" aria-hidden="true">
+        {d.photo && !photoFailed ? <img src={d.photo} alt="" onError={() => setPhotoFailed(true)} /> : initialsOf(d.name)}
+      </div>
+
+      <div className="cf-explore-body">
+        <div className="cf-explore-head">
+          <div style={{ minWidth: 0, flex: "1 1 260px" }}>
+            <div className="cf-eyebrow" style={{ textTransform: "uppercase" }}>{eyebrow}</div>
+            <h2>{d.name}</h2>
+            <p className="cf-explore-place">
+              {[d.location ? d.location.split(" · ")[0] : null, setting ? `${setting} campus` : null].filter(Boolean).join(" · ")}
+              {d.url ? <> · <a href={d.url} target="_blank" rel="noopener noreferrer">Website ↗</a></> : null}
+            </p>
+            {d.verdict || d.tier || (d.tags || []).length ? (
+              <div className="cf-explore-badges">
+                {d.verdict ? <VerdictBadge tone={d.verdict.tone}>{d.verdict.label}</VerdictBadge> : null}
+                {d.tier ? <Badge variant="cream">{d.tier === "safety" ? "Likely" : d.tier[0].toUpperCase() + d.tier.slice(1)}</Badge> : null}
+                {(d.tags || []).map((t, i) => <Badge key={i} variant="cream">{t.label}</Badge>)}
+              </div>
             ) : null}
           </div>
+          <div className="cf-explore-actions">
+            {onList ? (
+              <Button size="sm" variant="secondary" onClick={() => setConfirmRemove(true)} disabled={busy}>Remove from shortlist</Button>
+            ) : (
+              <Button size="sm" onClick={() => onAdd(d)} disabled={busy}>{busy ? "Saving…" : "Add to shortlist"}</Button>
+            )}
+            <Button size="sm" variant="secondary" onClick={onToggleFavorite} aria-pressed={favorite}>{favorite ? "★ Favorited" : "☆ Favorite"}</Button>
+          </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center", flexShrink: 0 }}>
-          {onList ? (
-            <Button size="sm" variant="secondary" onClick={() => setConfirmRemove(true)} disabled={busy}>Remove from list</Button>
-          ) : (
-            <Button size="sm" onClick={() => onAdd(d)} disabled={busy}>{busy ? "…" : "+ Add to my list"}</Button>
-          )}
-          <button type="button" onClick={onToggleFavorite} aria-pressed={favorite} className="cf-press"
-            style={{ borderRadius: "var(--radius-pill)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 14px", minHeight: 36, fontSize: 13, cursor: "pointer", color: "var(--ink)" }}>
-            {favorite ? "★ Favorited" : "☆ Favorite"}
-          </button>
-        </div>
-      </div>
 
-      {onList && confirmRemove ? <div style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-sm)" }}>
-        <p style={{ margin: "0 0 8px", fontSize: 13 }}>Remove this school from your list? Your saved essay drafts will remain.</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          <Button size="sm" disabled={busy} onClick={() => onRemove(d)}>{busy ? "Removing…" : "Confirm removal"}</Button>
-          <Button size="sm" variant="secondary" disabled={busy} onClick={() => setConfirmRemove(false)}>Keep school</Button>
-        </div>
-      </div> : null}
+        {onList && confirmRemove ? (
+          <div className="cf-explore-confirm">
+            <p>Remove this school from your shortlist? Your saved essay drafts will remain.</p>
+            <div className="cf-explore-actions">
+              <Button size="sm" disabled={busy} onClick={() => onRemove(d)}>{busy ? "Removing…" : "Confirm removal"}</Button>
+              <Button size="sm" variant="secondary" disabled={busy} onClick={() => setConfirmRemove(false)}>Keep school</Button>
+            </div>
+          </div>
+        ) : null}
 
-      {/* Snapshot tiles + campus photo */}
-      <div style={{ marginTop: 16, display: "flex", gap: 16, flexWrap: "wrap", alignItems: "stretch" }}>
-        <div className="cf-nums" style={{ display: "grid", flex: "1 1 240px", minWidth: 0, gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
-          <Tile label="Location" value={dash(d.location ? d.location.split(" · ")[0] : null)} />
-          <Tile label="Campus setting" value={dash(setting)} />
-          <Tile label="Undergraduate size" value={dash(d.size)} />
-          <Tile label="Overall admit rate" value={dash(d.admit)} />
-          <Tile label="SAT (25–75%)" value={dash(d.satRange)} />
-          <Tile label="ACT (25–75%)" value={dash(d.act)} />
-          {typeof d.rank === "number" && d.rank > 0 ? (
-            <Tile label="U.S. News rank" value={`#${d.rank}`} />
-          ) : null}
-          {d.gpa ? <Tile label="Avg GPA" value={dash(d.gpa)} /> : null}
-        </div>
-        <div className="cf-img-outline cf-campus-photo" style={{ flex: "0 0 auto", width: "min(280px, 100%)", minHeight: 160, aspectRatio: "4 / 3", borderRadius: "var(--radius-lg)", overflow: "hidden", background: "var(--hairline)" }}>
-          {d.photo && !photoFailed ? <img src={d.photo} onError={() => setPhotoFailed(true)} alt="" style={{ height: "100%", width: "100%", objectFit: "cover", display: "block" }} />
-            : <div style={{ height: "100%", minHeight: 160, display: "grid", placeItems: "center", background: "color-mix(in srgb, var(--coral) 10%, transparent)", color: "var(--coral)", fontFamily: "var(--font-display)", fontSize: 42 }}>{initials}</div>}
-        </div>
-      </div>
-
-      {d.testPolicy ? (
-        <div style={{ marginTop: 10, fontSize: 12.5, color: "var(--muted)" }}>
-          SAT/ACT policy: <strong style={{ color: "var(--ink)", fontWeight: 500 }}>{d.testPolicy}</strong>
-          {d.pellRate ? <> · Pell recipients: <strong style={{ color: "var(--ink)", fontWeight: 500 }}>{d.pellRate}</strong></> : null}
-        </div>
-      ) : null}
-
-      <Section title="Cost & outcomes" note={loading ? "loading…" : "US Dept. of Education"}>
-        <div className="cf-nums" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
-          <Tile label="Net price (avg)" value={dash(d.netPrice)} />
-          <Tile label="Cost of attendance" value={dash(d.coa)} />
-          <Tile label="Tuition (in-state)" value={dash(d.tuitionIn)} />
-          <Tile label="Tuition (out-of-state)" value={dash(d.tuitionOut)} />
-          <Tile label="Grad rate (4-yr)" value={dash(d.grad4)} />
-          <Tile label="Grad rate (6-yr)" value={dash(d.grad6)} />
-          <Tile label="Freshman retention" value={dash(d.retention)} />
-          <Tile label="Median earnings (10yr)" value={dash(d.earnings)} />
-        </div>
-        {d.priceCalcUrl ? (
-          <p style={{ margin: "8px 0 0", fontSize: 12.5 }}>
-            <a href={d.priceCalcUrl} target="_blank" rel="noopener noreferrer">Net price calculator ↗</a>
+        <Stats items={[
+          ["Admit rate", d.admit],
+          ["SAT (25th–75th)", d.satRange],
+          ["ACT (25th–75th)", d.act],
+          ...(d.gpa ? [["Average GPA", d.gpa]] : []),
+          ["Undergraduates", d.size],
+        ]} />
+        {d.testPolicy ? (
+          <p className="cf-explore-note">
+            SAT/ACT policy: <strong>{d.testPolicy}</strong>
+            {d.pellRate ? <> · Pell grant recipients: <strong>{d.pellRate}</strong></> : null}
           </p>
         ) : null}
-      </Section>
 
-      <p style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>A dash means data is unavailable. Average net price is not a personal aid estimate; use the college’s net price calculator. Verify testing policies for your application year.</p>
+        <Section title="Cost & outcomes" note={loading ? "Loading…" : "U.S. Dept. of Education"}>
+          <Stats compact items={[
+            ["Average net price", d.netPrice],
+            ["Cost of attendance", d.coa],
+            ["Tuition, in-state", d.tuitionIn],
+            ["Tuition, out-of-state", d.tuitionOut],
+            ["4-year graduation", d.grad4],
+            ["6-year graduation", d.grad6],
+            ["Freshman retention", d.retention],
+            ["Median earnings, 10 yrs", d.earnings],
+          ]} />
+          <p className="cf-explore-note">
+            Average net price is not your aid offer.
+            {d.priceCalcUrl ? <> <a href={d.priceCalcUrl} target="_blank" rel="noopener noreferrer">Try the net price calculator ↗</a></> : " Use the college’s net price calculator."}
+          </p>
+        </Section>
 
-      <Section title="Admission rates by plan" note={d.plans && d.plans.length ? `${d.plans.length} plans` : null}>
-        {d.plans && d.plans.length ? (
-          <Table head={[{ label: "Plan" }, { label: "Admit rate", right: true, mono: true }]}
-            rows={d.plans.map((p) => [p.plan, p.rate])} />
-        ) : (
-          <NoteBox>
-            Plan-specific rates are not available here. The overall admission rate ({dash(d.admit)}) describes a past applicant pool, not your personal odds. Check the college’s admissions website for current details.
-          </NoteBox>
-        )}
-      </Section>
+        <Section title="Admission plans & deadlines" note={hasPlans ? `${d.plans.length} plans` : null}>
+          {hasPlans || hasDeadlines ? (
+            <div style={{ display: "grid", gap: 12 }}>
+              {hasPlans ? <Table head={[{ label: "Plan" }, { label: "Admit rate", right: true, mono: true }]} rows={d.plans.map((p) => [p.plan, p.rate])} /> : null}
+              {hasDeadlines ? <Table head={[{ label: "Plan" }, { label: "Deadline", mono: true }]} rows={d.deadlines.map((x) => [x.plan, x.date])} /> : null}
+            </div>
+          ) : (
+            <NoteBox>
+              Plan-specific admit rates and deadlines aren’t in the federal dataset. The overall admit rate ({dash(d.admit)}) describes a past applicant pool, not your odds. Confirm plans and deadlines on the college’s admissions website.
+            </NoteBox>
+          )}
+        </Section>
 
-      <Section title="Application deadlines">
-        {d.deadlines && d.deadlines.length ? (
-          <Table head={[{ label: "Plan" }, { label: "Deadline", mono: true }]}
-            rows={d.deadlines.map((x) => [x.plan, x.date])} />
-        ) : (
-          <NoteBox>Deadlines are not available in the federal dataset. Confirm the year, application plan, and deadline on the college’s admissions website.</NoteBox>
-        )}
-      </Section>
+        <Section title="Schools & programs" note={programs.length ? `${programs.length} bachelor’s programs` : loading ? "Loading…" : null}>
+          {loading && !programs.length ? <NoteBox>Loading programs…</NoteBox> : <Programs programs={programs} />}
+        </Section>
 
-      <Section title="Schools & programs" note={programs.length ? `${programs.length} bachelor’s programs` : loading ? "loading…" : null}>
-        {loading && !programs.length ? <NoteBox>Loading programs…</NoteBox> : <Programs programs={programs} />}
-      </Section>
+        <Section title="Field-of-study earnings" note={programs.length ? "Median 4 yrs after completion" : null}>
+          {loading && !programs.length ? <NoteBox>Loading…</NoteBox> : <FieldEarnings programs={programs} />}
+        </Section>
 
-      <Section title="Field-of-study earnings" note={programs.length ? "median 4 yrs after completion" : null}>
-        {loading && !programs.length ? <NoteBox>Loading…</NoteBox> : <FieldEarnings programs={programs} />}
-      </Section>
+        <Section title="Internal transfer policy">
+          {d.transfer ? (
+            <p style={{ margin: 0, fontSize: 14, color: "var(--ink)", lineHeight: 1.6 }}>{d.transfer}</p>
+          ) : (
+            <NoteBox>Check {d.short || d.name}’s official department and admissions pages for restrictions on changing majors or colleges.</NoteBox>
+          )}
+        </Section>
 
-      <Section title="Internal transfer policy">
-        {d.transfer ? (
-          <div style={{ borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: "var(--ink)", lineHeight: 1.5 }}>{d.transfer}</p>
-          </div>
-        ) : (
-          <NoteBox>Check {d.short || d.name}’s official department and admissions pages for restrictions on changing majors or colleges.</NoteBox>
-        )}
-      </Section>
+        <p className="cf-explore-footnote">A dash means the data is unavailable. Verify testing policies and deadlines for your application year.</p>
+      </div>
     </div>
   );
 }

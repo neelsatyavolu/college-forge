@@ -1,0 +1,47 @@
+name: Refresh U.S. News rankings
+
+# U.S. News publishes Best Colleges in mid-to-late September. Scrape after the
+# release and open a PR so a person reviews movers before students see them.
+on:
+  schedule:
+    - cron: "0 14 1 10 *" # Oct 1
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-rankings
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Scrape rankings
+        env:
+          COLLEGE_SCORECARD_API_KEY: ${{ secrets.COLLEGE_SCORECARD_API_KEY }}
+        run: node scripts/fetch-usnews-rankings.mjs --report "$RUNNER_TEMP/rankings-report.md"
+
+      - name: Check dataset
+        run: npm test
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/refresh-rankings
+          delete-branch: true
+          add-paths: lib/us-news-rankings.ts
+          commit-message: "chore: refresh U.S. News rankings"
+          title: "chore: refresh U.S. News rankings"
+          body-path: ${{ runner.temp }}/rankings-report.md
