@@ -52,6 +52,46 @@
   var SCHOOL_KEYS = ["school_nid", "school_id", "schoolNid", "schoolId", "nid", "id"];
   var USER_KEYS = ["student_uid", "uid", "user_id", "userId", "id"];
 
+  /** Decode a stored blob that may be JSON or base64-encoded JSON. */
+  function decodeBlob(raw) {
+    if (typeof raw !== "string" || !raw) return null;
+    var v = parseStored(raw);
+    if (v && typeof v === "object") return v;
+    try {
+      var b = atob(raw.replace(/-/g, "+").replace(/_/g, "/").replace(/\s/g, ""));
+      var j = JSON.parse(b);
+      return j && typeof j === "object" ? j : null;
+    } catch (e) { return null; }
+  }
+
+  /** Depth-first search for a numeric id under any key matching `pattern`. */
+  function deepFindId(value, pattern, depth) {
+    if (!value || typeof value !== "object" || (depth || 0) > 4) return null;
+    var keys = Object.keys(value).slice(0, 200);
+    for (var i = 0; i < keys.length; i++) {
+      if (pattern.test(keys[i])) {
+        var hit = findId(value[keys[i]], SCHOOL_KEYS);
+        if (hit) return hit;
+      }
+    }
+    for (var j = 0; j < keys.length; j++) {
+      var nested = deepFindId(value[keys[j]], pattern, (depth || 0) + 1);
+      if (nested) return nested;
+    }
+    return null;
+  }
+
+  function findSchoolId(sources) {
+    var patterns = [/^(school|sel_school|current_school)_?(nid|id)?$/i, /school_?(nid|id)/i, /school/i];
+    for (var p = 0; p < patterns.length; p++) {
+      for (var s = 0; s < sources.length; s++) {
+        var hit = deepFindId(sources[s], patterns[p]);
+        if (hit) return hit;
+      }
+    }
+    return null;
+  }
+
   /** Read the session the Maia app itself uses. `storage` is a Storage-like object. */
   function readSession(storage) {
     var token = findJwt(parseStored(storage.getItem("userAccessKey"))) || findJwt(parseStored(storage.getItem("userToken")));
@@ -59,9 +99,24 @@
       for (var i = 0; i < storage.length && !token; i++) token = findJwt(parseStored(storage.getItem(storage.key(i))));
     }
     var claims = token ? jwtClaims(token) : {};
-    var schoolId = findId(parseStored(storage.getItem("sel_school")), SCHOOL_KEYS) || findId(claims, ["school_nid", "school_id", "schoolId"]);
+    var profile = decodeBlob(storage.getItem("userToken"));
+    var schoolId = findId(parseStored(storage.getItem("sel_school")), SCHOOL_KEYS) || findSchoolId([claims, profile]);
     var studentUid = findId(parseStored(storage.getItem("sel_user")), USER_KEYS) || findId(claims, ["uid", "user_id", "userId", "sub"]);
     return { token: token, schoolId: schoolId, studentUid: studentUid };
+  }
+
+  /** Field paths with types (and whether the value is all digits), never values. */
+  function fieldShapes(value, prefix, depth, out) {
+    out = out || [];
+    if (!value || typeof value !== "object" || depth > 2) return out;
+    Object.keys(value).slice(0, 40).forEach(function (f) {
+      if (out.length >= 60) return;
+      var v = value[f];
+      var t = v === null ? "null" : Array.isArray(v) ? "array" : typeof v;
+      out.push((prefix + f).slice(0, 60) + ":" + t + (/^\d+$/.test(String(v)) ? "(digits)" : ""));
+      if (t === "object") fieldShapes(v, prefix + f + ".", depth + 1, out);
+    });
+    return out;
   }
 
   /**
@@ -81,11 +136,13 @@
       var v = parseStored(raw);
       var shape = { key: key, kind: v === raw ? "text" : "json-" + (Array.isArray(v) ? "array" : typeof v), len: raw.length, jwt: Boolean(findJwt(v)) };
       if (typeof v === "string" || typeof v === "number") shape.digitsOnly = /^\d+$/.test(String(v).trim());
-      if (v && typeof v === "object" && !Array.isArray(v)) {
-        shape.fields = Object.keys(v).slice(0, 15).map(function (f) {
-          var t = v[f] === null ? "null" : Array.isArray(v[f]) ? "array" : typeof v[f];
-          return f.slice(0, 30) + ":" + t + (/^\d+$/.test(String(v[f])) ? "(digits)" : "");
-        });
+      if (v && typeof v === "object" && !Array.isArray(v)) shape.fields = fieldShapes(v, "", 0);
+      var jwt = findJwt(v);
+      if (jwt) shape.claims = fieldShapes(jwtClaims(jwt), "", 0);
+      else if (typeof v === "string" && raw.length > 40) {
+        var blob = decodeBlob(raw);
+        shape.decoded = blob ? "base64-json" : "opaque";
+        if (blob) shape.fields = fieldShapes(blob, "", 0);
       }
       return shape;
     });

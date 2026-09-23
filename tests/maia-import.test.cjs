@@ -41,10 +41,27 @@ test('storage diagnostics describe shapes without leaking values', () => {
  const d = JSON.parse(JSON.stringify(h.describeStorage(storage({ userAccessKey: JSON.stringify(token), sel_school: JSON.stringify({ nid: '11237322', title: 'Palo Alto High' }), authBlob: 'opaque-secret-value' }))));
  const text = JSON.stringify(d);
  for (const secret of [token, '11237322', 'Palo Alto High', 'opaque-secret-value']) assert.equal(text.includes(secret), false, secret);
- assert.deepEqual(d.find((x) => x.key === 'userAccessKey'), { key: 'userAccessKey', kind: 'json-string', len: token.length + 2, jwt: true, digitsOnly: false });
+ assert.deepEqual(d.find((x) => x.key === 'userAccessKey'), { key: 'userAccessKey', kind: 'json-string', len: token.length + 2, jwt: true, digitsOnly: false, claims: ['uid:number(digits)'] });
  assert.deepEqual(d.find((x) => x.key === 'sel_school').fields, ['nid:string(digits)', 'title:string']);
  assert.equal(d.find((x) => x.key === 'sel_user').kind, 'missing');
  assert.equal(d.find((x) => x.key === 'authBlob').kind, 'text');
+});
+
+test('finds the school id inside token claims or the stored user profile blob', () => {
+ const h = helpers();
+ const nestedClaims = h.readSession(storage({ userAccessKey: jwt({ uid: 1513688, data: { school: { nid: 11237322 } } }), sel_school: 'none', sel_user: 'none' }));
+ assert.equal(nestedClaims.schoolId, '11237322');
+ assert.equal(nestedClaims.studentUid, '1513688');
+
+ const profile = Buffer.from(JSON.stringify({ user: { name: 'x', current_school_id: '777', graduation_year: 2027 } })).toString('base64');
+ const fromProfile = h.readSession(storage({ userAccessKey: jwt({ uid: 1 }), userToken: profile, sel_school: 'none' }));
+ assert.equal(fromProfile.schoolId, '777');
+
+ const d = JSON.parse(JSON.stringify(h.describeStorage(storage({ userToken: profile }))));
+ const entry = d.find((x) => x.key === 'userToken');
+ assert.equal(entry.decoded, 'base64-json');
+ assert.deepEqual(entry.fields, ['user:object', 'user.name:string', 'user.current_school_id:string(digits)', 'user.graduation_year:number(digits)']);
+ assert.equal(JSON.stringify(d).includes('777'), false);
 });
 
 test('normalizes Maia scattergram responses', () => {
