@@ -49,10 +49,14 @@ test('storage diagnostics describe shapes without leaking values', () => {
 
 test('finds the school id inside token claims or the stored user profile blob', () => {
  const h = helpers();
- const nestedClaims = h.readSession(storage({ userAccessKey: jwt({ uid: 1513688, data: { school: { nid: 11237322 } } }), sel_school: 'none', sel_user: 'none' }));
- assert.equal(nestedClaims.schoolId, '11237322');
- assert.equal(nestedClaims.studentUid, '1513688');
- assert.deepEqual(JSON.parse(JSON.stringify(nestedClaims.sources)), { school: 'token:data.school', student: 'token:uid' });
+ // The real shape: a Drupal profile blob with the school in og_user_node and a "0" placeholder in iec_school.
+ const drupal = Buffer.from(JSON.stringify({ iec_school: '0', user: { uid: '1513688', og_user_node: { und: [{ target_id: '11237322' }, { target_id: '555' }] } } })).toString('base64');
+ const real = h.readSession(storage({ userAccessKey: jwt({ uid: '1513688', ds: 'x' }), userToken: drupal, sel_school: 'null', sel_user: 'null' }));
+ assert.equal(real.schoolId, '11237322');
+ assert.equal(real.studentUid, '1513688');
+ assert.deepEqual(JSON.parse(JSON.stringify(real.schools)).map((s) => s.id), ['11237322', '555']);
+ assert.deepEqual(JSON.parse(JSON.stringify(real.sources)), { school: 'userToken:user.og_user_node.und.0', student: 'token:uid' });
+ assert.equal(h.readSession(storage({ userToken: Buffer.from(JSON.stringify({ iec_school: '0' })).toString('base64') })).schoolId, null, '"0" is never an id');
 
  const profile = Buffer.from(JSON.stringify({ user: { name: 'x', current_school_id: '777', graduation_year: 2027 } })).toString('base64');
  const fromProfile = h.readSession(storage({ userAccessKey: jwt({ uid: 1 }), userToken: profile, sel_school: 'none' }));

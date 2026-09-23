@@ -10,7 +10,7 @@ const WS = 'maia-e2e-' + Date.now();
 const MAIA = 'https://app.maialearning.com';
 const API = 'https://app-www-maia.maialearning.com/ajs-services/';
 const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
-const TOKEN = `${b64({ alg: 'HS256' })}.${b64({ exp: 9e9 })}.sig`;
+const TOKEN = `${b64({ alg: 'HS256' })}.${b64({ exp: 9e9, uid: '1513688', ds: 'x' })}.sig`;
 const headers = { cookie: 'cf_workspace=' + WS, 'content-type': 'application/json' };
 
 for (const college of [
@@ -36,6 +36,7 @@ function fakeMaiaApi(req) {
   }
   if (path === 'scattergram-colleges-by-name') {
     const body = JSON.parse(req.postData());
+    if (body.school_id !== '11237322') return req.respond({ status: 406, headers: cors, contentType: 'application/json', body: JSON.stringify(['You are not authorized to access information for this school.']) });
     if (body.collegeNid === 555) return json([]);
     return json({ 0: { sat: '1520', gpa: '3.95', result: 'Accepted', type: 'Early Decision' }, 1: { sat: '1450', gpa: '3.7', result: 'Denied ', type: 'Regular Decision' }, avg_gpa: '3.9', avg_sat: '1510', student: { gpa: '3.49', wgpa: '3.83', sat: '1500' } });
   }
@@ -65,14 +66,18 @@ try {
     return req.continue();
   });
   await maia.goto(MAIA + '/v3/search');
-  await maia.evaluate((token, href) => {
-    localStorage.setItem('userAccessKey', JSON.stringify(token));
-    localStorage.setItem('sel_school', '"11237322"');
-    localStorage.setItem('sel_user', JSON.stringify({ uid: '1513688' }));
+  // Mirrors real Maia storage: plain-text JWT, a base64 Drupal profile whose first
+  // organic group is not the school (and iec_school "0"), and placeholder sel_* keys.
+  const profile = Buffer.from(JSON.stringify({ iec_school: '0', user: { uid: '1513688', og_user_node: { und: [{ target_id: '999' }, { target_id: '11237322' }] } } })).toString('base64');
+  await maia.evaluate((token, href, blob) => {
+    localStorage.setItem('userAccessKey', token);
+    localStorage.setItem('userToken', blob);
+    localStorage.setItem('sel_school', 'null');
+    localStorage.setItem('sel_user', 'null');
     const a = document.createElement('a');
     a.id = 'bm'; a.textContent = 'bookmark'; a.href = href;
     document.body.appendChild(a);
-  }, TOKEN, bookmarklet);
+  }, TOKEN, bookmarklet, profile);
 
   const popupTarget = browser.waitForTarget((t) => t.url().includes('/hub/maia-import.html'), { timeout: 10000 });
   await maia.click('#bm');
@@ -86,7 +91,9 @@ try {
   assert.match(status, /Imported 2 colleges \(1 with applicants/);
   assert.match(missing, /Nowhere College — Not found in Maia/);
 
-  const scatter = seen.find((s) => s.path === 'scattergram-colleges-by-name');
+  const scatterCalls = seen.filter((s) => s.path === 'scattergram-colleges-by-name').map((s) => ({ ...s, school: JSON.parse(s.body).school_id }));
+  assert.deepEqual(scatterCalls.map((s) => s.school), ['999', '11237322', '11237322'], 'wrong school rejected once, then the next candidate sticks');
+  const scatter = scatterCalls[1];
   assert.equal(scatter.auth, 'Bearer ' + TOKEN);
   assert.deepEqual(JSON.parse(scatter.body), { class_of_years: '4', app_plan: [], collegeNid: 176766, type: 'sat', grading_type: 'gpa', school_id: '11237322', student_uid: '1513688' });
 

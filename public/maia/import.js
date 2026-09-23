@@ -31,9 +31,10 @@
     return null;
   }
 
+  // Positive integer ids only: Maia uses "0" as a placeholder (e.g. iec_school).
   function findId(value, keys) {
-    if (typeof value === "number" && Number.isFinite(value)) return String(value);
-    if (typeof value === "string" && /^\d{1,12}$/.test(value.trim())) return value.trim();
+    if (typeof value === "number" && Number.isInteger(value) && value > 0) return String(value);
+    if (typeof value === "string" && /^[1-9]\d{0,11}$/.test(value.trim())) return value.trim();
     if (!value || typeof value !== "object") return null;
     for (var i = 0; i < keys.length; i++) {
       var hit = findId(value[keys[i]], []);
@@ -81,15 +82,23 @@
     return null;
   }
 
-  function findSchoolId(sources) {
-    var patterns = [/^(school|sel_school|current_school)_?(nid|id)?$/i, /school_?(nid|id)/i, /school/i];
-    for (var p = 0; p < patterns.length; p++) {
-      for (var s = 0; s < sources.length; s++) {
-        var hit = deepFindId(sources[s].value, patterns[p], sources[s].name + ":");
-        if (hit) return hit;
-      }
-    }
-    return null;
+  /**
+   * Candidate school ids, best first. Maia is Drupal-based: the stored profile's
+   * user.og_user_node.und lists the organic groups (schools) the student belongs
+   * to. Explicit school_id/school_nid fields are the fallback.
+   */
+  function schoolCandidates(profile, claims) {
+    var out = [];
+    function add(id, path) { if (id && !out.some(function (c) { return c.id === id; })) out.push({ id: id, path: path }); }
+    var groups = profile && profile.user && profile.user.og_user_node && profile.user.og_user_node.und;
+    (Array.isArray(groups) ? groups : []).slice(0, 10).forEach(function (g, i) {
+      add(findId(g, ["target_id", "nid", "gid", "id"]), "userToken:user.og_user_node.und." + i);
+    });
+    [{ name: "userToken", value: profile }, { name: "token", value: claims }].forEach(function (s) {
+      var hit = deepFindId(s.value, /school_?(nid|id)$/i, s.name + ":");
+      if (hit) add(hit.id, hit.path);
+    });
+    return out;
   }
 
   /** Read the session the Maia app itself uses. `storage` is a Storage-like object. */
@@ -101,14 +110,16 @@
     var claims = token ? jwtClaims(token) : {};
     var profile = decodeBlob(storage.getItem("userToken"));
     var selSchool = findId(parseStored(storage.getItem("sel_school")), SCHOOL_KEYS);
-    var school = selSchool ? { id: selSchool, path: "sel_school" } : findSchoolId([{ name: "token", value: claims }, { name: "userToken", value: profile }]);
+    var schools = (selSchool ? [{ id: selSchool, path: "sel_school" }] : []).concat(schoolCandidates(profile, claims).filter(function (c) { return c.id !== selSchool; }));
     var selUser = findId(parseStored(storage.getItem("sel_user")), USER_KEYS);
     var claimUser = selUser ? null : ["uid", "user_id", "userId", "sub"].filter(function (k) { return findId(claims[k], []); })[0];
+    var profileUser = findId(profile && profile.user && profile.user.uid, []);
     return {
       token: token,
-      schoolId: school ? school.id : null,
-      studentUid: selUser || (claimUser ? findId(claims[claimUser], []) : null),
-      sources: { school: school ? school.path : null, student: selUser ? "sel_user" : claimUser ? "token:" + claimUser : null },
+      schools: schools,
+      schoolId: schools.length ? schools[0].id : null,
+      studentUid: selUser || (claimUser ? findId(claims[claimUser], []) : profileUser),
+      sources: { school: schools.length ? schools[0].path : null, student: selUser ? "sel_user" : claimUser ? "token:" + claimUser : profileUser ? "userToken:user.uid" : null },
     };
   }
 
@@ -259,8 +270,9 @@
         return;
       }
       var out = [], missing = [], student = null;
-      var idsUsed = { schoolId: session.schoolId, schoolFrom: session.sources.school, studentUid: session.studentUid, studentFrom: session.sources.student };
+      var idsUsed = { schools: session.schools.map(function (s) { return s.id + " from " + s.path; }), studentUid: session.studentUid, studentFrom: session.sources.student };
       var streak = { signature: null, count: 0 };
+      var schoolIdx = 0;
       for (var i = 0; i < colleges.length && active(); i++) {
         var c = colleges[i];
         send({ type: "cf-maia:progress", done: i, total: colleges.length, name: c.name });
@@ -269,7 +281,7 @@
           if (!hit) { missing.push({ slug: c.slug, name: c.name, reason: "Not found in Maia" }); continue; }
           var raw = await api(session, "POST", "scattergram-colleges-by-name", {
             class_of_years: CLASS_OF_YEARS, app_plan: [], collegeNid: Number(hit.nid), type: "sat", grading_type: "gpa",
-            school_id: session.schoolId, student_uid: session.studentUid,
+            school_id: session.schools[schoolIdx].id, student_uid: session.studentUid,
           });
           var norm = normalizeScatter(raw);
           if (!student && (norm.student.gpa || norm.student.sat)) student = norm.student;
@@ -277,6 +289,13 @@
           streak = { signature: null, count: 0 };
         } catch (e) {
           if (e.fatal) { send({ type: "cf-maia:error", error: e.message }); return; }
+          // "Not authorized for this school": the id was wrong, so try the next candidate on the same college.
+          if (e.signature === "406 scattergram-colleges-by-name" && schoolIdx < session.schools.length - 1) {
+            schoolIdx++;
+            i--;
+            await sleep(DELAY_MS);
+            continue;
+          }
           missing.push({ slug: c.slug, name: c.name, reason: e.message || "Request failed" });
           // The same failure three times in a row is systematic: stop instead of hammering Maia.
           streak = e.signature && e.signature === streak.signature ? { signature: e.signature, count: streak.count + 1 } : { signature: e.signature || null, count: 1 };
