@@ -1,0 +1,123 @@
+{
+  "biola-university": {
+    "url": "https://www.biola.edu/admissions/undergrad/first-time"
+  },
+  "boston-college": {
+    "url": "https://www.bc.edu/bc-web/admission/apply.html"
+  },
+  "chapman-university": {
+    "url": "https://www.chapman.edu/admission/undergraduate/how-to-apply/creative-supplement.aspx"
+  },
+  "cornell-university": {
+    "url": "https://faq.enrollment.cornell.edu/kb/article/479-what-are-the-essay-questions-for-the-fall-2027-application/"
+  },
+  "d-youville-university": {
+    "url": "https://www.dyu.edu/admissions/first-time-college-admissions"
+  },
+  "dartmouth-college": {
+    "url": "https://admissions.dartmouth.edu/glossary-term/writing-supplement"
+  },
+  "duke-university": {
+    "url": "https://admissions.duke.edu/apply/"
+  },
+  "fordham-university": {
+    "url": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/writing-for-the-common-application/"
+  },
+  "georgetown-university": {
+    "url": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/"
+  },
+  "georgia-state-university": {
+    "url": "https://admissions.gsu.edu/bachelors-degree/apply/high-school/"
+  },
+  "harvard-university": {
+    "url": "https://college.harvard.edu/admissions"
+  },
+  "illinois-state-university": {
+    "url": "https://illinoisstate.edu/admissions/freshman-requirements/"
+  },
+  "james-madison-university": {
+    "url": "https://www.jmu.edu/honors/prospective-students/apply.shtml"
+  },
+  "johns-hopkins-university": {
+    "url": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements/"
+  },
+  "northeastern-university": {
+    "noSupplements": true,
+    "note": "Northeastern requires no supplemental essays"
+  },
+  "northwestern-university": {
+    "url": "https://admissions.northwestern.edu/apply/requirements.html"
+  },
+  "princeton-university": {
+    "url": "https://admission.princeton.edu/apply/princeton-specific-questions"
+  },
+  "purdue-university-main-campus": {
+    "url": "https://admissions.purdue.edu/become-student/guide/"
+  },
+  "rice-university": {
+    "url": "https://admission.rice.edu/apply/first-year-domestic-applicants"
+  },
+  "santa-clara-university": {
+    "url": "https://www.scu.edu/admission/undergraduate/first-year-students/"
+  },
+  "stanford-university": {
+    "url": "https://admission.stanford.edu/apply/first-year/apply.html"
+  },
+  "texas-christian-university": {
+    "url": "https://admissions.tcu.edu/apply/first-year/nursing-supplement.php"
+  },
+  "the-university-of-texas-austin": {
+    "url": "https://admissions.utexas.edu/apply/application-materials/essays-and-short-answers/"
+  },
+  "tufts-university": {
+    "url": "https://admissions.tufts.edu/apply/short-answer-questions/"
+  },
+  "university-of-arizona": {
+    "url": "https://www.arizona.edu/admissions/undergraduate/first-year"
+  },
+  "university-of-chicago": {
+    "url": "https://collegeadmissions.uchicago.edu/apply/essay/"
+  },
+  "university-of-cincinnati": {
+    "url": "https://www.admissions.uc.edu/apply/apply-tips/prompts.html"
+  },
+  "university-of-connecticut": {
+    "url": "https://admissions.uconn.edu/apply/first-year/instructions/"
+  },
+  "university-of-detroit-mercy": {
+    "url": "https://www.udmercy.edu/admission/freshman/index.php"
+  },
+  "university-of-illinois-urbana-champaign": {
+    "url": "https://www.admissions.illinois.edu/essays/"
+  },
+  "university-of-maryland-college-park": {
+    "url": "https://admissions.umd.edu/apply/essay-questions"
+  },
+  "university-of-massachusetts-lowell": {
+    "url": "https://www.uml.edu/admissions/apply/"
+  },
+  "university-of-miami": {
+    "url": "https://admissions.miami.edu/undergraduate/application-process/admission-requirements/freshman/index.html"
+  },
+  "university-of-notre-dame": {
+    "url": "https://admissions.nd.edu/apply/application-overview/"
+  },
+  "university-of-oregon": {
+    "url": "https://www.uoregon.edu/admissions/undergraduate/find-your-path/first-year-students/"
+  },
+  "university-of-rochester": {
+    "url": "https://admissions.rochester.edu/applying/how-to-apply/"
+  },
+  "virginia-tech": {
+    "url": "https://www.vt.edu/admissions/undergraduate/apply/ut-prosim-short-answer-questions.html"
+  },
+  "wake-forest-university": {
+    "url": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/"
+  },
+  "yale-university": {
+    "url": "https://admissions.yale.edu/essay-topics"
+  },
+  "yeshiva-university": {
+    "url": "https://apply.yu.edu/freshman"
+  }
+}

@@ -1,0 +1,49 @@
+name: Refresh supplemental essay prompts
+
+# Schools publish next-cycle supplements from late July through September.
+# Scrape twice each fall and open a PR so a person reviews parsed prompts
+# before students see them.
+on:
+  schedule:
+    - cron: "0 14 10 8 *" # Aug 10
+    - cron: "0 14 10 9 *" # Sep 10
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-supplements
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Scrape prompts
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: node scripts/fetch-supplements.mjs --report "$RUNNER_TEMP/supplements-report.md"
+
+      - name: Check dataset
+        run: node --test tests/supplement-scraper.test.cjs tests/essay-supplements.test.cjs
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/refresh-supplements
+          delete-branch: true
+          add-paths: lib/supplements/
+          commit-message: "chore: refresh supplemental essay prompts"
+          title: "chore: refresh supplemental essay prompts"
+          body-path: ${{ runner.temp }}/supplements-report.md

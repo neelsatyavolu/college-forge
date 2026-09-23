@@ -4,16 +4,22 @@
  * When schools are added (onboarding seed, upsert_college, Explore add),
  * ensure each application has a sidebar group with starter prompts:
  *   - UC campuses → one shared "UC Application" PIQ set (pick 4 of 8)
+ *   - schools in the scraped dataset (lib/supplement-prompts.ts) → their prompts
+ *   - schools recorded as having no supplements → no group
  *   - everyone else → placeholder "Why us" / short-answer slots the copilot
  *     should replace with real current-cycle prompts via set_essays
  *
  * Existing prompts and drafts are never overwritten — only missing keys
- * get seeded. Orphan keys (schools removed from the list) are left alone
- * so drafts aren't deleted.
+ * get seeded. Existing placeholder groups are not swapped for scraped
+ * prompts: this runs on every read, before a patch's drafts are applied, so
+ * a first draft saved against a placeholder id would be orphaned. Orphan
+ * keys (schools removed from the list) are left alone so drafts aren't
+ * deleted.
  */
 
 import type { College, Essay, Workspace } from "./store";
 import { isUcCampus } from "./seed-college-list";
+import { knownNoSupplements, scrapedSupplementsFor } from "./supplement-prompts";
 
 /** Synthetic slug for the shared UC Application essay set. */
 export const UC_APPLICATION_SLUG = "uc-application";
@@ -180,7 +186,9 @@ export function syncEssaySupplements(ws: Workspace): Workspace {
     if (!slug) continue;
     const existing = next[slug];
     if (!existing || existing.length === 0) {
-      next[slug] = placeholderSupplementsForCollege(c);
+      const scraped = scrapedSupplementsFor(c);
+      if (!scraped && knownNoSupplements(slug)) continue;
+      next[slug] = scraped ?? placeholderSupplementsForCollege(c);
       changed = true;
     }
   }
