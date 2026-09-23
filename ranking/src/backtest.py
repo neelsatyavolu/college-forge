@@ -190,8 +190,16 @@ def coverage(pred: pd.DataFrame, target: pd.DataFrame, est: str, noise: dict, cr
     noise_t = (MEDIAN_SE * noise[cred]["sigma"]) ** 2 / d["n_target"]
     size = pd.qcut(d["n_target"], 3, labels=["small", "medium", "large"])
     res = {}
-    for label, floor in (("estimate_plus_target_noise", 0.0), ("with_floor", noise[cred]["floor_sd"] ** 2)):
-        sd = np.sqrt(d[f"sd_{est}"] ** 2 + noise_t + floor)
+    floor2 = noise[cred]["floor_sd"] ** 2
+    variants = (
+        # Next-class prediction intervals (the target also carries its own sampling noise).
+        ("estimate_plus_target_noise", noise_t, 0.0),
+        ("with_floor", noise_t, floor2),
+        # The width actually published behind rank ranges: estimate + floor, no target noise.
+        ("published_width", 0.0, floor2),
+    )
+    for label, target_noise, floor in variants:
+        sd = np.sqrt(d[f"sd_{est}"] ** 2 + target_noise + floor)
         inside = d["err"].abs() <= 1.645 * sd
         by_size = inside.groupby(size, observed=True).mean()
         res[label] = {"all": float(inside.mean()), **{str(k): float(v) for k, v in by_size.items()}}

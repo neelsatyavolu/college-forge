@@ -2,7 +2,7 @@
 
 ## What this is, and what it is not
 
-A **comparison of past graduates' outcomes**, from federal administrative data on students who received federal aid. The program earnings estimates behind it were **backtested in a corrected retrospective evaluation**: built only from earlier graduating classes, they predicted the next classes' earnings better than the alternatives tested on institutions excluded from the final calibration and selection, and their 90% intervals held the next classes' results 91–94% of the time (§10).
+A **comparison of past graduates' outcomes**, from federal administrative data on students who received federal aid. The program earnings estimates behind it were **backtested in a corrected retrospective evaluation**: built only from earlier graduating classes, they predicted the next classes' earnings better than the alternatives tested on institutions excluded from the final calibration and selection, and separate 90% next-class prediction intervals held the next classes' results 91–94% of the time (§10). The narrower intervals behind published rank ranges are not validated to that level (§9).
 
 - It **describes** where covered former students had strong earnings, completion and employment.
 - The composite weights and the rank ranges are **not** validated by that backtest (§9, §10).
@@ -30,9 +30,11 @@ Territories are excluded (no BEA price parities). Programs are identified by OPE
 | Field | Who, when (June 10, 2026 release) | Source dollars | Use |
 |---|---|---|---|
 | `EARN_MDN_4YR`, `EARN_MDN_4YR_NAT` | 2017–19 graduates, earnings in 2022–23 | 2024 | Scored |
-| `EARN_MDN_5YR` | 2014–16 graduates, earnings in 2020–21 | 2022 | Scored where 4-year is suppressed |
+| `EARN_MDN_5YR` | 2014–16 graduates, earnings in 2020–21 | 2022 | Scored where 4-year is suppressed (~9% of estimates) |
 | `EARN_MDN_1YR` | 2018–20 graduates, earnings in 2020–21 | 2022 | Not scored |
 | `MD_EARN_WNE_P10` | students who entered 2009–11, earnings in 2020–21 | 2022 | Shown, not scored |
+| `COUNT_WNE_3YR`, `COUNT_NWNE_3YR` | 2014–16 graduates, working status in 2018–19 | — | Employment (scored) |
+| `C150_4` | first-time full-time students starting around fall 2018 | — | Graduation (scored) |
 
 Dollar years come from the data dictionary's cohort maps (`config.FIELD_DOLLAR_YEAR`); every field is restated in **2024 dollars** at load. `tests/test_data_contract.py` checks published figures against the official file for both modeled horizons, both credentials and a branch-campus group. "Earnings" are annual W-2 wages plus positive self-employment earnings for federal aid recipients working and not enrolled — not base salaries, and not international students.
 
@@ -49,6 +51,8 @@ y = ln(program median / national median for the same major and credential)
 ```
 
 using **4-year earnings, else 5-year**. Only one horizon is used per program: the 4- and 5-year figures describe overlapping or different classes and are not independent measurements. 1-year earnings (partly pandemic years, overlapping the next class) are not scored. This is exactly the observation model the backtest evaluates.
+
+The 4-year baseline is Scorecard's official national median (`EARN_MDN_4YR_NAT`). Scorecard publishes no 5-year national median, so the 5-year baseline is an earner-weighted median of program medians across all institutions. That is a different statistic, used for the ~9% of estimates that fall back to 5-year earnings.
 
 **Error scale (calibrated).** The sampling variance of a median is taken as `(1.2533 · σ)² / n`. σ is an **effective, count-dependent error scale**, fitted on development institutions from how much the same programs moved between classes with no overlapping completion years. Each major's systematic shift is removed first, and the fit is non-negative. **σ = 0.454 for bachelor's, 0.382 for master's**; v2 assumed 0.70. The same fit gives a **count-independent floor** (SD 0.020 bachelor's, 0.048 master's): change between classes that does not shrink with program size.
 
@@ -69,7 +73,7 @@ using **4-year earnings, else 5-year**. Only one horizon is used per program: th
 
 Weights are value judgments fixed a priori: v2 set 40/25/15 plus 20% for a 10-years-after-entry earnings component. **v3 removes that component from the score** because it compares entrants (including non-completers) against a completer baseline, mixing populations, cohorts and statistics. The remaining weights are renormalized proportionally. The later-earnings figure is still shown as a rough indicator.
 
-Components are z-scored across the ranked universe (clipped at ±3). The composite is the weighted mean of available components; early earnings and graduation are required. **The 0–100 score is a relative index** (top = 100, lowest = 0), not a probability.
+Components are z-scored across the ranked universe (clipped at ±3). The composite is the weighted mean of available components; early earnings and graduation are required. Four scored schools lack an employment figure, and their weights are rescaled over the other two. **The 0–100 score is a relative index** (top = 100, lowest = 0), not a probability.
 
 **Typical early earnings** (shown, not scored) is the completion-weighted mean of the school's bachelor's program medians. **Program coverage** is the share of known bachelor's completions in programs with a modeled estimate, not the share of graduates observed.
 
@@ -83,7 +87,7 @@ The headline score minus a 10-fold cross-fitted prediction from SAT/ACT (with a 
 
 ## 9. Uncertainty and sensitivity
 
-**Program intervals** (the basis of per-major rank ranges) combine the estimate's uncertainty with the count-independent floor, added once. In the backtest they were checked against the next class (§10).
+**Program intervals** (the basis of per-major rank ranges) combine the estimate's uncertainty with the count-independent floor, added once. They describe uncertainty in the estimate, not the spread of a future class's result. At this published width they contained the next class's result **82.8% of the time for bachelor's and 90.6% for master's** in the backtest. That is below 90%, as expected for intervals that leave out the next class's own sampling noise, and it is not a calibration of these intervals. The wider next-class prediction intervals are checked in §10.
 
 **Rank ranges** are 5th–95th percentiles over 500 redraws of those estimates, plus, in the cost-of-living ordering only, the graduate price level where it is modeled. A price error ε moves an adjusted estimate by `(loading − 1)·ε`, with `loading = (1 − b)·β` through the prior. Graduation and employment are held fixed. **Rank ranges are conditional on the model and are not themselves empirically calibrated.** Weights and similar choices are covered by sensitivity:
 
@@ -124,7 +128,7 @@ The current calibration and grid selection exclude test targets. But the broader
 
 v3 improves prediction error for both credentials and within-major ordering for bachelor's. **For master's the ordering is on par with the simpler methods (0.766 vs 0.771)**, which is one reason master's tables stay marked experimental.
 
-**Interval check** (test institutions, ≥50 target earners). The per-major offset between the two files' national medians is estimated on development institutions and frozen, and errors are not re-centered on test outcomes. On that basis, 90% program intervals (estimate + development-fitted floor + the next class's own sampling noise) contained the next class's result **91.5% of the time for bachelor's and 93.5% for master's**. For the largest third of programs the figures are 90.4% and 92.4%. Without the floor, the large-program figures fall to 88.6% for both, which is why the floor is included.
+**Interval check** (test institutions, ≥50 target earners). The per-major offset between the two files' national medians is estimated on development institutions and frozen, and errors are not re-centered on test outcomes. On that basis, 90% **next-class prediction intervals** (estimate + development-fitted floor + the next class's own sampling noise) contained the next class's result **91.5% of the time for bachelor's and 93.5% for master's**. These are wider than the published program intervals, which leave out the target's sampling noise (82.8% / 90.6% at published width, §9). For the largest third of programs the figures are 90.4% and 92.4%. Without the floor, the large-program figures fall to 88.6% for both, which is why the floor is included.
 
 **Limits.** One pair of graduating classes cannot show robustness across economic periods; the next Scorecard release is the prospective test. The backtest validates the as-reported program earnings estimates. It does not validate the geography model, the composite weights, or rank ranges.
 

@@ -48,7 +48,7 @@ function Validation() {
       </p>
       <table>
         <thead>
-          <tr><th /><th>Typical miss (this method)</th><th>Previous method</th><th>Last class’s raw earnings</th><th>Order agreement (this / raw)</th><th>90% intervals that held</th></tr>
+          <tr><th /><th>Typical miss (this method)</th><th>Previous method</th><th>Last class’s raw earnings</th><th>Order agreement (this / raw)</th><th>90% prediction intervals that held</th></tr>
         </thead>
         <tbody>
           {rows.map(({ c, v }) => (
@@ -115,7 +115,7 @@ export default function Methodology({ weights, cohorts }: { weights: Weights; co
         <div>
           <h3>How to read a rank</h3>
           <ul>
-            <li><strong>Ranges show uncertainty within the model.</strong> The small numbers under each rank cover noise in the earnings data (and, in the cost-of-living view, estimated locations). The program earnings intervals behind them held the next graduating class’s result about 91–94% of the time in our backtest; the rank ranges themselves aren’t separately calibrated, and they don’t cover choices like the weights (see the table below).</li>
+            <li><strong>Ranges show uncertainty within the model.</strong> The small numbers under each rank cover noise in the earnings data (and, in the cost-of-living view, estimated locations). They describe how uncertain each estimate is, not how much a future class could differ, and they aren’t separately calibrated. Wider prediction intervals, which add a future class’s own randomness, held the next class’s result 91–94% of the time in our backtest. Ranges don’t cover choices like the weights (see the table below).</li>
             <li><strong>Small programs lean on their college.</strong> A program with few graduates is pulled toward its college’s results in other majors, in proportion to how noisy its own data are. We tested this against judging each program alone, and it predicted the next class better. What’s borrowed is measured outcomes, not reputation.</li>
             <li><strong>“Beats expectations”</strong> compares a college with what a model predicts from its incoming students. It highlights colleges worth a closer look; it doesn’t prove the college caused the difference.</li>
           </ul>
