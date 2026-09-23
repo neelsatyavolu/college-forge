@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Forge Career Outcomes Ranking — end-to-end pipeline (ranking/METHODOLOGY.md v2.0)."""
+"""Forge Career Outcomes Ranking — end-to-end pipeline (ranking/METHODOLOGY.md v3.0)."""
 from __future__ import annotations
 
 import json
@@ -20,6 +20,7 @@ from institutions import apply_eligibility, employment_rate, load_institutions, 
 from majors import major_index, rank_majors  # noqa: E402
 from overall import (  # noqa: E402
     beats_expectations,
+    completion_weighted_effect,
     components,
     coverage,
     eligible_for_scoring,
@@ -30,10 +31,11 @@ from overall import (  # noqa: E402
 from programs import (  # noqa: E402
     expected_earnings,
     load_programs,
-    major_estimates,
-    price_slope,
+    price_prior,
+    program_estimates,
     program_premiums,
     school_effects,
+    shrinkage_sd,
 )
 from reports import DISCLOSURE, sources_md  # noqa: E402
 from util import write_csv  # noqa: E402
@@ -53,30 +55,42 @@ def typical_earnings(programs: pd.DataFrame) -> pd.Series:
     return (g["wx"].sum() / g["completions"].sum()).rename("typical_earnings")
 
 
-def build_overall(inst, eligible, programs, effects, rpp):
+def build_overall(inst, eligible, programs, effects, effects_adj, rpp):
+    """Headline table (earnings as reported) with the after-cost-of-living ordering joined."""
     elig = eligible.assign(employment_rate=employment_rate(eligible))
-    comp = components(elig, effects, expected_earnings(programs), rpp)
+    expected = expected_earnings(programs)
+    comp = components(elig, effects, expected, rpp, adjust_prices=False)
     comp, excl_cov = eligible_for_scoring(comp, coverage(programs))
+    comp_adj = components(elig, effects_adj, expected, rpp, adjust_prices=True).loc[comp.index]
+
     table = score_table(comp)
     table = table.join(rank_intervals(table))
+    adjusted = score_table(comp_adj)
+    adjusted = adjusted.join(rank_intervals(adjusted))
+    table = table.join(adjusted[["rank", "rank_low", "rank_high", "score", "early_premium", "later_premium"]].rename(columns={
+        "rank": "rank_adjusted", "rank_low": "rank_adjusted_low", "rank_high": "rank_adjusted_high",
+        "score": "score_adjusted", "early_premium": "early_premium_adjusted", "later_premium": "later_premium_adjusted",
+    }))
     meta = inst.set_index("UNITID")
     table = table.join(meta[META + ["MD_EARN_WNE_P10"]]).join(rpp[["rpp_grad", "rpp_source"]])
     table["typical_earnings"] = typical_earnings(programs).reindex(table.index)
     table["earnings_10yr"] = table["MD_EARN_WNE_P10"]
-    table["beats_expectations"] = beats_expectations(table, inst)
+    table["beats_expectations"], beats_fit = beats_expectations(table, inst)
     table["beats_rank"] = table["beats_expectations"].rank(ascending=False, method="first")
 
-    # Same schools, no cost-of-living adjustment: a full alternative ranking users can switch to.
-    no_col = rpp.assign(rpp_grad=100.0, rpp_log_sd=0.0)
-    comp_nominal = components(elig, effects, expected_earnings(programs), no_col).loc[comp.index]
-    nominal = score_table(comp_nominal)
-    nominal = nominal.join(rank_intervals(nominal))
-    table = table.join(nominal[["rank", "rank_low", "rank_high", "score", "early_premium", "long_premium"]].rename(columns={
-        "rank": "rank_nominal", "rank_low": "rank_nominal_low", "rank_high": "rank_nominal_high",
-        "score": "score_nominal", "early_premium": "early_premium_nominal", "long_premium": "long_premium_nominal",
-    }))
-    sens = sensitivity(comp, table["rank"], {"no_cost_of_living": comp_nominal})
-    return table, comp, excl_cov, sens
+    # Coverage floors: a school's estimate does not depend on the floor, so these variants
+    # only show how re-standardizing on a smaller universe moves the remaining schools.
+    cov = comp["coverage"]
+    alternatives = {
+        "with_cost_of_living": comp_adj,
+        "coverage_at_least_50pct": comp[cov >= 0.5],
+        "coverage_at_least_70pct": comp[cov >= 0.7],
+        "completion_weighted_programs": comp.assign(
+            early_premium=completion_weighted_effect(programs).reindex(comp.index)
+        ),
+    }
+    sens = sensitivity(comp, table["rank"], alternatives)
+    return table, comp, excl_cov, sens, beats_fit
 
 
 def main() -> int:
@@ -90,24 +104,34 @@ def main() -> int:
     print(f"  overall-eligible: {len(eligible):,} | per-major universe: {len(majors_pool):,}")
 
     print("=== 2. Program earnings premiums ===")
-    programs = program_premiums(load_programs())
+    programs = load_programs()
     programs = programs[programs["UNITID"].isin(set(majors_pool["UNITID"]))]
+    programs = program_premiums(programs, log_sd=shrinkage_sd(programs))
 
     print("=== 3. Graduate cost of living ===")
     need = set(eligible["UNITID"]) | set(programs.loc[programs["y_raw"].notna(), "UNITID"])
     rpp, geo_diag = graduate_rpp(inst[inst["UNITID"].isin(need)])
     print(f"  {geo_diag['n_schools']:,} schools · PSEO destinations {geo_diag['n_pseo_destinations']:,} · modeled {geo_diag['modeled_share']:.0%}")
 
-    print("=== 3b. Shrinkage (price-aware priors) ===")
+    print("=== 3b. Shrinkage (backtest-selected hierarchical model) ===")
+    # Headline (as reported): flat prior, so no modeled geography enters it at all.
+    flat = pd.Series(0.0, index=rpp.index)
+    effects, pool_diag = school_effects(programs, flat, price_prior(programs, flat))
+    nominal = program_estimates(programs, effects, pool_diag)
+    # Alternative (after cost of living): price-aware prior, then divide by graduate prices.
     log_price = np.log(rpp["rpp_grad"] / 100.0)
-    beta = price_slope(programs, log_price)
-    effects, pool_diag = school_effects(programs, log_price, beta)
-    programs = major_estimates(programs, log_price, beta)
+    effects_adj, diag_adj = school_effects(programs, log_price, price_prior(programs, log_price))
+    adjusted = program_estimates(programs, effects_adj, diag_adj)
+    programs = nominal.assign(
+        y_program_px=adjusted["y_program"].values,
+        y_program_px_sd=adjusted["y_program_sd"].values,
+        price_loading=adjusted["price_loading"].values,
+    )
     for cred, d in pool_diag.items():
-        print(f"  {cred}: {d['programs']:,} programs, {d['schools']:,} schools, τ={d['tau']:.3f}, ω={d['omega']:.3f}, price slope β={beta[cred]:.2f}")
+        print(f"  {cred}: {d['programs']:,} programs, {d['schools']:,} schools, τ={d['tau']:.3f}, ω={d['omega']:.3f}, α={d['alpha']:.3f}; adjusted-view β={diag_adj[cred]['beta']:.2f}")
 
     print("=== 4. Overall score ===")
-    table, comp, excl_cov, sens = build_overall(inst, eligible, programs, effects, rpp)
+    table, comp, excl_cov, sens, beats_fit = build_overall(inst, eligible, programs, effects, effects_adj, rpp)
     print(f"  scored: {len(table):,} | dropped (thin earnings coverage or no graduation rate): {len(excl_cov):,}")
     print(sens.to_string(index=False))
 
@@ -128,17 +152,18 @@ def main() -> int:
     write_csv(sens, OUT / "sensitivity.csv")
     (OUT / "diagnostics.json").write_text(json.dumps({
         "access_date": access_date, "dollar_factors_to_reference_year": factors_used(),
-        "price_slope": beta, "pooling": pool_diag, "geography": geo_diag,
+        "pooling": pool_diag, "pooling_adjusted_view": diag_adj,
+        "geography": geo_diag, "beats_expectations_fit": beats_fit,
         "n_scored": int(len(table)), "n_excluded": int(len(exclusions)), "majors": n_majors,
-        "component_coverage": {c: int(comp[c].notna().sum()) for c in ("early_premium", "long_premium", "graduation", "employment")},
+        "component_coverage": {c: int(comp[c].notna().sum()) for c in ("early_premium", "later_premium", "graduation", "employment")},
     }, indent=2, default=str))
-    (OUT / "sources.md").write_text(sources_md(access_date, geo_diag, pool_diag, beta, len(table), n_majors))
+    (OUT / "sources.md").write_text(sources_md(access_date, geo_diag, pool_diag, len(table), n_majors))
     (OUT / "DISCLOSURE.md").write_text(DISCLOSURE)
-    export_all(table, len(eligible), ranked, index, sens, access_date)
+    export_all(table, len(eligible), ranked, index, sens, beats_fit, access_date)
 
     print("\n=== TOP 30 ===")
-    show = table.head(30).assign(early=lambda d: np.round(d["early_premium"], 3), long=lambda d: np.round(d["long_premium"], 3))
-    print(show[["rank", "rank_low", "rank_high", "INSTNM", "STABBR", "score", "early", "long", "graduation", "employment"]].to_string(index=False))
+    show = table.head(30).assign(early=lambda d: np.round(d["early_premium"], 3))
+    print(show[["rank", "rank_low", "rank_high", "rank_adjusted", "INSTNM", "STABBR", "score", "early", "graduation", "employment"]].to_string(index=False))
     return 0
 
 

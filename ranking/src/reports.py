@@ -14,16 +14,16 @@ from config import (
 
 DISCLOSURE = f"""# Disclosure (publish with any public ranking)
 
-This is a **historical comparison of past graduates' outcomes**. It describes students who received federal aid and graduated several years ago. It has not been validated as a predictor of any future student's career, and it does not measure what a college causes.
+This is a **comparison of past graduates' outcomes** for students who received federal aid and graduated several years ago. Its program earnings estimates were backtested in a corrected retrospective evaluation: built only from earlier graduating classes, they predicted the next classes better than the alternatives tested on institutions excluded from the final calibration and selection, and their 90% intervals held the next classes' results 91–94% of the time. The composite weights and rank ranges are not validated by that test. It is not a forecast for any individual student, and it does not measure what a college causes.
 
-1. **Outcomes, no direct weight on selectivity.** The score uses earnings, graduation and employment. Admit rate, test scores, yield, research, spending and reputation are not scored. Admissions variables are used in two places: the model that predicts where graduates work (when that is not observed) and the separate "Beats expectations" view.
+1. **Outcomes, no direct weight on selectivity.** The score uses early-career earnings (50%), graduation (31.25%) and employment (18.75%). A 10-years-after-entry earnings figure is shown but not scored (it mixes entrants and graduates). Admit rate, test scores, yield, research, spending and reputation are not scored. Admissions variables are used in two places: the model that predicts where graduates work (when that is not observed) and the separate "Beats expectations" view.
 2. **Same-major comparisons.** Earnings are compared with the national median for the same major and credential, so a school is not rewarded or penalized for which majors it offers.
 3. **Federal aid recipients only.** Scorecard earnings and employment cover students who received federal grants or loans. At wealthy colleges that can be a minority of students. International students are not included.
-4. **Cohorts are old.** {EARNINGS_COHORTS['4yr']} (4-year earnings); {EARNINGS_COHORTS['5yr']} (5-year); {EARNINGS_COHORTS['1yr']} (1-year, partly pandemic years); {EARNINGS_COHORTS['10yr_entry']} (later earnings). The page refresh date is not the outcome date.
+4. **Cohorts are old.** Scored: {EARNINGS_COHORTS['4yr']} (4-year earnings), else {EARNINGS_COHORTS['5yr']} (5-year). Not scored: {EARNINGS_COHORTS['1yr']} (1-year, partly pandemic years); {EARNINGS_COHORTS['10yr_entry']} (later earnings, shown). The page refresh date is not the outcome date.
 5. **Dollars.** Every figure is restated in {REFERENCE_YEAR} dollars from each field's own source year using the PCE price index. Earnings are annual W-2 wages and self-employment earnings, not base salary.
-6. **Cost of living** uses BEA Regional Price Parities with 10 extra percentage points of housing weight (a young-renter basket). Where graduates work is observed from Census PSEO for a minority of schools (broad Census divisions plus in-state share, priced at campus-local prices for in-state workers) and modeled for the rest. Most top-ranked schools are modeled. Dividing a median by a price index is an approximation. State taxes are not deducted. A version without this adjustment is published alongside.
-7. **Uncertainty is conditional on the model.** Rank ranges (5th–95th percentile) redraw each school's earnings estimates and, where location is modeled, its price level. They do not cover the choice of weights, the housing basket, baselines, variance assumptions, or future labor markets. Overlapping ranges are a reason not to over-read the exact order; they do not prove two schools are equal.
-8. **Small programs are shrunk.** Overall: a school's programs are pooled into one school effect. Per major: each program is shrunk toward what the national median implies at its local price level, and never borrows the school's results in other majors.
+6. **The headline ranks earnings as reported and uses no geography.** An alternative ordering adjusts for cost of living with BEA Regional Price Parities (plus extra housing weight). Where graduates work is observed from Census PSEO for about a quarter of schools and modeled for the rest, and that model is not yet externally validated, which is why the adjusted ordering is the alternative. State taxes are not deducted.
+7. **Uncertainty.** Rank ranges (5th–95th percentile) redraw each earnings estimate and, in the cost-of-living view, the modeled price level. The program earnings intervals behind them were checked against the next graduating class; the rank ranges themselves are conditional on the model and not empirically calibrated. Weights and other specification choices are reported as sensitivity. Overlapping ranges are a reason not to over-read the exact order; they do not prove two schools are equal.
+8. **Small programs are shrunk.** A school's programs are pooled into one school effect; each program's estimate is pulled toward that effect in proportion to how noisy its own data are. This borrowing was chosen because it predicted the next graduating class better; what is borrowed is the school's measured outcomes, not reputation.
 9. **Only published cells are ranked.** A school missing from a major table may not offer the major, may report it under a related code, may have suppressed earnings, or may rank below the top 250 shown.
 10. **"Beats expectations" is not causal.** It is the gap between a school's score and a cross-fitted prediction from SAT/ACT, admit rate, Pell share and first-generation share. Unmeasured student differences and model error can drive it.
 11. **Excluded:** for-profit and online-only institutions, and schools in U.S. territories (no BEA price data). The overall table requires a first-time-student graduation rate.
@@ -34,13 +34,13 @@ This is a **historical comparison of past graduates' outcomes**. It describes st
 1. Majors are 4-digit federal CIP categories; they may not match catalog program names, and one code can bundle specialties (for example, nurse anesthesia sits inside registered nursing).
 2. Degree earnings are not occupation outcomes: a journalism graduate working in marketing counts toward journalism earnings.
 3. Per-major cost of living uses the school's bachelor's-graduate destinations for every major and for master's programs. **Master's tables are experimental**: graduate students' locations, ages and prior experience can differ sharply from undergraduates'.
-4. Pooled horizons combine different graduating cohorts; they are not one class's career path.
+4. A program is scored on 4-year earnings, or 5-year earnings (an older class) where the 4-year figure is suppressed. Programs with only 1-year earnings are not ranked.
 """
 
 
-def sources_md(access_date: str, geo_diag: dict, pool_diag: dict, beta: dict, n_ranked: int, n_majors: dict) -> str:
+def sources_md(access_date: str, geo_diag: dict, pool_diag: dict, n_ranked: int, n_majors: dict) -> str:
     pool_lines = "\n".join(
-        f"- {cred}: {d['programs']:,} programs at {d['schools']:,} schools · school-effect SD τ={d['tau']:.3f} · program SD ω={d['omega']:.3f} · price slope β={beta[cred]:.2f}"
+        f"- {cred}: {d['programs']:,} programs at {d['schools']:,} schools · school-effect SD τ={d['tau']:.3f} · program SD ω={d['omega']:.3f} · price prior α={d['alpha']:.3f}, β={d['beta']:.2f}"
         for cred, d in pool_diag.items()
     )
     dollar_lines = "\n".join(f"- `{f}`: {y} dollars" for f, y in FIELD_DOLLAR_YEAR.items())

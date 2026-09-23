@@ -1,12 +1,11 @@
 export type Control = "public" | "private_nonprofit";
 export type Credential = "bachelors" | "masters";
 export type View = "overall" | "majors" | "beats";
-/** Whether earnings are adjusted for the cost of living where graduates work. */
-export type PriceMode = "adjusted" | "nominal";
+/** Headline ranks earnings as reported ("nominal"); "adjusted" divides by graduate prices. */
+export type PriceMode = "nominal" | "adjusted";
 
 export type Weights = {
   early_premium: number;
-  long_premium: number;
   graduation: number;
   employment: number;
 };
@@ -27,9 +26,9 @@ type Ranked = {
   rank: number;
   rank_low: number;
   rank_high: number;
-  rank_nominal: number;
-  rank_nominal_low: number;
-  rank_nominal_high: number;
+  rank_adjusted: number;
+  rank_adjusted_low: number;
+  rank_adjusted_high: number;
 };
 
 export type School = Ranked & {
@@ -39,11 +38,11 @@ export type School = Ranked & {
   state: string;
   control: Control;
   score: number;
-  score_nominal: number;
+  score_adjusted: number;
   early_premium_pct: number;
-  early_premium_nominal_pct: number;
-  long_premium_pct: number | null;
-  long_premium_nominal_pct: number | null;
+  early_premium_adjusted_pct: number;
+  later_premium_pct: number | null;
+  later_premium_adjusted_pct: number | null;
   graduation_rate: number;
   employment_rate: number | null;
   typical_earnings: number | null;
@@ -57,7 +56,7 @@ export type School = Ranked & {
   beats_expectations: number | null;
   beats_rank: number | null;
   early_premium_pctile: number;
-  long_premium_pctile: number | null;
+  early_premium_adjusted_pctile: number;
   graduation_pctile: number;
   employment_pctile: number | null;
 };
@@ -66,6 +65,7 @@ export type OverallFile = RankingMeta & {
   n_ranked: number;
   n_eligible: number;
   schools: School[];
+  fit?: BeatsFit;
 };
 
 export type MajorSummary = {
@@ -89,7 +89,7 @@ export type MajorRow = Ranked & {
   state: string;
   control: Control;
   premium_pct: number;
-  premium_nominal_pct: number;
+  premium_adjusted_pct: number;
   earnings: number | null;
   earnings_horizon: Horizon;
   earnings_count: number | null;
@@ -118,7 +118,29 @@ export type SchoolMajorsFile = MajorMeta & {
   ranks: Record<string, [string, number, number][]>;
 };
 
-export type SensitivityRow = { variant: string; spearman_vs_headline: number; top25_overlap: number };
+export type SensitivityRow = {
+  variant: string;
+  n_schools: number;
+  spearman_vs_headline: number;
+  top25_overlap: number;
+  median_rank_shift: number;
+};
+
+type HeldOut = { within_major_rmse: number; rmse: number; rho: number; n: number };
+type Coverage = { all: number; small: number; medium: number; large: number };
+export type ValidationFile = {
+  noise: Record<Credential, { sigma: number; floor_sd: number; n_pairs: number }>;
+  chosen: Record<Credential, {
+    estimator: string;
+    k: number;
+    test: HeldOut;
+    test_raw_baseline: HeldOut;
+    test_major_only_sd070: HeldOut;
+    coverage_90: { estimate_plus_target_noise: Coverage; with_floor: Coverage };
+  }>;
+};
+
+export type BeatsFit = { out_of_fold_r2: number; residual_sd_points: number; n: number };
 
 export type Filters = {
   q: string;

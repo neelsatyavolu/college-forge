@@ -1,4 +1,4 @@
-"""Overall career-outcomes score (§4), rank intervals (§6), beats-expectations view (§7)."""
+"""Overall career-outcomes score (§6), rank intervals (§9), beats-expectations view (§8)."""
 from __future__ import annotations
 
 import numpy as np
@@ -6,7 +6,6 @@ import pandas as pd
 
 from config import (
     COVERAGE_FLOOR,
-    LOG_EARNINGS_SD,
     N_BOOT,
     OVERALL_WEIGHTS,
     RANDOM_SEED,
@@ -23,22 +22,27 @@ def components(
     school_effects: pd.DataFrame,
     expected: pd.Series,
     rpp: pd.DataFrame,
+    adjust_prices: bool,
 ) -> pd.DataFrame:
     """
-    One row per eligible school (UNITID index) with the four scored components.
-    Premiums are log ratios, so +0.10 ≈ 10.5% more than the comparison.
+    One row per eligible school (UNITID index). Premiums are log ratios (+0.10 ≈ +10.5%).
+
+    adjust_prices=False is the headline (nominal) view; True divides by the graduate price
+    level. Either way the price level also enters the shrinkage prior, so a price error ε
+    moves the early premium by price_coef·ε: loading − 1 when adjusted, loading when not.
     """
     df = schools.set_index("UNITID")
-    bach = school_effects[school_effects["credential"] == "bachelors"].set_index("UNITID")
-    col = np.log(rpp["rpp_grad"].reindex(df.index) / 100.0)
+    bach = school_effects[school_effects["credential"] == "bachelors"].set_index("UNITID").reindex(df.index)
+    col = np.log(rpp["rpp_grad"].reindex(df.index) / 100.0) if adjust_prices else 0.0
     out = pd.DataFrame(index=df.index)
-    out["early_premium"] = bach["mu_hat"].reindex(df.index) - col
-    out["early_premium_sd"] = bach["mu_sd"].reindex(df.index)
-    out["long_premium"] = np.log(df["MD_EARN_WNE_P10"]) - col - np.log(expected.reindex(df.index))
-    out["long_premium_sd"] = 1.2533 * LOG_EARNINGS_SD / np.sqrt(df["COUNT_WNE_P10"].clip(lower=10))
+    out["early_premium"] = bach["mu_hat"] - col
+    out["early_premium_sd"] = bach["mu_sd"]
+    out["price_sd"] = rpp["rpp_log_sd"].reindex(df.index).fillna(0.0)
+    out["price_coef"] = bach["mu_price_loading"].fillna(0.0) - (1.0 if adjust_prices else 0.0)
+    # Displayed only (v3.0): entrants incl. non-completers vs a completer baseline.
+    out["later_premium"] = np.log(df["MD_EARN_WNE_P10"]) - col - np.log(expected.reindex(df.index))
     out["graduation"] = df["C150_4"]
     out["employment"] = df["employment_rate"]
-    out["col_sd"] = rpp["rpp_log_sd"].reindex(df.index).fillna(0.0) if "rpp_log_sd" in rpp else 0.0
     return out
 
 
@@ -62,8 +66,8 @@ def composite(comp: pd.DataFrame, ref: pd.DataFrame | None = None, weights: dict
 
 
 def coverage(programs: pd.DataFrame) -> pd.Series:
-    """Share of bachelor's completions in programs with published earnings."""
-    b = programs[programs["credential"] == "bachelors"]
+    """Share of bachelor's completions (where known) in programs with published earnings."""
+    b = programs[(programs["credential"] == "bachelors") & programs["completions"].notna()]
     total = b.groupby("UNITID")["completions"].sum()
     covered = b[b["y_raw"].notna()].groupby("UNITID")["completions"].sum()
     return (covered.reindex(total.index).fillna(0) / total.replace(0, np.nan)).rename("coverage")
@@ -82,21 +86,20 @@ def score_table(comp: pd.DataFrame) -> pd.DataFrame:
 
 def rank_intervals(table: pd.DataFrame, n_boot: int = N_BOOT, seed: int = RANDOM_SEED) -> pd.DataFrame:
     """
-    5th–95th percentile ranks when earnings estimates and the modeled graduate price
-    level are redrawn from their uncertainty (the price error shifts both earnings
-    components together). Conditional on this model; weights, the price basket and
-    other specification choices are covered by sensitivity(), not by these ranges.
+    5th–95th percentile ranks when each school's earnings estimate and (where modeled)
+    its graduate price level are redrawn from their uncertainty. Graduation and
+    employment are fixed; specification choices are covered by sensitivity().
     """
     rng = np.random.default_rng(seed)
     base = table[COMPONENTS]
-    col_sd = table["col_sd"].fillna(0).to_numpy() if "col_sd" in table else np.zeros(len(table))
+    sd = table["early_premium_sd"].fillna(0).to_numpy()
+    price = (table["price_coef"] * table["price_sd"]).fillna(0).to_numpy()
     ranks = np.empty((n_boot, len(table)), dtype=np.int32)
     for b in range(n_boot):
         draw = base.copy()
-        price_err = rng.normal(0.0, 1.0, len(base)) * col_sd
-        for c in ("early_premium", "long_premium"):
-            sd = table[f"{c}_sd"].fillna(0).to_numpy()
-            draw[c] = base[c] + rng.normal(0.0, 1.0, len(base)) * sd - price_err
+        draw["early_premium"] = (
+            base["early_premium"] + rng.normal(0.0, 1.0, len(base)) * sd + rng.normal(0.0, 1.0, len(base)) * price
+        )
         c = composite(draw, ref=base).to_numpy()
         order = np.argsort(-c)
         rk = np.empty(len(c), dtype=np.int32)
@@ -109,11 +112,12 @@ def rank_intervals(table: pd.DataFrame, n_boot: int = N_BOOT, seed: int = RANDOM
     )
 
 
-def beats_expectations(table: pd.DataFrame, schools: pd.DataFrame) -> pd.Series:
+def beats_expectations(table: pd.DataFrame, schools: pd.DataFrame) -> tuple[pd.Series, dict]:
     """
-    §7: score minus the score a student-profile model predicts (SAT/ACT, admit rate,
-    Pell, first-gen), in score points. Predictions are cross-fitted, so no school's own
-    outcome shapes its prediction. Descriptive, not a causal value-added estimate.
+    §8: headline score minus a 10-fold cross-fitted prediction from SAT/ACT, admit rate,
+    Pell share and first-generation share, in score points. The regression is cross-fitted;
+    the score's own normalization and a few median-filled predictors use the full universe.
+    Descriptive, not a causal value-added estimate. Returns residuals and fit diagnostics.
     """
     s = schools.set_index("UNITID").reindex(table.index)
     sat = s["SAT_AVG"].fillna(s["ACTCMMID"] * 40 + 200)  # concordance-style ACT→SAT
@@ -124,31 +128,41 @@ def beats_expectations(table: pd.DataFrame, schools: pd.DataFrame) -> pd.Series:
         "pell": s["PCTPELL"],
         "first_gen": s["FIRST_GEN"].fillna(s["FIRST_GEN"].median()),
     }, index=table.index)
-    return crossfit_residuals(table["score"], X).rename("beats_expectations")
+    resid = crossfit_residuals(table["score"], X)
+    y = table["score"][resid.notna()]
+    fit = {
+        "out_of_fold_r2": float(1 - (resid.dropna() ** 2).sum() / ((y - y.mean()) ** 2).sum()),
+        "residual_sd_points": float(resid.std()),
+        "n": int(resid.notna().sum()),
+    }
+    return resid.rename("beats_expectations"), fit
 
 
 def sensitivity(
     comp: pd.DataFrame,
     headline: pd.Series,
-    alt_components: dict[str, pd.DataFrame],
+    alternatives: dict[str, pd.DataFrame],
 ) -> pd.DataFrame:
-    """How much the ranking moves under reasonable alternative choices."""
+    """How much the headline ranking moves under reasonable alternative choices."""
     variants = {
-        "equal_weights": (comp, {c: 0.25 for c in COMPONENTS}),
-        "earnings_only": (comp, {"early_premium": 2 / 3, "long_premium": 1 / 3}),
+        "equal_weights": (comp, {c: 1 / len(COMPONENTS) for c in COMPONENTS}),
         "early_earnings_only": (comp, {"early_premium": 1.0}),
         "no_graduation": (comp, {k: v for k, v in OVERALL_WEIGHTS.items() if k != "graduation"}),
         "no_employment": (comp, {k: v for k, v in OVERALL_WEIGHTS.items() if k != "employment"}),
-        **{name: (alt, OVERALL_WEIGHTS) for name, alt in alt_components.items()},
+        **{name: (alt, OVERALL_WEIGHTS) for name, alt in alternatives.items()},
     }
     rows = []
-    top = set(headline.nsmallest(25).index)
     for name, (data, w) in variants.items():
-        rk = composite(data.reindex(headline.index), weights=w).rank(ascending=False, method="min")
+        common = headline.index.intersection(data.dropna(subset=list(REQUIRED_COMPONENTS)).index)
+        rk = composite(data.loc[common], weights=w).rank(ascending=False, method="min")
+        base = headline.loc[common].rank(method="min")
+        top = set(base.nsmallest(25).index)
         rows.append({
             "variant": name,
-            "spearman_vs_headline": float(headline.corr(rk, method="spearman")),
+            "n_schools": int(len(common)),
+            "spearman_vs_headline": float(base.corr(rk, method="spearman")),
             "top25_overlap": len(top & set(rk.nsmallest(25).index)),
+            "median_rank_shift": float((base - rk).abs().median()),
         })
     return pd.DataFrame(rows)
 
@@ -169,3 +183,12 @@ def eligible_for_scoring(comp: pd.DataFrame, cov: pd.Series) -> tuple[pd.DataFra
         }))
         keep = keep & ~mask
     return comp.loc[keep].assign(coverage=c[keep]), pd.concat(parts, ignore_index=True)
+
+
+def completion_weighted_effect(programs: pd.DataFrame) -> pd.Series:
+    """Sensitivity: completion-weighted mean of program estimates (vs the pooled school effect)."""
+    b = programs[(programs["credential"] == "bachelors") & programs["y_program"].notna()
+                 & (programs["completions"].fillna(0) > 0)]
+    g = b.assign(wx=b["y_program"] * b["completions"]).groupby("UNITID")
+    return g["wx"].sum() / g["completions"].sum()
+

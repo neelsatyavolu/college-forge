@@ -1,4 +1,4 @@
-"""Unit tests for methodology v2 scoring (programs, overall composite, eligibility)."""
+"""Unit tests for methodology v3 scoring (programs, overall composite, eligibility)."""
 from __future__ import annotations
 
 import sys
@@ -12,8 +12,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from institutions import employment_rate  # noqa: E402
 from overall import composite, coverage  # noqa: E402
-from programs import collapse_branch_campuses, major_estimates, price_slope, program_premiums, school_effects  # noqa: E402
+from programs import (  # noqa: E402
+    collapse_branch_campuses,
+    price_prior,
+    program_estimates,
+    program_premiums,
+    school_effects,
+)
 from util import crossfit_residuals  # noqa: E402
+
+SD = 0.45
 
 
 def _program(unitid, cip, e4, n4, nat=100_000.0, cred="bachelors", completions=50.0):
@@ -27,73 +35,100 @@ def _program(unitid, cip, e4, n4, nat=100_000.0, cred="bachelors", completions=5
 
 class TestProgramPremiums(unittest.TestCase):
     def test_premium_is_log_ratio_to_same_major(self):
-        df = program_premiums(pd.DataFrame([_program(1, "1107", 150_000, 100, nat=100_000)]))
+        df = program_premiums(pd.DataFrame([_program(1, "1107", 150_000, 100, nat=100_000)]), SD)
         self.assertAlmostEqual(df.loc[0, "y_raw"], np.log(1.5))
 
-    def test_horizons_pool_by_precision(self):
-        row = _program(1, "1107", 120_000, 100)
-        row.update({"EARN_MDN_5YR": 150_000, "EARN_COUNT_WNE_5YR": 100})
-        y = program_premiums(pd.DataFrame([row])).loc[0, "y_raw"]
-        self.assertAlmostEqual(y, (np.log(1.2) + np.log(1.5)) / 2)
+    def test_uses_four_year_else_five_year_never_one_year(self):
+        both = _program(1, "1107", 120_000, 100)
+        both.update({"EARN_MDN_5YR": 150_000, "EARN_COUNT_WNE_5YR": 100, "EARN_MDN_1YR": 90_000, "EARN_COUNT_WNE_1YR": 100})
+        five_only = _program(2, "1107", np.nan, np.nan)
+        five_only.update({"EARN_MDN_5YR": 150_000, "EARN_COUNT_WNE_5YR": 80})
+        one_only = _program(3, "1107", np.nan, np.nan)
+        one_only.update({"EARN_MDN_1YR": 90_000, "EARN_COUNT_WNE_1YR": 100})
+        df = program_premiums(pd.DataFrame([both, five_only, one_only]), SD)
+        self.assertAlmostEqual(df.loc[0, "y_raw"], np.log(1.2))
+        self.assertEqual(df.loc[0, "earnings_horizon"], "4yr")
+        self.assertAlmostEqual(df.loc[1, "y_raw"], np.log(1.5))
+        self.assertEqual((df.loc[1, "earnings_horizon"], df.loc[1, "earners"]), ("5yr", 80))
+        self.assertTrue(np.isnan(df.loc[2, "y_raw"]))  # 1-year alone is shown, never scored
+
+    def test_sampling_variance_scales_with_sd_squared(self):
+        df = pd.DataFrame([_program(1, "1107", 120_000, 100)])
+        ratio = program_premiums(df, 0.9).loc[0, "se2"] / program_premiums(df, 0.45).loc[0, "se2"]
+        self.assertAlmostEqual(ratio, 4.0)
 
     def test_suppressed_cells_stay_missing(self):
-        df = program_premiums(pd.DataFrame([_program(1, "1107", np.nan, np.nan)]))
+        df = program_premiums(pd.DataFrame([_program(1, "1107", np.nan, np.nan)]), SD)
         self.assertTrue(np.isnan(df.loc[0, "y_raw"]))
 
 
-class TestShrinkage(unittest.TestCase):
-    def _panel(self, strong_school_small_program: float = 0.0):
+class TestHierarchicalModel(unittest.TestCase):
+    FLAT = pd.Series(0.0, index=range(60))
+
+    def _panel(self, small_program_value: float = 0.0):
         rng = np.random.default_rng(0)
         rows = []
         for school in range(60):
             effect = 0.6 if school == 0 else rng.normal(0, 0.2)
             for major in range(8):
                 small = school == 0 and major == 0
-                y = strong_school_small_program if small else effect + rng.normal(0, 0.05)
+                y = small_program_value if small else effect + rng.normal(0, 0.05)
                 rows.append(_program(school, f"{1000 + major}", 100_000 * np.exp(y), 25 if small else 200))
-        return program_premiums(pd.DataFrame(rows))
+        return program_premiums(pd.DataFrame(rows), SD)
 
-    NO_PRICE = pd.Series(dtype=float)
-    ZERO_BETA = {"bachelors": 0.0}
+    def _fit(self, progs):
+        prior = price_prior(progs, self.FLAT)
+        schools, diag = school_effects(progs, self.FLAT, prior)
+        return schools, program_estimates(progs, schools, diag)
 
-    def test_school_effect_pools_programs_and_shrinks_with_less_data(self):
-        schools, _ = school_effects(self._panel(), self.NO_PRICE, self.ZERO_BETA)
+    def test_school_effect_pools_programs_and_stays_strong(self):
+        schools, _ = self._fit(self._panel())
         s = schools.set_index("UNITID")
         self.assertTrue((s["mu_sd"] > 0).all())
-        self.assertTrue(np.all(np.abs(s["mu_hat"]) <= np.abs(s["m"]) + 1e-12))
-        self.assertGreater(s.loc[0, "mu_hat"], 0.4)  # a strong school stays strong
+        self.assertGreater(s.loc[0, "mu_hat"], 0.4)
 
-    def test_program_never_inherits_its_schools_strength(self):
-        # School 0 is excellent overall, but its small major-1000 program is exactly national median.
-        progs = major_estimates(self._panel(strong_school_small_program=0.0), self.NO_PRICE, self.ZERO_BETA)
+    def test_noisy_program_borrows_from_its_school(self):
+        # School 0 is strong; its small program reports the national median. The estimate is
+        # pulled toward the school's effect (what next-cohort prediction favored in the backtest).
+        _, progs = self._fit(self._panel(small_program_value=0.0))
         small = progs[(progs["UNITID"] == 0) & (progs["CIPCODE"] == "1000")].iloc[0]
-        self.assertAlmostEqual(small["y_major"], 0.0, places=6)
+        self.assertGreater(small["y_program"], 0.0)
+        self.assertLess(small["y_program"], small["mu_hat"])
 
-    def test_noisy_programs_shrink_more_toward_national_median(self):
-        progs = major_estimates(self._panel(strong_school_small_program=0.6), self.NO_PRICE, self.ZERO_BETA)
-        major = progs[progs["CIPCODE"] == "1000"]
-        small = major[major["UNITID"] == 0].iloc[0]
-        big = major[major["UNITID"] != 0].iloc[0]
-        self.assertLess(small["y_major"] / small["y_raw"], big["y_major"] / big["y_raw"])
-        self.assertGreater(small["y_major"], 0.0)
+    def test_floor_is_added_exactly_once(self):
+        progs = self._panel()
+        prior = price_prior(progs, self.FLAT)
+        schools, diag = school_effects(progs, self.FLAT, prior)
+        none = program_estimates(progs, schools, diag, floor_sd={"bachelors": 0.0})
+        some = program_estimates(progs, schools, diag, floor_sd={"bachelors": 0.05})
+        np.testing.assert_allclose(some["y_program_sd"] ** 2 - none["y_program_sd"] ** 2, 0.05 ** 2)
+
+    def test_large_program_keeps_mostly_its_own_result(self):
+        _, progs = self._fit(self._panel())
+        big = progs[(progs["UNITID"] == 3) & (progs["CIPCODE"] == "1001")].iloc[0]
+        self.assertLess(abs(big["y_program"] - big["y_raw"]), abs(big["mu_hat"] - big["y_raw"]))
 
 
-class TestPriceAwarePrior(unittest.TestCase):
-    def test_slope_recovers_how_pay_tracks_prices(self):
+class TestPricePrior(unittest.TestCase):
+    def test_prior_recovers_intercept_and_slope(self):
         rng = np.random.default_rng(1)
         price = pd.Series(rng.normal(0, 0.1, 300), index=range(300))
-        rows = [_program(u, "1107", 100_000 * np.exp(0.6 * price[u]), 400) for u in price.index]
-        beta = price_slope(program_premiums(pd.DataFrame(rows)), price)
-        self.assertAlmostEqual(beta["bachelors"], 0.6, places=2)
+        rows = [_program(u, "1107", 100_000 * np.exp(0.05 + 0.6 * price[u]), 400) for u in price.index]
+        alpha, beta = price_prior(program_premiums(pd.DataFrame(rows), SD), price)["bachelors"]
+        self.assertAlmostEqual(alpha, 0.05, places=2)
+        self.assertAlmostEqual(beta, 0.6, places=2)
 
-    def test_data_poor_program_lands_on_price_prior_not_zero(self):
+    def test_data_poor_school_lands_on_price_prior(self):
         price = pd.Series({u: 0.2 if u == 0 else 0.0 for u in range(40)})
         rows = [_program(u, "1107", 100_000 * np.exp(0.05 * (u % 3)), 400) for u in range(1, 40)]
         rows.append(_program(0, "1107", 100_000, 10))
-        progs = program_premiums(pd.DataFrame(rows))
+        progs = program_premiums(pd.DataFrame(rows), SD)
         progs.loc[progs["UNITID"] == 0, "se2"] = 1e6  # effectively no information
-        est = major_estimates(progs, price, {"bachelors": 0.5})
-        self.assertAlmostEqual(est.loc[est["UNITID"] == 0, "y_major"].iloc[0], 0.5 * 0.2, places=3)
+        prior = {"bachelors": (0.01, 0.5)}
+        schools, _ = school_effects(progs, price, prior)
+        mu = schools.set_index("UNITID").loc[0]
+        self.assertAlmostEqual(mu["mu_hat"], 0.01 + 0.5 * 0.2, places=3)
+        self.assertAlmostEqual(mu["mu_price_loading"], 0.5, places=3)
 
 
 class TestCrossFit(unittest.TestCase):
@@ -125,7 +160,6 @@ class TestComposite(unittest.TestCase):
     def _comp(self):
         return pd.DataFrame({
             "early_premium": [0.3, 0.1, -0.1, np.nan],
-            "long_premium": [0.2, 0.0, -0.2, 0.1],
             "graduation": [0.9, np.nan, 0.6, 0.8],
             "employment": [0.95, 0.9, 0.85, 0.9],
         }, index=[1, 2, 3, 4])

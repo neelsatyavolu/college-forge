@@ -43,13 +43,13 @@ export function horizonLabel(h: string): string {
 
 type RankFields = {
   rank: number; rank_low: number; rank_high: number;
-  rank_nominal: number; rank_nominal_low: number; rank_nominal_high: number;
+  rank_adjusted: number; rank_adjusted_low: number; rank_adjusted_high: number;
 };
 
-/** Rank and 5th–95th percentile range for the active cost-of-living mode. */
+/** Rank and 5th–95th percentile range for the active ordering (as reported by default). */
 export function rankFor(row: RankFields, mode: PriceMode): { rank: number; low: number; high: number } {
-  return mode === "nominal"
-    ? { rank: row.rank_nominal, low: row.rank_nominal_low, high: row.rank_nominal_high }
+  return mode === "adjusted"
+    ? { rank: row.rank_adjusted, low: row.rank_adjusted_low, high: row.rank_adjusted_high }
     : { rank: row.rank, low: row.rank_low, high: row.rank_high };
 }
 

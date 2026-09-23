@@ -119,8 +119,10 @@ function MajorHeader({ major, credential, cohorts, related, onPick }: HeaderProp
         {major.national_median != null && <> · national median {money(major.national_median)} a year, 4 years after graduating</>}
       </p>
       <p className="rk-majorhead__how">
-        Ranked by a modeled earnings premium versus graduates of this major nationally, combining 1, 4 and 5 years after
-        graduating and pulling small programs toward the national figure. It isn’t the same as sorting by the earnings column.
+        Ranked by a modeled earnings premium versus graduates of this major nationally, using earnings four years after
+        graduating (five where four-year figures are withheld). Programs with few graduates are pulled toward their
+        college’s results in other majors, which predicted the next graduating class best in our backtest. It isn’t the
+        same as sorting by the earnings column.
         4-year figures are {cohorts["4yr"]}, in 2024 dollars. Degree earnings aren’t job outcomes: a {major.name.toLowerCase()} graduate
         working in another field still counts here.
       </p>
@@ -174,7 +176,7 @@ function MajorRows({ file, prices, filters, onClear }: { file: MajorFile; prices
 
 function MajorRowView({ row: r, prices }: { row: MajorRow; prices: PriceMode }) {
   const rank = rankFor(r, prices);
-  const premium = prices === "nominal" ? r.premium_nominal_pct : r.premium_pct;
+  const premium = prices === "adjusted" ? r.premium_adjusted_pct : r.premium_pct;
   return (
     <div role="listitem" className="rk-row">
       <RankCell rank={rank.rank} low={rank.low} high={rank.high} />

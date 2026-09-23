@@ -19,8 +19,8 @@ const TABS: { id: View; label: string; blurb: string }[] = [
 ];
 
 const PRICE_OPTIONS: { id: PriceMode; label: string }[] = [
+  { id: "nominal", label: "As reported" },
   { id: "adjusted", label: "After cost of living" },
-  { id: "nominal", label: "Before cost of living" },
 ];
 
 function PriceToggle({ value, onChange }: { value: PriceMode; onChange: (v: PriceMode) => void }) {
@@ -81,12 +81,13 @@ export default function RankingsClient() {
     <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={meta ? `Ranking rebuilt ${formatDate(meta.generated)}` : "Outcomes, not prestige"}>
       <div className="cf-page rk-page" id="rankings-top">
         <header className="rk-header">
-          <div className="cf-eyebrow">CAREER OUTCOMES · HISTORICAL COMPARISON{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
+          <div className="cf-eyebrow">CAREER OUTCOMES · BACKTESTED{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
           <h1 className="cf-page-title">Where graduates did best</h1>
           <p className="cf-page-lede rk-lede">
             How past graduates fared: earnings compared with people who studied the same major elsewhere, plus graduation
             and employment, from federal records of students who received financial aid. Selectivity and prestige get no
-            direct weight. Use it to discover and compare colleges, not to decide on rank alone.
+            direct weight. We checked the earnings estimates against a later graduating class they never saw. Use it to
+            discover and compare colleges, not to decide on rank alone.
           </p>
         </header>
 
@@ -131,7 +132,7 @@ export default function RankingsClient() {
               {!list
                 ? "Loading rankings…"
                 : isBeats
-                  ? <>Showing <strong>{shown.length}</strong> of the {list.length} colleges furthest above prediction. Points are on the 0–100 score scale.</>
+                  ? <>Showing <strong>{shown.length}</strong> of the {list.length} colleges furthest above prediction. Points are on the 0–100 score scale.{beats.data?.fit ? ` The student-profile model explains about ${Math.round(beats.data.fit.out_of_fold_r2 * 100)}% of score differences, and a typical college lands within about ±${Math.round(beats.data.fit.residual_sd_points)} points of its prediction, so small gaps mean little.` : ""}</>
                   : <>Showing <strong>{shown.length}</strong> of the top {list.length}. Small numbers under each rank are its likely range within this model; overlapping ranges mean the exact order is uncertain.</>}
             </p>
             {list && shown.length === 0 && <EmptyState onClear={clearFilters} />}

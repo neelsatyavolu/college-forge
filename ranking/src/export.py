@@ -24,8 +24,9 @@ from config import (
 
 CONTROL = {1: "public", 2: "private_nonprofit"}
 MAJOR_SCORING = (
-    "Modeled earnings premium vs. the national median for the same major and credential, "
-    "pooled across 1-, 4- and 5-year horizons and shrunk toward a price-aware prior. "
+    "Modeled earnings premium vs. the national median for the same major and credential "
+    "(4-year earnings, else 5-year), shrunk toward the school's effect in proportion to its "
+    "noise (selected by next-class prediction). "
     "Graduation and employment are not scored in major tables."
 )
 
@@ -48,26 +49,29 @@ def _count(s: pd.Series) -> pd.Series:
     return s.where(s > 0).round()
 
 
+def _ranks(table: pd.DataFrame) -> dict:
+    cols = {}
+    for suffix in ("", "_adjusted"):
+        for part in ("", "_low", "_high"):
+            cols[f"rank{suffix}{part}"] = table[f"rank{suffix}{part}"]
+    return cols
+
+
 def school_rows(table: pd.DataFrame) -> pd.DataFrame:
-    """table: scored schools (UNITID index) with metadata columns attached."""
+    """table: scored schools (UNITID index). Unsuffixed fields are the headline (as reported)."""
     out = pd.DataFrame({
-        "rank": table["rank"],
-        "rank_low": table["rank_low"],
-        "rank_high": table["rank_high"],
-        "rank_nominal": table["rank_nominal"],
-        "rank_nominal_low": table["rank_nominal_low"],
-        "rank_nominal_high": table["rank_nominal_high"],
+        **_ranks(table),
         "unitid": table.index.astype(int),
         "institution": table["INSTNM"],
         "city": table["CITY"],
         "state": table["STABBR"],
         "control": table["CONTROL"].map(CONTROL),
         "score": table["score"].round(1),
-        "score_nominal": table["score_nominal"].round(1),
+        "score_adjusted": table["score_adjusted"].round(1),
         "early_premium_pct": _pct(table["early_premium"]).round(1),
-        "early_premium_nominal_pct": _pct(table["early_premium_nominal"]).round(1),
-        "long_premium_pct": _pct(table["long_premium"]).round(1),
-        "long_premium_nominal_pct": _pct(table["long_premium_nominal"]).round(1),
+        "early_premium_adjusted_pct": _pct(table["early_premium_adjusted"]).round(1),
+        "later_premium_pct": _pct(table["later_premium"]).round(1),
+        "later_premium_adjusted_pct": _pct(table["later_premium_adjusted"]).round(1),
         "graduation_rate": table["graduation"].round(3),
         "employment_rate": table["employment"].round(3),
         "typical_earnings": table["typical_earnings"].round(-2),
@@ -81,7 +85,7 @@ def school_rows(table: pd.DataFrame) -> pd.DataFrame:
         "beats_expectations": table["beats_expectations"].round(1),
         "beats_rank": table["beats_rank"],
     })
-    for c in ("early_premium", "long_premium", "graduation", "employment"):
+    for c in ("early_premium", "early_premium_adjusted", "graduation", "employment"):
         out[f"{c}_pctile"] = (table[c].rank(pct=True) * 100).round(0)
     return out
 
@@ -92,19 +96,14 @@ def major_rows(g: pd.DataFrame, overall_rank: pd.Series) -> pd.DataFrame:
     for h, col in horizon_count.items():
         shown_count = shown_count.where(g["earnings_horizon"] != h, g[col])
     return pd.DataFrame({
-        "rank": g["rank"],
-        "rank_low": g["rank_low"],
-        "rank_high": g["rank_high"],
-        "rank_nominal": g["rank_nominal"],
-        "rank_nominal_low": g["rank_nominal_low"],
-        "rank_nominal_high": g["rank_nominal_high"],
+        **_ranks(g),
         "unitid": g["UNITID"].astype(int),
         "institution": g["INSTNM_inst"],
         "city": g["CITY"],
         "state": g["STABBR"],
         "control": g["CONTROL_inst"].map(CONTROL),
-        "premium_pct": _pct(g["premium"]).round(1),
-        "premium_nominal_pct": _pct(g["y_major"]).round(1),
+        "premium_pct": _pct(g["y_program"]).round(1),
+        "premium_adjusted_pct": _pct(g["premium_adjusted"]).round(1),
         "earnings": g["earnings_display"].round(-2),
         "earnings_horizon": g["earnings_horizon"],
         "earnings_count": _count(shown_count),
@@ -120,7 +119,7 @@ def major_rows(g: pd.DataFrame, overall_rank: pd.Series) -> pd.DataFrame:
 
 def _top(df: pd.DataFrame, n: int) -> pd.DataFrame:
     """Rows in the top n under either ordering, so switching orderings never drops a school."""
-    keep = (df["rank"] <= n) | (df["rank_nominal"] <= n)
+    keep = (df["rank"] <= n) | (df["rank_adjusted"] <= n)
     return df[keep].sort_values("rank")
 
 
@@ -130,6 +129,7 @@ def export_all(
     majors: pd.DataFrame,
     index: pd.DataFrame,
     sens: pd.DataFrame,
+    beats_fit: dict,
     generated: str,
 ) -> None:
     majors_dir = PUBLIC_RANKINGS / "majors"
@@ -142,7 +142,7 @@ def export_all(
     base = {"generated": generated, "methodology_version": METHODOLOGY_VERSION,
             "dollar_year": REFERENCE_YEAR, "cohorts": EARNINGS_COHORTS}
     meta = {**base, "weights": OVERALL_WEIGHTS}
-    # top250.json: adjusted top 250 (the recommendation engine's candidate pool).
+    # top250.json: headline top 250 (the recommendation engine's candidate pool).
     _write(PUBLIC_RANKINGS / "top250.json", {
         **meta, "n_ranked": int(len(rows)), "n_eligible": n_eligible,
         "schools": _records(rows.head(OVERALL_TOP_N)),
@@ -153,7 +153,7 @@ def export_all(
         "schools": _records(_top(rows, OVERALL_TOP_N)),
     })
     beats = rows.dropna(subset=["beats_rank"]).sort_values("beats_rank")
-    _write(PUBLIC_RANKINGS / "value_added.json", {**meta, "schools": _records(beats.head(OVERALL_TOP_N))})
+    _write(PUBLIC_RANKINGS / "value_added.json", {**meta, "fit": beats_fit, "schools": _records(beats.head(OVERALL_TOP_N))})
 
     overall_rank = rows.set_index("unitid")["rank"]
     top_ids = set(rows.head(OVERALL_TOP_N)["unitid"])
@@ -178,6 +178,15 @@ def export_all(
         **major_meta, "majors": dict(zip(bach["CIPCODE"], bach["name"])), "ranks": by_school,
     })
     _write(PUBLIC_RANKINGS / "sensitivity.json", _records(sens))
+    backtest = OUT / "backtest.json"
+    if backtest.exists():
+        bt = json.loads(backtest.read_text())
+        _write(PUBLIC_RANKINGS / "validation.json", {
+            "design": bt["design"], "noise": bt["noise_calibration"],
+            "chosen": {c: {k: v[k] for k in ("estimator", "k", "test", "test_raw_baseline",
+                                              "test_major_only_sd070", "coverage_90")}
+                       for c, v in bt["chosen"].items()},
+        })
     for name in ("sources.md", "DISCLOSURE.md"):
         shutil.copyfile(OUT / name, PUBLIC_RANKINGS / name)
     print(f"  wrote public rankings → {PUBLIC_RANKINGS}")

@@ -47,8 +47,9 @@ type RowProps = { school: School; prices: PriceMode; expanded: boolean; onToggle
 function OverallRow({ school: s, prices, expanded, onToggle, onOpenMajor }: RowProps) {
   const detailId = `school-${s.unitid}`;
   const r = rankFor(s, prices);
-  const score = prices === "nominal" ? s.score_nominal : s.score;
-  const premium = prices === "nominal" ? s.early_premium_nominal_pct : s.early_premium_pct;
+  const adjusted = prices === "adjusted";
+  const score = adjusted ? s.score_adjusted : s.score;
+  const premium = adjusted ? s.early_premium_adjusted_pct : s.early_premium_pct;
   return (
     <div role="listitem" className={"rk-item" + (expanded ? " is-open" : "")}>
       <button type="button" className="rk-row" aria-expanded={expanded} aria-controls={detailId} onClick={onToggle}>
@@ -68,27 +69,27 @@ function OverallRow({ school: s, prices, expanded, onToggle, onOpenMajor }: RowP
 }
 
 function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; school: School; prices: PriceMode; onOpenMajor: (cip: string) => void }) {
-  const nominal = prices === "nominal";
-  const costNote = nominal ? "before cost of living" : "after cost of living";
+  const adjusted = prices === "adjusted";
+  const costNote = adjusted ? "after cost of living" : "as reported";
   const metrics = [
     {
       label: "Early-career earnings",
-      weight: "40%",
-      value: signedPct(nominal ? s.early_premium_nominal_pct : s.early_premium_pct),
-      note: `vs. graduates of the same majors nationally, ${costNote}; pooled 1, 4 and 5 years after graduating`,
-      pctile: nominal ? null : s.early_premium_pctile,
+      weight: "50% of score",
+      value: signedPct(adjusted ? s.early_premium_adjusted_pct : s.early_premium_pct),
+      note: `vs. graduates of the same majors nationally, ${costNote}; about four years after graduating`,
+      pctile: adjusted ? s.early_premium_adjusted_pctile : s.early_premium_pctile,
     },
+    { label: "Graduation", weight: "31% of score", value: rate(s.graduation_rate), note: "of first-time, full-time students finish within six years", pctile: s.graduation_pctile },
+    { label: "Employment", weight: "19% of score", value: rate(s.employment_rate), note: "of graduates working three years out, among those not back in school", pctile: s.employment_pctile },
     {
       label: "Later earnings",
-      weight: "20%",
-      value: signedPct(nominal ? s.long_premium_nominal_pct : s.long_premium_pct),
-      note: `vs. what its majors predict, ${costNote}. ${money(s.earnings_10yr)} median about 6 years after graduating (10 after starting), including students who didn’t finish`,
-      pctile: nominal ? null : s.long_premium_pctile,
+      weight: "not scored",
+      value: money(s.earnings_10yr),
+      note: `median about 6 years after graduating (10 after starting), including students who didn’t finish; ${signedPct(adjusted ? s.later_premium_adjusted_pct : s.later_premium_pct)} vs. what its majors predict`,
+      pctile: null,
     },
-    { label: "Graduation", weight: "25%", value: rate(s.graduation_rate), note: "of first-time, full-time students finish within six years", pctile: s.graduation_pctile },
-    { label: "Employment", weight: "15%", value: rate(s.employment_rate), note: "of graduates working three years out, among those not back in school", pctile: s.employment_pctile },
   ];
-  const other = rankFor(s, nominal ? "adjusted" : "nominal");
+  const other = rankFor(s, adjusted ? "nominal" : "adjusted");
   return (
     <div id={id} className="rk-detail">
       <div className="rk-metrics">
@@ -96,7 +97,7 @@ function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; scho
           <div className="rk-metric" key={m.label}>
             <div className="rk-metric__top">
               <span>{m.label}</span>
-              <span className="rk-metric__weight">{m.weight} of score</span>
+              <span className="rk-metric__weight">{m.weight}</span>
             </div>
             <div className="rk-metric__value">{m.value}</div>
             <p>{m.note}</p>
@@ -113,7 +114,7 @@ function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; scho
       </div>
       <dl className="rk-context">
         <div>
-          <dt>{nominal ? "Rank after cost of living" : "Rank before cost of living"}</dt>
+          <dt>{adjusted ? "Rank with earnings as reported" : "Rank after cost of living"}</dt>
           <dd>#{other.rank}<span> (range {other.low}–{other.high})</span></dd>
         </div>
         <div>
@@ -147,7 +148,7 @@ function TopMajors({ unitid, onOpenMajor }: { unitid: number; onOpenMajor: (cip:
   if (!data || best.length === 0) return null;
   return (
     <div className="rk-topmajors">
-      <h4>Strongest bachelor’s majors here (earnings after cost of living)</h4>
+      <h4>Strongest bachelor’s majors here</h4>
       <ul>
         {best.map(([cip, rank, n]) => (
           <li key={cip}>

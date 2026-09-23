@@ -1,19 +1,20 @@
-"""Program-level earnings premiums (v2).
+"""Program-level earnings premiums (v3).
 
 A program is one school × 4-digit CIP × credential (bachelor's or master's).
 Its premium is log(school median / national median for the same major and
 credential), pooled across the 1-, 4- and 5-year horizons Scorecard publishes.
 
-Small programs are noisy, so estimates are shrunk in proportion to their noise,
-with a different target for each question:
+Estimates are shrunk in proportion to their noise with a two-level model chosen by
+an out-of-sample backtest (src/backtest.py): a program's next graduating class is
+predicted best by pooling it with the same school's other programs.
 
-- School effect (overall ranking): pool all of a school's programs, then shrink
-  toward the national average by how much data the school has. Shrinking each
-  program to the national mean first would erase strong schools whose programs
-  are individually small.
-- Program estimate (per-major ranking): shrink toward what the national median for
-  that major implies at the program's local price level. A program earns its rank
-  from its own graduates; it never inherits its school's strength in other majors.
+- School effect (overall ranking): a school's programs are pooled into one effect,
+  shrunk toward a price-aware prior (α + β·ln(RPP/100)) by how little data it has.
+- Program estimate (per-major ranking): the program's own result, shrunk toward its
+  school effect by how noisy it is (b = ω² / (ω² + k·se²)).
+
+σ (within-program log-earnings SD) and k (shrinkage multiplier) are calibrated and
+selected by the backtest and pinned in config.
 """
 from __future__ import annotations
 
@@ -22,9 +23,10 @@ import pandas as pd
 
 from config import (
     FOS_CSV,
-    HORIZON_SE_INFLATION,
     LOG_EARNINGS_SD,
     MIN_PROGRAM_VARIANCE,
+    PROGRAM_FLOOR_SD,
+    SHRINK_K,
 )
 from dollars import to_reference_dollars
 from util import to_num
@@ -44,6 +46,17 @@ def _weighted_median(values: pd.Series, weights: pd.Series) -> float:
     return float(v[order][np.searchsorted(cw, cw[-1] / 2.0)])
 
 
+def program_group(df: pd.DataFrame) -> pd.Series:
+    """
+    Stable institution key across releases: zero-padded OPEID6 ("001081"), else the UNITID.
+    Releases may store OPEID6 as text or number, and may pick a different campus to carry
+    a branch group's cells, so programs are matched on this key, not on UNITID.
+    """
+    op = pd.to_numeric(df["OPEID6"], errors="coerce")
+    key = op.map(lambda v: f"{int(v):06d}" if pd.notna(v) else None)
+    return key.fillna("unit-" + df["UNITID"].astype("Int64").astype(str)).rename("group")
+
+
 def collapse_branch_campuses(df: pd.DataFrame) -> pd.DataFrame:
     """
     Scorecard publishes field-of-study earnings per OPEID6, so branch campuses repeat
@@ -51,13 +64,10 @@ def collapse_branch_campuses(df: pd.DataFrame) -> pd.DataFrame:
     to the main campus (else the largest campus), with completions summed.
     """
     keys = ["group", "CIPCODE", "CREDLEV"]
-    df = df.assign(
-        group=df["OPEID6"].astype("string").fillna("unit-" + df["UNITID"].astype(str)),
-        MAIN=df["MAIN"].fillna(0),
-    )
-    ranked = df.sort_values(["MAIN", "completions"], ascending=False)
+    df = df.assign(group=program_group(df), MAIN=df["MAIN"].fillna(0))
+    ranked = df.sort_values(["MAIN", "completions"], ascending=False, na_position="last")
     rep = ranked.drop_duplicates(keys).set_index(keys)
-    rep["completions"] = df.groupby(keys)["completions"].sum()
+    rep["completions"] = df.groupby(keys)["completions"].sum(min_count=1)
     return rep.reset_index()
 
 
@@ -75,7 +85,8 @@ def load_programs() -> pd.DataFrame:
     df["credential"] = df["CREDLEV"].map(CREDENTIALS)
     df["CIPCODE"] = df["CIPCODE"].astype(str).str.replace(r"\.0$", "", regex=True).str.zfill(4)
     df["CIPDESC"] = df["CIPDESC"].astype(str).str.strip().str.rstrip(".")
-    df["completions"] = df[["IPEDSCOUNT1", "IPEDSCOUNT2"]].mean(axis=1).fillna(0)
+    # Unknown completions stay unknown (NaN), so coverage denominators are not distorted.
+    df["completions"] = df[["IPEDSCOUNT1", "IPEDSCOUNT2"]].mean(axis=1)
     df = collapse_branch_campuses(df)
 
     # National medians (all institutions, incl. for-profit) per major × credential × horizon.
@@ -91,51 +102,92 @@ def load_programs() -> pd.DataFrame:
     return df
 
 
-def program_premiums(df: pd.DataFrame) -> pd.DataFrame:
-    """Raw log premium and sampling variance per program, pooled across horizons."""
-    num = pd.Series(0.0, index=df.index)
-    prec = pd.Series(0.0, index=df.index)
-    for label, h in HORIZONS.items():
+def shrinkage_sd(df: pd.DataFrame) -> pd.Series:
+    """Per-row σ·√k: calibrated within-program SD scaled by the backtest-selected k."""
+    sigma = df["credential"].map(LOG_EARNINGS_SD)
+    return sigma * np.sqrt(df["credential"].map(SHRINK_K))
+
+
+MODELED_HORIZONS = ("4yr", "5yr")  # in order of preference; 1-year is shown, never scored
+
+
+def program_premiums(df: pd.DataFrame, log_sd: float | pd.Series) -> pd.DataFrame:
+    """
+    Raw log premium and sampling variance per program from ONE horizon: 4-year earnings,
+    else 5-year. This is the observation model the backtest validates. Pooling horizons
+    would treat overlapping cohorts as independent, and 1-year earnings (partly pandemic
+    years, overlapping the next cohort) are displayed only.
+    log_sd: effective log-earnings SD, a scalar or one value per row.
+    """
+    out = df.copy()
+    out["y_raw"] = np.nan
+    out["se2"] = np.nan
+    out["earnings_display"] = np.nan
+    out["earnings_horizon"] = ""
+    out["earners"] = np.nan
+    for label in reversed(MODELED_HORIZONS):  # later assignments win: 4-year preferred
+        h = HORIZONS[label]
         e, n, nat = df[f"EARN_MDN_{h}"], df[f"EARN_COUNT_WNE_{h}"], df[f"nat_{label}"]
         ok = e.notna() & n.notna() & nat.notna() & (e > 0) & (nat > 0)
-        # SE of a median ≈ 1.2533·σ/√n; 1-year earnings are noisier career signals.
-        se2 = (1.2533 * LOG_EARNINGS_SD) ** 2 / n.clip(lower=10)
-        if label == "1yr":
-            se2 = se2 * HORIZON_SE_INFLATION
-        y = np.log(e / nat)
-        num = num + np.where(ok, y / se2, 0.0)
-        prec = prec + np.where(ok, 1.0 / se2, 0.0)
-    out = df.copy()
-    has = prec > 0
-    out["y_raw"] = np.where(has, num / prec.where(has, 1.0), np.nan)
-    out["se2"] = np.where(has, 1.0 / prec.where(has, 1.0), np.nan)
-    out["earnings_display"] = out["EARN_MDN_4YR"].fillna(out["EARN_MDN_5YR"]).fillna(out["EARN_MDN_1YR"])
-    out["earnings_horizon"] = np.select(
-        [out["EARN_MDN_4YR"].notna(), out["EARN_MDN_5YR"].notna(), out["EARN_MDN_1YR"].notna()],
-        ["4yr", "5yr", "1yr"],
-        default="",
-    )
-    out["earners"] = out[[f"EARN_COUNT_WNE_{h}" for h in HORIZONS.values()]].max(axis=1)
+        # SE of a median ≈ 1.2533·σ/√n
+        se2 = (1.2533 * log_sd) ** 2 / n.clip(lower=10)
+        out.loc[ok, "y_raw"] = np.log(e / nat)[ok]
+        out.loc[ok, "se2"] = pd.Series(se2, index=df.index)[ok]
+        out.loc[ok, "earnings_display"] = e[ok]
+        out.loc[ok, "earnings_horizon"] = label
+        out.loc[ok, "earners"] = n[ok]
     return out
 
 
-def school_effects(progs: pd.DataFrame, log_price: pd.Series, beta: dict[str, float]) -> tuple[pd.DataFrame, dict]:
+Prior = dict[str, tuple[float, float]]  # credential → (α, β)
+
+
+def _floored(v: float) -> float:
+    """Variance component with a floor; NaN (e.g. no multi-program schools) → floor.
+    Plain max() would return NaN, since NaN comparisons are always False."""
+    return float(v) if np.isfinite(v) and v > MIN_PROGRAM_VARIANCE else MIN_PROGRAM_VARIANCE
+
+
+def price_prior(progs: pd.DataFrame, log_price: pd.Series) -> Prior:
+    """
+    Per credential: nominal premium ≈ α + β·ln(RPP/100), precision-weighted.
+    α is the typical premium of ranked (public/nonprofit) programs at the national price
+    level; it need not be 0, since national medians include every institution.
+    """
+    x = progs["UNITID"].map(log_price).fillna(0.0)
+    df = progs.assign(x=x).dropna(subset=["y_raw"])
+    out: Prior = {}
+    for cred, g in df.groupby("credential"):
+        w = 1.0 / (g["se2"] + MIN_PROGRAM_VARIANCE * 10)
+        xm = np.average(g["x"], weights=w)
+        ym = np.average(g["y_raw"], weights=w)
+        sxx = float((w * (g["x"] - xm) ** 2).sum())
+        beta = float((w * (g["x"] - xm) * (g["y_raw"] - ym)).sum() / sxx) if sxx > 0 else 0.0
+        out[cred] = (float(ym - beta * xm), beta)
+    return out
+
+
+def _prior_mean(cred: str, unitids: pd.Series | pd.Index, log_price: pd.Series, prior: Prior) -> np.ndarray:
+    alpha, beta = prior[cred]
+    x = pd.Series(unitids).map(log_price).fillna(0.0).to_numpy()
+    return alpha + beta * x
+
+
+def school_effects(progs: pd.DataFrame, log_price: pd.Series, prior: Prior) -> tuple[pd.DataFrame, dict]:
     """
     School effect per credential (two-level empirical Bayes), nominal log premium.
 
     y_pj = μ_j + ε_pj + e_pj ;  ε ~ N(0, ω²) program deviation ; e ~ N(0, se²) sampling
-    μ_j ~ N(β·ln(RPP_j/100), τ²) school effect, the same price-aware prior as major_estimates.
-    Returns schools with mu_hat/mu_sd, plus diagnostics.
+    μ_j ~ N(α + β·ln(RPP_j/100), τ²).
+    Returns schools with mu_hat, mu_sd and mu_price_loading (∂μ̂/∂ln RPP = (1−b)·β),
+    plus diagnostics.
     """
     parts, diag = [], {}
     for cred, g in progs.dropna(subset=["y_raw"]).groupby("credential"):
         k = g.groupby("UNITID")["y_raw"].transform("size")
         dev = g["y_raw"] - g.groupby("UNITID")["y_raw"].transform("mean")
         multi = k > 1
-        omega2 = max(
-            float((dev[multi] ** 2 * k[multi] / (k[multi] - 1)).mean() - g.loc[multi, "se2"].mean()),
-            MIN_PROGRAM_VARIANCE,
-        )
+        omega2 = _floored((dev[multi] ** 2 * k[multi] / (k[multi] - 1)).mean() - g.loc[multi, "se2"].mean())
         g = g.assign(w=1.0 / (omega2 + g["se2"]))
         sch = g.groupby("UNITID").apply(
             lambda d: pd.Series({
@@ -145,47 +197,54 @@ def school_effects(progs: pd.DataFrame, log_price: pd.Series, beta: dict[str, fl
             }),
             include_groups=False,
         )
-        prior = beta[cred] * sch.index.map(log_price).to_series(index=sch.index).fillna(0.0)
-        tau2 = max(float((sch["m"] - prior).var() - sch["var_m"].mean()), MIN_PROGRAM_VARIANCE)
+        m0 = pd.Series(_prior_mean(cred, sch.index, log_price, prior), index=sch.index)
+        tau2 = _floored((sch["m"] - m0).var() - sch["var_m"].mean())
         b = tau2 / (tau2 + sch["var_m"])
-        sch["mu_hat"] = prior + b * (sch["m"] - prior)
+        sch["mu_hat"] = m0 + b * (sch["m"] - m0)
         sch["mu_sd"] = np.sqrt(b * sch["var_m"])
+        sch["mu_price_loading"] = (1 - b) * prior[cred][1]
         sch["credential"] = cred
         parts.append(sch.reset_index())
         diag[cred] = {"omega": float(np.sqrt(omega2)), "tau": float(np.sqrt(tau2)),
+                      "alpha": prior[cred][0], "beta": prior[cred][1],
                       "programs": int(len(g)), "schools": int(len(sch))}
     return pd.concat(parts, ignore_index=True), diag
 
 
-def price_slope(progs: pd.DataFrame, log_price: pd.Series) -> dict[str, float]:
+def program_estimates(
+    progs: pd.DataFrame, schools: pd.DataFrame, diag: dict, floor_sd: dict[str, float] | None = None
+) -> pd.DataFrame:
     """
-    Per credential: how much a program's nominal premium rises with the local price
-    level (precision-weighted slope through the national point, where both are 0).
+    Per-major program estimate (backtest-selected): the program's own premium shrunk
+    toward its school effect, b = ω² / (ω² + se²). Adds y_program, y_program_sd and
+    price_loading (∂estimate/∂ln RPP = (1−b)·(school price loading)).
+    y_program_sd includes the count-independent floor (config PROGRAM_FLOOR_SD unless
+    floor_sd is given; the backtest passes zeros and adds its own calibrated floor once).
     """
-    df = progs.assign(x=progs["UNITID"].map(log_price)).dropna(subset=["y_raw", "x"])
-    out = {}
-    for cred, g in df.groupby("credential"):
-        w = 1.0 / (g["se2"] + MIN_PROGRAM_VARIANCE * 10)
-        out[cred] = float((w * g["x"] * g["y_raw"]).sum() / (w * g["x"] ** 2).sum())
+    sch = schools[["UNITID", "credential", "mu_hat", "mu_sd", "mu_price_loading"]]
+    out = progs.merge(sch, on=["UNITID", "credential"], how="left")
+    omega2 = out["credential"].map({c: d["omega"] ** 2 for c, d in diag.items()})
+    b = omega2 / (omega2 + out["se2"])
+    out["y_program"] = out["mu_hat"] + b * (out["y_raw"] - out["mu_hat"])
+    floor2 = out["credential"].map(PROGRAM_FLOOR_SD if floor_sd is None else floor_sd).fillna(0.0) ** 2
+    out["y_program_sd"] = np.sqrt(b * out["se2"] + (1 - b) ** 2 * out["mu_sd"] ** 2 + floor2)
+    out["price_loading"] = (1 - b) * out["mu_price_loading"]
     return out
 
 
 def major_estimates(
-    progs: pd.DataFrame, log_price: pd.Series, beta: dict[str, float], min_programs: int = 20
+    progs: pd.DataFrame, log_price: pd.Series, prior: Prior, min_programs: int = 20
 ) -> pd.DataFrame:
     """
-    Per-major program estimate (nominal log premium).
-
-    Prior mean is β·ln(RPP/100): what a program with no data would be expected to earn
-    given where its graduates work (β from price_slope). A plain zero prior would assume
-    pay ignores local prices, which pushes data-poor programs in cheap regions up and in
-    expensive regions down once the cost-of-living adjustment is applied. The estimate
-    shrinks toward that prior by b = τ_m² / (τ_m² + se²), where τ_m is the spread of
-    programs around the prior within the major (credential median when the major has
-    too few programs). It never borrows the school's results in other majors.
+    Backtest challenger (not used for published ranks): shrink each program toward the
+    price-aware prior only, by b = τ_m² / (τ_m² + se²) with τ_m the spread within its
+    major. It lost to program_estimates on next-cohort prediction (out/backtest.json).
     """
     out = progs.copy()
-    out["prior"] = out["credential"].map(beta) * out["UNITID"].map(log_price).fillna(0.0)
+    out["prior"] = np.nan
+    for cred in out["credential"].dropna().unique():
+        rows = out["credential"] == cred
+        out.loc[rows, "prior"] = _prior_mean(cred, out.loc[rows, "UNITID"], log_price, prior)
     out["resid"] = out["y_raw"] - out["prior"]
     keys = ["credential", "CIPCODE"]
     g = out[out["resid"].notna()].groupby(keys)
@@ -202,7 +261,7 @@ def major_estimates(
 
 def expected_earnings(progs: pd.DataFrame, horizon: str = "5yr") -> pd.Series:
     """Completion-weighted national median for each school's bachelor's major mix."""
-    b = progs[(progs["credential"] == "bachelors") & (progs["completions"] > 0)]
+    b = progs[(progs["credential"] == "bachelors") & (progs["completions"].fillna(0) > 0)]
     nat = b[f"nat_{horizon}"].fillna(b["nat_4yr"])
     ok = nat.notna()
     b = b.assign(wx=b["completions"] * nat)[ok]

@@ -123,6 +123,8 @@ button.rk-row:hover { background: var(--surface-soft); }
 .rk-method__lede { max-width: 760px; font-size: 14px; line-height: 1.7; color: var(--body); margin: 0 0 24px; }
 .rk-method__lede strong { color: var(--ink); font-weight: 600; }
 .rk-weights { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 30px; }
+.rk-weights--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.rk-method__note--flush { margin: 0 0 14px !important; }
 .rk-weight { padding: 20px; border: 1px solid var(--hairline); border-radius: 9px; }
 .rk-weight__pct { font: 500 34px/1 var(--font-display); color: var(--workspace-accent); font-variant-numeric: lining-nums; }
 .rk-weight h3 { margin: 12px 0 8px; font-size: 14px; font-weight: 600; }
