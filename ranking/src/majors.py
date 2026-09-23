@@ -5,8 +5,8 @@ to the national median for the same major and credential (4-year earnings, else 
 mapped onto the 4-year scale),
 shrunk toward its school's effect in proportion to its noise (programs.program_estimates,
 selected by next-class prediction in src/backtest.py).
-Headline order is as reported (nominal, flat prior, no geography); the alternative uses a
-price-aware prior and divides by graduate prices.
+Three orderings: as reported (nominal, flat prior, no geography); and, with a price-aware
+prior, half (the page default, COST_OF_LIVING_WEIGHT) and full deflation by graduate prices.
 Only programs with published earnings are ranked; nothing is imputed.
 """
 from __future__ import annotations
@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from cip_families import family_name
-from config import MAJOR_MIN_SCHOOLS, N_BOOT, RANDOM_SEED
+from config import COST_OF_LIVING_WEIGHT, MAJOR_MIN_SCHOOLS, N_BOOT, RANDOM_SEED
 
 
 def _ranks(value: np.ndarray) -> np.ndarray:
@@ -34,11 +34,13 @@ def _rank_group(g: pd.DataFrame, rng: np.random.Generator) -> pd.DataFrame:
     g = g.copy()
     loading = g["price_loading"].fillna(0).to_numpy()
     price_sd = g["rpp_log_sd"].to_numpy()
+    px_sd = g["y_program_px_sd"].to_numpy()
     for suffix, value, sd, price in (
-        # Headline (as reported): flat-prior model, no geography, so no price error.
+        # As reported: flat-prior model, no geography, so no price error.
         ("", g["y_program"].to_numpy(), g["y_program_sd"].to_numpy(), np.zeros(len(g))),
-        # After cost of living: price-prior model; a price error ε moves it by (loading − 1)·ε.
-        ("_adjusted", g["premium_adjusted"].to_numpy(), g["y_program_px_sd"].to_numpy(), (loading - 1.0) * price_sd),
+        # Price-prior model minus w·ln(price); a price error ε moves it by (loading − w)·ε.
+        ("_partial", g["premium_partial"].to_numpy(), px_sd, (loading - COST_OF_LIVING_WEIGHT) * price_sd),
+        ("_adjusted", g["premium_adjusted"].to_numpy(), px_sd, (loading - 1.0) * price_sd),
     ):
         g[f"rank{suffix}"] = _ranks(value)
         lo, hi = _intervals(value, sd, price, rng)
@@ -54,7 +56,9 @@ def rank_majors(programs: pd.DataFrame, rpp: pd.DataFrame, universe_ids: set[int
     df["rpp_source"] = df["UNITID"].map(rpp["rpp_source"])
     df["rpp_log_sd"] = df["UNITID"].map(rpp["rpp_log_sd"]).fillna(0.0)
     df = df.dropna(subset=["rpp_grad"])
-    df["premium_adjusted"] = df["y_program_px"] - np.log(df["rpp_grad"] / 100.0)
+    log_price = np.log(df["rpp_grad"] / 100.0)
+    df["premium_partial"] = df["y_program_px"] - COST_OF_LIVING_WEIGHT * log_price
+    df["premium_adjusted"] = df["y_program_px"] - log_price
     rng = np.random.default_rng(RANDOM_SEED)
     parts = [
         _rank_group(g, rng)

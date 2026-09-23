@@ -1,4 +1,4 @@
-"""Pinned paths and constants for the Forge Career Outcomes Ranking (methodology v3.1)."""
+"""Pinned paths and constants for the Forge Career Outcomes Ranking (methodology v3.2)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,7 +8,7 @@ RAW = ROOT / "data" / "raw"
 PROCESSED = ROOT / "data" / "processed"
 OUT = ROOT / "out"
 
-METHODOLOGY_VERSION = "3.1"
+METHODOLOGY_VERSION = "3.2"
 
 # Access / release pins (recorded in sources.md at run time)
 SCORECARD_RELEASE = "Most-Recent-Cohorts_06102026"
@@ -75,6 +75,13 @@ MIN_PROGRAM_VARIANCE = 0.002
 MAJOR_MIN_SCHOOLS = 20
 MAJOR_TOP_N = 250
 OVERALL_TOP_N = 250
+
+# Cost of living (§4). The page default subtracts this share of ln(graduate price level):
+# 0 = earnings as reported, 1 = full purchasing power. 0.5 gives equal weight to what the
+# degree earns in the job market (which travels with the graduate) and what that pay buys
+# where graduates live. A value judgment like the component weights, not an estimate;
+# as-reported and full adjustment are published alongside it.
+COST_OF_LIVING_WEIGHT = 0.5
 
 # Geography
 RADIUS_MI_DEFAULT = 40.0

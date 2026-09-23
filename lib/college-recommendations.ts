@@ -128,10 +128,10 @@ export function recommendColleges(ws: Workspace) {
       tags: [{label:"Fair-ranking evidence",tone:"teal"}],
     };
     const adjustedEarnings = row.typical_earnings != null && row.rpp_grad != null ? Math.round(row.typical_earnings / (row.rpp_grad / 100)) : null;
-    const score = row.score_adjusted * 0.75 + (major ? 25 * (1 - (major.rank - 1) / major.of) : 0);
+    const score = row.score_partial * 0.75 + (major ? 25 * (1 - (major.rank - 1) / major.of) : 0);
     return [{ college, fit, score, onList: ws.colleges.some(c => c.scorecardId === row.unitid || c.slug === college.slug), evidence: {
-      fairRank: row.rank_adjusted, rankLow: row.rank_adjusted_low, rankHigh: row.rank_adjusted_high,
-      careerScore: row.score_adjusted, adjustedEarnings,
+      fairRank: row.rank_partial, rankLow: row.rank_partial_low, rankHigh: row.rank_partial_high,
+      careerScore: row.score_partial, adjustedEarnings,
       netPrice: row.net_price, costOfAttendance: row.cost_of_attendance,
       major,
       scorecardUrl: `https://collegescorecard.ed.gov/school/?${row.unitid}`,
@@ -163,7 +163,7 @@ export function recommendColleges(ws: Workspace) {
   if (!selected.some(c => c.fit.tier === "safety")) limitations.push("No likely option could be supported by the available evidence. Broaden your search and verify a financially workable safer choice.");
   return {
     generatedAt: rankings.generated,
-    methodology: "Within provisional academic categories, sort by 75% of the career-outcomes score after cost of living (0–100) + up to 25 points for where the intended major ranks among colleges with published earnings. Geographic and campus-setting preferences filter the pool. For profiles below 3.7 unweighted GPA, automatic suggestions exclude schools below 10% overall admission. Ambition changes the category mix, not a school's category.",
+    methodology: "Within provisional academic categories, sort by 75% of the career-outcomes score with a half cost-of-living adjustment (0–100) + up to 25 points for where the intended major ranks among colleges with published earnings. Geographic and campus-setting preferences filter the pool. For profiles below 3.7 unweighted GPA, automatic suggestions exclude schools below 10% overall admission. Ambition changes the category mix, not a school's category.",
     sources: [{label:"Ranking data and sources",url:"/data/rankings/sources.md"},{label:"Methodology limitations",url:"/data/rankings/DISCLOSURE.md"},{label:"US Department of Education College Scorecard",url:"https://collegescorecard.ed.gov/data/"},{label:"UC testing policy",url:"https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/filling-out-the-application.html"}],
     limitations, profileGaps, recommendations: selected.map(({score: _score,...row}) => row),
   };

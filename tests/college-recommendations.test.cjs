@@ -14,7 +14,7 @@ test('recommendations contain real, unique fair-ranking institutions and sourced
  assert.equal(result.generatedAt, data.generated);
  assert.equal(result.recommendations.length,12);
  assert.equal(new Set(result.recommendations.map(x=>x.college.scorecardId)).size,12);
- for(const r of result.recommendations){const source=data.schools.find(x=>x.unitid===r.college.scorecardId); assert.ok(source); assert.equal(r.evidence.fairRank,source.rank_adjusted); assert.equal(r.evidence.netPrice,source.net_price);}
+ for(const r of result.recommendations){const source=data.schools.find(x=>x.unitid===r.college.scorecardId); assert.ok(source); assert.equal(r.evidence.fairRank,source.rank_partial); assert.equal(r.evidence.netPrice,source.net_price);}
  assert.ok(result.recommendations.some(x=>x.evidence.major));
  assert.ok(result.recommendations.some(x=>x.fit.tier==='reach'));
  assert.ok(result.recommendations.some(x=>x.fit.tier==='target'));

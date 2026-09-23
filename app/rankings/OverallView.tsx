@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { money, ordinalPct, otherViewNote, rankFor, rate, signedPct } from "./format";
+import { byMode, money, ordinalPct, otherViewNote, rankFor, rate, signedPct } from "./format";
 import { useJson } from "./hooks";
 import { RankCell, SchoolName, ScoreBar } from "./parts";
 import type { PriceMode, School, SchoolMajorsFile } from "./types";
@@ -50,9 +50,8 @@ type RowProps = { school: School; prices: PriceMode; expanded: boolean; onToggle
 function OverallRow({ school: s, prices, expanded, onToggle, onOpenMajor }: RowProps) {
   const detailId = `school-${s.unitid}`;
   const r = rankFor(s, prices);
-  const adjusted = prices === "adjusted";
-  const score = adjusted ? s.score_adjusted : s.score;
-  const premium = adjusted ? s.early_premium_adjusted_pct : s.early_premium_pct;
+  const score = byMode(prices, s.score, s.score_partial, s.score_adjusted);
+  const premium = byMode(prices, s.early_premium_pct, s.early_premium_partial_pct, s.early_premium_adjusted_pct);
   const notes = [otherViewNote(s, prices), ...((s.fallback_share ?? 0) > MOSTLY_OLDER_DATA ? ["mostly older earnings data"] : [])];
   return (
     <div role="listitem" className={"rk-item" + (expanded ? " is-open" : "")}>
@@ -73,15 +72,14 @@ function OverallRow({ school: s, prices, expanded, onToggle, onOpenMajor }: RowP
 }
 
 function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; school: School; prices: PriceMode; onOpenMajor: (cip: string) => void }) {
-  const adjusted = prices === "adjusted";
-  const costNote = adjusted ? "after cost of living" : "as reported";
+  const costNote = byMode(prices, "as reported", "half-adjusted for cost of living", "fully adjusted for cost of living");
   const metrics = [
     {
       label: "Early-career earnings",
       weight: "50% of score",
-      value: signedPct(adjusted ? s.early_premium_adjusted_pct : s.early_premium_pct),
+      value: signedPct(byMode(prices, s.early_premium_pct, s.early_premium_partial_pct, s.early_premium_adjusted_pct)),
       note: `vs. graduates of the same majors nationally, ${costNote}; about four years after graduating`,
-      pctile: adjusted ? s.early_premium_adjusted_pctile : s.early_premium_pctile,
+      pctile: byMode(prices, s.early_premium_pctile, s.early_premium_partial_pctile, s.early_premium_adjusted_pctile),
     },
     { label: "Graduation", weight: "31% of score", value: rate(s.graduation_rate), note: "of first-time, full-time students finish within six years", pctile: s.graduation_pctile },
     { label: "Employment", weight: "19% of score", value: rate(s.employment_rate), note: "of graduates working three years out, among those not back in school", pctile: s.employment_pctile },
@@ -89,11 +87,10 @@ function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; scho
       label: "Later earnings",
       weight: "not scored",
       value: money(s.earnings_10yr),
-      note: `median about 6 years after graduating (10 after starting), including students who didn’t finish; ${signedPct(adjusted ? s.later_premium_adjusted_pct : s.later_premium_pct)} vs. what its majors predict`,
+      note: `median about 6 years after graduating (10 after starting), including students who didn’t finish; ${signedPct(byMode(prices, s.later_premium_pct, s.later_premium_partial_pct, s.later_premium_adjusted_pct))} vs. what its majors predict`,
       pctile: null,
     },
   ];
-  const other = rankFor(s, adjusted ? "nominal" : "adjusted");
   return (
     <div id={id} className="rk-detail">
       <div className="rk-metrics">
@@ -118,8 +115,8 @@ function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; scho
       </div>
       <dl className="rk-context">
         <div>
-          <dt>{adjusted ? "Rank with earnings as reported" : "Rank after cost of living"}</dt>
-          <dd>#{other.rank}<span> (range {other.low}–{other.high})</span></dd>
+          <dt>Rank in the other cost-of-living views</dt>
+          <dd>{otherViewNote(s, prices)}</dd>
         </div>
         <div>
           <dt>Where graduates work</dt>

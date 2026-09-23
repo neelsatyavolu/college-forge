@@ -14,7 +14,8 @@ body { background: var(--canvas); color: var(--ink); font-family: var(--font-san
 .rk-tab:hover { color: var(--ink); }
 .rk-tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--workspace-accent); }
 .rk-tab:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: 4px; border-radius: 2px; }
-.rk-pricetoggle { display: flex; gap: 8px; padding-bottom: 8px; }
+.rk-pricetoggle { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; }
+.rk-pricetoggle__label { font-size: 12px; color: var(--muted); margin-right: 2px; }
 
 /* Filters — matches Explore's inputs and pills */
 .rk-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 12px; }

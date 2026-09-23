@@ -12,7 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from config import HORIZON_SHIFT_LEVEL, OUT  # noqa: E402
+from config import COST_OF_LIVING_WEIGHT, HORIZON_SHIFT_LEVEL, OUT  # noqa: E402
 from destinations import graduate_rpp  # noqa: E402
 from export import export_all  # noqa: E402
 from dollars import factors_used  # noqa: E402
@@ -42,6 +42,11 @@ from reports import DISCLOSURE, sources_md  # noqa: E402
 from util import write_csv  # noqa: E402
 
 META = ["INSTNM", "CITY", "STABBR", "CONTROL", "net_price", "COSTT4_A", "PCTPELL"]
+# Columns carried from each cost-of-living view, renamed with the view's suffix.
+VIEW_COLUMNS = {
+    "rank": "rank{s}", "rank_low": "rank{s}_low", "rank_high": "rank{s}_high", "score": "score{s}",
+    "early_premium": "early_premium{s}", "later_premium": "later_premium{s}",
+}
 
 
 def _bachelors_effect(effects: pd.DataFrame) -> pd.Series:
@@ -67,21 +72,20 @@ def fallback_share(programs: pd.DataFrame) -> pd.Series:
 
 
 def build_overall(inst, eligible, programs, effects, effects_adj, effects_4yr, rpp):
-    """Headline table (earnings as reported) with the after-cost-of-living ordering joined."""
+    """As-reported table with the half (page default) and full cost-of-living orderings joined."""
     elig = eligible.assign(employment_rate=employment_rate(eligible))
     expected = expected_earnings(programs)
-    comp = components(elig, effects, expected, rpp, adjust_prices=False)
+    comp = components(elig, effects, expected, rpp, price_weight=0.0)
     comp, excl_cov = eligible_for_scoring(comp, coverage(programs))
-    comp_adj = components(elig, effects_adj, expected, rpp, adjust_prices=True).loc[comp.index]
+    comp_partial = components(elig, effects_adj, expected, rpp, price_weight=COST_OF_LIVING_WEIGHT).loc[comp.index]
+    comp_adj = components(elig, effects_adj, expected, rpp, price_weight=1.0).loc[comp.index]
 
     table = score_table(comp)
     table = table.join(rank_intervals(table))
-    adjusted = score_table(comp_adj)
-    adjusted = adjusted.join(rank_intervals(adjusted))
-    table = table.join(adjusted[["rank", "rank_low", "rank_high", "score", "early_premium", "later_premium"]].rename(columns={
-        "rank": "rank_adjusted", "rank_low": "rank_adjusted_low", "rank_high": "rank_adjusted_high",
-        "score": "score_adjusted", "early_premium": "early_premium_adjusted", "later_premium": "later_premium_adjusted",
-    }))
+    for suffix, c in (("_partial", comp_partial), ("_adjusted", comp_adj)):
+        view = score_table(c)
+        view = view.join(rank_intervals(view))
+        table = table.join(view[list(VIEW_COLUMNS)].rename(columns={k: v.format(s=suffix) for k, v in VIEW_COLUMNS.items()}))
     meta = inst.set_index("UNITID")
     table = table.join(meta[META + ["MD_EARN_WNE_P10"]]).join(rpp[["rpp_grad", "rpp_source"]])
     table["typical_earnings"] = typical_earnings(programs).reindex(table.index)
@@ -94,6 +98,7 @@ def build_overall(inst, eligible, programs, effects, effects_adj, effects_4yr, r
     # only show how re-standardizing on a smaller universe moves the remaining schools.
     cov = comp["coverage"]
     alternatives = {
+        "half_cost_of_living": comp_partial,
         "with_cost_of_living": comp_adj,
         "coverage_at_least_50pct": comp[cov >= 0.5],
         "coverage_at_least_70pct": comp[cov >= 0.7],

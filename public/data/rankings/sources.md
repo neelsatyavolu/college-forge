@@ -1,6 +1,6 @@
 # Sources
 
-Methodology: **v3.1** (`ranking/METHODOLOGY.md`)
+Methodology: **v3.2** (`ranking/METHODOLOGY.md`)
 Access date (UTC): **2026-09-23**
 Dollars: every figure restated in **2024** dollars (PCE) from each field's source year:
 

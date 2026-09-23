@@ -43,19 +43,32 @@ export function horizonLabel(h: string): string {
 
 type RankFields = {
   rank: number; rank_low: number; rank_high: number;
+  rank_partial: number; rank_partial_low: number; rank_partial_high: number;
   rank_adjusted: number; rank_adjusted_low: number; rank_adjusted_high: number;
 };
 
-/** Rank and 5th–95th percentile range for the active ordering (after cost of living by default). */
-export function rankFor(row: RankFields, mode: PriceMode): { rank: number; low: number; high: number } {
-  return mode === "adjusted"
-    ? { rank: row.rank_adjusted, low: row.rank_adjusted_low, high: row.rank_adjusted_high }
-    : { rank: row.rank, low: row.rank_low, high: row.rank_high };
+/** Pick the value for the active cost-of-living view. */
+export function byMode<T>(mode: PriceMode, nominal: T, partial: T, adjusted: T): T {
+  return mode === "nominal" ? nominal : mode === "partial" ? partial : adjusted;
 }
 
-/** The row's rank in the other earnings view, so the effect of the cost-of-living choice is visible. */
+/** Rank and 5th–95th percentile range for the active ordering (half cost of living by default). */
+export function rankFor(row: RankFields, mode: PriceMode): { rank: number; low: number; high: number } {
+  return byMode(
+    mode,
+    { rank: row.rank, low: row.rank_low, high: row.rank_high },
+    { rank: row.rank_partial, low: row.rank_partial_low, high: row.rank_partial_high },
+    { rank: row.rank_adjusted, low: row.rank_adjusted_low, high: row.rank_adjusted_high }
+  );
+}
+
+/** Ranks in the other two views, so the effect of the cost-of-living choice is visible. */
 export function otherViewNote(row: RankFields, mode: PriceMode): string {
-  return mode === "adjusted" ? `#${row.rank} as reported` : `#${row.rank_adjusted} after cost of living`;
+  const views: [PriceMode, string][] = [["nominal", "as reported"], ["partial", "half cost of living"], ["adjusted", "full cost of living"]];
+  return views
+    .filter(([m]) => m !== mode)
+    .map(([m, label]) => `#${rankFor(row, m).rank} ${label}`)
+    .join(" · ");
 }
 
 export function ordinalPct(p: number | null | undefined): string {

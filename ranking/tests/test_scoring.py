@@ -11,7 +11,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from institutions import employment_rate  # noqa: E402
-from overall import composite, coverage  # noqa: E402
+from overall import components, composite, coverage  # noqa: E402
 from programs import (  # noqa: E402
     collapse_branch_campuses,
     fit_horizon_shift,
@@ -178,6 +178,26 @@ class TestPricePrior(unittest.TestCase):
         mu = schools.set_index("UNITID").loc[0]
         self.assertAlmostEqual(mu["mu_hat"], 0.01 + 0.5 * 0.2, places=3)
         self.assertAlmostEqual(mu["mu_price_loading"], 0.5, places=3)
+
+
+class TestCostOfLivingWeight(unittest.TestCase):
+    def _components(self, weight: float) -> pd.DataFrame:
+        schools = pd.DataFrame({"UNITID": [1, 2], "MD_EARN_WNE_P10": [60_000.0, 60_000.0],
+                                "C150_4": [0.8, 0.7], "employment_rate": [0.9, 0.9]})
+        effects = pd.DataFrame({"UNITID": [1, 2], "credential": "bachelors", "mu_hat": [0.10, 0.10],
+                                "mu_sd": [0.02, 0.02], "mu_price_loading": [0.30, 0.30]})
+        rpp = pd.DataFrame({"rpp_grad": [120.0, 90.0], "rpp_log_sd": [0.016, 0.0]}, index=[1, 2])
+        expected = pd.Series(55_000.0, index=[1, 2])
+        return components(schools, effects, expected, rpp, price_weight=weight)
+
+    def test_half_weight_is_the_midpoint_in_log_earnings(self):
+        none, half, full = (self._components(w) for w in (0.0, 0.5, 1.0))
+        np.testing.assert_allclose(half["early_premium"], (none["early_premium"] + full["early_premium"]) / 2)
+        self.assertAlmostEqual(half.loc[1, "early_premium"], 0.10 - 0.5 * np.log(1.2))
+
+    def test_price_error_moves_the_estimate_by_loading_minus_weight(self):
+        for w in (0.0, 0.5, 1.0):
+            self.assertAlmostEqual(self._components(w).loc[1, "price_coef"], 0.30 - w)
 
 
 class TestCrossFit(unittest.TestCase):

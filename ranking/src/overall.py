@@ -22,23 +22,24 @@ def components(
     school_effects: pd.DataFrame,
     expected: pd.Series,
     rpp: pd.DataFrame,
-    adjust_prices: bool,
+    price_weight: float,
 ) -> pd.DataFrame:
     """
     One row per eligible school (UNITID index). Premiums are log ratios (+0.10 ≈ +10.5%).
 
-    adjust_prices=False is the headline (nominal) view; True divides by the graduate price
-    level. Either way the price level also enters the shrinkage prior, so a price error ε
-    moves the early premium by price_coef·ε: loading − 1 when adjusted, loading when not.
+    price_weight w subtracts w·ln(graduate price level): 0 = as reported (with the flat-prior
+    effects), 0.5 = the page default, 1 = full purchasing power. The price level also enters
+    the shrinkage prior of the price-aware effects, so a price error ε moves the early
+    premium by price_coef·ε = (loading − w)·ε.
     """
     df = schools.set_index("UNITID")
     bach = school_effects[school_effects["credential"] == "bachelors"].set_index("UNITID").reindex(df.index)
-    col = np.log(rpp["rpp_grad"].reindex(df.index) / 100.0) if adjust_prices else 0.0
+    col = price_weight * np.log(rpp["rpp_grad"].reindex(df.index) / 100.0)
     out = pd.DataFrame(index=df.index)
     out["early_premium"] = bach["mu_hat"] - col
     out["early_premium_sd"] = bach["mu_sd"]
     out["price_sd"] = rpp["rpp_log_sd"].reindex(df.index).fillna(0.0)
-    out["price_coef"] = bach["mu_price_loading"].fillna(0.0) - (1.0 if adjust_prices else 0.0)
+    out["price_coef"] = bach["mu_price_loading"].fillna(0.0) - price_weight
     # Displayed only (v3.0): entrants incl. non-completers vs a completer baseline.
     out["later_premium"] = np.log(df["MD_EARN_WNE_P10"]) - col - np.log(expected.reindex(df.index))
     out["graduation"] = df["C150_4"]

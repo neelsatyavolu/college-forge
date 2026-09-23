@@ -1,18 +1,18 @@
-# Forge career-outcomes ranking — methodology v3.1
+# Forge career-outcomes ranking — methodology v3.2
 
 ## What this is, and what it is not
 
 A **comparison of past graduates' outcomes**, from federal administrative data on students who received federal aid. The program earnings estimates behind it, **as reported (before any cost-of-living adjustment)**, were checked in an **exploratory retrospective evaluation**: built only from earlier graduating classes, they predicted the next classes' earnings better than the alternatives tested, on institutions excluded from calibration and selection (§10). Earlier results informed revisions, so this is not an untouched confirmatory test.
 
 - It **describes** where covered former students had strong earnings, completion and employment.
-- The backtest does **not** validate the cost-of-living adjustment (the page's default view), the composite weights, or the rank ranges (§4, §9, §10).
+- The backtest does **not** validate the cost-of-living adjustment (applied at half weight in the page's default view), the composite weights, or the rank ranges (§4, §9, §10).
 - It does **not estimate what a college causes**, including in "Beats expectations", and it is not a forecast for any individual student.
 
 ## 1. Principles
 
 1. **Outcomes, not inputs.** Admit rate, test scores, yield, research, spending and reputation get no direct weight. (Admissions variables appear only in the graduate-destination model for the cost-of-living view, §4, and in the separate expectations view, §8.)
 2. **Compare like with like.** Graduates are compared with graduates of the same major and credential nationally.
-3. **Two orderings, clearly labeled.** The page shows the **cost-of-living ordering by default** (a product choice), labeled as an exploratory adjustment. It depends on where graduates work, which is modeled for about three-quarters of schools and not externally validated (§4). The **as-reported ordering** uses no geography at all and is one click away. It is the ordering the backtest checks (§10) and the reference for the sensitivity table (§9). Every row shows its rank in the other ordering.
+3. **Three orderings, clearly labeled.** Cost of living counts **half by default** (§4), a stated value judgment. Where graduates work is modeled for about three-quarters of schools and not externally validated. **None** (earnings as reported, no geography) and **Full** (pure local purchasing power) are one click away. The as-reported ordering is the one the backtest checks (§10) and the reference for the sensitivity table (§9). Every row shows its rank in the other orderings.
 4. **Model choices are made by prediction, not by how the list looks.** Where the data can decide (error scale, how much to shrink, whether to pool with the school, how to use older 5-year earnings), the choice was made by held-out prediction on development institutions (§10). Component weights are value judgments fixed before results were inspected.
 5. **Nothing is imputed.** Suppressed programs are not ranked; unknown completion counts stay unknown.
 
@@ -38,9 +38,11 @@ Territories are excluded (no BEA price parities). Programs are identified by OPE
 
 Dollar years come from the data dictionary's cohort maps (`config.FIELD_DOLLAR_YEAR`); every field is restated in **2024 dollars** at load. `tests/test_data_contract.py` checks published figures against the official file for both modeled horizons, both credentials and a branch-campus group. "Earnings" are annual W-2 wages plus positive self-employment earnings for federal aid recipients working and not enrolled — not base salaries, and not international students.
 
-## 4. Cost of living (the page's default ordering; exploratory)
+## 4. Cost of living (half weight by default; exploratory)
 
-BEA Regional Price Parities with 10 extra percentage points of housing weight (a young-renter basket). In-state graduates are priced at the campus labor market (counties within 40 miles); leavers at Census-division destinations from PSEO.
+**How much it counts.** A view with weight `w` ranks `premium − w·ln(P/100)`, where `P` is the graduate price level: `w = 0` is earnings as reported, `w = 1` is full local purchasing power, and the page default is **`w = 0.5`** (`config.COST_OF_LIVING_WEIGHT`), exactly halfway between the two in log earnings, i.e. earnings divided by `√(P/100)`. The rationale is equal weight on two things a student cares about: what the degree earns in the job market, which travels with the graduate, and what that pay buys where graduates actually live. **This is a value judgment, like the component weights, not an estimate.** Our data cannot identify a "correct" weight. Two arguments sometimes offered for a particular value do not settle it. Research finds that roughly half of the big-city earnings premium comes from experience that stays with a worker after moving (De la Roca & Puga 2017), but all current earnings still face current local prices. Untaxed amenities argue for less adjustment; state taxes, which are not deducted, argue for more. The weight was set after seeing how the orderings compare, so it is disclosed as chosen, not pre-registered. Against the as-reported ordering, the half view has rank correlation 0.984 and a median move of 39 places; the full view, 0.911 and 97 (§9).
+
+**Measurement.** BEA Regional Price Parities with 10 extra percentage points of housing weight (a young-renter basket). In-state graduates are priced at the campus labor market (counties within 40 miles); leavers at Census-division destinations from PSEO.
 
 **Coverage, from the current run (`out/diagnostics.json`).** The geography step covers **1,717 schools**: every school eligible for the overall table or with a program earnings estimate, before ranking filters (1,677 of them appear in a published ranking).
 
@@ -55,7 +57,7 @@ BEA Regional Price Parities with 10 extra percentage points of housing weight (a
 
 Modeled price levels carry the held-out error of the estimator actually used: log error ≈ 0.016 for the regression and ≈ 0.011 for the two-bucket estimate (in-state share at campus prices, leavers at the implied leaver pool, scored where destinations are observed). Observed destinations carry no price error in the ranges; their approximation error is not quantified.
 
-**Why it is exploratory.** The observed target itself is built from coarse destinations and campus-local prices, so the regression's fit is not external validation, and in-state is not the same as near campus. Other unvalidated choices: the extra housing weight, no state-tax deduction, undergraduate destinations applied to every major and to master's programs, and independent modeled errors across schools. The choice matters: against the as-reported ordering, rank correlation is 0.91 and the median school moves 97 places (§9). The as-reported ordering avoids all of these assumptions.
+**Why it is exploratory.** The observed target itself is built from coarse destinations and campus-local prices, so the regression's fit is not external validation, and in-state is not the same as near campus. Other unvalidated choices: the extra housing weight, no state-tax deduction, undergraduate destinations applied to every major and to master's programs, and independent modeled errors across schools. The as-reported ordering avoids all of these assumptions. Because the price-aware prior expects higher nominal pay in expensive places, a heavily shrunk estimate whose price loading exceeds `w` rises slightly with its estimated price level; this affects 14 of 34,637 ranked programs in the half view.
 
 ## 5. Program estimates
 
@@ -79,12 +81,12 @@ where `shift(major)` is the major's mean gap among programs publishing both (equ
 
 **Two-level model (selected by backtest).** Program premium = school effect + program deviation + noise.
 
-- **School effect** (overall ranking): a school's programs are pooled, `m_s` = precision-weighted mean with variance `v_s`, then shrunk toward a prior: `μ̂_s = m0 + b_s·(m_s − m0)`, `b_s = τ² / (τ² + v_s)`, posterior SD `√(b_s·v_s)`. The prior `m0` is the typical premium α (≈ 0) for the as-reported ordering. For the cost-of-living view it is `α + β·ln(RPP/100)` (β ≈ 0.82 bachelor's, 1.00 master's: nominal pay rises with local prices).
+- **School effect** (overall ranking): a school's programs are pooled, `m_s` = precision-weighted mean with variance `v_s`, then shrunk toward a prior: `μ̂_s = m0 + b_s·(m_s − m0)`, `b_s = τ² / (τ² + v_s)`, posterior SD `√(b_s·v_s)`. The prior `m0` is the typical premium α (≈ 0) for the as-reported ordering. For the cost-of-living views it is `α + β·ln(RPP/100)` (β ≈ 0.82 bachelor's, 1.00 master's: nominal pay rises with local prices).
 - **Program estimate** (per-major rankings): the program's own premium, shrunk toward its school's effect by `b_p = ω² / (ω² + s²)`, where `s² = k·(1.2533σ)²/n` (+ the 5-year mapping variance for fallback programs), with **k = 1.5 bachelor's, 2 master's** chosen by next-class prediction. Its SD is `√(b_p·s² + (1 − b_p)²·SD(μ̂_s)² + floor²)`.
 
 **A program therefore borrows from its own school's results in other majors**, in proportion to how noisy its own data are. The backtest showed that borrowing predicts the next class better than judging each program alone. What is borrowed is measured graduate outcomes, not reputation, and a program with plenty of graduates keeps mostly its own result.
 
-**Price loadings** (how a price-level error ε moves an estimate through the prior, cost-of-living view only): `(1 − b_s)·β` for a school effect, `(1 − b_p)·(1 − b_s)·β` for a program estimate. Dividing by the price level then subtracts ε, so the net effect is `(loading − 1)·ε`.
+**Price loadings** (how a price-level error ε moves an estimate through the prior, cost-of-living views only): `(1 − b_s)·β` for a school effect, `(1 − b_p)·(1 − b_s)·β` for a program estimate. The adjustment then subtracts `w·ε`, so the net effect is `(loading − w)·ε`.
 
 ## 6. Overall score
 
@@ -102,7 +104,7 @@ Components are z-scored across the ranked universe (clipped at ±3). The composi
 
 ## 7. Per-major rankings
 
-Within one major and credential, schools are ordered by the program estimate (§5): by default with the price-aware prior and divided by the graduate price level, or as reported. Because estimates shrink by noise, the order is not the same as sorting the displayed earnings figure. Programs scored on 5-year earnings are labeled "older class", and each table states its share of them. Graduation and employment are not scored in major tables. Degree earnings are not occupation outcomes. Search and filters work within the published top 250.
+Within one major and credential, schools are ordered by the program estimate (§5): by default with the price-aware prior and half the cost-of-living adjustment (§4), or with none or all of it. Because estimates shrink by noise, the order is not the same as sorting the displayed earnings figure. Programs scored on 5-year earnings are labeled "older class", and each table states its share of them. Graduation and employment are not scored in major tables. Degree earnings are not occupation outcomes. Search and filters work within the published top 250.
 
 ## 8. Beats expectations
 
@@ -116,7 +118,7 @@ Four things are kept apart: uncertainty in an estimate; the wider spread of a fu
 
 **School intervals** (the basis of overall rank ranges) use the school effect's posterior SD `√(b_s·v_s)` without a separate floor. That is a different estimand: independent program-level class-to-class change largely averages out across a school's programs. School-level prediction has not been separately backtested.
 
-**Rank ranges** are 5th–95th percentiles over 500 redraws of those estimates, plus, in the cost-of-living ordering only, the graduate price level where it is estimated (net effect `(loading − 1)·ε`, §5). Graduation and employment are held fixed. **Rank ranges are conditional on the fitted model and are not themselves empirically calibrated.** Weights and similar choices are covered by sensitivity:
+**Rank ranges** are 5th–95th percentiles over 500 redraws of those estimates, plus, in the cost-of-living orderings only, the graduate price level where it is estimated (net effect `(loading − w)·ε`, §5). Graduation and employment are held fixed. **Rank ranges are conditional on the fitted model and are not themselves empirically calibrated.** Weights and similar choices are covered by sensitivity:
 
 | Alternative (vs. the as-reported ordering) | Rank correlation | Same top 25 | Median school moves |
 |---|---|---|---|
@@ -124,7 +126,8 @@ Four things are kept apart: uncertainty in an estimate; the wider spread of a fu
 | Early earnings only | 0.901 | 22 | 81 |
 | Without graduation | 0.934 | 23 | 66 |
 | Without employment | 0.978 | 22 | 36 |
-| After cost of living | 0.911 | 20 | 97 |
+| Half cost of living (the page default) | 0.984 | 22 | 39 |
+| Full cost of living | 0.911 | 20 | 97 |
 | Completion-weighted programs instead of the pooled school effect | 0.996 | 23 | 13 |
 | Only 4-year earnings (drop older 5-year data; 1,276 schools) | 0.995 | 24 | 7 |
 | Coverage floor 50% (1,155 schools) / 70% (842) | ≥ 0.9999 | 25 / 25 | 0 / 1 |
@@ -207,6 +210,9 @@ For programs with <30 five-year earners: 0.160 → 0.159 (bachelor's), 0.162 →
 - **Prospective check** on the next Scorecard release, with the protocol frozen.
 
 ## Changes
+
+**v3.2**
+- Cost of living counts half by default (`w = 0.5`, a stated value judgment); none and full are one click away. Price-error propagation generalized to `(loading − w)·ε`. The recommendation engine and per-school major ranks follow the default. Major tables show the overall rank for the active view.
 
 **v3.1**
 - 5-year fallback earnings mapped onto the 4-year scale (per-major shrunk shift), chosen on development institutions and checked on held-out ones; mapping uncertainty added to program variance.

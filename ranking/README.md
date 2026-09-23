@@ -1,12 +1,12 @@
 # Forge Career Outcomes Ranking
 
-Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v3.1). Published at `/rankings`.
+Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v3.2). Published at `/rankings`.
 
-A comparison of past graduates' outcomes whose as-reported program earnings estimates are checked against the next graduating class in an exploratory retrospective backtest (METHODOLOGY §10). The cost-of-living view is not validated. Not a causal estimate.
+A comparison of past graduates' outcomes whose as-reported program earnings estimates are checked against the next graduating class in an exploratory retrospective backtest (METHODOLOGY §10). The cost-of-living adjustment (half weight by default) is not validated. Not a causal estimate.
 
 **Question:** if you study a given major at this school, how do graduates do in their careers compared with people who studied the same thing elsewhere?
 
-The score uses outcomes only: early-career earnings vs. the same major nationally (50%), graduation (31.25%) and employment (18.75%). The headline ranks earnings as reported with no geography; a cost-of-living ordering is published alongside. Selectivity, yield, research, spending and reputation are not scored. Net price is reported, not scored.
+The score uses outcomes only: early-career earnings vs. the same major nationally (50%), graduation (31.25%) and employment (18.75%). Cost of living counts half by default (a stated value judgment); orderings with none (earnings as reported, the backtested one) and full adjustment are published alongside. Selectivity, yield, research, spending and reputation are not scored. Net price is reported, not scored.
 
 ## Quick start
 
@@ -52,8 +52,8 @@ python -m unittest tests.test_scoring tests.test_rpp tests.test_data_contract te
 
 | File | Description |
 |---|---|
-| `top250.json` | Overall top 250 after cost of living (recommendation engine) |
-| `overall.json` | Top 250 under either ordering (after / before cost of living), for the page |
+| `top250.json` | Overall top 250 in the default ordering, half cost of living (recommendation engine) |
+| `overall.json` | Top 250 under any ordering (none / half / full cost of living), for the page |
 | `value_added.json` | Top 250 by beats-expectations |
 | `majors/index.json` | All ranked majors (bachelor's and master's) |
 | `majors/{bachelors,masters}-{cip}.json` | Top 250 per major |

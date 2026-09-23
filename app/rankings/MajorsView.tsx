@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { credentialLabel, horizonLabel, matchesFilters, money, otherViewNote, rankFor, signedPct } from "./format";
+import { byMode, credentialLabel, horizonLabel, matchesFilters, money, otherViewNote, rankFor, signedPct } from "./format";
 import { useJson } from "./hooks";
 import { FilterBar, RankCell, SchoolName } from "./parts";
 import type { Cohorts, Credential, Filters, MajorFile, MajorRow, MajorSummary, PriceMode } from "./types";
@@ -196,7 +196,8 @@ function MajorRows({ file, prices, filters, onClear }: { file: MajorFile; prices
 
 function MajorRowView({ row: r, prices }: { row: MajorRow; prices: PriceMode }) {
   const rank = rankFor(r, prices);
-  const premium = prices === "adjusted" ? r.premium_adjusted_pct : r.premium_pct;
+  const premium = byMode(prices, r.premium_pct, r.premium_partial_pct, r.premium_adjusted_pct);
+  const overall = byMode(prices, r.overall_rank, r.overall_rank_partial, r.overall_rank_adjusted);
   return (
     <div role="listitem" className="rk-row">
       <RankCell rank={rank.rank} low={rank.low} high={rank.high} />
@@ -214,7 +215,7 @@ function MajorRowView({ row: r, prices }: { row: MajorRow; prices: PriceMode }) 
         {money(r.earnings_adjusted)}
         {r.location_observed && <small className="rk-horizon" title="Where graduates work is observed in Census data">● observed</small>}
       </span>
-      <span className="rk-cell rk-num rk-muted" data-label="Overall rank">{r.overall_rank != null ? `#${r.overall_rank}` : "—"}</span>
+      <span className="rk-cell rk-num rk-muted" data-label="Overall rank">{overall != null ? `#${overall}` : "—"}</span>
     </div>
   );
 }

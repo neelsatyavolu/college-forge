@@ -19,17 +19,29 @@ const TABS: { id: View; label: string }[] = [
 ];
 
 const PRICE_OPTIONS: { id: PriceMode; label: string; help: string }[] = [
+  { id: "nominal", label: "None", help: "Earnings as published, with no location estimates. The version our backtest checks." },
+  {
+    id: "partial",
+    label: "Half",
+    help: "Default. Gives equal weight to what the degree earns and what that pay buys where graduates live (earnings divided by the square root of the local price level). A judgment call, not a measured optimum.",
+  },
   {
     id: "adjusted",
-    label: "After cost of living",
-    help: "Earnings divided by estimated prices where graduates work. An exploratory estimate: locations are modeled for most colleges and not yet validated.",
+    label: "Full",
+    help: "Earnings divided by the full local price level where graduates work. Locations are estimated for most colleges and not yet validated.",
   },
-  { id: "nominal", label: "As reported", help: "Earnings as published, with no location estimates. The version our backtest checks." },
 ];
+
+const PRICE_NOTE: Record<PriceMode, string> = {
+  nominal: "earnings as reported",
+  partial: "half-adjusted for cost of living",
+  adjusted: "fully adjusted for cost of living",
+};
 
 function PriceToggle({ value, onChange }: { value: PriceMode; onChange: (v: PriceMode) => void }) {
   return (
-    <div className="rk-pricetoggle" role="group" aria-label="Earnings: after cost of living or as reported">
+    <div className="rk-pricetoggle" role="group" aria-label="Cost-of-living adjustment">
+      <span className="rk-pricetoggle__label">Cost of living</span>
       {PRICE_OPTIONS.map((o) => (
         <button key={o.id} type="button" className="rk-pill" title={o.help} aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
           {o.label}
@@ -116,7 +128,7 @@ export default function RankingsClient() {
                   ? <>Colleges furthest above what their incoming students predict (not proof the college caused it){beats.data?.fit ? `; a typical college lands within ±${Math.round(beats.data.fit.residual_sd_points)} points of prediction` : ""}. Showing <strong>{shown.length}</strong> of {list.length}.</>
                   : <>
                       {shown.length === list.length ? <>Top <strong>{list.length}</strong></> : <>Showing <strong>{shown.length}</strong> of the top {list.length}</>} of{" "}
-                      {meta?.n_ranked.toLocaleString()} colleges{query.prices === "adjusted" ? ", after estimated cost of living" : ", earnings as reported"}. Small
+                      {meta?.n_ranked.toLocaleString()} colleges, {PRICE_NOTE[query.prices]}. Small
                       numbers under a rank show its likely range.
                     </>}
             </p>

@@ -1,8 +1,11 @@
 export type Control = "public" | "private_nonprofit";
 export type Credential = "bachelors" | "masters";
 export type View = "overall" | "majors" | "beats";
-/** "adjusted" (page default) divides by estimated graduate prices; "nominal" ranks earnings as reported. */
-export type PriceMode = "nominal" | "adjusted";
+/**
+ * How much of the graduate price level earnings are divided by: "nominal" none (as reported),
+ * "partial" half (the page default), "adjusted" all (full purchasing power).
+ */
+export type PriceMode = "nominal" | "partial" | "adjusted";
 
 export type Weights = {
   early_premium: number;
@@ -26,6 +29,9 @@ type Ranked = {
   rank: number;
   rank_low: number;
   rank_high: number;
+  rank_partial: number;
+  rank_partial_low: number;
+  rank_partial_high: number;
   rank_adjusted: number;
   rank_adjusted_low: number;
   rank_adjusted_high: number;
@@ -38,10 +44,13 @@ export type School = Ranked & {
   state: string;
   control: Control;
   score: number;
+  score_partial: number;
   score_adjusted: number;
   early_premium_pct: number;
+  early_premium_partial_pct: number;
   early_premium_adjusted_pct: number;
   later_premium_pct: number | null;
+  later_premium_partial_pct: number | null;
   later_premium_adjusted_pct: number | null;
   graduation_rate: number;
   employment_rate: number | null;
@@ -58,6 +67,7 @@ export type School = Ranked & {
   beats_expectations: number | null;
   beats_rank: number | null;
   early_premium_pctile: number;
+  early_premium_partial_pctile: number;
   early_premium_adjusted_pctile: number;
   graduation_pctile: number;
   employment_pctile: number | null;
@@ -93,6 +103,7 @@ export type MajorRow = Ranked & {
   state: string;
   control: Control;
   premium_pct: number;
+  premium_partial_pct: number;
   premium_adjusted_pct: number;
   earnings: number | null;
   earnings_horizon: Horizon;
@@ -104,6 +115,8 @@ export type MajorRow = Ranked & {
   completions: number | null;
   location_observed: boolean;
   overall_rank: number | null;
+  overall_rank_partial: number | null;
+  overall_rank_adjusted: number | null;
 };
 
 export type MajorFile = MajorMeta & {

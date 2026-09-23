@@ -25,7 +25,8 @@ const VARIANTS: Record<string, string> = {
   early_earnings_only: "Early earnings only",
   no_graduation: "Without graduation",
   no_employment: "Without employment",
-  with_cost_of_living: "After cost of living",
+  half_cost_of_living: "Half cost of living (the page default)",
+  with_cost_of_living: "Full cost of living",
   completion_weighted_programs: "Weight programs by graduates instead of pooling",
   coverage_at_least_50pct: "Require programs with earnings to cover 50% of graduates",
   coverage_at_least_70pct: "Require programs with earnings to cover 70% of graduates",
@@ -67,7 +68,7 @@ export default function Methodology({ weights, cohorts }: { weights: Weights; co
           <h3>What’s left out on purpose</h3>
           <ul>
             <li><strong>Selectivity and prestige get no direct weight.</strong> Admit rates, test scores, reputation, research and spending describe who gets in, not how graduates do. (Admissions data does help estimate where graduates live for the cost-of-living view, and it drives “Beats expectations.”)</li>
-            <li><strong>Cost of living is an exploratory estimate.</strong> Rankings are shown after cost of living by default, but where graduates work is estimated for about three-quarters of colleges and hasn’t been checked against better data yet, and the choice moves many colleges a long way (see the table below). Each row shows its rank in the other view. Switch to “As reported” to rank on earnings alone, with no location data. That’s the version our backtest checks. Access to expensive, high-paying job markets can itself be a career advantage.</li>
+            <li><strong>Cost of living counts half by default.</strong> A degree’s pay matters wherever you take it, and what that pay buys matters where you live, so the default gives the two equal weight: earnings are divided by the square root of the local price level. That split is a judgment call, like the score weights, not a measured optimum. Choose “None” to rank on earnings as published (the version our backtest checks) or “Full” for pure local buying power. Where graduates work is estimated for about three-quarters of colleges and hasn’t been checked against better data yet. Each row shows its rank in the other views.</li>
             <li><strong>Price, job quality and fit.</strong> Net price is shown but never scored; medians say nothing about hours, satisfaction or the chance of an exceptional career.</li>
           </ul>
         </div>
