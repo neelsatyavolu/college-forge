@@ -20,7 +20,7 @@ const jwt = (claims) => `${b64({alg:'HS256'})}.${b64(claims)}.sig`;
 test('reads token and ids from the storage shapes Maia might use', () => {
  const h = helpers();
  const plain = h.readSession(storage({ userAccessKey: JSON.stringify(jwt({})), sel_school: '"11237322"', sel_user: '1513688' }));
- assert.deepEqual({ ...plain, token: Boolean(plain.token) }, { token: true, schoolId: '11237322', studentUid: '1513688' });
+ assert.deepEqual({ token: Boolean(plain.token), schoolId: plain.schoolId, studentUid: plain.studentUid, ...plain.sources }, { token: true, schoolId: '11237322', studentUid: '1513688', school: 'sel_school', student: 'sel_user' });
 
  const nested = h.readSession(storage({ userToken: JSON.stringify({ token: 'Bearer ' + jwt({}) }), sel_school: JSON.stringify({ nid: 42, title: 'Paly' }), sel_user: JSON.stringify({ uid: '77', name: 'x' }) }));
  assert.equal(nested.schoolId, '42');
@@ -52,6 +52,7 @@ test('finds the school id inside token claims or the stored user profile blob', 
  const nestedClaims = h.readSession(storage({ userAccessKey: jwt({ uid: 1513688, data: { school: { nid: 11237322 } } }), sel_school: 'none', sel_user: 'none' }));
  assert.equal(nestedClaims.schoolId, '11237322');
  assert.equal(nestedClaims.studentUid, '1513688');
+ assert.deepEqual(JSON.parse(JSON.stringify(nestedClaims.sources)), { school: 'token:data.school', student: 'token:uid' });
 
  const profile = Buffer.from(JSON.stringify({ user: { name: 'x', current_school_id: '777', graduation_year: 2027 } })).toString('base64');
  const fromProfile = h.readSession(storage({ userAccessKey: jwt({ uid: 1 }), userToken: profile, sel_school: 'none' }));

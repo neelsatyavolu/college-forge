@@ -64,18 +64,18 @@
     } catch (e) { return null; }
   }
 
-  /** Depth-first search for a numeric id under any key matching `pattern`. */
-  function deepFindId(value, pattern, depth) {
+  /** Depth-first search for a numeric id under any key matching `pattern`; returns { id, path }. */
+  function deepFindId(value, pattern, path, depth) {
     if (!value || typeof value !== "object" || (depth || 0) > 4) return null;
     var keys = Object.keys(value).slice(0, 200);
     for (var i = 0; i < keys.length; i++) {
       if (pattern.test(keys[i])) {
         var hit = findId(value[keys[i]], SCHOOL_KEYS);
-        if (hit) return hit;
+        if (hit) return { id: hit, path: path + keys[i] };
       }
     }
     for (var j = 0; j < keys.length; j++) {
-      var nested = deepFindId(value[keys[j]], pattern, (depth || 0) + 1);
+      var nested = deepFindId(value[keys[j]], pattern, path + keys[j] + ".", (depth || 0) + 1);
       if (nested) return nested;
     }
     return null;
@@ -85,7 +85,7 @@
     var patterns = [/^(school|sel_school|current_school)_?(nid|id)?$/i, /school_?(nid|id)/i, /school/i];
     for (var p = 0; p < patterns.length; p++) {
       for (var s = 0; s < sources.length; s++) {
-        var hit = deepFindId(sources[s], patterns[p]);
+        var hit = deepFindId(sources[s].value, patterns[p], sources[s].name + ":");
         if (hit) return hit;
       }
     }
@@ -100,9 +100,16 @@
     }
     var claims = token ? jwtClaims(token) : {};
     var profile = decodeBlob(storage.getItem("userToken"));
-    var schoolId = findId(parseStored(storage.getItem("sel_school")), SCHOOL_KEYS) || findSchoolId([claims, profile]);
-    var studentUid = findId(parseStored(storage.getItem("sel_user")), USER_KEYS) || findId(claims, ["uid", "user_id", "userId", "sub"]);
-    return { token: token, schoolId: schoolId, studentUid: studentUid };
+    var selSchool = findId(parseStored(storage.getItem("sel_school")), SCHOOL_KEYS);
+    var school = selSchool ? { id: selSchool, path: "sel_school" } : findSchoolId([{ name: "token", value: claims }, { name: "userToken", value: profile }]);
+    var selUser = findId(parseStored(storage.getItem("sel_user")), USER_KEYS);
+    var claimUser = selUser ? null : ["uid", "user_id", "userId", "sub"].filter(function (k) { return findId(claims[k], []); })[0];
+    return {
+      token: token,
+      schoolId: school ? school.id : null,
+      studentUid: selUser || (claimUser ? findId(claims[claimUser], []) : null),
+      sources: { school: school ? school.path : null, student: selUser ? "sel_user" : claimUser ? "token:" + claimUser : null },
+    };
   }
 
   /** Field paths with types (and whether the value is all digits), never values. */
@@ -215,7 +222,13 @@
       body: body ? JSON.stringify(body) : undefined,
     }).then(function (res) {
       if (res.status === 401 || res.status === 403) throw Object.assign(new Error("Your Maia session expired. Reload Maia, then click the bookmark again."), { fatal: true });
-      if (!res.ok) throw new Error("Maia returned " + res.status);
+      var call = path.split("/")[0];
+      if (!res.ok) {
+        return res.text().catch(function () { return ""; }).then(function (t) {
+          var detail = String(t || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160);
+          throw Object.assign(new Error("Maia returned " + res.status + " on " + call + (detail ? ": " + detail : "")), { signature: res.status + " " + call });
+        });
+      }
       return res.text().then(function (t) { return t ? JSON.parse(t) : null; });
     });
   }
@@ -246,6 +259,8 @@
         return;
       }
       var out = [], missing = [], student = null;
+      var idsUsed = { schoolId: session.schoolId, schoolFrom: session.sources.school, studentUid: session.studentUid, studentFrom: session.sources.student };
+      var streak = { signature: null, count: 0 };
       for (var i = 0; i < colleges.length && active(); i++) {
         var c = colleges[i];
         send({ type: "cf-maia:progress", done: i, total: colleges.length, name: c.name });
@@ -259,9 +274,16 @@
           var norm = normalizeScatter(raw);
           if (!student && (norm.student.gpa || norm.student.sat)) student = norm.student;
           out.push({ slug: c.slug, maiaTitle: hit.title, averages: norm.averages, points: norm.points });
+          streak = { signature: null, count: 0 };
         } catch (e) {
           if (e.fatal) { send({ type: "cf-maia:error", error: e.message }); return; }
           missing.push({ slug: c.slug, name: c.name, reason: e.message || "Request failed" });
+          // The same failure three times in a row is systematic: stop instead of hammering Maia.
+          streak = e.signature && e.signature === streak.signature ? { signature: e.signature, count: streak.count + 1 } : { signature: e.signature || null, count: 1 };
+          if (streak.count >= 3) {
+            send({ type: "cf-maia:error", error: "Stopped: " + e.message, diagnostic: [idsUsed].concat(describeStorage(localStorage)) });
+            return;
+          }
         }
         await sleep(DELAY_MS);
       }
