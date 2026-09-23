@@ -112,49 +112,57 @@ function statesOf(file: MajorFile | null): string[] {
 type HeaderProps = { major: MajorSummary; credential: Credential; cohorts: Cohorts; related: MajorSummary[]; onPick: (cip: string) => void };
 
 function MajorHeader({ major, credential, cohorts, related, onPick }: HeaderProps) {
+  const facts = [
+    `${major.n_ranked.toLocaleString()} colleges ranked`,
+    major.national_median != null ? `national median ${money(major.national_median)} (4 yrs out)` : null,
+    major.fallback_share > 0 ? `${Math.round(major.fallback_share * 100)}% on older data` : null,
+    credential === "masters" ? "experimental" : null,
+  ].filter(Boolean);
   return (
     <header className="rk-majorhead">
-      <span className="cf-eyebrow">{major.family.toUpperCase()} · {credentialLabel(credential).toUpperCase()}</span>
       <h2>{major.name}</h2>
-      <p>
-        {major.n_ranked.toLocaleString()} colleges ranked{major.n_ranked > TOP_N ? ` (top ${TOP_N} shown)` : ""}
-        {major.national_median != null && <> · national median {money(major.national_median)} a year, 4 years after graduating</>}
-      </p>
-      <p className="rk-majorhead__how">
-        Ranked by a modeled earnings premium versus graduates of this major nationally, using earnings four years after
-        graduating (five where four-year figures are withheld). Programs with few graduates are pulled toward their
-        college’s results in other majors, which predicted the next graduating class best in our backtest. It isn’t the
-        same as sorting by the earnings column.
-        4-year figures are {cohorts["4yr"]}, in 2024 dollars. Degree earnings aren’t job outcomes: a {major.name.toLowerCase()} graduate
-        working in another field still counts here.
-      </p>
-      {major.fallback_share > 0 && (
-        <p className="rk-majorhead__how">
-          {Math.round(major.fallback_share * 100)}% of ranked programs here withhold four-year earnings, so they’re scored on five-year
-          earnings of an older class ({cohorts["5yr"]}), shifted onto the four-year scale by how the two compare where both are
-          published. Treat their positions as less certain.
+      <p>{facts.join(" · ")}</p>
+      <details className="rk-majorhead__more">
+        <summary>How this table is ranked</summary>
+        <p>
+          Ranked by a modeled earnings premium versus graduates of this major nationally, using earnings four years after
+          graduating. Programs with few graduates are pulled toward their college’s results in other majors, which predicted
+          the next graduating class best in our backtest, so the order isn’t the same as sorting by the earnings column.
+          4-year figures are {cohorts["4yr"]}, in 2024 dollars. Degree earnings aren’t job outcomes: a graduate working in
+          another field still counts here.
         </p>
-      )}
-      {credential === "masters" && (
-        <p className="rk-note">
-          <strong>Experimental.</strong> Master’s students often bring years of work experience, and cost of living here uses
-          each college’s undergraduate destinations. Compare master’s programs with extra care.
+        {major.fallback_share > 0 && (
+          <p>
+            <strong>Older data.</strong> {Math.round(major.fallback_share * 100)}% of ranked programs here withhold four-year
+            earnings, so they’re scored on five-year earnings of an older class ({cohorts["5yr"]}), shifted onto the four-year
+            scale. Those rows say “older class”; treat their positions as less certain.
+          </p>
+        )}
+        {credential === "masters" && (
+          <p>
+            <strong>Experimental.</strong> Master’s students often bring years of work experience, and cost of living here uses
+            each college’s undergraduate destinations.
+          </p>
+        )}
+        {major.n_ranked < 60 && (
+          <p>
+            Few programs in this major publish earnings, usually because most students don’t receive federal aid. Missing
+            colleges aren’t ranked low; they have no public data.
+          </p>
+        )}
+        <p>
+          ● marks colleges whose graduates’ locations come from Census data; for the rest, cost of living uses a modeled
+          estimate.{major.n_ranked > TOP_N ? ` Search and filters look within the top ${TOP_N} shown.` : ""}
         </p>
-      )}
-      {major.n_ranked < 60 && (
-        <p className="rk-note">
-          Few programs in this major publish earnings, usually because most students don’t receive federal aid. Missing colleges
-          aren’t ranked low. They just have no public data.
-        </p>
-      )}
-      {related.length > 0 && (
-        <div className="rk-related">
-          <span>Related majors:</span>
-          {related.map((m) => (
-            <button key={m.cip} type="button" className="rk-pill" onClick={() => onPick(m.cip)}>{m.name}</button>
-          ))}
-        </div>
-      )}
+        {related.length > 0 && (
+          <div className="rk-related">
+            <span>Related majors:</span>
+            {related.map((m) => (
+              <button key={m.cip} type="button" className="rk-pill" onClick={() => onPick(m.cip)}>{m.name}</button>
+            ))}
+          </div>
+        )}
+      </details>
     </header>
   );
 }
@@ -171,10 +179,6 @@ function MajorRows({ file, prices, filters, onClear }: { file: MajorFile; prices
   if (rows.length === 0) return <MissingExplainer onClear={onClear} />;
   return (
     <>
-      <p className="rk-legend">
-        ● Where graduates work comes from Census data for marked colleges; for the rest it is modeled.
-        {file.n_ranked > TOP_N ? ` Search and filters look within the top ${TOP_N} shown.` : ""}
-      </p>
       <div className="rk-list rk-list--major" role="list" aria-label={`${file.name} ranking`}>
         <div className="rk-row rk-row--head" aria-hidden="true">
           <span>Rank</span>

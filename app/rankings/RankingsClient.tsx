@@ -12,35 +12,29 @@ import type { MajorIndexFile, OverallFile, PriceMode, View } from "./types";
 import WorkspaceShell from "./WorkspaceShell";
 import "./rankings.css";
 
-const TABS: { id: View; label: string; blurb: string }[] = [
-  { id: "overall", label: "Overall", blurb: "Colleges whose past graduates did best across earnings, graduation and employment. If you know your major, the By major tab is more relevant." },
-  { id: "majors", label: "By major", blurb: "Colleges whose graduates in one major out-earned graduates of the same major elsewhere." },
-  { id: "beats", label: "Beats expectations", blurb: "Colleges whose outcomes beat what a model predicts from their incoming students. Useful for spotting overlooked colleges; not proof that a college caused the difference." },
+const TABS: { id: View; label: string }[] = [
+  { id: "overall", label: "Overall" },
+  { id: "majors", label: "By major" },
+  { id: "beats", label: "Beats expectations" },
 ];
 
-const PRICE_OPTIONS: { id: PriceMode; label: string }[] = [
-  { id: "adjusted", label: "After cost of living" },
-  { id: "nominal", label: "As reported" },
+const PRICE_OPTIONS: { id: PriceMode; label: string; help: string }[] = [
+  {
+    id: "adjusted",
+    label: "After cost of living",
+    help: "Earnings divided by estimated prices where graduates work. An exploratory estimate: locations are modeled for most colleges and not yet validated.",
+  },
+  { id: "nominal", label: "As reported", help: "Earnings as published, with no location estimates. The version our backtest checks." },
 ];
 
 function PriceToggle({ value, onChange }: { value: PriceMode; onChange: (v: PriceMode) => void }) {
   return (
-    <div className="rk-pricetoggle-wrap">
-      <div className="rk-pricetoggle" role="group" aria-label="Cost of living">
-        <span>Earnings</span>
-        <div className="rk-pills">
-          {PRICE_OPTIONS.map((o) => (
-            <button key={o.id} type="button" className="rk-pill" aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
-              {o.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <p className="rk-pricetoggle__note">
-        {value === "adjusted"
-          ? "Exploratory: where graduates work is estimated for most colleges, and this adjustment isn’t validated yet."
-          : "Earnings as published, with no location estimates. This is the version our backtest checks."}
-      </p>
+    <div className="rk-pricetoggle" role="group" aria-label="Earnings: after cost of living or as reported">
+      {PRICE_OPTIONS.map((o) => (
+        <button key={o.id} type="button" className="rk-pill" title={o.help} aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
+          {o.label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -72,49 +66,28 @@ export default function RankingsClient() {
   const states = useMemo(() => [...new Set((list ?? []).map((s) => s.state))].sort(), [list]);
   const shown = useMemo(() => (list ?? []).filter((s) => matchesFilters(s, query)), [list, query]);
 
-  const counts = useMemo(() => {
-    const majors = index.data?.majors ?? [];
-    return {
-      bachelors: majors.filter((m) => m.credential === "bachelors").length,
-      masters: majors.filter((m) => m.credential === "masters").length,
-    };
-  }, [index.data]);
-
   const meta = overall.data;
   const error = overall.error || index.error || beats.error;
-  const tab = TABS.find((t) => t.id === query.view) ?? TABS[0];
 
   return (
     <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={meta ? `Ranking rebuilt ${formatDate(meta.generated)}` : "Outcomes, not prestige"}>
       <div className="cf-page rk-page" id="rankings-top">
         <header className="rk-header">
-          <div className="cf-eyebrow">CAREER OUTCOMES{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
           <h1 className="cf-page-title">Where graduates did best</h1>
-          <p className="cf-page-lede rk-lede">
-            How past graduates fared: earnings compared with people who studied the same major elsewhere and adjusted for
-            living costs where graduates work, plus graduation and employment, from federal records of students who
-            received financial aid. Selectivity and prestige get no direct weight. We checked the program earnings estimates, before
-            any cost-of-living adjustment, against a later graduating class they never saw; the cost-of-living adjustment itself
-            isn’t validated yet. Use it to discover and compare colleges, not to decide on rank alone.
+          <p className="rk-lede">
+            Earnings compared with the same major elsewhere, plus graduation and employment, from federal records.
+            No weight on prestige or selectivity. <a href="#methodology">How it works</a>
           </p>
         </header>
 
-        <div className="rk-facts" role="group" aria-label="At a glance">
-          <div><span className="cf-progress-value">{meta ? meta.n_ranked.toLocaleString() : "—"}</span><span>colleges scored</span></div>
-          <div><span className="cf-progress-value">{counts.bachelors || "—"}</span><span>bachelor’s majors</span></div>
-          <div><span className="cf-progress-value">{counts.masters || "—"}</span><span>master’s majors</span></div>
-          <div><span className="cf-progress-value">0%</span><span>direct weight on selectivity</span></div>
-        </div>
-
-        <div className="rk-tabs" role="tablist" aria-label="Ranking view">
-          {TABS.map((t) => (
-            <button key={t.id} type="button" role="tab" aria-selected={query.view === t.id} className="rk-tab" onClick={() => update({ view: t.id })}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-        <div className="rk-tabbar">
-          <p className="rk-tabblurb">{tab.blurb}</p>
+        <div className="rk-toolbar">
+          <div className="rk-tabs" role="tablist" aria-label="Ranking view">
+            {TABS.map((t) => (
+              <button key={t.id} type="button" role="tab" aria-selected={query.view === t.id} className="rk-tab" onClick={() => update({ view: t.id })}>
+                {t.label}
+              </button>
+            ))}
+          </div>
           {!isBeats && <PriceToggle value={query.prices} onChange={(prices) => update({ prices })} />}
         </div>
 
@@ -140,8 +113,12 @@ export default function RankingsClient() {
               {!list
                 ? "Loading rankings…"
                 : isBeats
-                  ? <>Showing <strong>{shown.length}</strong> of the {list.length} colleges furthest above prediction. Points are on the 0–100 score scale.{beats.data?.fit ? ` The student-profile model explains about ${Math.round(beats.data.fit.out_of_fold_r2 * 100)}% of score differences, and a typical college lands within about ±${Math.round(beats.data.fit.residual_sd_points)} points of its prediction, so small gaps mean little.` : ""}</>
-                  : <>Showing <strong>{shown.length}</strong> of the top {list.length}. Small numbers under each rank are its likely range within this model; overlapping ranges mean the exact order is uncertain. Each college also shows its rank in the other earnings view.</>}
+                  ? <>Colleges furthest above what their incoming students predict (not proof the college caused it){beats.data?.fit ? `; a typical college lands within ±${Math.round(beats.data.fit.residual_sd_points)} points of prediction` : ""}. Showing <strong>{shown.length}</strong> of {list.length}.</>
+                  : <>
+                      {shown.length === list.length ? <>Top <strong>{list.length}</strong></> : <>Showing <strong>{shown.length}</strong> of the top {list.length}</>} of{" "}
+                      {meta?.n_ranked.toLocaleString()} colleges{query.prices === "adjusted" ? ", after estimated cost of living" : ", earnings as reported"}. Small
+                      numbers under a rank show its likely range.
+                    </>}
             </p>
             {list && shown.length === 0 && <EmptyState onClear={clearFilters} />}
             {list && shown.length > 0 && (isBeats ? <BeatsView schools={shown} /> : <OverallView schools={shown} prices={query.prices} onOpenMajor={openMajor} />)}
