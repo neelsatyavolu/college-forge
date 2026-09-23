@@ -2,7 +2,8 @@
 
 A program is one school × 4-digit CIP × credential (bachelor's or master's).
 Its premium is log(school median / national median for the same major and
-credential), pooled across the 1-, 4- and 5-year horizons Scorecard publishes.
+credential), from 4-year earnings, else 5-year earnings mapped onto the 4-year
+scale (fit_horizon_shift, validated in src/backtest.py).
 
 Estimates are shrunk in proportion to their noise with a two-level model chosen by
 an out-of-sample backtest (src/backtest.py): a program's next graduating class is
@@ -17,6 +18,8 @@ predicted best by pooling it with the same school's other programs.
 selected by the backtest and pinned in config.
 """
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -109,14 +112,81 @@ def shrinkage_sd(df: pd.DataFrame) -> pd.Series:
 
 
 MODELED_HORIZONS = ("4yr", "5yr")  # in order of preference; 1-year is shown, never scored
+SHIFT_LEVELS = ("none", "credential", "major")
 
 
-def program_premiums(df: pd.DataFrame, log_sd: float | pd.Series) -> pd.DataFrame:
+@dataclass(frozen=True)
+class HorizonShift:
+    """
+    Fitted mapping from a 5-year premium onto the 4-year scale: y4 ≈ y5 − shift.
+    by_major: (credential, CIPCODE) → shift, shift_var (posterior variance of the true
+    shift), n_matched. by_credential: credential → (mean shift, between-major variance T²),
+    used for majors with no matched programs.
+    """
+    level: str
+    by_major: pd.DataFrame
+    by_credential: dict[str, tuple[float, float]]
+
+    def lookup(self, credential: pd.Series, cip: pd.Series) -> tuple[pd.Series, pd.Series]:
+        if self.level == "none":
+            zero = pd.Series(0.0, index=credential.index)
+            return zero, zero
+        keys = pd.MultiIndex.from_arrays([credential, cip])
+        m = self.by_major.reindex(keys)
+        mean = credential.map({c: v[0] for c, v in self.by_credential.items()})
+        between = credential.map({c: v[1] for c, v in self.by_credential.items()})
+        shift = pd.Series(m["shift"].to_numpy(dtype=float), index=credential.index).fillna(mean)
+        var = pd.Series(m["shift_var"].to_numpy(dtype=float), index=credential.index).fillna(between)
+        return shift.fillna(0.0), var.fillna(0.0)
+
+
+def horizon_pairs(df: pd.DataFrame) -> pd.DataFrame:
+    """Programs publishing both horizons: y4, y5 (log premiums vs each horizon's baseline) and counts."""
+    y4 = np.log(df["EARN_MDN_4YR"] / df["nat_4yr"])
+    y5 = np.log(df["EARN_MDN_5YR"] / df["nat_5yr"])
+    d = df.assign(y4=y4, y5=y5, n4=df["EARN_COUNT_WNE_4YR"], n5=df["EARN_COUNT_WNE_5YR"])
+    d = d.replace([np.inf, -np.inf], np.nan).dropna(subset=["y4", "y5", "n4", "n5"])
+    return d[(d["n4"] > 0) & (d["n5"] > 0)].assign(diff=lambda x: x["y5"] - x["y4"])
+
+
+def fit_horizon_shift(df: pd.DataFrame, level: str = "major") -> HorizonShift:
+    """
+    Fit the 5-year → 4-year mapping on programs that publish both horizons (equal weight
+    per program). "major": each major's mean y5 − y4, shrunk by empirical Bayes toward the
+    credential mean (T² = var of major means − their mean sampling variance, from the
+    observed spread of differences, so program heterogeneity is included). "credential":
+    one mean per credential. "none": no correction. Fit once, then apply frozen.
+    """
+    if level not in SHIFT_LEVELS:
+        raise ValueError(f"unknown shift level {level!r}")
+    rows, by_cred = [], {}
+    for cred, g in horizon_pairs(df).groupby("credential"):
+        maj = g.groupby("CIPCODE")["diff"].agg(["mean", "var", "size"])
+        maj["v"] = (maj["var"].fillna(g["diff"].var()) / maj["size"]).where(maj["size"] > 1, g["diff"].var())
+        mu = float(g["diff"].mean())
+        t2 = float(max(np.average((maj["mean"] - mu) ** 2, weights=maj["size"]) - np.average(maj["v"], weights=maj["size"]), 0.0))
+        if level == "credential":
+            by_cred[cred] = (mu, float(g["diff"].var() / len(g)))
+            continue
+        b = t2 / (t2 + maj["v"]) if t2 > 0 else 0.0 * maj["v"]
+        rows.append(pd.DataFrame({
+            "credential": cred, "CIPCODE": maj.index,
+            "shift": mu + b * (maj["mean"] - mu), "shift_var": b * maj["v"], "n_matched": maj["size"],
+        }))
+        by_cred[cred] = (mu, t2)
+    cols = ["credential", "CIPCODE", "shift", "shift_var", "n_matched"]
+    by_major = pd.concat(rows, ignore_index=True) if rows else pd.DataFrame(columns=cols)
+    return HorizonShift(level, by_major.set_index(["credential", "CIPCODE"]), by_cred)
+
+
+def program_premiums(df: pd.DataFrame, log_sd: float | pd.Series, shift: HorizonShift | None) -> pd.DataFrame:
     """
     Raw log premium and sampling variance per program from ONE horizon: 4-year earnings,
     else 5-year. This is the observation model the backtest validates. Pooling horizons
     would treat overlapping cohorts as independent, and 1-year earnings (partly pandemic
     years, overlapping the next cohort) are displayed only.
+    A 5-year premium is put on the 4-year scale with the frozen `shift` mapping (None = no
+    correction); the mapping's uncertainty is added to its variance.
     log_sd: effective log-earnings SD, a scalar or one value per row.
     """
     out = df.copy()
@@ -125,14 +195,22 @@ def program_premiums(df: pd.DataFrame, log_sd: float | pd.Series) -> pd.DataFram
     out["earnings_display"] = np.nan
     out["earnings_horizon"] = ""
     out["earners"] = np.nan
+    out["horizon_shift"] = 0.0
+    if shift is None:
+        delta = var = pd.Series(0.0, index=df.index)
+    else:
+        delta, var = shift.lookup(df["credential"], df["CIPCODE"])
     for label in reversed(MODELED_HORIZONS):  # later assignments win: 4-year preferred
         h = HORIZONS[label]
         e, n, nat = df[f"EARN_MDN_{h}"], df[f"EARN_COUNT_WNE_{h}"], df[f"nat_{label}"]
         ok = e.notna() & n.notna() & nat.notna() & (e > 0) & (nat > 0)
         # SE of a median ≈ 1.2533·σ/√n
-        se2 = (1.2533 * log_sd) ** 2 / n.clip(lower=10)
-        out.loc[ok, "y_raw"] = np.log(e / nat)[ok]
-        out.loc[ok, "se2"] = pd.Series(se2, index=df.index)[ok]
+        se2 = pd.Series((1.2533 * log_sd) ** 2 / n.clip(lower=10), index=df.index)
+        adj = delta if label == "5yr" else 0.0 * delta
+        extra = var if label == "5yr" else 0.0 * var
+        out.loc[ok, "y_raw"] = (np.log(e / nat) - adj)[ok]
+        out.loc[ok, "se2"] = (se2 + extra)[ok]
+        out.loc[ok, "horizon_shift"] = adj[ok]
         out.loc[ok, "earnings_display"] = e[ok]
         out.loc[ok, "earnings_horizon"] = label
         out.loc[ok, "earners"] = n[ok]

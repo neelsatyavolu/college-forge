@@ -23,6 +23,8 @@ body { background: var(--canvas); color: var(--ink); font-family: var(--font-san
 .rk-tabblurb { flex: 1 1 360px; font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; max-width: 720px; }
 .rk-pricetoggle { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
 .rk-pricetoggle .rk-pills { min-height: 0; }
+.rk-pricetoggle-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; max-width: 360px; }
+.rk-pricetoggle__note { margin: 0; font-size: 11px; line-height: 1.5; color: var(--muted); text-align: right; }
 
 /* Filters — matches Explore's inputs and pills */
 .rk-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 16px; margin-bottom: 14px; }
@@ -62,6 +64,7 @@ button.rk-row:hover { background: var(--surface-soft); }
 .rk-school { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .rk-school__name { font-weight: 500; font-size: 15px; line-height: 1.3; }
 .rk-school__meta { font-size: 12px; color: var(--muted); }
+.rk-school__notes { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
 
 .rk-scorebar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .rk-scorebar__track { flex: 1; max-width: 88px; height: 6px; border-radius: 3px; background: var(--surface-card); overflow: hidden; }
@@ -136,6 +139,12 @@ button.rk-row:hover { background: var(--surface-soft); }
 .rk-sens th, .rk-sens td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--hairline); font-variant-numeric: tabular-nums; }
 .rk-sens th { font-size: 10px; letter-spacing: 1.1px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .rk-sens p { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+.rk-tablewrap { overflow-x: auto; max-width: 100%; margin-top: 14px; }
+.rk-sens--wide table { max-width: 920px; }
+.rk-sens__sub { margin-top: 26px !important; font-size: 19px !important; }
+.rk-sens td small { color: var(--muted); font-size: 10px; }
+.rk-sens .rk-tablewrap table { min-width: 560px; }
+.rk-sens table + p, .rk-tablewrap + p { max-width: 760px; }
 .rk-method__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
 .rk-method__cols h3 { margin: 0 0 10px; font: 500 23px/1.2 var(--font-display); }
 .rk-method ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--body); }
@@ -184,4 +193,6 @@ button.rk-row:hover { background: var(--surface-soft); }
   .rk-weights, .rk-method__cols { grid-template-columns: 1fr; }
   .rk-majorhead h2 { font-size: 30px; }
   .rk-field--grow { flex-basis: 100%; }
+  .rk-pricetoggle-wrap { align-items: flex-start; max-width: none; }
+  .rk-pricetoggle__note { text-align: left; }
 }

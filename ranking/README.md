@@ -1,8 +1,8 @@
 # Forge Career Outcomes Ranking
 
-Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v3.0). Published at `/rankings`.
+Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v3.1). Published at `/rankings`.
 
-A comparison of past graduates' outcomes whose program earnings estimates are backtested against the next graduating class (METHODOLOGY §10). Not a causal estimate.
+A comparison of past graduates' outcomes whose as-reported program earnings estimates are checked against the next graduating class in an exploratory retrospective backtest (METHODOLOGY §10). The cost-of-living view is not validated. Not a causal estimate.
 
 **Question:** if you study a given major at this school, how do graduates do in their careers compared with people who studied the same thing elsewhere?
 
@@ -28,7 +28,7 @@ python -m unittest tests.test_scoring tests.test_rpp tests.test_data_contract te
 | `dollars.py` | Restates each earnings field from its documented source dollar year to 2024 dollars |
 | `institutions.py` | Scorecard institution records, overall and per-major universes, employment rate |
 | `programs.py` | Program earnings premiums (4-year else 5-year), OPEID6 matching, branch-campus collapse, school effects, hierarchical program estimates |
-| `backtest.py` | Next-class backtest: noise calibration, estimator × shrinkage selection, held-out error and interval coverage |
+| `backtest.py` | Next-class backtest: 5-year mapping check, noise calibration, estimator × shrinkage selection, held-out error (centered, uncentered, strata, bootstrap intervals, repeated splits), interval coverage, provenance |
 | `destinations.py` | Graduate cost of living (BEA RPP × PSEO destinations, modeled fallback) |
 | `geo.py`, `pseo.py` | Price parities, campus-local prices, PSEO retention/destinations |
 | `overall.py` | Composite score, rank intervals, beats-expectations residual, sensitivity |
@@ -101,7 +101,7 @@ unzip -o -j data/raw/all/College_Scorecard_Raw_Data_06102026.zip \
 
 ## Review checklist after each run
 
-1. Run `src/backtest.py` first. If it selects different σ, floor or k, update `config.py`; `tests/test_backtest_pins.py` fails until they match. Settings are chosen by the backtest, never by how the list looks.
+1. Run `src/backtest.py` first. If it selects different σ, floor, k or 5-year mapping level, update `config.py`; `tests/test_backtest_pins.py` fails until they match. Settings are chosen by the backtest, never by how the list looks.
 2. `tests/test_data_contract.py` must pass: published earnings match the official Scorecard file. On a new Scorecard release, re-check `config.FIELD_DOLLAR_YEAR` against the data dictionary's cohort maps first.
 3. `sensitivity.csv`: every variant should keep Spearman ≥ 0.85 with the headline. A large drop means one component is driving the ranking.
 4. `exclusions.csv`: check that exclusion counts by reason are stable between data releases.

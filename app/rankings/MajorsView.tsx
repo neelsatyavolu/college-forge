@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { credentialLabel, horizonLabel, matchesFilters, money, rankFor, signedPct } from "./format";
+import { credentialLabel, horizonLabel, matchesFilters, money, otherViewNote, rankFor, signedPct } from "./format";
 import { useJson } from "./hooks";
 import { FilterBar, RankCell, SchoolName } from "./parts";
 import type { Cohorts, Credential, Filters, MajorFile, MajorRow, MajorSummary, PriceMode } from "./types";
 
-const shortHorizon = (h: string) => (h ? `${h.replace("yr", "")} yr${h === "1yr" ? "" : "s"} out` : "");
+const TOP_N = 250;
+const shortHorizon = (h: string) =>
+  h === "5yr" ? "5 yrs out · older class" : h ? `${h.replace("yr", "")} yr${h === "1yr" ? "" : "s"} out` : "";
 
 type Props = {
   index: MajorSummary[];
@@ -115,7 +117,7 @@ function MajorHeader({ major, credential, cohorts, related, onPick }: HeaderProp
       <span className="cf-eyebrow">{major.family.toUpperCase()} · {credentialLabel(credential).toUpperCase()}</span>
       <h2>{major.name}</h2>
       <p>
-        {major.n_ranked.toLocaleString()} colleges ranked{major.n_ranked > 250 ? " (top 250 shown)" : ""}
+        {major.n_ranked.toLocaleString()} colleges ranked{major.n_ranked > TOP_N ? ` (top ${TOP_N} shown)` : ""}
         {major.national_median != null && <> · national median {money(major.national_median)} a year, 4 years after graduating</>}
       </p>
       <p className="rk-majorhead__how">
@@ -126,6 +128,13 @@ function MajorHeader({ major, credential, cohorts, related, onPick }: HeaderProp
         4-year figures are {cohorts["4yr"]}, in 2024 dollars. Degree earnings aren’t job outcomes: a {major.name.toLowerCase()} graduate
         working in another field still counts here.
       </p>
+      {major.fallback_share > 0 && (
+        <p className="rk-majorhead__how">
+          {Math.round(major.fallback_share * 100)}% of ranked programs here withhold four-year earnings, so they’re scored on five-year
+          earnings of an older class ({cohorts["5yr"]}), shifted onto the four-year scale by how the two compare where both are
+          published. Treat their positions as less certain.
+        </p>
+      )}
       {credential === "masters" && (
         <p className="rk-note">
           <strong>Experimental.</strong> Master’s students often bring years of work experience, and cost of living here uses
@@ -151,14 +160,21 @@ function MajorHeader({ major, credential, cohorts, related, onPick }: HeaderProp
 }
 
 function MajorRows({ file, prices, filters, onClear }: { file: MajorFile; prices: PriceMode; filters: Filters; onClear: () => void }) {
+  // The file holds the top 250 under either ordering; show the top 250 of the active one.
   const rows = useMemo(
-    () => file.rows.filter((r) => matchesFilters(r, filters)).sort((a, b) => rankFor(a, prices).rank - rankFor(b, prices).rank),
+    () =>
+      file.rows
+        .filter((r) => rankFor(r, prices).rank <= TOP_N && matchesFilters(r, filters))
+        .sort((a, b) => rankFor(a, prices).rank - rankFor(b, prices).rank),
     [file, filters, prices]
   );
   if (rows.length === 0) return <MissingExplainer onClear={onClear} />;
   return (
     <>
-      <p className="rk-legend">● Where graduates work comes from Census data for marked colleges; for the rest it is modeled.</p>
+      <p className="rk-legend">
+        ● Where graduates work comes from Census data for marked colleges; for the rest it is modeled.
+        {file.n_ranked > TOP_N ? ` Search and filters look within the top ${TOP_N} shown.` : ""}
+      </p>
       <div className="rk-list rk-list--major" role="list" aria-label={`${file.name} ranking`}>
         <div className="rk-row rk-row--head" aria-hidden="true">
           <span>Rank</span>
@@ -180,7 +196,7 @@ function MajorRowView({ row: r, prices }: { row: MajorRow; prices: PriceMode }) 
   return (
     <div role="listitem" className="rk-row">
       <RankCell rank={rank.rank} low={rank.low} high={rank.high} />
-      <SchoolName name={r.institution} city={r.city} state={r.state} control={r.control} />
+      <SchoolName name={r.institution} city={r.city} state={r.state} control={r.control} notes={[otherViewNote(r, prices)]} />
       <span className="rk-cell rk-num" data-label="vs. national">
         <strong className={premium >= 0 ? "rk-pos" : "rk-neg"}>{signedPct(premium)}</strong>
       </span>
@@ -206,7 +222,7 @@ function MissingExplainer({ onClear }: { onClear: () => void }) {
       <ul className="rk-reasons">
         <li>doesn’t offer this major, or reports it under a related major code</li>
         <li>has earnings suppressed for privacy (too few aid recipients)</li>
-        <li>ranks below the top 250 shown</li>
+        <li>ranks below the top {TOP_N} shown</li>
       </ul>
       <button type="button" className="rk-link-btn" onClick={onClear}>Clear filters</button>
     </div>

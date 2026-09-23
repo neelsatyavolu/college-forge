@@ -84,13 +84,16 @@ export function ScoreBar({ value, label }: { value: number; label?: string }) {
   );
 }
 
-export function SchoolName({ name, city, state, control }: { name: string; city: string | null; state: string; control: string }) {
+type SchoolNameProps = { name: string; city: string | null; state: string; control: string; notes?: string[] };
+
+export function SchoolName({ name, city, state, control, notes = [] }: SchoolNameProps) {
   return (
     <span className="rk-school">
       <span className="rk-school__name">{name}</span>
       <span className="rk-school__meta">
         {[city, state].filter(Boolean).join(", ")} · {control === "public" ? "Public" : "Private"}
       </span>
+      {notes.length > 0 && <span className="rk-school__notes">{notes.join(" · ")}</span>}
     </span>
   );
 }

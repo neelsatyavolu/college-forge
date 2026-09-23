@@ -25,15 +25,22 @@ const PRICE_OPTIONS: { id: PriceMode; label: string }[] = [
 
 function PriceToggle({ value, onChange }: { value: PriceMode; onChange: (v: PriceMode) => void }) {
   return (
-    <div className="rk-pricetoggle" role="group" aria-label="Cost of living">
-      <span>Earnings</span>
-      <div className="rk-pills">
-        {PRICE_OPTIONS.map((o) => (
-          <button key={o.id} type="button" className="rk-pill" aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
-            {o.label}
-          </button>
-        ))}
+    <div className="rk-pricetoggle-wrap">
+      <div className="rk-pricetoggle" role="group" aria-label="Cost of living">
+        <span>Earnings</span>
+        <div className="rk-pills">
+          {PRICE_OPTIONS.map((o) => (
+            <button key={o.id} type="button" className="rk-pill" aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
+      <p className="rk-pricetoggle__note">
+        {value === "adjusted"
+          ? "Exploratory: where graduates work is estimated for most colleges, and this adjustment isn’t validated yet."
+          : "Earnings as published, with no location estimates. This is the version our backtest checks."}
+      </p>
     </div>
   );
 }
@@ -81,13 +88,14 @@ export default function RankingsClient() {
     <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={meta ? `Ranking rebuilt ${formatDate(meta.generated)}` : "Outcomes, not prestige"}>
       <div className="cf-page rk-page" id="rankings-top">
         <header className="rk-header">
-          <div className="cf-eyebrow">CAREER OUTCOMES · BACKTESTED{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
+          <div className="cf-eyebrow">CAREER OUTCOMES{meta ? ` · METHOD v${meta.methodology_version}` : ""}</div>
           <h1 className="cf-page-title">Where graduates did best</h1>
           <p className="cf-page-lede rk-lede">
             How past graduates fared: earnings compared with people who studied the same major elsewhere and adjusted for
             living costs where graduates work, plus graduation and employment, from federal records of students who
-            received financial aid. Selectivity and prestige get no direct weight. We checked the earnings estimates against a later graduating class they never saw. Use it to
-            discover and compare colleges, not to decide on rank alone.
+            received financial aid. Selectivity and prestige get no direct weight. We checked the program earnings estimates, before
+            any cost-of-living adjustment, against a later graduating class they never saw; the cost-of-living adjustment itself
+            isn’t validated yet. Use it to discover and compare colleges, not to decide on rank alone.
           </p>
         </header>
 
@@ -133,7 +141,7 @@ export default function RankingsClient() {
                 ? "Loading rankings…"
                 : isBeats
                   ? <>Showing <strong>{shown.length}</strong> of the {list.length} colleges furthest above prediction. Points are on the 0–100 score scale.{beats.data?.fit ? ` The student-profile model explains about ${Math.round(beats.data.fit.out_of_fold_r2 * 100)}% of score differences, and a typical college lands within about ±${Math.round(beats.data.fit.residual_sd_points)} points of its prediction, so small gaps mean little.` : ""}</>
-                  : <>Showing <strong>{shown.length}</strong> of the top {list.length}. Small numbers under each rank are its likely range within this model; overlapping ranges mean the exact order is uncertain.</>}
+                  : <>Showing <strong>{shown.length}</strong> of the top {list.length}. Small numbers under each rank are its likely range within this model; overlapping ranges mean the exact order is uncertain. Each college also shows its rank in the other earnings view.</>}
             </p>
             {list && shown.length === 0 && <EmptyState onClear={clearFilters} />}
             {list && shown.length > 0 && (isBeats ? <BeatsView schools={shown} /> : <OverallView schools={shown} prices={query.prices} onOpenMajor={openMajor} />)}

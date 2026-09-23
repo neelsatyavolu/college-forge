@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { money, ordinalPct, rankFor, rate, signedPct } from "./format";
+import { money, ordinalPct, otherViewNote, rankFor, rate, signedPct } from "./format";
 import { useJson } from "./hooks";
 import { RankCell, SchoolName, ScoreBar } from "./parts";
 import type { PriceMode, School, SchoolMajorsFile } from "./types";
@@ -9,6 +9,9 @@ type Props = {
   prices: PriceMode;
   onOpenMajor: (cip: string) => void;
 };
+
+/** Colleges whose scored programs mostly use 5-year earnings (an older graduating class). */
+const MOSTLY_OLDER_DATA = 0.5;
 
 const TYPICAL_EARNINGS_HELP =
   "Completion-weighted average of the median earnings of this college’s bachelor’s programs, mostly 4 years after graduating. Not the median of all graduates.";
@@ -50,11 +53,12 @@ function OverallRow({ school: s, prices, expanded, onToggle, onOpenMajor }: RowP
   const adjusted = prices === "adjusted";
   const score = adjusted ? s.score_adjusted : s.score;
   const premium = adjusted ? s.early_premium_adjusted_pct : s.early_premium_pct;
+  const notes = [otherViewNote(s, prices), ...((s.fallback_share ?? 0) > MOSTLY_OLDER_DATA ? ["mostly older earnings data"] : [])];
   return (
     <div role="listitem" className={"rk-item" + (expanded ? " is-open" : "")}>
       <button type="button" className="rk-row" aria-expanded={expanded} aria-controls={detailId} onClick={onToggle}>
         <RankCell rank={r.rank} low={r.low} high={r.high} />
-        <SchoolName name={s.institution} city={s.city} state={s.state} control={s.control} />
+        <SchoolName name={s.institution} city={s.city} state={s.state} control={s.control} notes={notes} />
         <ScoreBar value={score} label={`Score ${score.toFixed(1)} on a 0 to 100 relative index`} />
         <span className="rk-cell rk-num" data-label="vs. same majors">
           <strong className={premium >= 0 ? "rk-pos" : "rk-neg"}>{signedPct(premium)}</strong>
@@ -132,6 +136,12 @@ function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; scho
           <dt>Completions in programs with published earnings</dt>
           <dd>{Math.round(s.program_coverage * 100)}%<span> · not the share of graduates observed</span></dd>
         </div>
+        {s.fallback_share != null && s.fallback_share > 0 && (
+          <div>
+            <dt>Programs scored on older data</dt>
+            <dd>{Math.round(s.fallback_share * 100)}%<span> · 5-year earnings of an earlier class, adjusted to the 4-year scale</span></dd>
+          </div>
+        )}
       </dl>
       <TopMajors unitid={s.unitid} onOpenMajor={onOpenMajor} />
     </div>

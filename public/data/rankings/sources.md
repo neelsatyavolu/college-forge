@@ -1,6 +1,6 @@
 # Sources
 
-Methodology: **v3.0** (`ranking/METHODOLOGY.md`)
+Methodology: **v3.1** (`ranking/METHODOLOGY.md`)
 Access date (UTC): **2026-09-23**
 Dollars: every figure restated in **2024** dollars (PCE) from each field's source year:
 
@@ -26,9 +26,10 @@ Dollars: every figure restated in **2024** dollars (PCE) from each field's sourc
 - Per-major rankings: 156 bachelors, 85 masters
 - Graduate cost of living: 1,717 schools; PSEO destinations observed for 458; modeled for 73%
 - Graduate price model: cross-validated R² 0.904, held-out log error 0.016 (used in rank ranges for modeled schools)
+- Two-bucket price estimate (in-state share observed, destinations not): held-out log error 0.011 over 458 schools with both; used for 2 schools
 - Implied out-of-state destination price level: 99.7
 
 ## Shrinkage
 
-- bachelors: 26,671 programs at 1,586 schools · school-effect SD τ=0.146 · program SD ω=0.081 · price prior α=-0.003, β=0.00
-- masters: 10,055 programs at 1,252 schools · school-effect SD τ=0.127 · program SD ω=0.128 · price prior α=0.007, β=0.00
+- bachelors: 26,671 programs at 1,586 schools · school-effect SD τ=0.146 · program SD ω=0.080 · price prior α=-0.003, β=0.00
+- masters: 10,055 programs at 1,252 schools · school-effect SD τ=0.128 · program SD ω=0.126 · price prior α=0.007, β=0.00

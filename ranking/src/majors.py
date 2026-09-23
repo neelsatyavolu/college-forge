@@ -1,7 +1,8 @@
 """Per-major rankings for bachelor's and master's programs (§7).
 
 The ranked quantity is a modeled earnings premium: a program's median earnings relative
-to the national median for the same major and credential (4-year earnings, else 5-year),
+to the national median for the same major and credential (4-year earnings, else 5-year
+mapped onto the 4-year scale),
 shrunk toward its school's effect in proportion to its noise (programs.program_estimates,
 selected by next-class prediction in src/backtest.py).
 Headline order is as reported (nominal, flat prior, no geography); the alternative uses a
@@ -70,8 +71,10 @@ def major_index(ranked: pd.DataFrame) -> pd.DataFrame:
         ranked.groupby(["credential", "CIPCODE"], as_index=False)
         .agg(name=("CIPDESC", "first"), family=("family", "first"),
              n_ranked=("n_ranked", "first"), national_median=("nat_4yr", "median"),
-             graduates=("completions", "sum"))
+             graduates=("completions", "sum"),
+             fallback_share=("earnings_horizon", lambda h: float((h == "5yr").mean())))
         .sort_values(["credential", "graduates"], ascending=[True, False])
     )
     idx["graduates"] = idx["graduates"].round().astype(int)
+    idx["fallback_share"] = idx["fallback_share"].round(3)
     return idx

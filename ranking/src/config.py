@@ -1,4 +1,4 @@
-"""Pinned paths and constants for the Forge Career Outcomes Ranking (methodology v3.0)."""
+"""Pinned paths and constants for the Forge Career Outcomes Ranking (methodology v3.1)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,7 +8,7 @@ RAW = ROOT / "data" / "raw"
 PROCESSED = ROOT / "data" / "processed"
 OUT = ROOT / "out"
 
-METHODOLOGY_VERSION = "3.0"
+METHODOLOGY_VERSION = "3.1"
 
 # Access / release pins (recorded in sources.md at run time)
 SCORECARD_RELEASE = "Most-Recent-Cohorts_06102026"
@@ -58,13 +58,17 @@ Z_CLIP = 3.0
 # σ: effective count-dependent error scale of a program's log median earnings, calibrated on
 #    development institutions from how much the same programs moved between graduating
 #    classes with no overlapping completion years (AY2014-16 → AY2017-19). Replaces 0.70.
-LOG_EARNINGS_SD = {"bachelors": 0.454, "masters": 0.382}
+LOG_EARNINGS_SD = {"bachelors": 0.454, "masters": 0.383}
 # floor: count-independent change between classes (does not shrink with program size);
 #    added to program uncertainty so large programs' intervals are not overconfident.
-PROGRAM_FLOOR_SD = {"bachelors": 0.020, "masters": 0.048}
+PROGRAM_FLOOR_SD = {"bachelors": 0.019, "masters": 0.048}
 # k: multiplier on sampling variance used for shrinkage, chosen from a fixed grid by
 #    within-major next-class prediction error on development institutions.
 SHRINK_K = {"bachelors": 1.5, "masters": 2.0}
+# 5-year → 4-year mapping for programs whose 4-year earnings are withheld (v3.1): each
+#    major's mean y5 − y4 among programs publishing both, shrunk toward the credential mean.
+#    Level chosen on development institutions and checked on held-out ones (backtest.horizon_test).
+HORIZON_SHIFT_LEVEL = "major"
 MIN_PROGRAM_VARIANCE = 0.002
 
 # Per-major rankings (§5)

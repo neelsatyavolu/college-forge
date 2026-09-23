@@ -53,6 +53,11 @@ export function rankFor(row: RankFields, mode: PriceMode): { rank: number; low: 
     : { rank: row.rank, low: row.rank_low, high: row.rank_high };
 }
 
+/** The row's rank in the other earnings view, so the effect of the cost-of-living choice is visible. */
+export function otherViewNote(row: RankFields, mode: PriceMode): string {
+  return mode === "adjusted" ? `#${row.rank} as reported` : `#${row.rank_adjusted} after cost of living`;
+}
+
 export function ordinalPct(p: number | null | undefined): string {
   return p == null ? "—" : `Better than ${Math.max(0, Math.round(p) - 1)}% of ranked colleges`;
 }

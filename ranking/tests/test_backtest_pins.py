@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from config import LOG_EARNINGS_SD, OUT, PROGRAM_FLOOR_SD, SHRINK_K  # noqa: E402
+from config import HORIZON_SHIFT_LEVEL, LOG_EARNINGS_SD, OUT, PROGRAM_FLOOR_SD, SHRINK_K  # noqa: E402
 
 BACKTEST = OUT / "backtest.json"
 
@@ -43,6 +43,10 @@ class TestPinsMatchBacktest(unittest.TestCase):
                 err = chosen["test"]["within_major_rmse"]
                 self.assertLess(err, chosen["test_raw_baseline"]["within_major_rmse"])
                 self.assertLess(err, chosen["test_major_only_sd070"]["within_major_rmse"])
+                self.assertLess(err, chosen["test_major_only_tuned"]["within_major_rmse"])
+
+    def test_horizon_mapping_matches_the_shipped_level(self):
+        self.assertEqual(HORIZON_SHIFT_LEVEL, self.bt["horizon_mapping"]["shipped"])
 
 
 if __name__ == "__main__":

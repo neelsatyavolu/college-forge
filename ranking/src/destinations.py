@@ -27,6 +27,7 @@ from pseo import (
     match_pseo_to_scorecard,
     rpp_grad_destination,
     rpp_grad_two_dest,
+    two_dest_log_rmse_cv,
 )
 from util import opeid8
 
@@ -76,7 +77,13 @@ def graduate_rpp(schools: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
         ).where(has_dest)
 
     leaver_pool = implied_leaver_pool(dest_rpp(104.0), df["retention_share"], df["rpp_local"])
-    rpp_grad, rpp_src, rpp_meta = fit_rpp_grad_model(df, dest_rpp(leaver_pool))
+    observed = dest_rpp(leaver_pool)
+    rpp_grad, rpp_src, rpp_meta = fit_rpp_grad_model(df, observed)
+    # Held-out error of the two-bucket estimator used for in-state-only schools below,
+    # scored where observed retention and destinations are both available.
+    pseo_ret = df["retention_source"] == "pseo"
+    two_dest_rmse, two_dest_n = two_dest_log_rmse_cv(
+        observed.where(pseo_ret), df["retention_share"], df["rpp_local"])
     df["rpp_grad"] = rpp_grad.values
     df["rpp_source"] = rpp_src.values
     # PSEO in-state share but no destination rows: two-bucket with the leaver pool, not 100
@@ -86,19 +93,25 @@ def graduate_rpp(schools: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     ).values
     df.loc[instate_only, "rpp_source"] = "pseo_instate"
 
+    src_counts = df["rpp_source"].value_counts()
     diag = {
         "n_schools": int(len(df)),
         "n_pseo_retention": n_pseo,
         "n_pseo_destinations": int(has_dest.sum()),
+        "n_by_rpp_source": {str(k): int(v) for k, v in src_counts.items()},
         "modeled_share": float((df["rpp_source"] == "modeled").mean()),
+        "two_dest_model": {"log_rmse_cv": two_dest_rmse, "n_scored": two_dest_n},
         "retention_model": ret_meta,
         "rpp_grad_model": rpp_meta,
         "leaver_pool_rpp": float(leaver_pool),
         "division_rpp": {str(k): v for k, v in div_rpp.items()},
     }
-    # Price-level uncertainty for the rank ranges: modeled destinations carry the model's
-    # held-out error. Observed (PSEO) destinations carry none here; their division/campus
-    # approximation error is not quantified and is disclosed instead.
-    df["rpp_log_sd"] = (df["rpp_source"] != "pseo_dest") * rpp_meta.get("log_rmse_cv", 0.0)
+    # Price-level uncertainty for the rank ranges: each estimated price level carries the
+    # held-out error of the estimator actually used (regression or two-bucket). Observed
+    # (PSEO) destinations carry none here; their division/campus approximation error is not
+    # quantified and is disclosed instead.
+    df["rpp_log_sd"] = df["rpp_source"].map({
+        "modeled": rpp_meta.get("log_rmse_cv", 0.0), "pseo_instate": two_dest_rmse, "pseo_dest": 0.0,
+    }).fillna(rpp_meta.get("log_rmse_cv", 0.0))
     cols = ["UNITID", "rpp_grad", "rpp_local", "rpp_source", "rpp_log_sd", "retention_share", "retention_source"]
     return df[cols].set_index("UNITID"), diag

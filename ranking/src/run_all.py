@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Forge Career Outcomes Ranking — end-to-end pipeline (ranking/METHODOLOGY.md v3.0)."""
+"""Forge Career Outcomes Ranking — end-to-end pipeline (ranking/METHODOLOGY.md v3.1)."""
 from __future__ import annotations
 
 import json
@@ -12,7 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from config import OUT  # noqa: E402
+from config import HORIZON_SHIFT_LEVEL, OUT  # noqa: E402
 from destinations import graduate_rpp  # noqa: E402
 from export import export_all  # noqa: E402
 from dollars import factors_used  # noqa: E402
@@ -30,6 +30,7 @@ from overall import (  # noqa: E402
 )
 from programs import (  # noqa: E402
     expected_earnings,
+    fit_horizon_shift,
     load_programs,
     price_prior,
     program_estimates,
@@ -41,6 +42,10 @@ from reports import DISCLOSURE, sources_md  # noqa: E402
 from util import write_csv  # noqa: E402
 
 META = ["INSTNM", "CITY", "STABBR", "CONTROL", "net_price", "COSTT4_A", "PCTPELL"]
+
+
+def _bachelors_effect(effects: pd.DataFrame) -> pd.Series:
+    return effects[effects["credential"] == "bachelors"].set_index("UNITID")["mu_hat"]
 
 
 def typical_earnings(programs: pd.DataFrame) -> pd.Series:
@@ -55,7 +60,13 @@ def typical_earnings(programs: pd.DataFrame) -> pd.Series:
     return (g["wx"].sum() / g["completions"].sum()).rename("typical_earnings")
 
 
-def build_overall(inst, eligible, programs, effects, effects_adj, rpp):
+def fallback_share(programs: pd.DataFrame) -> pd.Series:
+    """Share of a school's scored bachelor's programs that use 5-year (older class) earnings."""
+    b = programs[(programs["credential"] == "bachelors") & programs["y_raw"].notna()]
+    return (b["earnings_horizon"] == "5yr").groupby(b["UNITID"]).mean().rename("fallback_share")
+
+
+def build_overall(inst, eligible, programs, effects, effects_adj, effects_4yr, rpp):
     """Headline table (earnings as reported) with the after-cost-of-living ordering joined."""
     elig = eligible.assign(employment_rate=employment_rate(eligible))
     expected = expected_earnings(programs)
@@ -74,6 +85,7 @@ def build_overall(inst, eligible, programs, effects, effects_adj, rpp):
     meta = inst.set_index("UNITID")
     table = table.join(meta[META + ["MD_EARN_WNE_P10"]]).join(rpp[["rpp_grad", "rpp_source"]])
     table["typical_earnings"] = typical_earnings(programs).reindex(table.index)
+    table["fallback_share"] = fallback_share(programs).reindex(table.index)
     table["earnings_10yr"] = table["MD_EARN_WNE_P10"]
     table["beats_expectations"], beats_fit = beats_expectations(table, inst)
     table["beats_rank"] = table["beats_expectations"].rank(ascending=False, method="first")
@@ -88,6 +100,7 @@ def build_overall(inst, eligible, programs, effects, effects_adj, rpp):
         "completion_weighted_programs": comp.assign(
             early_premium=completion_weighted_effect(programs).reindex(comp.index)
         ),
+        "four_year_earnings_only": comp.assign(early_premium=_bachelors_effect(effects_4yr).reindex(comp.index)),
     }
     sens = sensitivity(comp, table["rank"], alternatives)
     return table, comp, excl_cov, sens, beats_fit
@@ -106,7 +119,8 @@ def main() -> int:
     print("=== 2. Program earnings premiums ===")
     programs = load_programs()
     programs = programs[programs["UNITID"].isin(set(majors_pool["UNITID"]))]
-    programs = program_premiums(programs, log_sd=shrinkage_sd(programs))
+    horizon = fit_horizon_shift(programs, HORIZON_SHIFT_LEVEL)
+    programs = program_premiums(programs, log_sd=shrinkage_sd(programs), shift=horizon)
 
     print("=== 3. Graduate cost of living ===")
     need = set(eligible["UNITID"]) | set(programs.loc[programs["y_raw"].notna(), "UNITID"])
@@ -122,6 +136,9 @@ def main() -> int:
     log_price = np.log(rpp["rpp_grad"] / 100.0)
     effects_adj, diag_adj = school_effects(programs, log_price, price_prior(programs, log_price))
     adjusted = program_estimates(programs, effects_adj, diag_adj)
+    # Sensitivity: school effects from 4-year earnings only (no 5-year fallback programs).
+    four_only = programs.assign(y_raw=programs["y_raw"].where(programs["earnings_horizon"] == "4yr"))
+    effects_4yr, _ = school_effects(four_only, flat, price_prior(four_only, flat))
     programs = nominal.assign(
         y_program_px=adjusted["y_program"].values,
         y_program_px_sd=adjusted["y_program_sd"].values,
@@ -131,7 +148,7 @@ def main() -> int:
         print(f"  {cred}: {d['programs']:,} programs, {d['schools']:,} schools, τ={d['tau']:.3f}, ω={d['omega']:.3f}, α={d['alpha']:.3f}; adjusted-view β={diag_adj[cred]['beta']:.2f}")
 
     print("=== 4. Overall score ===")
-    table, comp, excl_cov, sens, beats_fit = build_overall(inst, eligible, programs, effects, effects_adj, rpp)
+    table, comp, excl_cov, sens, beats_fit = build_overall(inst, eligible, programs, effects, effects_adj, effects_4yr, rpp)
     print(f"  scored: {len(table):,} | dropped (thin earnings coverage or no graduation rate): {len(excl_cov):,}")
     print(sens.to_string(index=False))
 
@@ -154,6 +171,14 @@ def main() -> int:
         "access_date": access_date, "dollar_factors_to_reference_year": factors_used(),
         "pooling": pool_diag, "pooling_adjusted_view": diag_adj,
         "geography": geo_diag, "beats_expectations_fit": beats_fit,
+        "horizon_shift": {"level": horizon.level, "by_credential": horizon.by_credential,
+                          "majors_fitted": int(len(horizon.by_major))},
+        "five_year_fallback": {
+            "ranked_programs": int((ranked["earnings_horizon"] == "5yr").sum()),
+            "of_ranked_programs": int(len(ranked)),
+            "in_major_top25": int(((ranked["earnings_horizon"] == "5yr") & (ranked["rank"] <= 25)).sum()),
+            "overall_scored_schools_majority_fallback": int((table["fallback_share"] > 0.5).sum()),
+        },
         "n_scored": int(len(table)), "n_excluded": int(len(exclusions)), "majors": n_majors,
         "component_coverage": {c: int(comp[c].notna().sum()) for c in ("early_premium", "later_premium", "graduation", "employment")},
     }, indent=2, default=str))

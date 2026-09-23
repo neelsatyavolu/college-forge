@@ -1,7 +1,7 @@
 export type Control = "public" | "private_nonprofit";
 export type Credential = "bachelors" | "masters";
 export type View = "overall" | "majors" | "beats";
-/** Headline ranks earnings as reported ("nominal"); "adjusted" divides by graduate prices. */
+/** "adjusted" (page default) divides by estimated graduate prices; "nominal" ranks earnings as reported. */
 export type PriceMode = "nominal" | "adjusted";
 
 export type Weights = {
@@ -50,6 +50,8 @@ export type School = Ranked & {
   rpp_grad: number | null;
   location_observed: boolean;
   program_coverage: number;
+  /** Share of scored bachelor's programs using 5-year (older class) earnings. */
+  fallback_share: number | null;
   net_price: number | null;
   cost_of_attendance: number | null;
   pct_pell: number | null;
@@ -76,6 +78,8 @@ export type MajorSummary = {
   n_ranked: number;
   national_median: number | null;
   graduates: number;
+  /** Share of ranked programs using 5-year (older class) earnings. */
+  fallback_share: number;
 };
 
 export type MajorIndexFile = MajorMeta & { majors: MajorSummary[] };
@@ -126,17 +130,41 @@ export type SensitivityRow = {
   median_rank_shift: number;
 };
 
-type HeldOut = { within_major_rmse: number; rmse: number; rho: number; n: number };
+type HeldOut = {
+  within_major_rmse: number | null;
+  dev_offset_rmse: number;
+  rmse: number;
+  rho: number | null;
+  n: number;
+  n_institutions: number;
+  n_centered_programs: number;
+  n_centered_majors: number;
+  n_rho_programs: number;
+  n_rho_majors: number;
+};
 type Coverage = { all: number; small: number; medium: number; large: number };
+type HorizonLevel = { rmse: number; bias: number; rmse_small: number; coverage_90: number; coverage_90_small: number };
 export type ValidationFile = {
+  provenance: { generated_utc: string; code_commit: string; uncommitted_changes_in_ranking: boolean };
   noise: Record<Credential, { sigma: number; floor_sd: number; n_pairs: number }>;
+  horizon_mapping: {
+    shipped: string;
+    test: Record<Credential, { n_programs: number; n_institutions: number; n_small: number; none: HorizonLevel; major: HorizonLevel; credential: HorizonLevel }>;
+  };
+  repeated_splits: Record<string, Record<Credential, { test_within_major_rmse: number; raw_within_major_rmse: number; test_rho: number; raw_rho: number; estimator: string; k: number }>>;
   chosen: Record<Credential, {
     estimator: string;
     k: number;
     test: HeldOut;
     test_raw_baseline: HeldOut;
     test_major_only_sd070: HeldOut;
-    coverage_90: { estimate_plus_target_noise: Coverage; with_floor: Coverage };
+    test_major_only_tuned: HeldOut & { k: number };
+    test_minus_raw_within_major_rmse_90ci: [number, number];
+    test_minus_tuned_major_only_within_major_rmse_90ci: [number, number];
+    strata: Record<"target_under_50_earners" | "past_used_5yr_fallback", HeldOut | null>;
+    strata_raw_baseline: Record<"target_under_50_earners" | "past_used_5yr_fallback", HeldOut | null>;
+    coverage_90: { n: number; estimate_plus_target_noise: Coverage; with_floor: Coverage; published_width: Coverage };
+    coverage_90_target_under_50: { n: number; estimate_plus_target_noise: Coverage; with_floor: Coverage; published_width: Coverage };
   }>;
 };
 

@@ -14,6 +14,7 @@ from institutions import employment_rate  # noqa: E402
 from overall import composite, coverage  # noqa: E402
 from programs import (  # noqa: E402
     collapse_branch_campuses,
+    fit_horizon_shift,
     price_prior,
     program_estimates,
     program_premiums,
@@ -35,7 +36,7 @@ def _program(unitid, cip, e4, n4, nat=100_000.0, cred="bachelors", completions=5
 
 class TestProgramPremiums(unittest.TestCase):
     def test_premium_is_log_ratio_to_same_major(self):
-        df = program_premiums(pd.DataFrame([_program(1, "1107", 150_000, 100, nat=100_000)]), SD)
+        df = program_premiums(pd.DataFrame([_program(1, "1107", 150_000, 100, nat=100_000)]), SD, shift=None)
         self.assertAlmostEqual(df.loc[0, "y_raw"], np.log(1.5))
 
     def test_uses_four_year_else_five_year_never_one_year(self):
@@ -45,7 +46,7 @@ class TestProgramPremiums(unittest.TestCase):
         five_only.update({"EARN_MDN_5YR": 150_000, "EARN_COUNT_WNE_5YR": 80})
         one_only = _program(3, "1107", np.nan, np.nan)
         one_only.update({"EARN_MDN_1YR": 90_000, "EARN_COUNT_WNE_1YR": 100})
-        df = program_premiums(pd.DataFrame([both, five_only, one_only]), SD)
+        df = program_premiums(pd.DataFrame([both, five_only, one_only]), SD, shift=None)
         self.assertAlmostEqual(df.loc[0, "y_raw"], np.log(1.2))
         self.assertEqual(df.loc[0, "earnings_horizon"], "4yr")
         self.assertAlmostEqual(df.loc[1, "y_raw"], np.log(1.5))
@@ -54,12 +55,60 @@ class TestProgramPremiums(unittest.TestCase):
 
     def test_sampling_variance_scales_with_sd_squared(self):
         df = pd.DataFrame([_program(1, "1107", 120_000, 100)])
-        ratio = program_premiums(df, 0.9).loc[0, "se2"] / program_premiums(df, 0.45).loc[0, "se2"]
+        ratio = program_premiums(df, 0.9, shift=None).loc[0, "se2"] / program_premiums(df, 0.45, shift=None).loc[0, "se2"]
         self.assertAlmostEqual(ratio, 4.0)
 
     def test_suppressed_cells_stay_missing(self):
-        df = program_premiums(pd.DataFrame([_program(1, "1107", np.nan, np.nan)]), SD)
+        df = program_premiums(pd.DataFrame([_program(1, "1107", np.nan, np.nan)]), SD, shift=None)
         self.assertTrue(np.isnan(df.loc[0, "y_raw"]))
+
+
+class TestHorizonShift(unittest.TestCase):
+    """5-year premiums are mapped onto the 4-year scale with a frozen, fitted per-major shift."""
+
+    def _pairs(self, shift_by_major: dict[str, float], n: int = 60, seed: int = 0) -> pd.DataFrame:
+        rng = np.random.default_rng(seed)
+        rows = []
+        for cip, shift in shift_by_major.items():
+            for u in range(n):
+                y4 = rng.normal(0, 0.2)
+                row = _program(u, cip, 100_000 * np.exp(y4), 200)
+                row.update({"EARN_MDN_5YR": 100_000 * np.exp(y4 + shift + rng.normal(0, 0.02)), "EARN_COUNT_WNE_5YR": 200})
+                rows.append(row)
+        return pd.DataFrame(rows)
+
+    def _fallback(self, cip: str) -> pd.DataFrame:
+        row = _program(999, cip, np.nan, np.nan)
+        row.update({"EARN_MDN_5YR": 150_000, "EARN_COUNT_WNE_5YR": 20})
+        return pd.DataFrame([row])
+
+    def test_fallback_program_is_moved_onto_the_four_year_scale(self):
+        shift = fit_horizon_shift(self._pairs({"5009": 0.15, "1107": 0.0}), "major")
+        out = program_premiums(self._fallback("5009"), SD, shift=shift).iloc[0]
+        self.assertAlmostEqual(out["y_raw"], np.log(1.5) - 0.15, delta=0.02)
+        self.assertAlmostEqual(out["horizon_shift"], 0.15, delta=0.02)
+        uncorrected = program_premiums(self._fallback("5009"), SD, shift=None).iloc[0]
+        self.assertGreater(out["se2"], uncorrected["se2"])  # mapping uncertainty is carried
+
+    def test_four_year_programs_are_untouched(self):
+        pairs = self._pairs({"5009": 0.15})
+        shift = fit_horizon_shift(pairs, "major")
+        out = program_premiums(pairs, SD, shift=shift)
+        np.testing.assert_allclose(out["y_raw"], np.log(pairs["EARN_MDN_4YR"] / pairs["nat_4yr"]))
+        self.assertTrue((out["horizon_shift"] == 0).all())
+
+    def test_unmatched_major_uses_credential_mean_and_between_major_variance(self):
+        shift = fit_horizon_shift(self._pairs({"5009": 0.15, "1107": -0.05, "4201": 0.05}), "major")
+        mean, between = shift.by_credential["bachelors"]
+        delta, var = shift.lookup(pd.Series(["bachelors"]), pd.Series(["9999"]))
+        self.assertAlmostEqual(delta.iloc[0], mean)
+        self.assertAlmostEqual(var.iloc[0], between)
+        self.assertGreater(between, 0.0)
+
+    def test_none_level_applies_no_correction(self):
+        shift = fit_horizon_shift(self._pairs({"5009": 0.15}), "none")
+        out = program_premiums(self._fallback("5009"), SD, shift=shift).iloc[0]
+        self.assertAlmostEqual(out["y_raw"], np.log(1.5))
 
 
 class TestHierarchicalModel(unittest.TestCase):
@@ -74,7 +123,7 @@ class TestHierarchicalModel(unittest.TestCase):
                 small = school == 0 and major == 0
                 y = small_program_value if small else effect + rng.normal(0, 0.05)
                 rows.append(_program(school, f"{1000 + major}", 100_000 * np.exp(y), 25 if small else 200))
-        return program_premiums(pd.DataFrame(rows), SD)
+        return program_premiums(pd.DataFrame(rows), SD, shift=None)
 
     def _fit(self, progs):
         prior = price_prior(progs, self.FLAT)
@@ -114,7 +163,7 @@ class TestPricePrior(unittest.TestCase):
         rng = np.random.default_rng(1)
         price = pd.Series(rng.normal(0, 0.1, 300), index=range(300))
         rows = [_program(u, "1107", 100_000 * np.exp(0.05 + 0.6 * price[u]), 400) for u in price.index]
-        alpha, beta = price_prior(program_premiums(pd.DataFrame(rows), SD), price)["bachelors"]
+        alpha, beta = price_prior(program_premiums(pd.DataFrame(rows), SD, shift=None), price)["bachelors"]
         self.assertAlmostEqual(alpha, 0.05, places=2)
         self.assertAlmostEqual(beta, 0.6, places=2)
 
@@ -122,7 +171,7 @@ class TestPricePrior(unittest.TestCase):
         price = pd.Series({u: 0.2 if u == 0 else 0.0 for u in range(40)})
         rows = [_program(u, "1107", 100_000 * np.exp(0.05 * (u % 3)), 400) for u in range(1, 40)]
         rows.append(_program(0, "1107", 100_000, 10))
-        progs = program_premiums(pd.DataFrame(rows), SD)
+        progs = program_premiums(pd.DataFrame(rows), SD, shift=None)
         progs.loc[progs["UNITID"] == 0, "se2"] = 1e6  # effectively no information
         prior = {"bachelors": (0.01, 0.5)}
         schools, _ = school_effects(progs, price, prior)

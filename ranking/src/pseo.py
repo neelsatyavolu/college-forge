@@ -366,6 +366,32 @@ def implied_leaver_pool(
     return float(implied.median())
 
 
+def two_dest_log_rmse_cv(
+    observed: pd.Series,
+    retention: pd.Series,
+    rpp_local: pd.Series,
+    folds: int = 5,
+) -> tuple[float, int]:
+    """
+    Held-out log error of the two-bucket estimator (in-state share at campus prices,
+    leavers at the implied leaver pool), scored against destination-based price levels
+    where both are observed. The leaver pool is re-estimated without each fold.
+    """
+    ok = observed.notna() & retention.notna() & rpp_local.notna()
+    idx = observed.index[ok]
+    if len(idx) < 40:
+        return float("nan"), int(len(idx))
+    fold = pd.Series(np.arange(len(idx)) % folds, index=idx)
+    errs = []
+    for f in range(folds):
+        train, test = idx[fold != f], idx[fold == f]
+        pool = implied_leaver_pool(observed[train], retention[train], rpp_local[train])
+        pred = rpp_grad_two_dest(retention[test], rpp_local[test], pool)
+        errs.append(np.log(pred) - np.log(observed[test]))
+    e = pd.concat(errs)
+    return float(np.sqrt((e ** 2).mean())), int(len(idx))
+
+
 def fit_rpp_grad_model(
     df: pd.DataFrame,
     observed: pd.Series,

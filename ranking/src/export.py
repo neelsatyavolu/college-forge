@@ -25,8 +25,8 @@ from config import (
 CONTROL = {1: "public", 2: "private_nonprofit"}
 MAJOR_SCORING = (
     "Modeled earnings premium vs. the national median for the same major and credential "
-    "(4-year earnings, else 5-year), shrunk toward the school's effect in proportion to its "
-    "noise (selected by next-class prediction). "
+    "(4-year earnings, else 5-year earnings mapped onto the 4-year scale), shrunk toward the "
+    "school's effect in proportion to its noise (selected by next-class prediction). "
     "Graduation and employment are not scored in major tables."
 )
 
@@ -79,6 +79,7 @@ def school_rows(table: pd.DataFrame) -> pd.DataFrame:
         "rpp_grad": table["rpp_grad"].round(1),
         "location_observed": table["rpp_source"] == "pseo_dest",
         "program_coverage": table["coverage"].round(2),
+        "fallback_share": table["fallback_share"].round(2),
         "net_price": table["net_price"],
         "cost_of_attendance": table["COSTT4_A"],
         "pct_pell": table["PCTPELL"].round(3),
@@ -184,11 +185,13 @@ def export_all(
     backtest = OUT / "backtest.json"
     if backtest.exists():
         bt = json.loads(backtest.read_text())
+        keep = ("estimator", "k", "test", "test_raw_baseline", "test_major_only_sd070", "test_major_only_tuned",
+                "test_minus_raw_within_major_rmse_90ci", "test_minus_tuned_major_only_within_major_rmse_90ci",
+                "strata", "strata_raw_baseline", "coverage_90", "coverage_90_target_under_50")
         _write(PUBLIC_RANKINGS / "validation.json", {
-            "design": bt["design"], "noise": bt["noise_calibration"],
-            "chosen": {c: {k: v[k] for k in ("estimator", "k", "test", "test_raw_baseline",
-                                              "test_major_only_sd070", "coverage_90")}
-                       for c, v in bt["chosen"].items()},
+            "provenance": bt["provenance"], "design": bt["design"], "noise": bt["noise_calibration"],
+            "horizon_mapping": bt["horizon_mapping"], "repeated_splits": bt["repeated_splits"],
+            "chosen": {c: {k: v[k] for k in keep} for c, v in bt["chosen"].items()},
         })
     for name in ("sources.md", "DISCLOSURE.md"):
         shutil.copyfile(OUT / name, PUBLIC_RANKINGS / name)

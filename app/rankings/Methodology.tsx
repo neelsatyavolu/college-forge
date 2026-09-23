@@ -1,11 +1,12 @@
 import { useJson } from "./hooks";
-import type { Cohorts, SensitivityRow, ValidationFile, Weights } from "./types";
+import type { Cohorts, SensitivityRow, Weights } from "./types";
+import Validation from "./Validation";
 
 const COMPONENTS: { key: keyof Weights; title: string; body: string }[] = [
   {
     key: "early_premium",
     title: "Early-career earnings",
-    body: "Median earnings four years after graduating (five where the four-year figure is withheld), compared with people who studied the same major at other colleges. A college isn’t rewarded just for offering high-paying majors.",
+    body: "Median earnings four years after graduating (five where the four-year figure is withheld, shifted onto the four-year scale), compared with people who studied the same major at other colleges. A college isn’t rewarded just for offering high-paying majors.",
   },
   {
     key: "graduation",
@@ -28,50 +29,8 @@ const VARIANTS: Record<string, string> = {
   completion_weighted_programs: "Weight programs by graduates instead of pooling",
   coverage_at_least_50pct: "Require programs with earnings to cover 50% of graduates",
   coverage_at_least_70pct: "Require programs with earnings to cover 70% of graduates",
+  four_year_earnings_only: "Use only 4-year earnings (drop older 5-year data)",
 };
-
-const pct = (n: number) => `${Math.round(n * 100)}%`;
-const err = (n: number) => `${(n * 100).toFixed(1)}%`;
-
-function Validation() {
-  const { data } = useJson<ValidationFile>("/data/rankings/validation.json");
-  if (!data) return null;
-  const rows = (["bachelors", "masters"] as const).map((c) => ({ c, v: data.chosen[c] }));
-  return (
-    <div className="rk-sens">
-      <h3>Does it predict the next graduating class?</h3>
-      <p className="rk-method__note rk-method__note--flush">
-        We rebuilt every program’s estimate using only students who graduated in 2014–16, then compared it with what the
-        2017–19 graduates actually earned. Settings were chosen on 80% of colleges and scored on the other 20%. An
-        outside review caught flaws in our first version of this test, and these are the corrected results. Because we
-        had seen the earlier results, treat this as a careful look back rather than a pristine test.
-      </p>
-      <table>
-        <thead>
-          <tr><th /><th>Typical miss (this method)</th><th>Previous method</th><th>Last class’s raw earnings</th><th>Order agreement (this / raw)</th><th>90% prediction intervals that held</th></tr>
-        </thead>
-        <tbody>
-          {rows.map(({ c, v }) => (
-            <tr key={c}>
-              <td>{c === "bachelors" ? "Bachelor’s" : "Master’s"}</td>
-              <td>{err(v.test.within_major_rmse)}</td>
-              <td>{err(v.test_major_only_sd070.within_major_rmse)}</td>
-              <td>{err(v.test_raw_baseline.within_major_rmse)}</td>
-              <td>{v.test.rho.toFixed(2)} / {v.test_raw_baseline.rho.toFixed(2)}</td>
-              <td>{pct(v.coverage_90.with_floor.all)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <p>
-        Misses are within-major earnings errors (log points, ≈ percent). Order agreement is the rank correlation with the
-        next class within each major. For master’s programs the ordering is on par with simpler methods, not better. This
-        checks program earnings estimates, not the overall weights or rank ranges. One pair of graduating classes can’t
-        show the method holds in every economy; the next federal data release is the next test.
-      </p>
-    </div>
-  );
-}
 
 export default function Methodology({ weights, cohorts }: { weights: Weights; cohorts: Cohorts }) {
   const sens = useJson<SensitivityRow[]>("/data/rankings/sensitivity.json");
@@ -108,7 +67,7 @@ export default function Methodology({ weights, cohorts }: { weights: Weights; co
           <h3>What’s left out on purpose</h3>
           <ul>
             <li><strong>Selectivity and prestige get no direct weight.</strong> Admit rates, test scores, reputation, research and spending describe who gets in, not how graduates do. (Admissions data does help estimate where graduates live for the cost-of-living view, and it drives “Beats expectations.”)</li>
-            <li><strong>Cost of living is an estimate.</strong> Rankings are shown after cost of living by default, but where graduates work is estimated for about three-quarters of colleges and hasn’t been checked against better data yet. Switch to “As reported” to rank on earnings alone, with no location data. That’s the version our backtest checks. Access to expensive, high-paying job markets can itself be a career advantage.</li>
+            <li><strong>Cost of living is an exploratory estimate.</strong> Rankings are shown after cost of living by default, but where graduates work is estimated for about three-quarters of colleges and hasn’t been checked against better data yet, and the choice moves many colleges a long way (see the table below). Each row shows its rank in the other view. Switch to “As reported” to rank on earnings alone, with no location data. That’s the version our backtest checks. Access to expensive, high-paying job markets can itself be a career advantage.</li>
             <li><strong>Price, job quality and fit.</strong> Net price is shown but never scored; medians say nothing about hours, satisfaction or the chance of an exceptional career.</li>
           </ul>
         </div>
