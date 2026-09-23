@@ -34,6 +34,18 @@ window.cfApi = {
     return j;
   },
 
+  async getScattergrams() {
+    const res = await fetch("/api/workspace/scattergrams", { credentials: "same-origin" });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || j.success === false) throw new Error((j && j.error) || "Failed to load scattergrams");
+    return j.data;
+  },
+
+  async deleteScattergrams() {
+    const res = await fetch("/api/workspace/scattergrams", { method: "DELETE", credentials: "same-origin" });
+    if (!res.ok) throw new Error("Delete failed");
+  },
+
   exportUrl(format) {
     return "/api/workspace/export?format=" + encodeURIComponent(format);
   },

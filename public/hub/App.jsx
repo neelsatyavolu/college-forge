@@ -8,6 +8,7 @@ const NAV = [
   { id: "explore", label: "Explore colleges", group: "Discover", icon: "search" },
   { id: "shortlist", label: "Your shortlist", group: "Discover", icon: "bookmark" },
   { id: "compare", label: "Compare schools", group: "Discover", icon: "columns" },
+  { id: "scattergrams", label: "Scattergrams", group: "Discover", icon: "scatter" },
   { id: "essays", label: "Essays", group: "Apply", icon: "edit" },
   { id: "planner", label: "Application plan", group: "Apply", icon: "check" },
   { id: "timeline", label: "Dates & deadlines", group: "Apply", icon: "calendar" },
@@ -27,6 +28,7 @@ function NavIcon({ name }) {
     chart: "M4 20V10m6 10V4m6 16v-7m4 7H2",
     bookmark: "M6 3h12v18l-6-4-6 4Z",
     columns: "M3 4h7v16H3ZM14 4h7v16h-7Z",
+    scatter: "M3 3v18h18M8 15h.01M11 10h.01M15 13h.01M18 7h.01M9 7h.01",
     edit: "m15 4 5 5M4 20l5-1L21 7l-5-5L4 14ZM13 21h8",
     check: "m4 6 2 2 4-4M13 6h7M4 13l2 2 4-4M13 13h7M4 20h16",
     calendar: "M4 5h16v16H4ZM8 2v6m8-6v6M4 11h16",
@@ -207,6 +209,7 @@ function App() {
           {view === "timeline" && <Timeline data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "track" && <Track data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "compare" && <Compare data={data} onAsk={openChat} />}
+          {view === "scattergrams" && <Scattergrams data={data} />}
           {view === "share" && <ShareExport data={data} onWorkspaceChange={applyWorkspace} onWorkspaceSwitch={switchWorkspace} />}
           {view === "settings" && <Settings theme={theme} onToggleTheme={toggleTheme} onStartOnboarding={() => setRunOnboarding(true)} onWorkspaceChange={switchWorkspace} />}
         </main>

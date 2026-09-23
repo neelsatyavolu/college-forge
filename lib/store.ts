@@ -321,8 +321,21 @@ function safeName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120) || "upload.txt";
 }
 
+async function deleteText(key: string): Promise<void> {
+  if (useBlob()) {
+    const { del } = await import("@vercel/blob");
+    await del(key);
+    return;
+  }
+  await fs.unlink(path.join(dataDir(), key)).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+  });
+}
+
 const workspaceKey = (id: string) => `workspaces/${safeId(id)}.json`;
 const uploadKey = (id: string, name: string) => `uploads/${safeId(id)}/${safeName(name)}`;
+// Kept outside the workspace document so share links, exports and AI context never include it.
+const scattergramKey = (id: string) => `scattergrams/${safeId(id)}.json`;
 
 export function newWorkspaceId(): string {
   return randomUUID();
@@ -486,7 +499,20 @@ export async function updateWorkspace(id: string, mutate: WorkspaceMutation): Pr
 }
 
 export async function resetWorkspace(id: string): Promise<Workspace> {
+  await deleteScattergramText(id);
   return updateWorkspace(id, () => emptyWorkspace());
+}
+
+export async function readScattergramText(id: string): Promise<string | null> {
+  return readText(scattergramKey(id));
+}
+
+export async function writeScattergramText(id: string, text: string): Promise<void> {
+  await writeText(scattergramKey(id), text, "application/json");
+}
+
+export async function deleteScattergramText(id: string): Promise<void> {
+  await deleteText(scattergramKey(id));
 }
 
 export async function saveUpload(id: string, name: string, text: string): Promise<UploadMeta> {
