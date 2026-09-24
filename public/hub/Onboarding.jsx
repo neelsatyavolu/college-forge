@@ -1098,7 +1098,9 @@ async function runPlanSteps(onProgress) {
     throw new Error("The AI couldn't research any schools. Check your AI connection in Settings and try again.");
   }
 
-  await streamBuildChat(plan.milestones.prompt, (m) => onProgress(`Balancing rounds & milestones: ${m}`));
+  for (const step of [plan.rounds, plan.milestones]) {
+    await streamBuildChat(step.prompt, (m) => onProgress(`${step.label}: ${m}`));
+  }
   onProgress("Loading your hub…");
   return { ws: await fetchWorkspace(), failed };
 }

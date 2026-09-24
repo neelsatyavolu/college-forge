@@ -2,8 +2,9 @@
  * Split the AI hub build into small chat requests. One request cannot
  * research a whole college list: providers cap tool rounds per request
  * (6 for ChatGPT) and the model makes only a couple of calls per round.
- * So each step covers a few schools, and a final step balances the
- * application rounds across the list and sets milestones around them.
+ * So each step covers a few schools; then one step balances the application
+ * rounds across the list and a last one sets milestones around them. The
+ * last two work from saved data only, so they finish well within the cap.
  */
 
 import type { Workspace } from "./store";
@@ -12,9 +13,9 @@ import { planReadiness } from "./plan-readiness";
 export const SCHOOLS_PER_STEP = 2;
 
 export type BuildStep = { label: string; prompt: string };
-export type BuildPlan = { schools: BuildStep[]; milestones: BuildStep };
+export type BuildPlan = { schools: BuildStep[]; rounds: BuildStep; milestones: BuildStep };
 
-const SCHOOL_INSTRUCTIONS = `For each school, run one web_search on its official admissions site that covers both its deadlines and its supplemental essays. Issue both schools' calls together in the same turn.
+const SCHOOL_INSTRUCTIONS = `For each school, run one web_search on its official admissions site that covers both its deadlines and its supplemental essays. Issue both schools' calls together in the same turn. Use at most two lookups (web_search or web_fetch) per school, then save what you found: a partial save beats running out of turns with nothing saved.
 
 1. **Deadlines** (when listed as needed): save this cycle's official deadlines with upsert_college (the school's name + slug above) as \`deadlines: [{plan, date: "YYYY-MM-DD"}]\`, plus \`supp\` (No supps / Supps optional / Supps required).
    - Name admission rounds exactly: "ED I", "ED II", "EA", "EA II", "REA", "RD", "Priority", or "Rolling".
@@ -28,22 +29,27 @@ const SCHOOL_INSTRUCTIONS = `For each school, run one web_search on its official
 
 Call tools. Empty fields are better than invented dates or prompts.`;
 
-const PLAN_PROMPT = `Choose the student's application round at each school, then build their dated plan. Each school's deadlines, supplement status, and current round, and the Early Decision choice, are in the workspace snapshot.
+const NO_LOOKUPS = "Everything you need is in the workspace snapshot: do not search the web, fetch pages, or read uploads.";
 
-1. **Balanced rounds.** Call set_application_rounds once with a round for every school that has deadlines. Spread the work so essays are never rushed:
-   - Early Decision only at the school the student chose; none if no Early Decision school is set.
-   - Choose EA or Priority only where applying early clearly pays off: merit, scholarship, or honors consideration requires it, admission is rolling or priority-based, or the school needs no new essays.
-   - Keep schools with required supplements spread out: at most 3 due in any half month. The first one should be at least 4 weeks from today unless applying early is what earns merit or honors consideration.
-   - Everything else goes RD, spread across January and February.
-   - The tool reply shows the workload by half month. If any window is overloaded, call it once more with fixes.
-2. **Milestones.** Then call set_critical_dates once. Dates the student added are kept automatically, and each school's own deadlines (application, aid, scholarship, honors, documents) already appear on the Timeline, so never repeat them. Only add:
-   - FAFSA opening (Oct 1) if it is still ahead
-   - one "Target: Ask for recommendation letters" at least 4 weeks before the first chosen deadline (or this week, if that date has passed)
-   - a Common App personal statement final draft
-   - supplement draft targets staggered one or two schools per week in deadline order, each finished 2 weeks before its deadline
-   - one "Target: Submit …" per chosen deadline date, a week before, naming its schools
-   Plan only around the chosen rounds, with no "if you choose ED" alternatives. Keep it to about 15 milestones, all dated today or later. Label self-set targets "Target:". Each detail is one short sentence telling the student what to do, with no URLs, sources, or notes about what you left out.
-3. Reply in one or two sentences.`;
+const ROUNDS_PROMPT = `Choose the student's application round at each school. Each school's deadlines, supplement status, and current round, and the Early Decision choice, are in the workspace snapshot. ${NO_LOOKUPS}
+
+Call set_application_rounds once with a round for every school that has deadlines. Spread the work so essays are never rushed:
+- Early Decision only at the school the student chose; none if no Early Decision school is set.
+- Choose EA or Priority only where applying early clearly pays off: merit, scholarship, or honors consideration requires it, admission is rolling or priority-based, or the school needs no new essays.
+- Keep schools with required supplements spread out: at most 3 due in any half month. The first one should be at least 4 weeks from today unless applying early is what earns merit or honors consideration.
+- Everything else goes RD, spread across January and February.
+The tool reply shows the workload by half month. If a window is overloaded, call it once more with fixes. Reply in one sentence.`;
+
+const MILESTONES_PROMPT = `Build the student's dated plan around the application round chosen at each school (its "round" in the workspace snapshot). ${NO_LOOKUPS}
+
+Call set_critical_dates once. Dates the student added are kept automatically, and each school's own deadlines (application, aid, scholarship, honors, documents) already appear on the Timeline, so never repeat them. Only add:
+- FAFSA opening (Oct 1) if it is still ahead
+- one "Target: Ask for recommendation letters" at least 4 weeks before the first chosen deadline (or this week, if that date has passed)
+- a Common App personal statement final draft
+- supplement draft targets staggered one or two schools per week in deadline order, each finished 2 weeks before its deadline
+- one "Target: Submit …" per chosen deadline date, a week before, naming its schools
+
+Plan only around the chosen rounds, with no "if you choose ED" alternatives. Keep it to about 15 milestones, all dated today or later. Label self-set targets "Target:". Each detail is one short sentence telling the student what to do, with no URLs, sources, or notes about what you left out. Reply in one sentence.`;
 
 function chunk<T>(items: T[], size: number): T[][] {
   return Array.from({ length: Math.ceil(items.length / size) }, (_, i) => items.slice(i * size, (i + 1) * size));
@@ -74,5 +80,9 @@ export function buildPlan(ws: Workspace): BuildPlan {
       SCHOOL_INSTRUCTIONS,
   }));
 
-  return { schools, milestones: { label: "Rounds & milestones", prompt: PLAN_PROMPT } };
+  return {
+    schools,
+    rounds: { label: "Balancing rounds", prompt: ROUNDS_PROMPT },
+    milestones: { label: "Milestones", prompt: MILESTONES_PROMPT },
+  };
 }

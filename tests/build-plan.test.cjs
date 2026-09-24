@@ -31,7 +31,9 @@ test('batches only the schools that still need deadlines or prompts', () => {
 test('a complete plan has no school steps but still refreshes milestones', () => {
   const plan = buildPlan(workspace([college('done', dated)], { done: current }));
   assert.deepEqual(plan.schools, []);
-  assert.match(plan.milestones.prompt, /set_application_rounds[\s\S]*set_critical_dates/);
+  assert.match(plan.rounds.prompt, /set_application_rounds/);
+  assert.match(plan.milestones.prompt, /set_critical_dates/);
+  for (const step of [plan.rounds, plan.milestones]) assert.match(step.prompt, /do not search the web/);
 });
 
 test('last-cycle prompts saved while this year is unreleased get rechecked', () => {
