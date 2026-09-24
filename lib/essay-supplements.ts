@@ -187,7 +187,7 @@ export function syncEssaySupplements(ws: Workspace): Workspace {
     const existing = next[slug];
     if (!existing || existing.length === 0) {
       const scraped = scrapedSupplementsFor(c);
-      if (!scraped && knownNoSupplements(slug)) continue;
+      if (!scraped && (knownNoSupplements(slug) || c.supp === "No supps")) continue;
       next[slug] = scraped ?? placeholderSupplementsForCollege(c);
       changed = true;
     }

@@ -209,6 +209,27 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
     setBusy("");
   };
 
+  const [rebuildLog, setRebuildLog] = React.useState("");
+  const setupBusy = busy === "reset" || busy === "rebuild";
+
+  const rebuildHub = async () => {
+    setErr(""); setMsg("");
+    if (status && !chosenAvailable) {
+      setErr("Connect an AI provider above to rebuild your hub.");
+      return;
+    }
+    setBusy("rebuild"); setRebuildLog("Starting…");
+    try {
+      if (window.cfFlushEssayDrafts) await window.cfFlushEssayDrafts();
+      const ws = await window.cfRebuildHub(window.CF_DATA, setRebuildLog);
+      if (typeof onWorkspaceChange === "function") onWorkspaceChange(ws);
+      setMsg("Hub rebuilt. Check Timeline for deadlines and Essays for prompts.");
+    } catch (e) {
+      setErr(e.message || "Could not rebuild your hub.");
+    }
+    setRebuildLog(""); setBusy("");
+  };
+
   const redoOnboarding = () => {
     setErr(""); setMsg("");
     if (typeof onStartOnboarding === "function") onStartOnboarding();
@@ -377,12 +398,24 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
             <div style={{ flex: "1 1 220px", minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Rebuild hub</div>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
+                Have the AI rebuild your plan from the answers you already saved. It fills in deadlines, milestones and this year's essay prompts. Your school list, edits and drafts are kept. This takes a few minutes.
+              </p>
+              {rebuildLog ? <p role="status" style={{ margin: "8px 0 0", fontSize: 13, color: "var(--body)" }}>{rebuildLog}</p> : null}
+            </div>
+            <Button size="sm" onClick={rebuildHub} disabled={setupBusy}>
+              {busy === "rebuild" ? "Rebuilding…" : "Rebuild hub"}
+            </Button>
+          </div>
+          <div style={{ borderTop: "1px solid var(--hairline)", paddingTop: 16, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+            <div style={{ flex: "1 1 220px", minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Redo onboarding</div>
               <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
                 Review your story, academics, and college preferences. Your existing answers are prefilled; finishing saves your changes.
               </p>
             </div>
-            <Button size="sm" onClick={redoOnboarding} disabled={busy === "reset"}>
+            <Button size="sm" variant="secondary" onClick={redoOnboarding} disabled={setupBusy}>
               Redo onboarding
             </Button>
           </div>
@@ -393,7 +426,7 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
                 Wipe workspace data to empty, then open onboarding from a clean slate. AI logins stay connected.
               </p>
             </div>
-            <Button size="sm" variant="secondary" onClick={resetHubAndOnboard} disabled={busy === "reset"}>
+            <Button size="sm" variant="secondary" onClick={resetHubAndOnboard} disabled={setupBusy}>
               {busy === "reset" ? "Resetting…" : "Reset hub"}
             </Button>
           </div>

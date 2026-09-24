@@ -22,6 +22,9 @@ button:disabled { cursor: wait; }
 .cf-copilot-launch { display: flex; width: 100%; align-items: center; gap: 10px; padding: 13px 11px; background: var(--workspace-accent-soft); border: 1px solid var(--hairline); border-radius: 9px; color: var(--workspace-accent); text-align: left; font-size: 12px; font-weight: 600; }
 .cf-copilot-launch > span:first-child { font-size: 25px; }
 .cf-copilot-launch > span:last-child { margin-left: auto; }
+.cf-chat-fab { display: grid; place-items: center; width: 56px; height: 56px; }
+.cf-chat-fab[hidden] { display: none; }
+.cf-chat-fab:focus-visible { border-radius: 50%; }
 .cf-copilot-launch small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; font-weight: 400; }
 .cf-sidebar-tools { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; gap: 4px; }
 .cf-sidebar-tools a { color: var(--muted); font-size: 10px; }

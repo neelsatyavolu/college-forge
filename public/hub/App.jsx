@@ -216,6 +216,10 @@ function App() {
         </main>
         <footer className="cf-workspace-footer"><span>College Forge · Room to find your own path.</span><a href="/rankings">Explore the data ↗</a></footer>
       </div>
+      {/* Stays mounted while hidden so closing the chat can return focus here. */}
+      <button type="button" className="cf-fab cf-chat-fab" hidden={chatOpen || menuOpen} aria-label="Open AI copilot chat" onClick={openChat}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z" /></svg>
+      </button>
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 60 }}>
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
           <AiChat returnFocusRef={chatReturnFocusRef} key={data.draftStorageKey || "initial"} open={chatOpen} initialPrompt={chatPrompt} onClose={() => setChatOpen(false)} onWorkspaceChange={refresh} data={data} view={view} />

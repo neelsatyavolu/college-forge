@@ -1,5 +1,6 @@
 import type { Workspace } from "./store";
 import { recommendColleges } from "./college-recommendations";
+import { planReadiness } from "./plan-readiness";
 
 // A compact, readable snapshot of the current workspace so the model knows
 // what's already populated and what's still empty.
@@ -18,7 +19,17 @@ function snapshot(ws: Workspace): string {
     `Colleges (${ws.colleges.length}): ${ws.colleges.map((c) => `${c.short || c.name}[${c.tier || "?"}]`).join(", ") || "none"}`
   );
   lines.push(`Early Decision: ${ws.ed ? ws.ed.school : "none set"}`);
-  lines.push(`Critical dates: ${ws.criticalDates.length}`);
+  lines.push(
+    `Critical dates (${ws.criticalDates.length}): ` +
+      (ws.criticalDates.map((d) => `${d.date} ${d.label}`).join("; ") || "none")
+  );
+  const plan = planReadiness(ws);
+  lines.push(`Schools missing deadlines: ${plan.missingDeadlines.join(", ") || "none"}`);
+  lines.push(
+    `Supplement prompts — current: ${plan.essays.current.join(", ") || "none"}; ` +
+      `unconfirmed (prior cycle / CollegeVine): ${plan.essays.unconfirmed.join(", ") || "none"}; ` +
+      `placeholder (not loaded): ${plan.essays.placeholder.join(", ") || "none"}`
+  );
   const suppEntries = Object.entries(ws.essays.supplements || {});
   const suppCount = suppEntries.reduce((n, [, arr]) => n + arr.length, 0);
   const suppSlugs = suppEntries.map(([s, arr]) => `${s}(${arr.length})`).join(", ");
@@ -85,6 +96,7 @@ Your job is twofold:
 - **UC campuses share one application** (UC Application ≠ Common App). Berkeley + UCLA + UCSD + … = **one app slot**. You may keep a UC cluster without treating each campus as a separate application.
 - Common App personal statement prompts are preloaded (650 words, student picks one).
 - **Essays tab follows the list.** Adding a school auto-creates supplement slots (UC PIQs under slug \`uc-application\`). After add/enrich, prefer real current-cycle prompts via web_search/web_fetch + set_essays (partial map by slug; merges safely).
+- **A complete plan** means every school on the list has verified deadlines saved on the college (\`deadlines\`: [{plan, date: "YYYY-MM-DD"}] plus a short \`deadline\` label such as "EA · Nov 1") and a \`supp\` status, its current-cycle supplement prompts are loaded, and critical dates hold the dated milestones (FAFSA/CSS, recommendation requests, testing, essay drafts, submissions). The workspace snapshot below lists what is still missing.
 - Track recommenders, scholarships, FAFSA/CSS, and per-school application status when relevant.
 - After writing, briefly tell the user what changed. Be concise; **bold** for emphasis.
 - Never suggest storing Common App cookies or reverse-engineering Common App APIs.

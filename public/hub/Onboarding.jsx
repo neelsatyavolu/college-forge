@@ -821,7 +821,7 @@ function BuildStep({
   );
 }
 
-function buildAiPrompt({ draft, story, prefs, mustHave, uploads }) {
+function buildAiPrompt({ draft, story, prefs, mustHave, uploads, rebuild = false }) {
   const satLine = draft.testOptional
     ? "Test optional — not reporting SAT/ACT"
     : `SAT=${draft.sat || "—"} (${draft.satNote || "no section note"})`;
@@ -834,7 +834,17 @@ function buildAiPrompt({ draft, story, prefs, mustHave, uploads }) {
     ? uploads.map((u) => `- ${u.name}`).join("\n")
     : "(none)";
 
-  return `You are completing onboarding for this student. Use your tools to WRITE to the hub — do not only describe what you would do.
+  const intro = rebuild
+    ? "You are rebuilding this student's hub from the answers they already saved. Keep their school list, essay drafts, and anything they edited; fill every gap and refresh what is stale."
+    : "You are completing onboarding for this student.";
+  const profileTasks = rebuild
+    ? "1–4. The profile was saved before. Re-save identity, activities, honors, and uploads data only where the workspace snapshot shows them empty — the student may have edited them since."
+    : `1. set_applicant_snapshot + set_profile_identity + set_testing from the structured fields.
+2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
+3. Parse awards → set_honors; set awards count on the snapshot.
+4. Read uploads and merge any extra structured data (coursework, more activities, etc.).`;
+
+  return `${intro} Use your tools to WRITE to the hub — do not only describe what you would do.
 
 ## Structured identity (authoritative — save with set_applicant_snapshot + set_profile_identity + set_testing)
 - Name: ${draft.name.trim()}
@@ -881,16 +891,145 @@ ${must}
 ${uploadLine}
 
 ## Required tasks (do all)
-1. set_applicant_snapshot + set_profile_identity + set_testing from the structured fields.
-2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
-3. Parse awards → set_honors; set awards count on the snapshot.
-4. Read uploads and merge any extra structured data (coursework, more activities, etc.).
-5. Review the seeded college list with get_college_recommendations. Explain the evidence and tradeoffs; keep the list intact. Enrich only facts you can verify.
-6. Set a few critical_dates if you know real deadlines for the list.
-7. **Essays / supplements:** The server already opened Essays-tab groups for every school (UC PIQs under slug \`uc-application\`; other schools get Why-us placeholders). When you can, web_search 2–4 priority schools' current supplement prompts and call set_essays with a *partial* supplements map (merge-safe by slug). Prefer real prompts + word limits; skip inventing full prompts for every school if short on turns.
-8. Reply with a short summary of what you saved, the recommendation evidence, missing information, and which essay groups are verified.
+Work in as few rounds as possible: issue independent tool calls (searches, upserts) together in one turn. Use one web_search per school that covers both its deadlines and its supplement prompts, prioritizing schools in the snapshot's "missing deadlines" and "placeholder/unconfirmed prompts" lists.
+${profileTasks}
+5. Review the ${rebuild ? "saved" : "seeded"} college list with get_college_recommendations. Explain the evidence and tradeoffs; keep the list intact. Enrich only facts you can verify.
+6. **Deadlines for every school.** Find each school's official deadlines for this cycle (ED, ED II, EA, REA, RD, plus priority, scholarship, or honors-program deadlines). Save them with upsert_college (name + slug of the saved school) as \`deadlines: [{plan, date: "YYYY-MM-DD"}]\`, a short \`deadline\` label for the plan the student is most likely to use (e.g. "EA · Nov 1"), and \`supp\` (No supps / Supps optional / Supps required). Leave out any date you cannot verify.
+7. **Plan milestones.** Call set_critical_dates once with a dated plan built from those deadlines. It replaces the list, so re-include any existing critical dates from the snapshot that are still relevant. Include: FAFSA opening (Oct 1) and each CSS Profile priority deadline for schools on the list; recommendation-letter requests about 4 weeks before the earliest deadline; test registration if the student still plans to test; Common App personal statement final draft; supplement draft targets and a "submit by" target about a week before each deadline; scholarship deadlines. Label self-set targets "Target:" so they are not mistaken for official deadlines. Do not repeat per-school deadlines here — the Timeline already shows them.
+8. **Essays / supplements for every school.** The Essays tab already has a group per school: UC PIQs under slug \`uc-application\`, scraped prompts where on file, otherwise Why-us placeholders. Leave "current" groups alone. For "placeholder" and "unconfirmed" schools, check the official site for this cycle's supplement prompts:
+   - Released → set_essays with a *partial* supplements map keyed by slug: every prompt with its real word limit, ids \`<slug>-supp-1\`, \`<slug>-supp-2\`… in order (so existing drafts stay attached), and "(optional)" in the label for optional ones.
+   - Not released yet → keep the group. If you find last cycle's prompts, save them labeled "(last cycle — this year's not released yet)".
+   - No supplements → upsert_college with supp "No supps", then set_essays with an empty array for that slug.
+9. Reply with a short summary: what you saved, deadlines found, milestones set, which essay groups are verified or still waiting on this year's release, the recommendation evidence, and any schools you could not finish (so the student can ask you to continue).
 
 Call tools. Empty fields are better than invented numbers.`;
+}
+
+// Wizard answers as last saved in the workspace (prefills the wizard and
+// lets Settings rebuild the hub without re-entering them).
+function initialDraft(data) {
+  const a = (data && data.applicant) || {};
+  const p = (data && data.profile) || {};
+  return {
+    name: a.name || "",
+    gradYear: p.gradYear != null && p.gradYear !== "" ? String(p.gradYear) : "",
+    cycle: a.cycle || "",
+    hs: p.hs || "",
+    location: p.location || "",
+    intended: p.intended || "",
+    gpaWeighted: present(a.gpaWeighted) ? a.gpaWeighted : "",
+    gpaUnweighted: present(a.gpaUnweighted) ? a.gpaUnweighted : "",
+    sat: present(a.sat) ? a.sat : present(p.testing && p.testing.sat) ? p.testing.sat : "",
+    satNote: a.satNote || (p.testing && p.testing.satNote) || "",
+    testOptional: false,
+  };
+}
+
+function initialStory(data) {
+  const existingStory = (data && data.onboarding && data.onboarding.storyNotes) || {};
+  return {
+    activities: existingStory.activities || "",
+    awards: existingStory.awards || "",
+    other: existingStory.other || "",
+  };
+}
+
+function initialPrefs(data) {
+  const existingPrefs = (data && data.onboarding && data.onboarding.listPrefs) || {};
+  return {
+    ambition: existingPrefs.ambition || "balanced",
+    appCount:
+      typeof existingPrefs.appCount === "number" && existingPrefs.appCount >= 8
+        ? existingPrefs.appCount
+        : null,
+    settings: existingPrefs.settings || [],
+    size: existingPrefs.size || "any",
+    regions: existingPrefs.regions || [],
+    notes: existingPrefs.notes || "",
+  };
+}
+
+// Stream the AI hub build and return the refreshed workspace. onProgress gets
+// short status lines for the UI.
+async function runHubBuild(prompt, onProgress) {
+  const aiPrefs = loadAiPrefs();
+  const body = {
+    messages: [{ role: "user", content: prompt }],
+  };
+  if (aiPrefs.preferred && aiPrefs.preferred !== "auto") body.provider = aiPrefs.preferred;
+  if (aiPrefs.grokModel) body.grokModel = aiPrefs.grokModel;
+  if (aiPrefs.codexModel) body.codexModel = aiPrefs.codexModel;
+  if (aiPrefs.opencodeModel) body.opencodeModel = aiPrefs.opencodeModel;
+
+  const chatRes = await fetch("/api/ai/chat", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!chatRes.ok || !chatRes.body) {
+    let msg = `AI request failed (${chatRes.status}).`;
+    try {
+      const j = await chatRes.json();
+      if (j.error) msg = j.error;
+    } catch (e) {}
+    throw new Error(msg);
+  }
+
+  const reader = chatRes.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let idx;
+    while ((idx = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, idx);
+      buf = buf.slice(idx + 1);
+      if (!line.trim()) continue;
+      let ev;
+      try {
+        ev = JSON.parse(line);
+      } catch (e) {
+        continue;
+      }
+      if (ev.type === "status") {
+        const soft = window.cfChatStatus && window.cfChatStatus.softenStatusMessage
+          ? window.cfChatStatus.softenStatusMessage(ev.message)
+          : ev.message;
+        onProgress(soft || "Working…");
+      } else if (ev.type === "tool") {
+        const label = window.cfChatStatus && window.cfChatStatus.friendlyToolMessage
+          ? window.cfChatStatus.friendlyToolMessage(ev.name, ev.path)
+          : "Updating your hub…";
+        onProgress(label);
+      } else if (ev.type === "error") {
+        throw new Error(ev.message || "Something went wrong while building.");
+      } else if (ev.type === "done") {
+        onProgress("Finishing up…");
+      }
+    }
+  }
+
+  onProgress("Loading your hub…");
+  const wsRes = await fetch("/api/workspace", { credentials: "same-origin", cache: "no-store" });
+  if (!wsRes.ok) throw new Error("Could not refresh your hub.");
+  const ws = await wsRes.json();
+  return ws.data || ws;
+}
+
+// Re-run the AI build from the saved answers and current school list.
+function rebuildHub(data, onProgress) {
+  const prompt = buildAiPrompt({
+    draft: initialDraft(data),
+    story: initialStory(data),
+    prefs: initialPrefs(data),
+    mustHave: (data && data.colleges) || [],
+    uploads: (data && data.uploads) || [],
+    rebuild: true,
+  });
+  return runHubBuild(prompt, onProgress);
 }
 
 // ── Main wizard ──────────────────────────────────────────────────────────
@@ -910,42 +1049,9 @@ function Onboarding({ data, onComplete, onCancel }) {
   const [buildLog, setBuildLog] = React.useState("");
   const [useAi, setUseAi] = React.useState(true);
 
-  const a = (data && data.applicant) || {};
-  const p = (data && data.profile) || {};
-  const existingStory = (data && data.onboarding && data.onboarding.storyNotes) || {};
-  const existingPrefs = (data && data.onboarding && data.onboarding.listPrefs) || {};
-
-  const [draft, setDraft] = React.useState({
-    name: a.name || "",
-    gradYear: p.gradYear != null && p.gradYear !== "" ? String(p.gradYear) : "",
-    cycle: a.cycle || "",
-    hs: p.hs || "",
-    location: p.location || "",
-    intended: p.intended || "",
-    gpaWeighted: present(a.gpaWeighted) ? a.gpaWeighted : "",
-    gpaUnweighted: present(a.gpaUnweighted) ? a.gpaUnweighted : "",
-    sat: present(a.sat) ? a.sat : present(p.testing && p.testing.sat) ? p.testing.sat : "",
-    satNote: a.satNote || (p.testing && p.testing.satNote) || "",
-    testOptional: false,
-  });
-
-  const [story, setStory] = React.useState({
-    activities: existingStory.activities || "",
-    awards: existingStory.awards || "",
-    other: existingStory.other || "",
-  });
-
-  const [prefs, setPrefs] = React.useState({
-    ambition: existingPrefs.ambition || "balanced",
-    appCount:
-      typeof existingPrefs.appCount === "number" && existingPrefs.appCount >= 8
-        ? existingPrefs.appCount
-        : null,
-    settings: existingPrefs.settings || [],
-    size: existingPrefs.size || "any",
-    regions: existingPrefs.regions || [],
-    notes: existingPrefs.notes || "",
-  });
+  const [draft, setDraft] = React.useState(() => initialDraft(data));
+  const [story, setStory] = React.useState(() => initialStory(data));
+  const [prefs, setPrefs] = React.useState(() => initialPrefs(data));
 
   const set = (key) => (e) => setDraft((d) => ({ ...d, [key]: e.target.value }));
 
@@ -1112,75 +1218,12 @@ function Onboarding({ data, onComplete, onCancel }) {
       );
 
       const prompt = buildAiPrompt({ draft, story, prefs, mustHave, uploads });
-      const aiPrefs = loadAiPrefs();
-      const body = {
-        messages: [{ role: "user", content: prompt }],
-      };
-      if (aiPrefs.preferred && aiPrefs.preferred !== "auto") body.provider = aiPrefs.preferred;
-      if (aiPrefs.grokModel) body.grokModel = aiPrefs.grokModel;
-      if (aiPrefs.codexModel) body.codexModel = aiPrefs.codexModel;
-      if (aiPrefs.opencodeModel) body.opencodeModel = aiPrefs.opencodeModel;
-
-      const chatRes = await fetch("/api/ai/chat", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!chatRes.ok || !chatRes.body) {
-        let msg = `AI request failed (${chatRes.status}).`;
-        try {
-          const j = await chatRes.json();
-          if (j.error) msg = j.error;
-        } catch (e) {}
-        throw new Error(msg + " Your basics were saved — open the hub and ask the copilot to finish.");
-      }
-
-      const reader = chatRes.body.getReader();
-      const dec = new TextDecoder();
-      let buf = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let idx;
-        while ((idx = buf.indexOf("\n")) >= 0) {
-          const line = buf.slice(0, idx);
-          buf = buf.slice(idx + 1);
-          if (!line.trim()) continue;
-          let ev;
-          try {
-            ev = JSON.parse(line);
-          } catch (e) {
-            continue;
-          }
-          if (ev.type === "status") {
-            const soft = window.cfChatStatus && window.cfChatStatus.softenStatusMessage
-              ? window.cfChatStatus.softenStatusMessage(ev.message)
-              : ev.message;
-            setBuildLog(soft || "Working…");
-          } else if (ev.type === "tool") {
-            const label = window.cfChatStatus && window.cfChatStatus.friendlyToolMessage
-              ? window.cfChatStatus.friendlyToolMessage(ev.name, ev.path)
-              : "Updating your hub…";
-            setBuildLog(label);
-          } else if (ev.type === "error") {
-            throw new Error(ev.message || "Something went wrong while building.");
-          } else if (ev.type === "done") {
-            setBuildLog("Finishing up…");
-          }
-        }
-      }
-
-      setBuildLog("Loading your hub…");
-      const wsRes = await fetch("/api/workspace", { credentials: "same-origin", cache: "no-store" });
-      if (!wsRes.ok) throw new Error("Could not refresh your hub.");
-      const ws = await wsRes.json();
+      const ws = await runHubBuild(prompt, setBuildLog);
       setBuildStatus("done");
       setBuildLog("Done");
       // Brief beat so the user sees success, then hand off
       await new Promise((r) => setTimeout(r, 600));
-      if (onComplete) await onComplete(ws.data || ws);
+      if (onComplete) await onComplete(ws);
     } catch (e) {
       if (savedWs) {
         // The data-backed workspace is usable even when optional AI is unavailable.
@@ -1393,3 +1436,4 @@ function Onboarding({ data, onComplete, onCancel }) {
 }
 
 window.Onboarding = Onboarding;
+window.cfRebuildHub = rebuildHub;
