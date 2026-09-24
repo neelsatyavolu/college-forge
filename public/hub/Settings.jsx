@@ -221,9 +221,11 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
     setBusy("rebuild"); setRebuildLog("Starting…");
     try {
       if (window.cfFlushEssayDrafts) await window.cfFlushEssayDrafts();
-      const ws = await window.cfRebuildHub(window.CF_DATA, setRebuildLog);
+      const { ws, failed } = await window.cfRebuildHub(window.CF_DATA, setRebuildLog);
       if (typeof onWorkspaceChange === "function") onWorkspaceChange(ws);
-      setMsg("Hub rebuilt. Check Timeline for deadlines and Essays for prompts.");
+      setMsg(failed.length
+        ? `Hub rebuilt, but the AI couldn't finish ${failed.join(", ")}. Rebuild again to retry just those.`
+        : "Hub rebuilt. Check Timeline for deadlines and Essays for prompts.");
     } catch (e) {
       setErr(e.message || "Could not rebuild your hub.");
     }

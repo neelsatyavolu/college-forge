@@ -16,7 +16,10 @@ function snapshot(ws: Workspace): string {
   );
   lines.push(`Testing APs: ${p.testing.aps.length}; Activities: ${p.activities.length}; Honors: ${p.honors.length}`);
   lines.push(
-    `Colleges (${ws.colleges.length}): ${ws.colleges.map((c) => `${c.short || c.name}[${c.tier || "?"}]`).join(", ") || "none"}`
+    `Colleges (${ws.colleges.length}): ${ws.colleges.map((c) => {
+      const dates = (c.deadlines || []).map((d) => `${d.plan} ${d.date}`).join(", ") || c.deadline || "no deadlines";
+      return `${c.short || c.name} [${c.slug}; ${c.tier || "?"}; ${dates}]`;
+    }).join("; ") || "none"}`
   );
   lines.push(`Early Decision: ${ws.ed ? ws.ed.school : "none set"}`);
   lines.push(

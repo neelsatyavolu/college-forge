@@ -20,8 +20,9 @@ export type PlanReadiness = {
   };
 };
 
-// Matches the caveat lib/supplement-prompts.ts appends to unverified prompts.
-const UNCONFIRMED = /confirm on the school's site/i;
+// The caveat lib/supplement-prompts.ts appends to unverified prompts, and the
+// label the copilot gives last cycle's prompts while this year's are unreleased.
+const UNCONFIRMED = /confirm on the school's site|not released yet/i;
 
 function hasDeadline(c: College): boolean {
   return Boolean(c.deadlines?.length || c.deadline?.trim());
@@ -29,7 +30,7 @@ function hasDeadline(c: College): boolean {
 
 function essayStatus(essays: Essay[]): keyof PlanReadiness["essays"] {
   if (!supplementsLookReal(essays)) return "placeholder";
-  return essays.some((e) => UNCONFIRMED.test(e.prompt || "")) ? "unconfirmed" : "current";
+  return essays.some((e) => UNCONFIRMED.test(`${e.label} ${e.prompt}`)) ? "unconfirmed" : "current";
 }
 
 export function planReadiness(ws: Workspace): PlanReadiness {

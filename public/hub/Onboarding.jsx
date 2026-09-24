@@ -821,7 +821,7 @@ function BuildStep({
   );
 }
 
-function buildAiPrompt({ draft, story, prefs, mustHave, uploads, rebuild = false }) {
+function buildAiPrompt({ draft, story, prefs, mustHave, uploads }) {
   const satLine = draft.testOptional
     ? "Test optional — not reporting SAT/ACT"
     : `SAT=${draft.sat || "—"} (${draft.satNote || "no section note"})`;
@@ -834,17 +834,7 @@ function buildAiPrompt({ draft, story, prefs, mustHave, uploads, rebuild = false
     ? uploads.map((u) => `- ${u.name}`).join("\n")
     : "(none)";
 
-  const intro = rebuild
-    ? "You are rebuilding this student's hub from the answers they already saved. Keep their school list, essay drafts, and anything they edited; fill every gap and refresh what is stale."
-    : "You are completing onboarding for this student.";
-  const profileTasks = rebuild
-    ? "1–4. The profile was saved before. Re-save identity, activities, honors, and uploads data only where the workspace snapshot shows them empty — the student may have edited them since."
-    : `1. set_applicant_snapshot + set_profile_identity + set_testing from the structured fields.
-2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
-3. Parse awards → set_honors; set awards count on the snapshot.
-4. Read uploads and merge any extra structured data (coursework, more activities, etc.).`;
-
-  return `${intro} Use your tools to WRITE to the hub — do not only describe what you would do.
+  return `You are completing onboarding for this student. Use your tools to WRITE to the hub — do not only describe what you would do.
 
 ## Structured identity (authoritative — save with set_applicant_snapshot + set_profile_identity + set_testing)
 - Name: ${draft.name.trim()}
@@ -891,16 +881,13 @@ ${must}
 ${uploadLine}
 
 ## Required tasks (do all)
-Work in as few rounds as possible: issue independent tool calls (searches, upserts) together in one turn. Use one web_search per school that covers both its deadlines and its supplement prompts, prioritizing schools in the snapshot's "missing deadlines" and "placeholder/unconfirmed prompts" lists.
-${profileTasks}
-5. Review the ${rebuild ? "saved" : "seeded"} college list with get_college_recommendations. Explain the evidence and tradeoffs; keep the list intact. Enrich only facts you can verify.
-6. **Deadlines for every school.** Find each school's official deadlines for this cycle (ED, ED II, EA, REA, RD, plus priority, scholarship, or honors-program deadlines). Save them with upsert_college (name + slug of the saved school) as \`deadlines: [{plan, date: "YYYY-MM-DD"}]\`, a short \`deadline\` label for the plan the student is most likely to use (e.g. "EA · Nov 1"), and \`supp\` (No supps / Supps optional / Supps required). Leave out any date you cannot verify.
-7. **Plan milestones.** Call set_critical_dates once with a dated plan built from those deadlines. It replaces the list, so re-include any existing critical dates from the snapshot that are still relevant. Include: FAFSA opening (Oct 1) and each CSS Profile priority deadline for schools on the list; recommendation-letter requests about 4 weeks before the earliest deadline; test registration if the student still plans to test; Common App personal statement final draft; supplement draft targets and a "submit by" target about a week before each deadline; scholarship deadlines. Label self-set targets "Target:" so they are not mistaken for official deadlines. Do not repeat per-school deadlines here — the Timeline already shows them.
-8. **Essays / supplements for every school.** The Essays tab already has a group per school: UC PIQs under slug \`uc-application\`, scraped prompts where on file, otherwise Why-us placeholders. Leave "current" groups alone. For "placeholder" and "unconfirmed" schools, check the official site for this cycle's supplement prompts:
-   - Released → set_essays with a *partial* supplements map keyed by slug: every prompt with its real word limit, ids \`<slug>-supp-1\`, \`<slug>-supp-2\`… in order (so existing drafts stay attached), and "(optional)" in the label for optional ones.
-   - Not released yet → keep the group. If you find last cycle's prompts, save them labeled "(last cycle — this year's not released yet)".
-   - No supplements → upsert_college with supp "No supps", then set_essays with an empty array for that slug.
-9. Reply with a short summary: what you saved, deadlines found, milestones set, which essay groups are verified or still waiting on this year's release, the recommendation evidence, and any schools you could not finish (so the student can ask you to continue).
+Issue independent tool calls together in the same turn.
+1. set_applicant_snapshot + set_profile_identity + set_testing from the structured fields.
+2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
+3. Parse awards → set_honors; set awards count on the snapshot.
+4. Read uploads and merge any extra structured data (coursework, more activities, etc.).
+5. Review the seeded college list with get_college_recommendations. Keep the list intact.
+6. Reply with a short summary of what you saved and any missing information. Deadlines, essay prompts, and milestones are researched in follow-up requests, so skip them here.
 
 Call tools. Empty fields are better than invented numbers.`;
 }
@@ -949,9 +936,9 @@ function initialPrefs(data) {
   };
 }
 
-// Stream the AI hub build and return the refreshed workspace. onProgress gets
-// short status lines for the UI.
-async function runHubBuild(prompt, onProgress) {
+// One AI chat request for the hub build; resolves when the stream ends.
+// onProgress gets short status lines for the UI.
+async function streamBuildChat(prompt, onProgress) {
   const aiPrefs = loadAiPrefs();
   const body = {
     messages: [{ role: "user", content: prompt }],
@@ -1012,24 +999,65 @@ async function runHubBuild(prompt, onProgress) {
     }
   }
 
-  onProgress("Loading your hub…");
+}
+
+async function fetchWorkspace() {
   const wsRes = await fetch("/api/workspace", { credentials: "same-origin", cache: "no-store" });
   if (!wsRes.ok) throw new Error("Could not refresh your hub.");
   const ws = await wsRes.json();
   return ws.data || ws;
 }
 
-// Re-run the AI build from the saved answers and current school list.
-function rebuildHub(data, onProgress) {
-  const prompt = buildAiPrompt({
-    draft: initialDraft(data),
-    story: initialStory(data),
-    prefs: initialPrefs(data),
-    mustHave: (data && data.colleges) || [],
-    uploads: (data && data.uploads) || [],
-    rebuild: true,
-  });
-  return runHubBuild(prompt, onProgress);
+// Parallel school requests. Workspace writes retry on conflict.
+const BUILD_CONCURRENCY = 3;
+
+// Research deadlines and prompts a couple of schools per request (one request
+// runs out of tool rounds on a full list), then set milestones. Returns the
+// refreshed workspace and the labels of school steps that failed.
+async function runPlanSteps(onProgress) {
+  const res = await fetch("/api/ai/build-plan", { credentials: "same-origin", cache: "no-store" });
+  const plan = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(plan.error || "Could not plan the hub build.");
+
+  const steps = plan.schools || [];
+  const failed = [];
+  let next = 0;
+  let finished = 0;
+  const worker = async () => {
+    while (next < steps.length) {
+      const step = steps[next++];
+      const progress = (m) => onProgress(`Schools ${finished} of ${steps.length} done · ${step.label}: ${m}`);
+      try {
+        await streamBuildChat(step.prompt, progress);
+      } catch (e) {
+        failed.push(step.label);
+      }
+      finished++;
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(BUILD_CONCURRENCY, steps.length) }, worker));
+  if (steps.length && failed.length === steps.length) {
+    throw new Error("The AI couldn't research any schools. Check your AI connection in Settings and try again.");
+  }
+
+  await streamBuildChat(plan.milestones.prompt, (m) => onProgress(`Milestones: ${m}`));
+  onProgress("Loading your hub…");
+  return { ws: await fetchWorkspace(), failed };
+}
+
+// Re-run the AI build from the saved answers: the profile step only when it
+// was never filled in, then every school still missing deadlines or prompts.
+async function rebuildHub(data, onProgress) {
+  if (!((data && data.profile && data.profile.activities) || []).length) {
+    await streamBuildChat(buildAiPrompt({
+      draft: initialDraft(data),
+      story: initialStory(data),
+      prefs: initialPrefs(data),
+      mustHave: (data && data.colleges) || [],
+      uploads: (data && data.uploads) || [],
+    }), onProgress);
+  }
+  return runPlanSteps(onProgress);
 }
 
 // ── Main wizard ──────────────────────────────────────────────────────────
@@ -1218,7 +1246,8 @@ function Onboarding({ data, onComplete, onCancel }) {
       );
 
       const prompt = buildAiPrompt({ draft, story, prefs, mustHave, uploads });
-      const ws = await runHubBuild(prompt, setBuildLog);
+      await streamBuildChat(prompt, setBuildLog);
+      const { ws } = await runPlanSteps(setBuildLog);
       setBuildStatus("done");
       setBuildLog("Done");
       // Brief beat so the user sees success, then hand off
