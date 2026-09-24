@@ -14,7 +14,9 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from config import FIELD_DOLLAR_YEAR, FOS_CSV, PUBLIC_RANKINGS, REFERENCE_YEAR  # noqa: E402
+from config import (  # noqa: E402
+    FIELD_DOLLAR_YEAR, FOS_CSV, INST_CSV, OVERALL_WEIGHTS, PUBLIC_RANKINGS, REFERENCE_YEAR,
+)
 from dollars import factor  # noqa: E402
 
 MAJORS = PUBLIC_RANKINGS / "majors"
@@ -82,6 +84,22 @@ class TestPublishedEarningsMatchSource(unittest.TestCase):
         pub = json.loads((MAJORS / "bachelors-1107.json").read_text())
         nat = self.fos[(self.fos["CIPCODE"] == "1107") & (self.fos["CREDLEV"] == 3)]["EARN_MDN_4YR_NAT"].dropna()
         self.assertEqual(pub["national_median"], round(float(nat.median()), -2))
+
+
+@unittest.skipUnless(INST_CSV.exists() and (PUBLIC_RANKINGS / "overall.json").exists(), "raw data or exports absent")
+class TestPublishedPellGraduationMatchesSource(unittest.TestCase):
+    def test_every_school_matches_the_official_record_and_is_not_scored(self):
+        inst = pd.read_csv(INST_CSV, usecols=["UNITID", "C150_4_PELL", "D150_4_PELL"], low_memory=False)
+        inst = inst.set_index("UNITID").apply(pd.to_numeric, errors="coerce")
+        rows = json.loads((PUBLIC_RANKINGS / "overall.json").read_text())["schools"]
+        self.assertGreater(len(rows), 0)
+        for r in rows:
+            src = inst.loc[r["unitid"]]
+            with self.subTest(unitid=r["unitid"]):
+                # Rounded to 3 places; ties may break either way.
+                self.assertAlmostEqual(r["pell_graduation_rate"], float(src["C150_4_PELL"]), delta=5e-4 + 1e-9)
+                self.assertEqual(r["pell_cohort"], float(src["D150_4_PELL"]))
+        self.assertNotIn("pell_graduation", OVERALL_WEIGHTS)
 
 
 class TestDollarFactors(unittest.TestCase):

@@ -41,7 +41,7 @@ from programs import (  # noqa: E402
 from reports import DISCLOSURE, sources_md  # noqa: E402
 from util import write_csv  # noqa: E402
 
-META = ["INSTNM", "CITY", "STABBR", "CONTROL", "net_price", "COSTT4_A", "PCTPELL"]
+META = ["INSTNM", "CITY", "STABBR", "CONTROL", "net_price", "COSTT4_A", "PCTPELL", "C150_4_PELL", "D150_4_PELL"]
 # Columns carried from each cost-of-living view, renamed with the view's suffix.
 VIEW_COLUMNS = {
     "rank": "rank{s}", "rank_low": "rank{s}_low", "rank_high": "rank{s}_high", "score": "score{s}",

@@ -35,6 +35,7 @@ Territories are excluded (no BEA price parities). Programs are identified by OPE
 | `MD_EARN_WNE_P10` | students who entered 2009–11, earnings in 2020–21 | 2022 | Shown, not scored |
 | `COUNT_WNE_3YR`, `COUNT_NWNE_3YR` | AY2014–16 graduates, working status in 2018–19 | — | Employment (scored) |
 | `C150_4` | first-time full-time students starting around fall 2018 | — | Graduation (scored) |
+| `C150_4_PELL`, `D150_4_PELL` | the same cohort's first-year Pell Grant recipients, and their count | — | Shown, not scored |
 
 Dollar years come from the data dictionary's cohort maps (`config.FIELD_DOLLAR_YEAR`); every field is restated in **2024 dollars** at load. `tests/test_data_contract.py` checks published figures against the official file for both modeled horizons, both credentials and a branch-campus group. "Earnings" are annual W-2 wages plus positive self-employment earnings for federal aid recipients working and not enrolled — not base salaries, and not international students.
 
@@ -99,6 +100,8 @@ where `shift(major)` is the major's mean gap among programs publishing both (equ
 Weights are value judgments fixed a priori: v2 set 40/25/15 plus 20% for a 10-years-after-entry earnings component. **v3 removes that component from the score** because it compares entrants (including non-completers) against a completer baseline, mixing populations, cohorts and statistics. The remaining weights are renormalized proportionally. They are not estimated coefficients for career success. The later-earnings figure is still shown as a rough indicator.
 
 Components are z-scored across the ranked universe (clipped at ±3). The composite is the weighted mean of available components; early earnings and graduation are required. Four scored schools lack an employment figure, and their weights are rescaled over the other two. **The 0–100 score is a relative index** (top = 100, lowest = 0), not a probability.
+
+**Pell graduation** (shown, not scored) is the six-year completion rate of first-year Pell recipients in the graduation cohort, with the gap to all students and the cohort size (median 199; 23 overall-ranked schools have fewer than 30). It is not scored because adding a component is a weight decision, and weights are fixed a priori (§1.4).
 
 **Typical early earnings** (shown, not scored) is the completion-weighted mean of the school's bachelor's program medians. **Program coverage** is the share of known bachelor's completions in programs with a modeled estimate, not the share of graduates observed. **Older data** is the share of a school's scored bachelor's programs that use 5-year earnings; rows where it exceeds half are flagged (34 scored schools).
 
@@ -213,6 +216,7 @@ For programs with <30 five-year earners: 0.160 → 0.159 (bachelor's), 0.162 →
 
 **v3.2**
 - Cost of living counts half by default (`w = 0.5`, a stated value judgment); none and full are one click away. Price-error propagation generalized to `(loading − w)·ε`. The recommendation engine and per-school major ranks follow the default. Major tables show the overall rank for the active view.
+- Pell graduation (`C150_4_PELL`) shown on each college, not scored; scores and ranks unchanged.
 
 **v3.1**
 - 5-year fallback earnings mapped onto the 4-year scale (per-major shrunk shift), chosen on development institutions and checked on held-out ones; mapping uncertainty added to program variance.

@@ -54,6 +54,9 @@ export type School = Ranked & {
   later_premium_adjusted_pct: number | null;
   graduation_rate: number;
   employment_rate: number | null;
+  /** Six-year completion of first-year Pell recipients in the graduation cohort. Shown, not scored. */
+  pell_graduation_rate: number | null;
+  pell_cohort: number | null;
   typical_earnings: number | null;
   earnings_10yr: number | null;
   rpp_grad: number | null;

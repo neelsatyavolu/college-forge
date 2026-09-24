@@ -78,6 +78,9 @@ def school_rows(table: pd.DataFrame) -> pd.DataFrame:
         "later_premium_adjusted_pct": _pct(table["later_premium_adjusted"]).round(1),
         "graduation_rate": table["graduation"].round(3),
         "employment_rate": table["employment"].round(3),
+        # Shown, not scored: Pell recipients in the same first-time, full-time cohort as C150_4.
+        "pell_graduation_rate": table["C150_4_PELL"].round(3),
+        "pell_cohort": table["D150_4_PELL"],
         "typical_earnings": table["typical_earnings"].round(-2),
         "earnings_10yr": table["earnings_10yr"].round(-2),
         "rpp_grad": table["rpp_grad"].round(1),

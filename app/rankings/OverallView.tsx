@@ -126,6 +126,13 @@ function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; scho
           </dd>
         </div>
         <div>
+          <dt>Graduation of Pell Grant students</dt>
+          <dd>
+            {rate(s.pell_graduation_rate)}
+            <span> · {pellNote(s)} · not scored</span>
+          </dd>
+        </div>
+        <div>
           <dt>Average net price</dt>
           <dd>{money(s.net_price)}<span> / yr · not scored</span></dd>
         </div>
@@ -143,6 +150,14 @@ function SchoolDetail({ id, school: s, prices, onOpenMajor }: { id: string; scho
       <TopMajors unitid={s.unitid} onOpenMajor={onOpenMajor} />
     </div>
   );
+}
+
+/** Gap to all students in the same cohort, and the cohort size so small groups read as noisy. */
+function pellNote(s: School): string {
+  if (s.pell_graduation_rate == null) return "not reported";
+  const gap = Math.round((s.pell_graduation_rate - s.graduation_rate) * 100);
+  const vs = gap === 0 ? "same as all students" : `${Math.abs(gap)} pts ${gap > 0 ? "above" : "below"} all students`;
+  return s.pell_cohort != null ? `${vs}; cohort of ${Math.round(s.pell_cohort).toLocaleString("en-US")}` : vs;
 }
 
 function TopMajors({ unitid, onOpenMajor }: { unitid: number; onOpenMajor: (cip: string) => void }) {

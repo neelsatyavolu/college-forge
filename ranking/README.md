@@ -6,7 +6,7 @@ A comparison of past graduates' outcomes whose as-reported program earnings esti
 
 **Question:** if you study a given major at this school, how do graduates do in their careers compared with people who studied the same thing elsewhere?
 
-The score uses outcomes only: early-career earnings vs. the same major nationally (50%), graduation (31.25%) and employment (18.75%). Cost of living counts half by default (a stated value judgment); orderings with none (earnings as reported, the backtested one) and full adjustment are published alongside. Selectivity, yield, research, spending and reputation are not scored. Net price is reported, not scored.
+The score uses outcomes only: early-career earnings vs. the same major nationally (50%), graduation (31.25%) and employment (18.75%). Cost of living counts half by default (a stated value judgment); orderings with none (earnings as reported, the backtested one) and full adjustment are published alongside. Selectivity, yield, research, spending and reputation are not scored. Net price and Pell graduation are reported, not scored.
 
 ## Quick start
 
