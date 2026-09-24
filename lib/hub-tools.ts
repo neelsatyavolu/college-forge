@@ -11,6 +11,7 @@ import { slugify, upsertCollegeInto, removeCollegeFrom } from "./colleges";
 import { gateAiCollegeAdd } from "./seed-college-list";
 import { recommendColleges } from "./college-recommendations";
 import { mergeSupplements } from "./essay-supplements";
+import { applyRounds, workloadSummary, type RoundChoice } from "./application-rounds";
 
 // Only copy keys the caller actually provided, so partial updates never wipe
 // existing fields with undefined.
@@ -253,8 +254,28 @@ export function makeHubTools(
       },
     },
     {
+      name: "set_application_rounds",
+      description:
+        "Choose the round the student applies in at each school (e.g. EA, RD, ED I). plan must match one of that school's saved deadline plans exactly. The Timeline and Planner then show only that round's dates. Returns the resulting workload by half month so you can rebalance.",
+      parameters: {
+        type: "object",
+        properties: {
+          rounds: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: { slug: { type: "string" }, plan: { type: "string" } },
+              required: ["slug", "plan"],
+            },
+          },
+        },
+        required: ["rounds"],
+        additionalProperties: false,
+      },
+    },
+    {
       name: "set_critical_dates",
-      description: "Replace the Overview 'Critical dates' list.",
+      description: "Replace the AI-written milestones on the Timeline and Overview. Dates the student added themselves are kept automatically.",
       parameters: {
         type: "object",
         properties: {
@@ -519,9 +540,28 @@ export function makeHubTools(
           }));
           return a.school ? `Set Early Decision to ${a.school}.` : "Cleared Early Decision.";
         }
+        case "set_application_rounds": {
+          if (!Array.isArray(a.rounds)) return "set_application_rounds requires a 'rounds' array.";
+          let outcome = { saved: [] as string[], problems: [] as string[] };
+          const next = await mutate((ws) => {
+            const result = applyRounds(ws, a.rounds as RoundChoice[]);
+            outcome = result;
+            return result.ws;
+          });
+          const { saved, problems } = outcome;
+          return [
+            `Saved rounds for ${saved.length} school${saved.length === 1 ? "" : "s"}.`,
+            problems.length ? `Not saved: ${problems.join(" ")}` : "",
+            `Workload: ${workloadSummary(next)}`,
+          ].filter(Boolean).join("\n");
+        }
         case "set_critical_dates": {
           if (!Array.isArray(a.dates)) return "set_critical_dates requires a 'dates' array.";
-          await mutate((ws) => ({ ...ws, criticalDates: a.dates as Workspace["criticalDates"] }));
+          const dates = (a.dates as Workspace["criticalDates"]).map(({ source: _source, ...d }) => d);
+          await mutate((ws) => ({
+            ...ws,
+            criticalDates: [...ws.criticalDates.filter((d) => d.source === "student"), ...dates],
+          }));
           return `Saved ${(a.dates as unknown[]).length} critical dates.`;
         }
         case "set_essays": {

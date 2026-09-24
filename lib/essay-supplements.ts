@@ -204,6 +204,26 @@ export function syncEssaySupplements(ws: Workspace): Workspace {
   };
 }
 
+const OPTIONAL_LABEL = /\(optional\)/i;
+
+/**
+ * Keep each college's `supp` label (Shortlist, Planner, Compare) in line with
+ * the prompts actually loaded on the Essays tab. Placeholder groups and
+ * schools without a group keep their saved label.
+ */
+export function syncSuppStatus(ws: Workspace): Workspace {
+  let changed = false;
+  const colleges = ws.colleges.map((c) => {
+    const group = c.slug ? ws.essays?.supplements?.[c.slug] : undefined;
+    if (!group?.length || !hasRealPrompts(group)) return c;
+    const supp = group.some((e) => !OPTIONAL_LABEL.test(e.label || "")) ? "Supps required" : "Supps optional";
+    if (c.supp === supp) return c;
+    changed = true;
+    return { ...c, supp } as College;
+  });
+  return changed ? { ...ws, colleges } : ws;
+}
+
 /**
  * Merge AI-provided supplement maps by college slug (partial updates
  * must not wipe other schools). Empty array for a slug clears that slug.

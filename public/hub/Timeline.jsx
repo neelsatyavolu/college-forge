@@ -15,18 +15,12 @@ function timelineDate(label, graduationYear) {
   return { date, inferred: !explicitYear };
 }
 
-const PLAN_TONE = (plan) =>
-  /Early Decision|ED/.test(plan) ? { bg: "var(--coral)", fg: "var(--on-primary)", label: "ED" }
-  : /Restrictive|REA/.test(plan) ? { bg: "var(--accent-amber)", fg: "var(--ink)", label: "REA" }
-  : /Early Action|EA/.test(plan) ? { bg: "var(--accent-teal)", fg: "var(--on-primary)", label: "EA" }
-  : /Scholarship|priority/i.test(plan) ? { bg: "var(--warning)", fg: "var(--ink)", label: "$" }
-  : { bg: "var(--surface-cream-strong)", fg: "var(--muted)", label: "RD" };
-
 function Timeline({ data, onAsk, onWorkspaceChange }) {
   const [editing, setEditing] = React.useState(null);
   const [form, setForm] = React.useState({ date: "", label: "", detail: "" });
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [showAllRounds, setShowAllRounds] = React.useState(false);
   const graduationYear = Number(data.profile && data.profile.gradYear) || null;
   const dates = data.criticalDates || [];
   const saveDates = async (next) => {
@@ -47,12 +41,17 @@ function Timeline({ data, onAsk, onWorkspaceChange }) {
     setEditing(index);
     setError("");
   };
-  // Merge critical dates + every school deadline into one sorted stream.
+  // Merge critical dates + school deadlines into one sorted stream. By default
+  // each school shows only the round the student applies in.
   const events = [];
   dates.forEach((m, index) => events.push({ date: m.date, title: m.label, detail: m.detail, kind: "milestone", index }));
-  (data.colleges || []).forEach((c) =>
-    (c.deadlines || []).forEach((d) => events.push({ date: d.date, title: `${c.short} — ${d.plan}`, detail: c.major, plan: d.plan, kind: "deadline" }))
-  );
+  let otherRounds = 0;
+  (data.colleges || []).forEach((c) => {
+    const all = c.deadlines || [];
+    const shown = showAllRounds ? all : window.cfDeadlinePlan.planDeadlines(c);
+    otherRounds += all.length - shown.length;
+    shown.forEach((d) => events.push({ date: d.date, title: `${c.short || c.name} — ${d.plan}`, plan: d.plan, kind: "deadline" }));
+  });
   events.forEach((event) => { event.parsed = timelineDate(event.date, graduationYear); });
   events.sort((a, b) => (a.parsed ? a.parsed.date.getTime() : Infinity) - (b.parsed ? b.parsed.date.getTime() : Infinity));
 
@@ -70,7 +69,7 @@ function Timeline({ data, onAsk, onWorkspaceChange }) {
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">Timeline</h1>
-          <p className="cf-page-lede">Every milestone and application deadline across your cycle, in order. ED/EA/REA plans are flagged.</p>
+          <p className="cf-page-lede">Your milestones and the deadlines for the round you’re applying in at each school, in order.</p>
         </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
           <Button variant="secondary" size="sm" onClick={onAsk}>Ask about a date ✱</Button>
@@ -78,13 +77,19 @@ function Timeline({ data, onAsk, onWorkspaceChange }) {
         </div>
       </header>
 
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>Confirm school deadlines on the official admissions site. Dates without a year use your graduation year’s application cycle; set a full date to remove ambiguity.</p>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:12}}>Confirm school deadlines on the official admissions site. Dates without a year use your graduation year’s application cycle; set a full date to remove ambiguity.</p>
+      {otherRounds > 0 || showAllRounds ? (
+        <label style={{display:"inline-flex",alignItems:"center",gap:8,fontSize:13,color:"var(--body)",marginBottom:20}}>
+          <input type="checkbox" checked={showAllRounds} onChange={(e) => setShowAllRounds(e.target.checked)} />
+          Show other rounds{otherRounds > 0 ? ` (${otherRounds} hidden)` : ""}
+        </label>
+      ) : null}
       {error ? <p role="alert" style={{color:"var(--error)"}}>{error}</p> : null}
       {editing !== null ? (
         <form onSubmit={(event) => {
           event.preventDefault();
           if (!form.label.trim() || !timelineDate(form.date, graduationYear)) return;
-          const milestone = {...form, label:form.label.trim()};
+          const milestone = {...form, label:form.label.trim(), source:"student"};
           saveDates(editing < 0 ? [...dates,milestone] : dates.map((date,index) => index === editing ? milestone : date));
         }} style={{padding:20,border:"1px solid var(--hairline)",borderRadius:"var(--radius-md)",marginBottom:24,display:"grid",gap:12}}>
           <h2 className="cf-display" style={{margin:0,fontSize:20}}>{editing < 0 ? "New milestone" : "Edit milestone"}</h2>
@@ -107,7 +112,7 @@ function Timeline({ data, onAsk, onWorkspaceChange }) {
             </div>
             <div style={{ borderLeft: "1px solid var(--hairline)", paddingLeft: "clamp(16px, 3vw, 24px)", paddingBottom: 24, position: "relative" }}>
               {g.items.map((e, i) => {
-                const tone = e.kind === "deadline" ? PLAN_TONE(e.plan) : null;
+                const tone = e.kind === "deadline" ? window.cfDeadlinePlan.deadlineTone(e.plan) : null;
                 return (
                   <div key={i} style={{ position: "relative", marginBottom: i === g.items.length - 1 ? 0 : 16 }}>
                     <span style={{ position: "absolute", left: "calc(-1 * clamp(16px, 3vw, 24px) - 6px)", top: 6, width: 10, height: 10, borderRadius: "50%", background: e.kind === "milestone" ? "var(--ink)" : (tone ? tone.bg : "var(--muted)"), border: "2px solid var(--canvas)", boxShadow: "0 0 0 1px var(--hairline)" }} />

@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
-import { syncEssaySupplements } from "./essay-supplements";
+import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
 
 // ── Workspace data model ──────────────────────────────────────────────────
 // Mirrors the shape the hub UI renders (window.CF_DATA). Everything starts
@@ -153,7 +153,8 @@ export type Workspace = {
     honors: Honor[];
   };
   ed: null | { school: string; deadline: string; daysLeft: number | string; reason: string };
-  criticalDates: { date: string; label: string; detail: string }[];
+  /** source "student": added or edited on the Timeline; AI rewrites keep these. */
+  criticalDates: { date: string; label: string; detail: string; source?: "student" }[];
   colleges: College[];
   essays: { commonApp: Essay[]; supplements: Record<string, Essay[]> };
   /** Draft text keyed by essay id — server-persisted (not localStorage). */
@@ -373,7 +374,7 @@ function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
     onboarding: { ...empty.onboarding, ...(parsed.onboarding || {}) },
   };
   // Backfill Essays groups for any college already on the list (lazy migration).
-  return syncEssaySupplements(base);
+  return syncSuppStatus(syncEssaySupplements(base));
 }
 
 type WorkspaceMutation = (workspace: Workspace) => Workspace | Promise<Workspace>;

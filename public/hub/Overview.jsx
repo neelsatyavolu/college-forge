@@ -9,7 +9,7 @@ function Overview({ data, onNavigate, onAsk, onStart }) {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const allDates = [
     ...(data.criticalDates || []),
-    ...colleges.flatMap(college => (college.deadlines || []).map(deadline => ({ date: deadline.date, label: `${college.short || college.name} — ${deadline.plan}`, detail: college.major || "Confirm on the admissions website" }))),
+    ...colleges.flatMap(college => window.cfDeadlinePlan.planDeadlines(college).map(deadline => ({ date: deadline.date, label: `${college.short || college.name} — ${deadline.plan}`, detail: college.major || "Confirm on the admissions website" }))),
   ].map(item => ({ ...item, parsed: window.cfTimelineDate(item.date, Number(data.profile.gradYear) || null) }));
   const dates = allDates.filter(item => item.parsed && item.parsed.date >= today).sort((a, b) => a.parsed.date - b.parsed.date).slice(0, 3);
   const undatedCount = allDates.filter(item => !item.parsed).length;

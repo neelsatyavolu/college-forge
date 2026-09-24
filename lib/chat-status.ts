@@ -72,6 +72,8 @@ export function friendlyToolMessage(name: string, path?: string): string {
       return "Updating your school list…";
     case "set_early_decision":
       return "Setting early-decision school…";
+    case "set_application_rounds":
+      return "Balancing your application rounds…";
     case "set_critical_dates":
       return "Updating important dates…";
     case "set_essays":

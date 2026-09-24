@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const ts = require('typescript');
 require.extensions['.ts'] = (mod, file) => mod._compile(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2021, esModuleInterop: true, resolveJsonModule: true } }).outputText, file);
-const { syncEssaySupplements, placeholderSupplementsForCollege } = require('../lib/essay-supplements.ts');
+const { syncEssaySupplements, syncSuppStatus, placeholderSupplementsForCollege } = require('../lib/essay-supplements.ts');
 const { scrapedSupplementsFor } = require('../lib/supplement-prompts.ts');
 
 const dataset = JSON.parse(fs.readFileSync(path.join(__dirname, '../lib/supplements/prompts.json'), 'utf8'));
@@ -61,4 +61,22 @@ test('no-limit and outdated prompts carry a guidance note', () => {
       if (school.source === 'collegevine') assert.match(essays[i].prompt, /confirm on the school's site/);
     });
   }
+});
+
+test('supplement status follows the loaded prompts', () => {
+  const prompt = (label) => ({ id: label, label, prompt: 'Tell us about it.', limit: 250, unit: 'words' });
+  const colleges = [
+    college('required', 'Required U'),
+    { ...college('optional', 'Optional U'), supp: 'Supps required' },
+    { ...college('placeholder', 'Placeholder U'), supp: 'Supps optional' },
+    college('not-listed', 'Not Listed U'),
+  ];
+  const ws = workspace(colleges, {
+    required: [prompt('Why us'), prompt('Community (optional)')],
+    optional: [prompt('Anything else (optional)')],
+    placeholder: placeholderSupplementsForCollege(college('placeholder')),
+  });
+  const out = syncSuppStatus(ws);
+  assert.deepEqual(out.colleges.map((c) => c.supp), ['Supps required', 'Supps optional', 'Supps optional', undefined]);
+  assert.equal(syncSuppStatus(out), out);
 });

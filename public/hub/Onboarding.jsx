@@ -6,12 +6,13 @@ const {
   Badge: OnboardBadge,
 } = window.CollegeForgeDesignSystem_e95e63;
 
-// welcome → AI → You → Academics → Story → List prefs → Upload → Build
+// welcome → AI → You → Academics → Transcript → Story → List prefs → Upload → Build
 const STEPS = [
   { id: "welcome", label: "Welcome" },
   { id: "connect", label: "AI" },
   { id: "identity", label: "You" },
   { id: "academics", label: "Academics" },
+  { id: "transcript", label: "Transcript" },
   { id: "story", label: "Story" },
   { id: "prefs", label: "List" },
   { id: "upload", label: "Upload" },
@@ -655,7 +656,8 @@ function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
 }
 
 // ── Upload ───────────────────────────────────────────────────────────────
-function UploadStep({ uploads, onUploaded }) {
+// Posts files to /api/upload; the server extracts text the AI reads with read_upload.
+function useFileUpload(onUploaded) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
   const fileRef = React.useRef(null);
@@ -679,6 +681,50 @@ function UploadStep({ uploads, onUploaded }) {
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  return { busy, error, fileRef, upload };
+}
+
+function TranscriptStep({ transcript, connected, onUploaded }) {
+  const { busy, error, fileRef, upload } = useFileUpload(onUploaded);
+
+  return (
+    <div>
+      <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <span>Upload your transcript</span>
+        <OnboardBadge variant="cream" uppercase>Optional</OnboardBadge>
+      </h2>
+      <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
+        {connected
+          ? "The AI reads your transcript to fill in your coursework, honors, and AP/IB classes. An unofficial copy is fine. You can skip."
+          : "Connect an AI in the AI step and it will read your transcript to fill in your coursework. The file is saved to your hub either way. You can skip."}
+      </p>
+      <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".pdf,.docx,.txt"
+          style={{ display: "none" }}
+          onChange={(e) => upload(e.target.files)}
+        />
+        <OnboardButton size="md" variant="secondary" disabled={busy} onClick={() => fileRef.current && fileRef.current.click()}>
+          {busy ? "Uploading…" : transcript ? "Replace transcript" : "Choose transcript"}
+        </OnboardButton>
+        <p style={{ margin: "10px 0 0", fontSize: 12, color: "var(--muted)" }}>PDF, DOCX, or text · max 15 MB</p>
+        {transcript ? (
+          <p style={{ margin: "14px 0 0", fontSize: 13, color: "var(--ink)" }}>
+            ✓ {transcript.name}
+            {transcript.chars ? <span style={{ color: "var(--muted)" }}> · {transcript.chars.toLocaleString()} chars</span> : null}
+          </p>
+        ) : null}
+        {error ? <p style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+function UploadStep({ uploads, onUploaded }) {
+  const { busy, error, fileRef, upload } = useFileUpload(onUploaded);
+
   return (
     <div>
       <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -686,7 +732,7 @@ function UploadStep({ uploads, onUploaded }) {
         <OnboardBadge variant="cream" uppercase>Optional</OnboardBadge>
       </h2>
       <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
-        Save a transcript, resume, or activities list for reference. A connected AI can use these with your permission. You can skip.
+        Save a resume, activities list, or award list for reference. A connected AI can use these with your permission. You can skip.
       </p>
       <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
         <input
@@ -728,6 +774,7 @@ function BuildStep({
   prefs,
   mustHave,
   uploads,
+  transcript,
   providerLabel,
   buildStatus,
   buildLog,
@@ -791,6 +838,7 @@ function BuildStep({
         {row("GPA (W)", draft.gpaWeighted)}
         {row("GPA (UW)", draft.gpaUnweighted)}
         {row("SAT", draft.testOptional ? "Test optional" : draft.sat)}
+        {row("Transcript", transcript ? transcript.name : "None")}
         {row("Story", storyBits.length ? storyBits.join(" · ") : "None yet (AI can still help)")}
         {row("List strategy", ambitionLabel(prefs.ambition))}
         {row(
@@ -821,7 +869,7 @@ function BuildStep({
   );
 }
 
-function buildAiPrompt({ draft, story, prefs, mustHave, uploads }) {
+function buildAiPrompt({ draft, story, prefs, mustHave, uploads, transcript = null }) {
   const satLine = draft.testOptional
     ? "Test optional — not reporting SAT/ACT"
     : `SAT=${draft.sat || "—"} (${draft.satNote || "no section note"})`;
@@ -830,9 +878,18 @@ function buildAiPrompt({ draft, story, prefs, mustHave, uploads }) {
     ? mustHave.map((c) => `- ${c.name}${c.slug ? ` [${c.slug}]` : ""}${c.location ? ` — ${c.location}` : ""}`).join("\n")
     : "(none marked as must-include)";
 
-  const uploadLine = uploads.length
-    ? uploads.map((u) => `- ${u.name}`).join("\n")
+  const otherUploads = uploads.filter((u) => !transcript || u.name !== transcript.name);
+  const uploadLine = otherUploads.length
+    ? otherUploads.map((u) => `- ${u.name}`).join("\n")
     : "(none)";
+
+  const transcriptSection = transcript
+    ? `## Transcript (read it first with read_upload)
+- ${transcript.name}
+Save the courses with set_coursework: honors courses, AP/IB courses, and senior-year courses. The GPA and test fields above are what the student entered, so keep them. If the transcript disagrees, point that out in your summary.
+
+`
+    : "";
 
   return `You are completing onboarding for this student. Use your tools to WRITE to the hub — do not only describe what you would do.
 
@@ -877,7 +934,7 @@ The server has already selected a preliminary list using the student's academics
 ## Must-include schools (already saved)
 ${must}
 
-## Uploads to read with read_upload if relevant
+${transcriptSection}## Uploads to read with read_upload if relevant
 ${uploadLine}
 
 ## Required tasks (do all)
@@ -885,7 +942,7 @@ Issue independent tool calls together in the same turn.
 1. set_applicant_snapshot + set_profile_identity + set_testing from the structured fields.
 2. Parse activities → set_activities (rank by importance; include role, hours, years, desc when present).
 3. Parse awards → set_honors; set awards count on the snapshot.
-4. Read uploads and merge any extra structured data (coursework, more activities, etc.).
+4. Read the transcript (if listed) and other uploads, then merge the structured data (coursework, more activities, etc.).
 5. Review the seeded college list with get_college_recommendations. Keep the list intact.
 6. Reply with a short summary of what you saved and any missing information. Deadlines, essay prompts, and milestones are researched in follow-up requests, so skip them here.
 
@@ -1012,8 +1069,9 @@ async function fetchWorkspace() {
 const BUILD_CONCURRENCY = 3;
 
 // Research deadlines and prompts a couple of schools per request (one request
-// runs out of tool rounds on a full list), then set milestones. Returns the
-// refreshed workspace and the labels of school steps that failed.
+// runs out of tool rounds on a full list), then balance rounds and set
+// milestones. Returns the refreshed workspace and the labels of school steps
+// that failed.
 async function runPlanSteps(onProgress) {
   const res = await fetch("/api/ai/build-plan", { credentials: "same-origin", cache: "no-store" });
   const plan = await res.json().catch(() => ({}));
@@ -1040,7 +1098,7 @@ async function runPlanSteps(onProgress) {
     throw new Error("The AI couldn't research any schools. Check your AI connection in Settings and try again.");
   }
 
-  await streamBuildChat(plan.milestones.prompt, (m) => onProgress(`Milestones: ${m}`));
+  await streamBuildChat(plan.milestones.prompt, (m) => onProgress(`Balancing rounds & milestones: ${m}`));
   onProgress("Loading your hub…");
   return { ws: await fetchWorkspace(), failed };
 }
@@ -1071,6 +1129,7 @@ function Onboarding({ data, onComplete, onCancel }) {
     return priority.length ? priority : cols.slice(0, 5);
   });
   const [uploads, setUploads] = React.useState(() => (data && data.uploads) || []);
+  const [transcript, setTranscript] = React.useState(null);
   const [err, setErr] = React.useState("");
   const [busy, setBusy] = React.useState(false);
   const [buildStatus, setBuildStatus] = React.useState("idle"); // idle | building | done
@@ -1135,6 +1194,7 @@ function Onboarding({ data, onComplete, onCancel }) {
     if (id === "connect") return true;
     if (id === "identity") return Boolean(identityOk);
     if (id === "academics") return Boolean(academicsOk);
+    if (id === "transcript") return true;
     if (id === "story") return true;
     if (id === "prefs") return true;
     if (id === "upload") return true;
@@ -1245,7 +1305,7 @@ function Onboarding({ data, onComplete, onCancel }) {
           : "Asking the AI to build your hub…"
       );
 
-      const prompt = buildAiPrompt({ draft, story, prefs, mustHave, uploads });
+      const prompt = buildAiPrompt({ draft, story, prefs, mustHave, uploads, transcript });
       await streamBuildChat(prompt, setBuildLog);
       const { ws } = await runPlanSteps(setBuildLog);
       setBuildStatus("done");
@@ -1275,6 +1335,11 @@ function Onboarding({ data, onComplete, onCancel }) {
       setBusy(false);
     }
   };
+
+  const mergeUploads = (saved) => setUploads((u) => {
+    const names = new Set(saved.map((s) => s.name));
+    return [...u.filter((x) => !names.has(x.name)), ...saved];
+  });
 
   const id = STEPS[step].id;
   const isLast = step === STEPS.length - 1;
@@ -1384,6 +1449,18 @@ function Onboarding({ data, onComplete, onCancel }) {
             </div>
           ) : null}
 
+          {id === "transcript" ? (
+            <TranscriptStep
+              transcript={transcript}
+              connected={Boolean(connected)}
+              onUploaded={(saved) => {
+                if (!saved.length) return;
+                setTranscript(saved[0]);
+                mergeUploads(saved);
+              }}
+            />
+          ) : null}
+
           {id === "story" ? <StoryStep story={story} onChange={setStory} /> : null}
 
           {id === "prefs" ? (
@@ -1396,17 +1473,7 @@ function Onboarding({ data, onComplete, onCancel }) {
           ) : null}
 
           {id === "upload" ? (
-            <UploadStep
-              uploads={uploads}
-              onUploaded={(saved) => setUploads((u) => {
-                const names = new Set(u.map((x) => x.name));
-                const merged = [...u];
-                for (const s of saved) {
-                  if (!names.has(s.name)) merged.push(s);
-                }
-                return merged;
-              })}
-            />
+            <UploadStep uploads={uploads} onUploaded={mergeUploads} />
           ) : null}
 
           {id === "build" && connected && !building ? <label style={{display:"flex",gap:8,marginBottom:16,color:"var(--body)",fontSize:14}}><input type="checkbox" checked={useAi} onChange={(e)=>setUseAi(e.target.checked)} />Enrich my saved profile with {providerLabel} (optional)</label> : null}
@@ -1417,6 +1484,7 @@ function Onboarding({ data, onComplete, onCancel }) {
               prefs={prefs}
               mustHave={mustHave}
               uploads={uploads}
+              transcript={transcript}
               providerLabel={providerLabel}
               buildStatus={buildStatus}
               buildLog={buildLog}
@@ -1441,7 +1509,7 @@ function Onboarding({ data, onComplete, onCancel }) {
             )}
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            {id === "upload" ? (
+            {id === "upload" || (id === "transcript" && !transcript) ? (
               <OnboardButton variant="secondary" size="md" onClick={goNext} disabled={busy || building}>
                 Skip
               </OnboardButton>

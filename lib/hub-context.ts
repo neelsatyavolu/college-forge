@@ -17,8 +17,8 @@ function snapshot(ws: Workspace): string {
   lines.push(`Testing APs: ${p.testing.aps.length}; Activities: ${p.activities.length}; Honors: ${p.honors.length}`);
   lines.push(
     `Colleges (${ws.colleges.length}): ${ws.colleges.map((c) => {
-      const dates = (c.deadlines || []).map((d) => `${d.plan} ${d.date}`).join(", ") || c.deadline || "no deadlines";
-      return `${c.short || c.name} [${c.slug}; ${c.tier || "?"}; ${dates}]`;
+      const dates = (c.deadlines || []).map((d) => `${d.plan} ${d.date}`).join(", ") || "none saved";
+      return `${c.short || c.name} [${c.slug}; ${c.tier || "?"}; ${c.supp || "supps unknown"}; round: ${c.deadline || "not chosen"}; deadlines: ${dates}]`;
     }).join("; ") || "none"}`
   );
   lines.push(`Early Decision: ${ws.ed ? ws.ed.school : "none set"}`);
@@ -99,7 +99,7 @@ Your job is twofold:
 - **UC campuses share one application** (UC Application ≠ Common App). Berkeley + UCLA + UCSD + … = **one app slot**. You may keep a UC cluster without treating each campus as a separate application.
 - Common App personal statement prompts are preloaded (650 words, student picks one).
 - **Essays tab follows the list.** Adding a school auto-creates supplement slots (UC PIQs under slug \`uc-application\`). After add/enrich, prefer real current-cycle prompts via web_search/web_fetch + set_essays (partial map by slug; merges safely).
-- **A complete plan** means every school on the list has verified deadlines saved on the college (\`deadlines\`: [{plan, date: "YYYY-MM-DD"}] plus a short \`deadline\` label such as "EA · Nov 1") and a \`supp\` status, its current-cycle supplement prompts are loaded, and critical dates hold the dated milestones (FAFSA/CSS, recommendation requests, testing, essay drafts, submissions). The workspace snapshot below lists what is still missing.
+- **A complete plan** means every school on the list has verified deadlines saved on the college (\`deadlines\`: [{plan, date: "YYYY-MM-DD"}]), a round chosen with set_application_rounds so essay-heavy deadlines are spread out, and its current-cycle supplement prompts loaded; critical dates hold the cross-school milestones (recommendation requests, essay drafts, submissions) without repeating school deadlines. The workspace snapshot below lists what is still missing.
 - Track recommenders, scholarships, FAFSA/CSS, and per-school application status when relevant.
 - After writing, briefly tell the user what changed. Be concise; **bold** for emphasis.
 - Never suggest storing Common App cookies or reverse-engineering Common App APIs.
@@ -127,5 +127,5 @@ ${snapshot(ws)}
 ## Uploaded documents available to read
 ${uploadList}
 
-Today's date context: the student is applying in the current cycle. Do the work — write to the hub, don't just talk about it.`;
+Today is ${new Date().toISOString().slice(0, 10)}. Never date a milestone or target before today. Do the work — write to the hub, don't just talk about it.`;
 }
