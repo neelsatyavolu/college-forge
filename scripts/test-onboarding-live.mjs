@@ -31,6 +31,8 @@ try {
  await page.waitForSelector('[placeholder="3.95"]');
  await fill('[placeholder="3.95"]','3.7');
  await click('Continue');
+ await page.waitForFunction(()=>document.body.innerText.includes('Upload your transcript'));
+ await click('Skip');
  await page.waitForSelector('.cf-onboard-textarea');
  await page.type('.cf-onboard-textarea','Library volunteer, 2 hours weekly');
  await click('Continue');

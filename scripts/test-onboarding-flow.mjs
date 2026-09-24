@@ -12,7 +12,8 @@ try {
  await page.evaluate(()=>{
    window.calls=[];
    window.fetch=async(url,opts={})=>{
-     window.calls.push({url,body:opts.body && JSON.parse(opts.body)});
+     window.calls.push({url,body:typeof opts.body==='string'?JSON.parse(opts.body):opts.body});
+     if(url==='/api/upload') return {ok:true,json:async()=>({saved:opts.body.getAll('files').map(f=>({name:f.name,chars:1234})),errors:[]})};
      if(url==='/api/ai/status') return {ok:true,json:async()=>({active:window.aiConnected?'codex':null})};
      if(url==='/api/workspace' && opts.method==='POST') return {ok:true,json:async()=>({success:true,data:{applicant:JSON.parse(opts.body).applicant,onboarding:{completed:true},colleges:[{slug:'data-backed-school'}]}})};
      if(url==='/api/ai/chat') return {ok:false,status:503,json:async()=>({error:'AI offline'})};
@@ -43,6 +44,12 @@ try {
  assert.equal(await page.evaluate(()=>[...document.querySelectorAll('button')].find(el=>el.textContent==='Continue').disabled),true,'SAT over 1600 must be rejected');
  await fill('[placeholder="1540"]','');
  await click('Continue');
+ await page.waitForFunction(()=>document.body.innerText.includes('Upload your transcript'));
+ const transcriptInput=await page.$('input[type=file]');
+ await transcriptInput.uploadFile(new URL('../package.json',import.meta.url).pathname);
+ await page.waitForFunction(()=>document.body.innerText.includes('✓ package.json'));
+ assert.ok(await page.evaluate(()=>window.calls.find(call=>call.url==='/api/upload').body.getAll('files').length===1),'Transcript step uploads one file');
+ await click('Continue');
  await page.waitForSelector('textarea');
  await page.type('textarea','Volunteered at the library');
  await click('Continue');
@@ -51,6 +58,7 @@ try {
  await page.waitForFunction(()=>document.body.innerText.includes('Upload documents'));
  await click('Skip');
  await page.waitForFunction(()=>document.body.innerText.includes('Review & build'));
+ assert.ok(await page.evaluate(()=>[...document.querySelectorAll('.cf-onboard-review-row')].some(row=>row.textContent==='Transcriptpackage.json')),'Review lists the transcript');
  await click('Build my hub ✱');
  await page.waitForFunction(()=>!!window.completed);
  assert.equal(await page.evaluate(()=>window.completed.onboarding.completed),true);
@@ -60,19 +68,22 @@ try {
  assert.equal(payload.applicant.sat,'—');
  assert.equal(payload.storyNotes.activities,'Volunteered at the library');
  assert.equal(payload.listPrefs.ambition,'balanced');
- console.log('No-AI onboarding: entire flow completes, invalid GPA/SAT rejected, answers preserved, AI never called.');
+ console.log('No-AI onboarding: entire flow completes, transcript uploads, invalid GPA/SAT rejected, answers preserved, AI never called.');
  await page.evaluate(()=>{
-   window.aiConnected=true;window.completed=null;
+   window.aiConnected=true;window.completed=null;window.calls=[];
    window.root.render(React.createElement(window.Onboarding,{key:'connected',data:{applicant:{name:'Test',gpaUnweighted:'3.7'},profile:{hs:'Test High',intended:'Biology',gradYear:'2027'}},onComplete:ws=>{window.completed=ws;},onCancel:()=>{window.cancelled=true;}}));
  });
  await page.waitForFunction(()=>document.querySelector('.cf-onboard-progress__item.is-active')?.textContent.includes('Welcome'));
- for(const label of ['AI','You','Academics','Story','List','Upload','Build']) {
+ for(const label of ['AI','You','Academics','Transcript','Story','List','Upload','Build']) {
+   if(label==='Story') await (await page.$('input[type=file]')).uploadFile(new URL('../package.json',import.meta.url).pathname), await page.waitForFunction(()=>document.body.innerText.includes('✓ package.json'));
    await click('Continue');
    await page.waitForFunction(label=>document.querySelector('.cf-onboard-progress__item.is-active .cf-onboard-progress__label')?.textContent===label,{},label);
  }
  await click('Build my hub ✱');
  await page.waitForFunction(()=>!!window.completed);
  assert.equal(await page.evaluate(()=>window.completed.onboarding.completed),true);
- assert.ok(await page.evaluate(()=>window.calls.some(call=>call.url==='/api/ai/chat')));
- console.log('Optional connected-AI failure still opens the saved workspace.');
+ const buildPrompt=await page.evaluate(()=>window.calls.find(call=>call.url==='/api/ai/chat').body.messages[0].content);
+ assert.match(buildPrompt,/## Transcript[^\n]*\n[^]*package\.json/,'AI build prompt names the transcript');
+ assert.match(buildPrompt,/read_upload[^\n]*transcript|transcript[^\n]*read_upload/i,'AI is told to read the transcript');
+ console.log('Connected AI gets the transcript in its build prompt; AI failure still opens the saved workspace.');
 } finally {await browser.close();}
