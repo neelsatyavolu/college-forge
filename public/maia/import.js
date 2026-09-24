@@ -321,7 +321,7 @@
     if (msg.type === "cf-maia:hello" && !started && Array.isArray(msg.colleges)) {
       started = true;
       clearInterval(ping);
-      var list = msg.colleges.filter(function (c) { return c && typeof c.slug === "string" && typeof c.name === "string"; }).slice(0, 200);
+      var list = msg.colleges.filter(function (c) { return c && typeof c.slug === "string" && typeof c.name === "string"; }).slice(0, 300);
       run(list);
     } else if (msg.type === "cf-maia:cancel") {
       cancelled = true;

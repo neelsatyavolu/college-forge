@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { deleteScattergramText, getWorkspace, readScattergramText, writeScattergramText } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { applyScattergramImport, decodeScattergramDoc, ScattergramInputError } from "@/lib/scattergrams";
+import { US_NEWS_BY_SLUG, US_NEWS_TOP_250 } from "@/lib/us-news-rankings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,7 +32,9 @@ export async function POST(req: NextRequest) {
   try {
     const ws = await getWorkspace(id);
     const existing = decodeScattergramDoc(await readScattergramText(id));
-    const { doc, skipped } = applyScattergramImport(existing, body, ws.colleges);
+    // The student's list plus the U.S. News top 250 (the popup's "top N" option).
+    const allowed = [...US_NEWS_TOP_250, ...ws.colleges].map((c) => ({ slug: c.slug, name: c.name, rank: US_NEWS_BY_SLUG.get(c.slug)?.rank ?? null }));
+    const { doc, skipped } = applyScattergramImport(existing, body, allowed);
     await writeScattergramText(id, JSON.stringify(doc));
     return json({ success: true, data: { scattergrams: doc, skipped } }, 200, setCookie);
   } catch (error) {

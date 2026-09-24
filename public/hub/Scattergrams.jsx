@@ -102,7 +102,7 @@ function CollegeScatter({ college, student }) {
   return (
     <section style={{ border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", padding: 16, background: "var(--canvas)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginBottom: 8 }}>
-        <h3 className="cf-display" style={{ margin: 0, fontSize: 20, color: "var(--ink)" }}>{college.name}</h3>
+        <h3 className="cf-display" style={{ margin: 0, fontSize: 20, color: "var(--ink)" }}>{college.rank ? <span style={{ color: "var(--muted)", marginRight: 8 }}>{`#${college.rank}`}</span> : null}{college.name}</h3>
         <span style={{ fontSize: 13, color: "var(--muted)" }}>
           {college.n === 0 ? "No applicants from your school" : `${college.n} applicants · ${accepted} accepted (${Math.round((accepted / college.n) * 100)}%)`}
         </span>
@@ -113,6 +113,24 @@ function CollegeScatter({ college, student }) {
           <ScatterChart college={college} student={student} />
           {unplotted > 0 && <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--muted)" }}>{unplotted} applicant{unplotted === 1 ? "" : "s"} without both SAT and GPA aren’t plotted.</p>}
         </>}
+    </section>
+  );
+}
+
+const RANKED_PAGE = 12;
+
+/** Top-ranked schools imported with the "U.S. News top N" option that aren't on the student's list. */
+function RankedScatters({ colleges, student }) {
+  const [shown, setShown] = React.useState(RANKED_PAGE);
+  if (!colleges.length) return null;
+  return (
+    <section style={{ marginTop: 32 }}>
+      <h2 className="cf-display" style={{ margin: "0 0 4px", fontSize: 26, color: "var(--ink)" }}>Top-ranked schools</h2>
+      <p style={{ margin: "0 0 16px", fontSize: 13, color: "var(--muted)" }}>{`${colleges.length} U.S. News-ranked schools you imported that aren’t on your list, in rank order.`}</p>
+      <div style={{ display: "grid", gap: 16 }}>
+        {colleges.slice(0, shown).map((c) => <CollegeScatter key={c.slug} college={c} student={student} />)}
+      </div>
+      {shown < colleges.length && <div style={{ marginTop: 16 }}><Button size="sm" variant="secondary" onClick={() => setShown(shown + RANKED_PAGE)}>{`Show more (${colleges.length - shown} left)`}</Button></div>}
     </section>
   );
 }
@@ -129,11 +147,11 @@ function ImportSetup({ imported, onDelete, busy }) {
   return (
     <section style={{ border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", padding: 20, background: "var(--surface-soft)", marginBottom: 24 }}>
       <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 22, color: "var(--ink)" }}>{imported ? "Refresh from Maia" : "Import from Maia Learning"}</h2>
-      <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)" }}>If your high school uses Maia Learning, you can bring in its scattergrams: where past applicants from your school landed, by GPA and SAT, for each college on your list.</p>
+      <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)" }}>If your high school uses Maia Learning, you can bring in its scattergrams: where past applicants from your school landed, by GPA and SAT, for each college on your list. You can also bring in the U.S. News top 50 to 250.</p>
       <ol style={{ margin: "0 0 16px", paddingLeft: 20, fontSize: 14, color: "var(--body)", lineHeight: 1.7 }}>
         <li>Drag this button to your bookmarks bar: <a ref={linkRef} onClick={(e) => e.preventDefault()} style={{ display: "inline-block", padding: "4px 12px", borderRadius: "var(--radius-pill)", background: "var(--coral)", color: "var(--on-primary)", textDecoration: "none", fontWeight: 600, cursor: "grab" }}>Forge ← Maia</a> <button type="button" onClick={copy} style={{ border: "none", background: "transparent", color: "var(--coral)", cursor: "pointer", fontSize: 13 }}>{copied ? "Copied" : "or copy it"}</button></li>
         <li>Open <a href="https://app.maialearning.com" target="_blank" rel="noopener noreferrer" style={{ color: "var(--coral)" }}>app.maialearning.com</a> and sign in.</li>
-        <li>Click the bookmark. A small College Forge window shows progress, then saves here.</li>
+        <li>Click the bookmark. In the small College Forge window, choose your list alone or your list plus a U.S. News top 50, 75, 100, 150, 200 or 250. It shows progress, then saves here.</li>
       </ol>
       <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>This uses your own Maia sign-in in your browser; College Forge never sees your Maia password or session. The data describes real students from your school, so it stays private to your workspace and is left out of share links and exports. Maia doesn’t officially support this, so it may stop working if Maia changes.</p>
       {imported && <div style={{ marginTop: 12 }}><Button size="sm" variant="secondary" disabled={busy} onClick={onDelete}>Delete imported data</Button></div>}
@@ -170,6 +188,8 @@ function Scattergrams({ data }) {
   const student = studentMarker(doc, data.applicant || {});
   const imported = doc ? data.colleges.map((c) => doc.colleges[c.slug]).filter(Boolean) : [];
   const notImported = doc ? data.colleges.filter((c) => !doc.colleges[c.slug]) : [];
+  const onList = new Set(data.colleges.map((c) => c.slug));
+  const ranked = doc ? Object.values(doc.colleges).filter((c) => !onList.has(c.slug)).sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity)) : [];
 
   return (
     <div className="cf-page">
@@ -191,6 +211,7 @@ function Scattergrams({ data }) {
             {imported.map((c) => <CollegeScatter key={c.slug} college={c} student={student} />)}
           </div>
           {notImported.length > 0 && <p style={{ marginTop: 16, fontSize: 13, color: "var(--muted)" }}>{`Not imported yet: ${notImported.map((c) => c.short || c.name).join(", ")}. Run the bookmark again to add them.`}</p>}
+          <RankedScatters colleges={ranked} student={student} />
         </>}
     </div>
   );

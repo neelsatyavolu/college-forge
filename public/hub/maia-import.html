@@ -33,14 +33,30 @@
   ul { padding-left: 18px; font-size: 13px; color: var(--muted); }
   .actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
   button, a.btn { font: inherit; font-size: 14px; padding: 8px 14px; border-radius: var(--radius-md); border: 1px solid var(--hairline); background: var(--surface-soft); color: var(--ink); cursor: pointer; text-decoration: none; }
-  a.btn.primary { background: var(--coral); border-color: var(--coral); color: var(--on-primary); }
+  a.btn.primary, button.primary { background: var(--coral); border-color: var(--coral); color: var(--on-primary); }
+  .scope { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 16px 0 0; }
+  .scope label { font-size: 14px; color: var(--ink); }
+  select { font: inherit; font-size: 14px; padding: 7px 10px; border-radius: var(--radius-md); border: 1px solid var(--hairline); background: var(--surface-soft); color: var(--ink); }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <main>
   <h1>Import from Maia</h1>
-  <p>Bringing your school’s past-applicant scattergrams into College Forge for the colleges on your list.</p>
+  <p>Bringing your school’s past-applicant scattergrams into College Forge for the colleges on your list, and optionally the U.S. News top-ranked schools.</p>
+  <div class="scope" id="scope" hidden>
+    <label for="scope-select">Import</label>
+    <select id="scope-select">
+      <option value="0">Just my list</option>
+      <option value="50">My list + U.S. News top 50</option>
+      <option value="75">My list + U.S. News top 75</option>
+      <option value="100">My list + U.S. News top 100</option>
+      <option value="150">My list + U.S. News top 150</option>
+      <option value="200">My list + U.S. News top 200</option>
+      <option value="250">My list + U.S. News top 250</option>
+    </select>
+    <button type="button" class="primary" id="start">Start import</button>
+  </div>
   <div class="bar" aria-hidden="true"><span id="bar"></span></div>
   <div class="status" id="status" role="status" aria-live="polite">Connecting to Maia…</div>
   <ul id="missing" hidden></ul>

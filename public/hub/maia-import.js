@@ -5,6 +5,8 @@
   "use strict";
 
   var MAIA_ORIGIN = "https://app.maialearning.com";
+  var SAVE_BATCH = 25; // colleges per POST, to stay well under the request size limit
+  var SCOPE_KEY = "cf.maiaScope";
   var maia = window.opener;
   var colleges = null;
   var finished = false;
@@ -37,18 +39,25 @@
     list.hidden = false;
   }
 
+  async function post(body) {
+    var res = await fetch("/api/workspace/scattergrams", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    var j = await res.json().catch(function () { return {}; });
+    if (!res.ok || j.success === false) throw new Error(j.error || "Save failed");
+  }
+
   async function save(payload, missing, cancelled) {
-    if (!payload.colleges.length) { showMissing(missing); finish("Maia didn’t return scattergrams for any college on your list.", true); return; }
-    setStatus("Saving to College Forge…");
+    if (!payload.colleges.length) { showMissing(missing); finish("Maia didn’t return scattergrams for any of these colleges.", true); return; }
+    var total = payload.colleges.length;
     try {
-      var res = await fetch("/api/workspace/scattergrams", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      var j = await res.json().catch(function () { return {}; });
-      if (!res.ok || j.success === false) throw new Error(j.error || "Save failed");
+      for (var i = 0; i < total; i += SAVE_BATCH) {
+        setStatus("Saving to College Forge… (" + Math.min(i + SAVE_BATCH, total) + " of " + total + ")");
+        await post({ classOfYears: payload.classOfYears, student: payload.student, colleges: payload.colleges.slice(i, i + SAVE_BATCH) });
+      }
       var withData = payload.colleges.filter(function (c) { return c.points.length > 0; }).length;
       showMissing(missing);
       finish((cancelled ? "Stopped early. " : "") + "Imported " + payload.colleges.length + " colleges (" + withData + " with applicants from your school).");
@@ -81,28 +90,72 @@
   // First click stops the run and keeps what was already fetched; afterwards it closes.
   var stopping = false;
   el("cancel").addEventListener("click", function () {
-    if (finished || stopping || !maia || maia.closed) { window.close(); return; }
+    if (finished || stopping || !colleges || !maia || maia.closed) { window.close(); return; }
     stopping = true;
     maia.postMessage({ type: "cf-maia:cancel" }, MAIA_ORIGIN);
     setStatus("Stopping… saving what’s done so far.");
     el("cancel").textContent = "Close";
   });
 
+  function toTarget(c) { return { slug: c.slug, name: c.name, scorecardId: c.scorecardId || null }; }
+
+  /** The student's list first, then ranked schools up to `topN` that aren't already on it. */
+  function chooseColleges(list, ranked, topN) {
+    var seen = {};
+    list.forEach(function (c) { seen[c.slug] = true; });
+    var extra = ranked.filter(function (c) { return c.rank <= topN && !seen[c.slug]; });
+    return list.concat(extra).map(toTarget);
+  }
+
+  // The ranking only feeds the "top N" options, so the import still works without it.
+  async function loadRanked() {
+    try {
+      var res = await fetch("/api/colleges/search?browse=1", { credentials: "same-origin" });
+      var j = await res.json();
+      if (!res.ok || !j.success || !Array.isArray(j.data)) throw new Error("browse failed");
+      return j.data.filter(function (c) { return typeof c.rank === "number" && c.rank > 0; }).sort(function (a, b) { return a.rank - b.rank; });
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function remembered() {
+    try { return localStorage.getItem(SCOPE_KEY) || "0"; } catch (e) { return "0"; }
+  }
+
+  function begin(list, ranked) {
+    var topN = Number(el("scope-select").value) || 0;
+    try { localStorage.setItem(SCOPE_KEY, String(topN)); } catch (e) { /* private mode */ }
+    var chosen = chooseColleges(list, ranked, topN);
+    if (!chosen.length) { setStatus("Your list is empty. Add colleges in College Forge or pick a U.S. News option.", true); return; }
+    el("scope").hidden = true;
+    colleges = chosen;
+    var extra = chosen.length - list.length;
+    setStatus("Importing " + chosen.length + " colleges" + (extra > 0 && list.length ? " (" + list.length + " from your list, " + extra + " top-ranked)" : "") + ". Waiting for Maia…");
+    hello();
+  }
+
   async function start() {
     if (!maia) { finish("Open this from the College Forge bookmark while you’re on app.maialearning.com.", true); return; }
     window.addEventListener("message", onMessage);
+    var list;
     try {
       var res = await fetch("/api/workspace", { credentials: "same-origin" });
       if (!res.ok) throw new Error("load failed");
       var ws = await res.json();
-      colleges = (ws.colleges || []).map(function (c) { return { slug: c.slug, name: c.name, scorecardId: c.scorecardId || null }; });
+      list = ws.colleges || [];
     } catch (e) {
       finish("Couldn’t load your College Forge list. Refresh College Forge and try again.", true);
       return;
     }
-    if (!colleges.length) { finish("Your list is empty. Add colleges in College Forge first, then run the import again.", true); return; }
-    setStatus("Found " + colleges.length + " colleges on your list. Waiting for Maia…");
-    hello();
+    var ranked = await loadRanked();
+    var select = el("scope-select");
+    if (!ranked.length) Array.prototype.forEach.call(select.options, function (o) { o.disabled = o.value !== "0"; });
+    select.value = ranked.length ? remembered() : "0";
+    if (select.selectedIndex < 0) select.value = "0";
+    el("start").addEventListener("click", function () { begin(list, ranked); });
+    el("scope").hidden = false;
+    setStatus(list.length + " colleges on your list. Choose what to import." + (ranked.length ? " Larger imports take a few minutes." : ""));
   }
 
   start();

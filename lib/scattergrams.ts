@@ -9,6 +9,8 @@ export type StudentMarker = { gpa: number | null; wgpa: number | null; sat: numb
 export type CollegeScattergram = {
   slug: string;
   name: string;
+  /** U.S. News rank at import time, when the school is in the top 250. */
+  rank?: number | null;
   maiaTitle: string | null;
   fetchedAt: number;
   n: number;
@@ -25,7 +27,7 @@ export type ScattergramDoc = {
   colleges: Record<string, CollegeScattergram>;
 };
 
-export const MAX_IMPORT_COLLEGES = 200;
+export const MAX_IMPORT_COLLEGES = 300;
 export const MAX_POINTS_PER_COLLEGE = 5000;
 export const MAX_POINTS_PER_IMPORT = 50_000;
 const MAX_ROUND = 40;
@@ -80,14 +82,17 @@ function sanitizeStudent(value: unknown): StudentMarker | null {
 
 export type ImportResult = { doc: ScattergramDoc; skipped: string[] };
 
+export type ImportableCollege = { slug: string; name: string; rank?: number | null };
+
 /**
- * Validate an import body and merge it over the existing doc. Only colleges on
- * the student's list (by slug) are stored; the college name comes from the list.
+ * Validate an import body and merge it over the existing doc. Only `allowed`
+ * colleges (by slug) are stored; the name and rank come from `allowed`, and a
+ * later entry with the same slug wins.
  */
 export function applyScattergramImport(
   existing: ScattergramDoc | null,
   body: unknown,
-  list: { slug: string; name: string }[],
+  allowed: ImportableCollege[],
   now = Date.now()
 ): ImportResult {
   if (!isObject(body)) throw new ScattergramInputError("A JSON object is required.");
@@ -97,7 +102,7 @@ export function applyScattergramImport(
   const total = incoming.reduce((sum, entry) => sum + (isObject(entry) && Array.isArray(entry.points) ? entry.points.length : 0), 0);
   if (total > MAX_POINTS_PER_IMPORT) throw new ScattergramInputError("Too many points in one import.");
 
-  const names = new Map(list.map((c) => [c.slug, c.name]));
+  const known = new Map(allowed.map((c) => [c.slug, c]));
   const skipped: string[] = [];
   const imported: Record<string, CollegeScattergram> = {};
   for (const entry of incoming) {
@@ -105,8 +110,8 @@ export function applyScattergramImport(
     const points = entry.points ?? [];
     if (!Array.isArray(points)) throw new ScattergramInputError(`points for ${entry.slug} must be an array.`);
     if (points.length > MAX_POINTS_PER_COLLEGE) throw new ScattergramInputError(`Too many points for ${entry.slug}.`);
-    const name = names.get(entry.slug);
-    if (!name) {
+    const college = known.get(entry.slug);
+    if (!college) {
       skipped.push(entry.slug.slice(0, 80));
       continue;
     }
@@ -114,7 +119,8 @@ export function applyScattergramImport(
     const averages = isObject(entry.averages) ? { gpa: gpa(entry.averages.gpa), sat: sat(entry.averages.sat) } : { gpa: null, sat: null };
     imported[entry.slug] = {
       slug: entry.slug,
-      name,
+      name: college.name,
+      rank: college.rank ?? null,
       maiaTitle: label(entry.maiaTitle, 160),
       fetchedAt: now,
       n: clean.length,
@@ -125,8 +131,8 @@ export function applyScattergramImport(
   }
 
   const classOfYears = label(body.classOfYears, 4);
-  // Drop data for colleges the student has since removed from their list.
-  const kept = Object.fromEntries(Object.entries(existing?.colleges || {}).filter(([slug]) => names.has(slug)));
+  // Drop data for colleges that are no longer importable (e.g. removed from the list).
+  const kept = Object.fromEntries(Object.entries(existing?.colleges || {}).filter(([slug]) => known.has(slug)));
   return {
     skipped,
     doc: {

@@ -94,11 +94,25 @@ test('outcomes collapse to a fixed set, so hostile labels stay cheap and harmles
  assert.equal((await route.POST(req('POST', {colleges:tooMany}))).status, 400);
 }));
 
-test('an import drops stored data for colleges no longer on the list', () => isolated(async () => {
+test('an import drops stored data for unranked colleges no longer on the list', () => isolated(async () => {
  await route.POST(req('POST', {colleges:[tufts, {slug:'bates-college', points:[]}]}));
- await store.updateWorkspace(WS, (ws) => ({...ws, colleges: ws.colleges.filter((c) => c.slug !== 'tufts-university')}));
- const j = await (await route.POST(req('POST', {colleges:[{slug:'bates-college', points:[]}]}))).json();
- assert.deepEqual(Object.keys(j.data.scattergrams.colleges), ['bates-college']);
+ await store.updateWorkspace(WS, (ws) => ({...ws, colleges: ws.colleges.filter((c) => c.slug !== 'bates-college')}));
+ const j = await (await route.POST(req('POST', {colleges:[tufts]}))).json();
+ assert.deepEqual(Object.keys(j.data.scattergrams.colleges), ['tufts-university']);
+}));
+
+test('U.S. News top-250 schools import even when they are not on the list', () => isolated(async () => {
+ const j = await (await route.POST(req('POST', {colleges:[{slug:'boston-college', maiaTitle:'Boston College', points:[{sat:1450,gpa:3.9,result:'Accepted'}]}]}))).json();
+ assert.deepEqual(j.data.skipped, []);
+ const bc = j.data.scattergrams.colleges['boston-college'];
+ assert.equal(bc.name, 'Boston College');
+ assert.equal(bc.rank, 31);
+ assert.equal(bc.n, 1);
+ assert.equal(j.data.scattergrams.colleges['tufts-university'], undefined);
+ const later = await (await route.POST(req('POST', {colleges:[tufts]}))).json();
+ assert.equal(later.data.scattergrams.colleges['boston-college'].n, 1, 'ranked schools survive later imports');
+ assert.equal(later.data.scattergrams.colleges['tufts-university'].rank, 31);
+ assert.equal(later.data.scattergrams.colleges['bates-college'], undefined);
 }));
 
 test('empty imports are kept so the UI can say the school has no data', () => isolated(async () => {
@@ -115,7 +129,7 @@ test('a later import replaces only the colleges it includes', () => isolated(asy
 }));
 
 test('invalid bodies are rejected', () => isolated(async () => {
- for (const body of [null, [], 123, 'x', {}, {colleges:[]}, {colleges:'nope'}, {colleges:Array.from({length:201},(_,i)=>({slug:'s'+i,points:[]}))}]) {
+ for (const body of [null, [], 123, 'x', {}, {colleges:[]}, {colleges:'nope'}, {colleges:Array.from({length:301},(_,i)=>({slug:'s'+i,points:[]}))}]) {
   const r = await route.POST(req('POST', body));
   assert.equal(r.status, 400, JSON.stringify(body).slice(0,40));
   assert.equal((await r.json()).success, false);
