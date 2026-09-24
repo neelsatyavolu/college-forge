@@ -43,6 +43,14 @@ function fakeMaiaApi(req) {
   return req.respond({ status: 404, headers: cors, body: 'unexpected ' + path });
 }
 
+// The popup asks what to import before it talks to Maia; pick "Just my list".
+async function startImport(popup) {
+  await popup.waitForSelector('#scope:not([hidden])', { timeout: 10000 });
+  await popup.click('input[name="scope"][value="0"] + span');
+  if (process.env.CHOOSE_DELAY_MS) await new Promise((r) => setTimeout(r, Number(process.env.CHOOSE_DELAY_MS)));
+  await popup.click('#start');
+}
+
 const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
 try {
   await browser.setCookie({ name: 'cf_workspace', value: WS, url: BASE });
@@ -82,6 +90,7 @@ try {
   const popupTarget = browser.waitForTarget((t) => t.url().includes('/hub/maia-import.html'), { timeout: 10000 });
   await maia.click('#bm');
   const popup = await (await popupTarget).page();
+  await startImport(popup);
   await popup.waitForFunction(() => /Imported|Couldn|didn/.test(document.getElementById('status').textContent), { timeout: 20000 }).catch(async (e) => {
     console.error('popup status:', await popup.$eval('#status', (n) => n.textContent), '| maia errors:', errors, '| maia calls:', seen.map((s) => s.path));
     throw e;
@@ -107,6 +116,7 @@ try {
   const reloaded = popup.waitForNavigation();
   await maia.click('#bm');
   await reloaded;
+  await startImport(popup);
   await popup.waitForFunction(() => /Imported/.test(document.getElementById('status').textContent), { timeout: 20000 });
   assert.ok(seen.length > callsBefore, 'second run called Maia again');
 

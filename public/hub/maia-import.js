@@ -123,8 +123,11 @@
     try { return localStorage.getItem(SCOPE_KEY) || "0"; } catch (e) { return "0"; }
   }
 
+  function scopeInputs() { return Array.prototype.slice.call(document.querySelectorAll('input[name="scope"]')); }
+
   function begin(list, ranked) {
-    var topN = Number(el("scope-select").value) || 0;
+    var checked = scopeInputs().filter(function (i) { return i.checked; })[0];
+    var topN = checked ? Number(checked.value) || 0 : 0;
     try { localStorage.setItem(SCOPE_KEY, String(topN)); } catch (e) { /* private mode */ }
     var chosen = chooseColleges(list, ranked, topN);
     if (!chosen.length) { setStatus("Your list is empty. Add colleges in College Forge or pick a U.S. News option.", true); return; }
@@ -149,10 +152,13 @@
       return;
     }
     var ranked = await loadRanked();
-    var select = el("scope-select");
-    if (!ranked.length) Array.prototype.forEach.call(select.options, function (o) { o.disabled = o.value !== "0"; });
-    select.value = ranked.length ? remembered() : "0";
-    if (select.selectedIndex < 0) select.value = "0";
+    var inputs = scopeInputs();
+    var want = ranked.length ? remembered() : "0";
+    inputs.forEach(function (i) {
+      if (!ranked.length) i.disabled = i.value !== "0";
+      i.checked = i.value === want;
+    });
+    if (!inputs.some(function (i) { return i.checked; })) inputs[0].checked = true;
     el("start").addEventListener("click", function () { begin(list, ranked); });
     el("scope").hidden = false;
     setStatus(list.length + " colleges on your list. Choose what to import." + (ranked.length ? " Larger imports take a few minutes." : ""));

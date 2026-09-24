@@ -38,6 +38,25 @@ function useWidth(ref) {
 }
 
 const diamond = (cx, cy, r) => `M${cx} ${cy - r}L${cx + r} ${cy}L${cx} ${cy + r}L${cx - r} ${cy}Z`;
+const square = (cx, cy, r) => `M${cx - r} ${cy - r}h${2 * r}v${2 * r}h${-2 * r}Z`;
+const triangle = (cx, cy, r) => `M${cx} ${cy - 1.15 * r}L${cx + 1.1 * r} ${cy + 0.8 * r}L${cx - 1.1 * r} ${cy + 0.8 * r}Z`;
+
+// Maia's round labels vary ("Early Decision II", "ED2", "REA", "Restrictive Early Action"), so match loosely.
+function roundKind(round) {
+  const r = String(round || "").toLowerCase();
+  if (/early decision|\bed\s*(i{1,2}|[12])?\b/.test(r)) return "ED";
+  if (/early action|\b(r|sc)?ea\b/.test(r)) return "EA";
+  return null;
+}
+// Diamond is taken by the "You" marker; everything that isn't ED or EA stays a circle.
+const ROUND_SHAPE = { ED: square, EA: triangle };
+
+function roundSummary(points) {
+  return ["ED", "EA"].map((kind) => {
+    const round = points.filter((p) => roundKind(p.round) === kind);
+    return round.length ? `${kind} ${round.filter((p) => p.result === "Accepted").length} of ${round.length} accepted` : null;
+  }).filter(Boolean).join(" · ");
+}
 
 function ScatterChart({ college, student }) {
   const boxRef = React.useRef(null);
@@ -76,9 +95,13 @@ function ScatterChart({ college, student }) {
         <line x1={x(student.sat)} x2={x(student.sat)} y1={pad.t} y2={H - pad.b} />
         <line x1={pad.l} x2={W - pad.r} y1={y(student.gpa)} y2={y(student.gpa)} />
       </g>}
-      {sorted.map((p, i) => <circle key={i} cx={x(p.sat)} cy={y(p.gpa)} r={dot} fill={colorFor(p.result)} fillOpacity="0.8">
-        <title>{`${p.result}${p.round ? " · " + p.round : ""} — SAT ${p.sat}, GPA ${p.gpa.toFixed(2)}`}</title>
-      </circle>)}
+      {sorted.map((p, i) => {
+        const shape = ROUND_SHAPE[roundKind(p.round)];
+        const title = <title>{`${p.result}${p.round ? " · " + p.round : ""} — SAT ${p.sat}, GPA ${p.gpa.toFixed(2)}`}</title>;
+        return shape
+          ? <path key={i} d={shape(x(p.sat), y(p.gpa), dot * 0.9)} fill={colorFor(p.result)} fillOpacity="0.8">{title}</path>
+          : <circle key={i} cx={x(p.sat)} cy={y(p.gpa)} r={dot} fill={colorFor(p.result)} fillOpacity="0.8">{title}</circle>;
+      })}
       {college.averages.sat != null && college.averages.gpa != null && <path d={`M${x(college.averages.sat) - 7} ${y(college.averages.gpa)}h14M${x(college.averages.sat)} ${y(college.averages.gpa) - 7}v14`} stroke="var(--ink)" strokeWidth="1.8"><title>{`Maia average — SAT ${college.averages.sat}, GPA ${college.averages.gpa}`}</title></path>}
       {student && <path d={diamond(x(student.sat), y(student.gpa), 8)} fill="var(--coral)" stroke="var(--canvas)" strokeWidth="2"><title>{`You — SAT ${student.sat}, GPA ${student.gpa}`}</title></path>}
     </svg>
@@ -91,6 +114,9 @@ function Legend({ hasStudent }) {
   const item = { display: "inline-flex", alignItems: "center", gap: 6 };
   return <ul style={{ display: "flex", flexWrap: "wrap", gap: 14, listStyle: "none", padding: 0, margin: "0 0 16px", fontSize: 12, color: "var(--muted)" }}>
     {items.map(([label, color]) => <li key={label} style={item}><span aria-hidden="true" style={{ width: 10, height: 10, borderRadius: 9999, background: color }} />{label}</li>)}
+    <li style={item}><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d={square(6, 6, 4.5)} fill="var(--muted)" /></svg>Early Decision</li>
+    <li style={item}><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d={triangle(6, 6.5, 4.5)} fill="var(--muted)" /></svg>Early Action</li>
+    <li style={item}><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="var(--muted)" /></svg>Regular / other</li>
     {hasStudent && <li style={item}><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d={diamond(6, 6, 5)} fill="var(--coral)" /></svg>You</li>}
     <li style={item}><span aria-hidden="true" style={{ color: "var(--ink)", fontWeight: 600 }}>+</span>Maia average</li>
   </ul>;
@@ -99,12 +125,13 @@ function Legend({ hasStudent }) {
 function CollegeScatter({ college, student }) {
   const accepted = college.counts.Accepted || 0;
   const unplotted = college.points.filter((p) => p.sat == null || p.gpa == null).length;
+  const rounds = roundSummary(college.points);
   return (
     <section style={{ border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", padding: 16, background: "var(--canvas)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginBottom: 8 }}>
         <h3 className="cf-display" style={{ margin: 0, fontSize: 20, color: "var(--ink)" }}>{college.rank ? <span style={{ color: "var(--muted)", marginRight: 8 }}>{`#${college.rank}`}</span> : null}{college.name}</h3>
         <span style={{ fontSize: 13, color: "var(--muted)" }}>
-          {college.n === 0 ? "No applicants from your school" : `${college.n} applicants · ${accepted} accepted (${Math.round((accepted / college.n) * 100)}%)`}
+          {college.n === 0 ? "No applicants from your school" : `${college.n} applicants · ${accepted} accepted (${Math.round((accepted / college.n) * 100)}%)${rounds ? " · " + rounds : ""}`}
         </span>
       </div>
       {college.n === 0
