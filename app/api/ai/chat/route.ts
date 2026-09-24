@@ -138,12 +138,8 @@ export async function POST(req: NextRequest) {
         });
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
-        const detail =
-          err instanceof Error && err.stack
-            ? err.stack.split("\n").slice(0, 5).join("\n")
-            : undefined;
         console.error(`[ai-chat] ws=${wsTag} error after ${Date.now() - startedAt}ms:`, err);
-        emit({ type: "error", message, detail });
+        emit({ type: "error", message });
       } finally {
         closed = true;
         try {
