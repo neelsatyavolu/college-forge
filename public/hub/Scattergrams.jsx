@@ -172,11 +172,14 @@ function Scattergrams({ data }) {
   const notImported = doc ? data.colleges.filter((c) => !doc.colleges[c.slug]) : [];
 
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-        <h1 className="cf-display" style={{ margin: 0, fontSize: 34, color: "var(--ink)" }}>Scattergrams</h1>
+    <div className="cf-page">
+      <header className="cf-page-header">
+        <div>
+          <h1 className="cf-page-title">Scattergrams</h1>
+          <p className="cf-page-lede">Where past applicants from your high school landed, by GPA and SAT, for each college on your list.</p>
+        </div>
         {doc && <Badge variant="cream" uppercase>{`Imported ${new Date(doc.importedAt).toLocaleDateString()}${doc.classOfYears ? ` · last ${doc.classOfYears} classes` : ""}`}</Badge>}
-      </div>
+      </header>
       {error && <p role="alert" style={{ color: "var(--error)", fontSize: 14 }}>{error}</p>}
       <ImportSetup imported={Boolean(doc)} onDelete={remove} busy={busy} />
       {loading ? <p style={{ color: "var(--muted)", fontSize: 14 }}>Loading…</p>
