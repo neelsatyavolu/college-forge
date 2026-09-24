@@ -1,0 +1,2 @@
+// Same bootstrap as public/hub/index.html so the saved theme applies before first paint.
+export const THEME_BOOTSTRAP = `(function(){try{var s=localStorage.getItem("cf.theme");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;

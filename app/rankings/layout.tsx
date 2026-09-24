@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import { THEME_BOOTSTRAP } from "@/lib/theme-bootstrap";
 
 export const metadata: Metadata = {
   title: "Career rankings · College Forge",
@@ -10,9 +11,6 @@ export const metadata: Metadata = {
     description: "College and major rankings built on outcomes, not prestige.",
   },
 };
-
-// Same bootstrap as public/hub/index.html so the saved theme applies before first paint.
-const THEME_BOOTSTRAP = `(function(){try{var s=localStorage.getItem("cf.theme");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;
 
 export default function RankingsLayout({ children }: { children: ReactNode }) {
   // Shares the hub's stylesheets (the hub is static and bypasses this layout).

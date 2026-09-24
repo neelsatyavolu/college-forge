@@ -18,8 +18,8 @@ function ok(cond, label) {
 }
 
 const root = await hit("/");
-ok([307, 308, 302, 301].includes(root.status) && (root.headers.get("location") || "").includes("/hub/index.html"),
-  `/ redirects to hub (status ${root.status} -> ${root.headers.get("location")})`);
+const rootText = await root.text();
+ok(root.status === 200 && rootText.includes('href="/hub/index.html"'), `/ renders the landing page with a link to the hub (status ${root.status})`);
 
 const html = await hit("/hub/index.html");
 const htmlText = await html.text();

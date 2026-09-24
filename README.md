@@ -10,7 +10,7 @@ read-only advisor link instead (safe and ToS-friendly).
 ```bash
 npm install
 npm run build
-npm start          # http://localhost:3000  → /hub/index.html
+npm start          # http://localhost:3000 (landing page; the hub is /hub/index.html)
 # or: npm run dev
 ```
 

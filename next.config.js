@@ -13,9 +13,8 @@ const nextConfig = {
     ];
   },
   async redirects() {
-    // The hub UI is the static React kit under /public/hub.
+    // "/" is the landing page (app/page.tsx); the hub UI is the static React kit under /public/hub.
     return [
-      { source: "/", destination: "/hub/index.html", permanent: false },
       // Common typo from the rankings launch brief
       { source: "/rankigngs", destination: "/rankings", permanent: false },
       { source: "/ranking", destination: "/rankings", permanent: false },
