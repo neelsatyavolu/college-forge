@@ -14,6 +14,8 @@ body { background: var(--canvas); color: var(--ink); font-family: var(--font-san
 .lp-nav nav { display: flex; align-items: center; gap: 24px; font-size: 15px; }
 .lp .lp-nav a.lp-nav__cta { text-decoration: none; font-weight: 500; color: var(--coral); }
 .lp .lp-nav a.lp-nav__cta:hover { color: var(--coral-active); }
+.lp .lp-nav a.lp-nav__github { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 1px solid var(--hairline); border-radius: 8px; text-decoration: none; font-weight: 500; transition: border-color 140ms; }
+.lp .lp-nav a.lp-nav__github:hover { border-color: var(--muted-soft); }
 
 /* Buttons */
 .lp-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border-radius: 8px; border: 1px solid var(--hairline); background: var(--canvas); color: var(--ink); font-size: 16px; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background 140ms, border-color 140ms, transform 140ms; }
@@ -126,6 +128,10 @@ body { background: var(--canvas); color: var(--ink); font-family: var(--font-san
 
 @media (max-width: 640px) {
   .lp-nav .lp-nav__rankings { display: none; }
+  .lp-nav nav { gap: 14px; }
+  .lp-nav__your { display: none; }
+  .lp .lp-nav a.lp-nav__github { padding: 0; border: 0; min-width: 24px; justify-content: center; }
+  .lp-nav__github span { display: none; }
   .lp-trust { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .lp-rank__table thead th:nth-child(4), .lp-rank__table td:nth-child(4) { display: none; }
   .lp-btn { flex: 1 1 auto; }

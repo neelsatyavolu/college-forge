@@ -92,3 +92,7 @@ BASE=https://forge.n3el.dev node scripts/verify.mjs
 Browser checks use the installed Google Chrome and default to `http://127.0.0.1:3210`. Start the app on that port first. Component regression scripts under `scripts/test-*.mjs` also cover editing, failed saves, draft recovery, and mobile comparisons. Live AI replies require a connected account and are a separate integration check.
 
 For local storage only, a process killed during a write can leave a `.json.lock` file. Stop/verify all writers before removing a confirmed abandoned lock; the application deliberately never steals locks from a paused or slow writer. This does not apply to the Blob driver.
+
+## License
+
+Code is [MIT](LICENSE). College photos, U.S. News rankings and essay prompts belong to their respective owners; College Scorecard data is public domain.
