@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const pkce = readPkceCookie();
+  const pkce = await readPkceCookie();
   if (!pkce) {
     return NextResponse.json(
       { error: "OAuth session expired. Click Connect ChatGPT again." },
@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const tokens = await exchangeCode(code, pkce.verifier);
-    writeSessionCookie(tokens);
-    clearPkceCookie();
+    await writeSessionCookie(tokens);
+    await clearPkceCookie();
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Token exchange failed.";

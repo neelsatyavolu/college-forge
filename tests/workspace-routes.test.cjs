@@ -45,19 +45,19 @@ test('an advisor note must not reactivate a share revoked while the note is savi
  const name=store.updateWorkspace ? 'updateWorkspace' : 'saveWorkspace';const original=store[name];
  store[name]=async(...args)=>{const value=await original(...args);await shares.putShare({token,workspaceId:'route-test-workspace',label:'Advisor',createdAt:1,revokedAt:2});return value;};
  try {
-   const response=await advisor.POST(req({body:'Helpful note'},'POST','/api/share/'+token),{params:{token}});assert.equal(response.status,200);
+   const response=await advisor.POST(req({body:'Helpful note'},'POST','/api/share/'+token),{params:Promise.resolve({token})});assert.equal(response.status,200);
    assert.equal((await shares.getShare(token)).revokedAt,2);
-   assert.equal((await advisor.GET(req({},'POST'),{params:{token}})).status,404);
+   assert.equal((await advisor.GET(req({},'POST'),{params:Promise.resolve({token})})).status,404);
  } finally {store[name]=original;}
 }));
 
 test('reset invalidates prior share links and recovery codes',()=>isolated(async()=>{
  const shared=await (await workspace.POST(req({action:'create-share'},'POST'))).json();
  const recovery=await (await workspace.POST(req({action:'create-recovery'},'POST'))).json();
- assert.equal((await advisor.GET(req({},'POST'),{params:{token:shared.token}})).status,200);
+ assert.equal((await advisor.GET(req({},'POST'),{params:Promise.resolve({token:shared.token})})).status,200);
  await workspace.POST(req({action:'reset'},'POST'));
  await workspace.PATCH(req({applicant:{name:'New private profile'}}));
- assert.equal((await advisor.GET(req({},'POST'),{params:{token:shared.token}})).status,404);
- assert.equal((await advisor.POST(req({body:'Old link note'},'POST'),{params:{token:shared.token}})).status,404);
+ assert.equal((await advisor.GET(req({},'POST'),{params:Promise.resolve({token:shared.token})})).status,404);
+ assert.equal((await advisor.POST(req({body:'Old link note'},'POST'),{params:Promise.resolve({token:shared.token})})).status,404);
  assert.equal((await workspace.POST(req({action:'claim-recovery',code:recovery.code},'POST'))).status,404);
 }));

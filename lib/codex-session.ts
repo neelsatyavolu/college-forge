@@ -22,12 +22,12 @@ const cookieOptions = (maxAge: number) => ({
   maxAge,
 });
 
-export function writePkceCookie(value: PkceCookie): void {
-  cookies().set(PKCE_COOKIE, JSON.stringify(value), cookieOptions(PKCE_TTL_SECONDS));
+export async function writePkceCookie(value: PkceCookie): Promise<void> {
+  (await cookies()).set(PKCE_COOKIE, JSON.stringify(value), cookieOptions(PKCE_TTL_SECONDS));
 }
 
-export function readPkceCookie(): PkceCookie | null {
-  const raw = cookies().get(PKCE_COOKIE)?.value;
+export async function readPkceCookie(): Promise<PkceCookie | null> {
+  const raw = (await cookies()).get(PKCE_COOKIE)?.value;
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
@@ -38,8 +38,8 @@ export function readPkceCookie(): PkceCookie | null {
   }
 }
 
-export function clearPkceCookie(): void {
-  cookies().delete(PKCE_COOKIE);
+export async function clearPkceCookie(): Promise<void> {
+  (await cookies()).delete(PKCE_COOKIE);
 }
 
 function chunkString(s: string, size: number): string[] {
@@ -48,7 +48,7 @@ function chunkString(s: string, size: number): string[] {
   return out;
 }
 
-export function writeSessionCookie(tokens: CodexTokens): void {
+export async function writeSessionCookie(tokens: CodexTokens): Promise<void> {
   const compact: CodexTokens = {
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken,
@@ -60,7 +60,7 @@ export function writeSessionCookie(tokens: CodexTokens): void {
   if (chunks.length > MAX_CHUNKS) {
     throw new Error(`Codex session too large to fit in ${MAX_CHUNKS} cookies.`);
   }
-  const jar = cookies();
+  const jar = await cookies();
   const opts = cookieOptions(SESSION_TTL_DAYS * 24 * 60 * 60);
   chunks.forEach((chunk, i) => {
     jar.set(`${SESSION_COOKIE_PREFIX}_${i}`, chunk, opts);
@@ -71,16 +71,16 @@ export function writeSessionCookie(tokens: CodexTokens): void {
   jar.delete(LEGACY_SESSION_COOKIE);
 }
 
-export function clearSessionCookie(): void {
-  const jar = cookies();
+export async function clearSessionCookie(): Promise<void> {
+  const jar = await cookies();
   for (let i = 0; i < MAX_CHUNKS; i++) {
     jar.delete(`${SESSION_COOKIE_PREFIX}_${i}`);
   }
   jar.delete(LEGACY_SESSION_COOKIE);
 }
 
-export function readSessionCookie(): CodexTokens | null {
-  const jar = cookies();
+export async function readSessionCookie(): Promise<CodexTokens | null> {
+  const jar = await cookies();
   let joined = "";
   for (let i = 0; i < MAX_CHUNKS; i++) {
     const v = jar.get(`${SESSION_COOKIE_PREFIX}_${i}`)?.value;
@@ -104,7 +104,7 @@ export function readSessionCookie(): CodexTokens | null {
 }
 
 export async function getActiveCodexSession(): Promise<CodexTokens | null> {
-  const session = readSessionCookie();
+  const session = await readSessionCookie();
   if (!session) return null;
   if (session.expiresAt > Date.now() + 30_000) return session;
   try {
@@ -113,7 +113,7 @@ export async function getActiveCodexSession(): Promise<CodexTokens | null> {
       ...refreshed,
       accountId: refreshed.accountId ?? session.accountId,
     };
-    writeSessionCookie(merged);
+    await writeSessionCookie(merged);
     return merged;
   } catch {
     // A transient refresh outage must not delete a recoverable session. The

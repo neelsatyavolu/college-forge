@@ -21,12 +21,12 @@ const cookieOptions = (maxAge: number) => ({
   maxAge,
 });
 
-export function writeGrokPkceCookie(value: PkceCookie): void {
-  cookies().set(PKCE_COOKIE, JSON.stringify(value), cookieOptions(PKCE_TTL_SECONDS));
+export async function writeGrokPkceCookie(value: PkceCookie): Promise<void> {
+  (await cookies()).set(PKCE_COOKIE, JSON.stringify(value), cookieOptions(PKCE_TTL_SECONDS));
 }
 
-export function readGrokPkceCookie(): PkceCookie | null {
-  const raw = cookies().get(PKCE_COOKIE)?.value;
+export async function readGrokPkceCookie(): Promise<PkceCookie | null> {
+  const raw = (await cookies()).get(PKCE_COOKIE)?.value;
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
@@ -37,8 +37,8 @@ export function readGrokPkceCookie(): PkceCookie | null {
   }
 }
 
-export function clearGrokPkceCookie(): void {
-  cookies().delete(PKCE_COOKIE);
+export async function clearGrokPkceCookie(): Promise<void> {
+  (await cookies()).delete(PKCE_COOKIE);
 }
 
 function chunkString(s: string, size: number): string[] {
@@ -47,13 +47,13 @@ function chunkString(s: string, size: number): string[] {
   return out;
 }
 
-export function writeGrokSessionCookie(tokens: GrokTokens): void {
+export async function writeGrokSessionCookie(tokens: GrokTokens): Promise<void> {
   const json = JSON.stringify(tokens);
   const chunks = chunkString(json, CHUNK_SIZE);
   if (chunks.length > MAX_CHUNKS) {
     throw new Error(`Grok session too large to fit in ${MAX_CHUNKS} cookies.`);
   }
-  const jar = cookies();
+  const jar = await cookies();
   const opts = cookieOptions(SESSION_TTL_DAYS * 24 * 60 * 60);
   chunks.forEach((chunk, i) => {
     jar.set(`${SESSION_COOKIE_PREFIX}_${i}`, chunk, opts);
@@ -63,15 +63,15 @@ export function writeGrokSessionCookie(tokens: GrokTokens): void {
   }
 }
 
-export function clearGrokSessionCookie(): void {
-  const jar = cookies();
+export async function clearGrokSessionCookie(): Promise<void> {
+  const jar = await cookies();
   for (let i = 0; i < MAX_CHUNKS; i++) {
     jar.delete(`${SESSION_COOKIE_PREFIX}_${i}`);
   }
 }
 
-export function readGrokSessionCookie(): GrokTokens | null {
-  const jar = cookies();
+export async function readGrokSessionCookie(): Promise<GrokTokens | null> {
+  const jar = await cookies();
   let joined = "";
   for (let i = 0; i < MAX_CHUNKS; i++) {
     const v = jar.get(`${SESSION_COOKIE_PREFIX}_${i}`)?.value;
@@ -95,12 +95,12 @@ export function readGrokSessionCookie(): GrokTokens | null {
 }
 
 export async function getActiveGrokSession(): Promise<GrokTokens | null> {
-  const session = readGrokSessionCookie();
+  const session = await readGrokSessionCookie();
   if (!session) return null;
   if (session.expiresAt > Date.now() + 30_000) return session;
   try {
     const refreshed = await refreshGrokTokens(session.refreshToken);
-    writeGrokSessionCookie(refreshed);
+    await writeGrokSessionCookie(refreshed);
     return refreshed;
   } catch {
     // A transient refresh outage must not delete a recoverable session. The

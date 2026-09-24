@@ -57,7 +57,7 @@ Always read workspace blobs with `useCache: false`. Workspace mutations use `upd
 
 ## Frontend development
 
-The hub JSX remains in `public/hub/`. `npm run dev` compiles it and watches for edits; `npm run build` compiles it before Next.js builds. Production React and compiled scripts are served locally from the ignored `public/hub/compiled/` directory. `npm run build:hub` regenerates only these assets. Runtime Babel and external JavaScript CDNs are not required.
+The hub JSX remains in `public/hub/`. `npm run dev` compiles it and watches for edits; `npm run build` compiles it before Next.js builds. Production React and compiled scripts are served locally from the ignored `public/hub/compiled/` directory. The hub loads React as script globals, and React 19 ships no UMD builds, so the hub stays on React 18.3.1 from `vendor/react-18.3.1/` while the Next.js pages use React 19. `npm run build:hub` regenerates only these assets. Runtime Babel and external JavaScript CDNs are not required.
 
 ## Environment
 

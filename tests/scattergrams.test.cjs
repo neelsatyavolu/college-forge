@@ -60,7 +60,7 @@ test('import stores sanitized scattergrams for list colleges only, outside the w
 test('share links never expose imported scattergrams', () => isolated(async () => {
  await route.POST(req('POST', {colleges:[tufts]}));
  const created = await (await workspace.POST(new NextRequest('http://localhost/api/workspace',{method:'POST',headers:{cookie:'cf_workspace='+WS,'content-type':'application/json'},body:JSON.stringify({action:'create-share'})}))).json();
- const view = await share.GET(new NextRequest('http://localhost/api/share/'+created.token), {params:{token:created.token}});
+ const view = await share.GET(new NextRequest('http://localhost/api/share/'+created.token), {params:Promise.resolve({token:created.token})});
  assert.equal(view.status, 200);
  assert.equal((await view.text()).includes('Waitlisted'), false);
 }));

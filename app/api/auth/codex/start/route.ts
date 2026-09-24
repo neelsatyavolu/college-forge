@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST() {
   const { verifier, challenge, state } = generatePkce();
-  writePkceCookie({ verifier, state });
+  await writePkceCookie({ verifier, state });
   const authorizeUrl = buildAuthorizeUrl(challenge, state);
   return NextResponse.json({ authorizeUrl, state });
 }

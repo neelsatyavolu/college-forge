@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const pkce = readGrokPkceCookie();
+  const pkce = await readGrokPkceCookie();
   if (!pkce) {
     return NextResponse.json(
       { error: "OAuth session expired. Click Connect Grok again." },
@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const tokens = await exchangeGrokCode(code, pkce.verifier);
-    writeGrokSessionCookie(tokens);
-    clearGrokPkceCookie();
+    await writeGrokSessionCookie(tokens);
+    await clearGrokPkceCookie();
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Token exchange failed.";

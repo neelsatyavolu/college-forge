@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  clearGrokPkceCookie();
-  clearGrokSessionCookie();
+  await clearGrokPkceCookie();
+  await clearGrokSessionCookie();
   return NextResponse.json({ ok: true });
 }

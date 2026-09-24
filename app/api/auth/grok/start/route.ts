@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST() {
   const { verifier, challenge, state } = generateGrokPkce();
-  writeGrokPkceCookie({ verifier, state });
+  await writeGrokPkceCookie({ verifier, state });
   const authorizeUrl = buildGrokAuthorizeUrl(challenge, state);
   return NextResponse.json({ authorizeUrl, state });
 }

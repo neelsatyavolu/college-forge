@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 class ShareUnavailableError extends Error {}
 
-type Ctx = { params: { token: string } };
+type Ctx = { params: Promise<{ token: string }> };
 
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -18,7 +18,7 @@ function json(data: unknown, status = 200): Response {
 }
 
 export async function GET(_req: NextRequest, ctx: Ctx) {
-  const token = ctx.params.token;
+  const { token } = await ctx.params;
   const share = await getShare(token);
   if (!share || share.revokedAt) {
     return json({ success: false, error: "This share link is invalid or has been revoked." }, 404);
@@ -37,7 +37,7 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
 
 /** Advisors can post notes only (no profile mutation). */
 export async function POST(req: NextRequest, ctx: Ctx) {
-  const token = ctx.params.token;
+  const { token } = await ctx.params;
   const share = await getShare(token);
   if (!share || share.revokedAt) {
     return json({ success: false, error: "This share link is invalid or has been revoked." }, 404);

@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir, copyFile, readdir, rename } from 'node:fs/promises';
 import { watchFile, unwatchFile } from 'node:fs';
 import { spawn } from 'node:child_process';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { Script } from 'node:vm';
@@ -11,11 +11,14 @@ import { stampAssetVersions } from './hub-version.mjs';
 const require = createRequire(import.meta.url);
 const hub = fileURLToPath(new URL('../public/hub/', import.meta.url));
 const output = join(hub, 'compiled');
+// The hub loads React as script globals. React 19 ships no UMD builds, so the hub
+// keeps React 18.3.1 from vendor/ while the Next.js pages use React 19.
+const vendorReact = fileURLToPath(new URL('../vendor/react-18.3.1/', import.meta.url));
 async function buildHub() {
   await mkdir(output, { recursive: true });
 
   for (const name of ['react', 'react-dom']) {
-    const source = join(dirname(require.resolve(`${name}/package.json`)), 'umd', `${name}.production.min.js`);
+    const source = join(vendorReact, `${name}.production.min.js`);
     await copyFile(source, join(output, `${name}.production.min.js.tmp`));
     await rename(join(output, `${name}.production.min.js.tmp`), join(output, `${name}.production.min.js`));
   }
