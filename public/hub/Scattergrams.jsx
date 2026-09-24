@@ -165,6 +165,8 @@ function RankedScatters({ colleges, student }) {
 function ImportSetup({ imported, onDelete, busy }) {
   const linkRef = React.useRef(null);
   const [copied, setCopied] = React.useState(false);
+  // Once data is imported, the setup steps only matter for a refresh, so they start collapsed.
+  const [open, setOpen] = React.useState(!imported);
   const code = bookmarkletCode(window.location.origin);
   // React warns on javascript: hrefs in JSX, so the bookmarklet link is set directly.
   React.useEffect(() => { if (linkRef.current) linkRef.current.setAttribute("href", code); }, [code]);
@@ -172,8 +174,11 @@ function ImportSetup({ imported, onDelete, busy }) {
     try { await navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { setCopied(false); }
   };
   return (
-    <section style={{ border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", padding: 20, background: "var(--surface-soft)", marginBottom: 24 }}>
-      <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 22, color: "var(--ink)" }}>{imported ? "Refresh from Maia" : "Import from Maia Learning"}</h2>
+    <details open={open} onToggle={(e) => setOpen(e.currentTarget.open)} style={{ border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", padding: open ? 20 : "12px 20px", background: "var(--surface-soft)", marginBottom: 24 }}>
+      <summary style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, cursor: "pointer", listStyle: "none", marginBottom: open ? 8 : 0 }}>
+        <h2 className="cf-display" style={{ margin: 0, fontSize: 22, color: "var(--ink)" }}>{imported ? "Refresh from Maia" : "Import from Maia Learning"}</h2>
+        <span style={{ fontSize: 13, color: "var(--coral)", whiteSpace: "nowrap" }}>{open ? "Hide ▴" : "Show steps ▾"}</span>
+      </summary>
       <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)" }}>If your high school uses Maia Learning, you can bring in its scattergrams: where past applicants from your school landed, by GPA and SAT, for each college on your list. You can also bring in the U.S. News top 50 to 250.</p>
       <ol style={{ margin: "0 0 16px", paddingLeft: 20, fontSize: 14, color: "var(--body)", lineHeight: 1.7 }}>
         <li>Drag this button to your bookmarks bar: <a ref={linkRef} onClick={(e) => e.preventDefault()} style={{ display: "inline-block", padding: "4px 12px", borderRadius: "var(--radius-pill)", background: "var(--coral)", color: "var(--on-primary)", textDecoration: "none", fontWeight: 600, cursor: "grab" }}>Forge ← Maia</a> <button type="button" onClick={copy} style={{ border: "none", background: "transparent", color: "var(--coral)", cursor: "pointer", fontSize: 13 }}>{copied ? "Copied" : "or copy it"}</button></li>
@@ -182,7 +187,7 @@ function ImportSetup({ imported, onDelete, busy }) {
       </ol>
       <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>This uses your own Maia sign-in in your browser; College Forge never sees your Maia password or session. The data describes real students from your school, so it stays private to your workspace and is left out of share links and exports. Maia doesn’t officially support this, so it may stop working if Maia changes.</p>
       {imported && <div style={{ marginTop: 12 }}><Button size="sm" variant="secondary" disabled={busy} onClick={onDelete}>Delete imported data</Button></div>}
-    </section>
+    </details>
   );
 }
 
@@ -228,7 +233,7 @@ function Scattergrams({ data }) {
         {doc && <Badge variant="cream" uppercase>{`Imported ${new Date(doc.importedAt).toLocaleDateString()}${doc.classOfYears ? ` · last ${doc.classOfYears} classes` : ""}`}</Badge>}
       </header>
       {error && <p role="alert" style={{ color: "var(--error)", fontSize: 14 }}>{error}</p>}
-      <ImportSetup imported={Boolean(doc)} onDelete={remove} busy={busy} />
+      {!loading && <ImportSetup key={doc ? "refresh" : "import"} imported={Boolean(doc)} onDelete={remove} busy={busy} />}
       {loading ? <p style={{ color: "var(--muted)", fontSize: 14 }}>Loading…</p>
         : !doc ? null
         : <>
