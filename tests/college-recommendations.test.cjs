@@ -74,6 +74,28 @@ test('test-optional note prevents stale scores affecting fit', () => {
  const before=assessAcademicFit(school,ws);ws.applicant.sat='1600';assert.deepEqual(assessAcademicFit(school,ws),before);
  assert.ok(!before.reasons.some(x=>x.includes('Your SAT')));
 });
+test('long college names are shortened on a word boundary', () => {
+ const {usNewsToCollege}=require('../lib/colleges.ts');
+ const mit=usNewsToCollege(US_NEWS_TOP_250.find(s=>s.slug==='massachusetts-institute-of-technology'));
+ assert.equal(mit.short,'Massachusetts Institute');
+ assert.equal(mit.short.includes(' of T'), false);
+ const caltech=usNewsToCollege(US_NEWS_TOP_250.find(s=>s.slug==='california-institute-of-technology'));
+ assert.equal(caltech.short,'California Institute');
+});
+test('same-named colleges with different scorecard ids stay distinct', () => {
+ const {scorecardToCollege, upsertCollegeInto}=require('../lib/colleges.ts');
+ const row=(id, city, state)=>({id, name:'University of St. Thomas', alias:null, city, state, url:null, ownership:2, locale:11, size:5000, admitRate:0.8, sat25:1100, sat75:1300, act25:null, act75:null, netPrice:null, tuitionIn:null, tuitionOut:null, completion4yr:null, earnings10yr:null});
+ const mn=scorecardToCollege(row(174914,'St. Paul','MN'));
+ const tx=scorecardToCollege(row(227863,'Houston','TX'));
+ assert.equal(mn.slug,'university-of-st-thomas-mn');
+ assert.equal(tx.slug,'university-of-st-thomas-tx');
+ const ws=upsertCollegeInto(upsertCollegeInto(emptyWorkspace(), mn), tx);
+ assert.equal(ws.colleges.length,2);
+ const again=upsertCollegeInto(ws, {...tx, slug:'university-of-st-thomas'});
+ assert.equal(again.colleges.length,2);
+ assert.equal(again.colleges.filter(c=>c.scorecardId===174914).length,1);
+ assert.equal(again.colleges.filter(c=>c.scorecardId===227863).length,1);
+});
 test('saving grounded recommendations does not recalculate their tiers', () => {
  const {upsertCollegeInto}=require('../lib/colleges.ts');const ws=profile();
  const candidate=recommendColleges(ws).recommendations[0];

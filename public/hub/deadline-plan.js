@@ -47,10 +47,15 @@
     return KIND_TONES[kindOf(plan)] || roundTone(plan);
   }
 
+  function looksLikeDate(label) {
+    return /^\d{4}-\d{2}-\d{2}$/.test(label) || /^[A-Za-z]+\.?\s+\d{1,2}(?:,?\s+\d{4})?$/.test(label);
+  }
+
   // The round in the school's "EA · Nov 1" label, or null when none is chosen.
+  // A bare date is not a round — filtering on it would hide every real deadline.
   function chosenRound(college) {
     var label = String((college && college.deadline) || "").split("·")[0].trim();
-    if (!label) return null;
+    if (!label || looksLikeDate(label)) return null;
     var tokens = roundTokens(label);
     return tokens.length ? { token: tokens[0] } : { name: label.toLowerCase() };
   }

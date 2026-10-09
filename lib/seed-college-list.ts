@@ -268,7 +268,16 @@ function parseGpa(raw: string | number | null | undefined): number | null {
 }
 
 function shortName(name: string): string {
-  return name.replace(/^The\s+/i, "").replace(/\s*[-–—].*$/, "").slice(0, 28);
+  const cleaned = name.replace(/^The\s+/i, "").replace(/\s*[-–—].*$/, "").replace(/,/g, "").trim();
+  if (cleaned.length <= 28) return cleaned;
+  const words = cleaned.split(/\s+/);
+  let out = "";
+  for (const word of words) {
+    const next = out ? `${out} ${word}` : word;
+    if (next.length > 28) break;
+    out = next;
+  }
+  return out.replace(/\s+(of|and|the|for|at|in)$/i, "") || words[0];
 }
 
 function settingMatch(schoolSetting: UsNewsCollege["setting"], wanted: string[]): boolean {

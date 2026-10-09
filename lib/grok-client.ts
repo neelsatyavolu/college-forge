@@ -79,8 +79,8 @@ async function callGrok(
     });
 
     if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      throw new Error(`Grok request failed (${res.status}): ${detail.slice(0, 400)}`);
+      console.error(`[grok] request failed (${res.status})`);
+      throw new Error(`Grok request failed (${res.status}). Try again or reconnect in Settings.`);
     }
 
     const json = (await res.json()) as {
