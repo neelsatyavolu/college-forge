@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://forge.n3el.dev"),
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body style={{ margin: 0 }} suppressHydrationWarning>
         {children}
+        <Script src="https://analytics.n3el.dev/p.js" strategy="afterInteractive" />
       </body>
     </html>
   );
