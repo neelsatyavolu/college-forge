@@ -15,6 +15,10 @@ test('calendar validates actual dates and derives missing years from graduation 
  const ws=workspace();ws.criticalDates=[{date:'Nov 1',label:'Fall deadline'},{date:'January 5',label:'Spring deadline'},{date:'2026-02-30',label:'Impossible ISO'},{date:'Feb 29, 2027',label:'Impossible named'},{date:'2028-02-29',label:'Leap deadline'},{date:'Rolling',label:'Unknown'}];
  const calendar=exportCalendar(ws);assert.equal(calendar.included,3);assert.equal(calendar.skipped,3);assert.match(calendar.text,/DTSTART;VALUE=DATE:20261101/);assert.match(calendar.text,/DTSTART;VALUE=DATE:20270105/);assert.match(calendar.text,/DTSTART;VALUE=DATE:20280229/);assert.doesNotMatch(calendar.text,/Impossible|Unknown/);
 });
+test('a chosen-round label still exports its date',()=>{
+ const ws=workspace();ws.colleges=[{slug:'unc',name:'UNC',short:'UNC',deadline:'EA · Nov 1'}];
+ const calendar=exportCalendar(ws);assert.equal(calendar.included,1);assert.equal(calendar.skipped,0);assert.match(calendar.text,/DTSTART;VALUE=DATE:20261101/);assert.match(calendar.text,/SUMMARY:UNC — EA/);
+});
 test('calendar never invents a year without a graduation year',()=>{
  const ws=workspace();ws.profile.gradYear='';ws.criticalDates=[{date:'Nov 1',label:'Unknown year'},{date:'2026-11-01',label:'Explicit year'}];const result=exportCalendar(ws);assert.equal(result.included,1);assert.equal(result.skipped,1);
 });
