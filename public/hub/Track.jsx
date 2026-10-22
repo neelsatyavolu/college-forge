@@ -25,7 +25,16 @@ function Track({ data, onAsk, onWorkspaceChange }) {
   const [schForm, setSchForm] = React.useState({ name: "", amount: "", deadline: "", url: "" });
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [notes, setNotes] = React.useState(fa.notes || "");
+  const serverNotes = fa.notes || "";
+  const [notes, setNotes] = React.useState(serverNotes);
+  const notesRef = React.useRef(notes);
+  const notesBaseRef = React.useRef(serverNotes);
+  notesRef.current = notes;
+  React.useEffect(() => {
+    const incoming = fa.notes || "";
+    if (notesRef.current === notesBaseRef.current) setNotes(incoming);
+    notesBaseRef.current = incoming;
+  }, [fa.notes]);
 
   const patch = async (p) => {
     if (busy) return false;

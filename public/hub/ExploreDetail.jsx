@@ -124,6 +124,11 @@ function FieldEarnings({ programs }) {
   }
   const max = Math.max(...rows.map((r) => Math.max(r.earnings4, r.national4 || 0)));
   const money = (n) => `$${Math.round(n).toLocaleString()}`;
+  const vsNational = (earnings, national) => {
+    if (typeof national !== "number" || national <= 0) return null;
+    const pct = Math.round(((earnings - national) / national) * 100);
+    return `${pct > 0 ? "+" : ""}${pct}%`;
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -136,11 +141,11 @@ function FieldEarnings({ programs }) {
               <span style={{ flexShrink: 0, fontFamily: "var(--font-mono)", fontSize: 12.5, color: "var(--ink)" }}>{money(p.earnings4)}</span>
             </div>
             <div style={{ position: "relative", height: 6, borderRadius: "var(--radius-pill)", background: "var(--surface-cream-strong)", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${(p.earnings4 / max) * 100}%`, background: beats ? "var(--accent-teal)" : "var(--coral)", borderRadius: "var(--radius-pill)" }} />
+              <div style={{ height: "100%", width: `${max > 0 ? (p.earnings4 / max) * 100 : 0}%`, background: beats ? "var(--accent-teal)" : "var(--coral)", borderRadius: "var(--radius-pill)" }} />
             </div>
             {typeof p.national4 === "number" ? (
               <div style={{ marginTop: 2, fontSize: 11.5, color: "var(--muted-soft)" }}>
-                national median {money(p.national4)} · {beats ? "+" : ""}{Math.round(((p.earnings4 - p.national4) / p.national4) * 100)}%
+                national median {money(p.national4)}{vsNational(p.earnings4, p.national4) ? ` · ${vsNational(p.earnings4, p.national4)}` : ""}
               </div>
             ) : null}
           </div>
@@ -199,7 +204,7 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
         <div className="cf-explore-confirm">
           <p>Remove this school from your shortlist? Your saved essay drafts will remain.</p>
           <div className="cf-explore-actions">
-            <Button size="sm" disabled={busy} onClick={() => onRemove(d)}>{busy ? "Removing…" : "Confirm removal"}</Button>
+            <Button size="sm" disabled={busy} onClick={() => onRemove(c)}>{busy ? "Removing…" : "Confirm removal"}</Button>
             <Button size="sm" variant="secondary" disabled={busy} onClick={() => setConfirmRemove(false)}>Keep school</Button>
           </div>
         </div>

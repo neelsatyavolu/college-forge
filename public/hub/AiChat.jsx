@@ -417,7 +417,9 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view, i
       let buf = "", completed = false;
       const event = line => {
         if (!line.trim()) return;
-        const ev = JSON.parse(line);
+        let ev;
+        try { ev = JSON.parse(line); }
+        catch { throw new Error("The connection returned an unreadable response."); }
         if (ev.type === "delta") appendToLastAssistant(ev.text);
         else if (ev.type === "status") setStatus(window.cfChatStatus?.softenStatusMessage?.(ev.message) || ev.message || "Working…");
         else if (ev.type === "tool") setStatus(window.cfChatStatus?.friendlyToolMessage?.(ev.name, ev.path) || "Updating your hub…");
@@ -437,6 +439,12 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view, i
         if (!completed) throw new Error("The connection ended before the response finished.");
       } finally { await reader.cancel().catch(() => {}); }
     } catch (e) {
+      if (submitted) {
+        setMessages((m) => {
+          const last = m[m.length - 1];
+          return last && last.role === "assistant" && !last.content ? m.slice(0, -1) : m;
+        });
+      }
       setError(`${e.message || "Couldn’t send your message."}${submitted ? " Your prompt is ready to edit or resend. Review any saved hub changes before retrying." : ""}`);
       setInput(current => current || text);
       setAttachments(current => current.length ? current : sentAttachments);

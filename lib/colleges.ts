@@ -15,20 +15,32 @@ export function slugify(s: string): string {
     .slice(0, 80);
 }
 
+function positiveId(id: number | null | undefined): number | null {
+  return typeof id === "number" && id > 0 ? id : null;
+}
+
 function sameCollege(a: College, b: College): boolean {
+  const aId = positiveId(a.scorecardId);
+  const bId = positiveId(b.scorecardId);
+  // Federal ids are decisive. Two campuses can share a display name
+  // (University of St. Thomas in Minnesota and Texas) and must not collapse.
+  if (aId !== null && bId !== null) return aId === bId;
   if (a.slug && b.slug && a.slug === b.slug) return true;
-  if (
-    typeof a.scorecardId === "number" &&
-    typeof b.scorecardId === "number" &&
-    a.scorecardId > 0 &&
-    a.scorecardId === b.scorecardId
-  ) {
-    return true;
-  }
   const na = slugify(a.name || a.short || "");
   const nb = slugify(b.name || b.short || "");
   if (na && nb && na === nb) return true;
   return false;
+}
+
+/** A saved list row is this school when the slug matches or the Scorecard id does. */
+export function matchesSavedCollege(
+  saved: { slug?: string; scorecardId?: number | null },
+  candidate: { slug?: string; scorecardId?: number | null }
+): boolean {
+  if (saved.slug && candidate.slug && saved.slug === candidate.slug) return true;
+  const savedId = positiveId(saved.scorecardId);
+  const candidateId = positiveId(candidate.scorecardId);
+  return savedId !== null && savedId === candidateId;
 }
 
 /**
@@ -172,6 +184,20 @@ const pct = (n: number | null) => (typeof n === "number" ? `${Math.round(n * 100
 const range = (a: number | null, b: number | null) =>
   typeof a === "number" && typeof b === "number" ? `${a}–${b}` : undefined;
 
+/** Clip a long name on a word boundary instead of mid-word ("Institute of T"). */
+function clipShortName(name: string): string {
+  const cleaned = name.replace(/^The\s+/i, "").replace(/\s*[-–—].*$/, "").replace(/,/g, "").trim();
+  if (cleaned.length <= 28) return cleaned;
+  const words = cleaned.split(/\s+/);
+  let out = "";
+  for (const word of words) {
+    const next = out ? `${out} ${word}` : word;
+    if (next.length > 28) break;
+    out = next;
+  }
+  return out.replace(/\s+(of|and|the|for|at|in)$/i, "") || words[0];
+}
+
 /** A short display name: prefer a real alias (UCLA, MIT) over the full name. */
 function shortName(name: string, alias: string | null): string {
   const first = (alias ?? "")
@@ -179,7 +205,7 @@ function shortName(name: string, alias: string | null): string {
     .map((a) => a.trim())
     .filter((a) => a.length >= 2 && a.length <= 12 && !/^\d+$/.test(a))[0];
   if (first) return first;
-  return name.replace(/^The\s+/i, "").replace(/\s*[-–—].*$/, "").slice(0, 28);
+  return clipShortName(name);
 }
 
 /**
@@ -197,6 +223,9 @@ export function withUsNews(college: College, scorecardId?: number | null): Colle
   if (!hit) return college;
   return {
     ...college,
+    // Keep the disambiguated ranking slug so two schools with the same
+    // Scorecard name do not share one id in search results.
+    slug: hit.slug,
     rank: college.rank ?? hit.rank,
     photo: college.photo || hit.photo || null,
     scorecardId: college.scorecardId ?? hit.scorecardId,

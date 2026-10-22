@@ -66,3 +66,10 @@ test('schools without a chosen round show every deadline', () => {
   const college = { deadlines: [{ plan: 'ED I', date: 'x' }, { plan: 'RD', date: 'y' }] };
   assert.deepEqual(plans(college), ['ED I', 'RD']);
 });
+
+test('a bare date is not treated as a chosen round', () => {
+  const college = { deadline: 'Nov 1', deadlines: [{ plan: 'EA', date: '2026-11-01' }, { plan: 'RD', date: '2027-01-05' }] };
+  assert.deepEqual(plans(college), ['EA', 'RD']);
+  const iso = { deadline: '2026-11-01', deadlines: [{ plan: 'RD', date: '2027-01-05' }] };
+  assert.deepEqual(plans(iso), ['RD']);
+});

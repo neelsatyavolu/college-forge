@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import {
   scorecardToCollege,
+  matchesSavedCollege,
   fitFor,
   cipArea,
   CREDENTIAL_LABEL,
@@ -152,8 +153,8 @@ export async function GET(req: NextRequest) {
   try {
     const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
     if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Scorecard ${res.status}: ${text.slice(0, 200)}`);
+      console.error(`[colleges] scorecard detail failed (${res.status})`);
+      throw new Error("College details are temporarily unavailable.");
     }
     const body = (await res.json()) as { results?: Hit[] };
     const r = body.results?.[0];
@@ -164,19 +165,19 @@ export async function GET(req: NextRequest) {
     const { tags, tier } = fitFor(base, ws.profile.testing.sat || ws.applicant.sat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
     // Anything the copilot already researched for this school (deadlines,
     // admit-by-plan, transfer policy) wins — the federal dataset has none of it.
-    const saved = ws.colleges.find((c) => c.slug === base.slug);
+    const scId = num(r.id);
+    const saved = ws.colleges.find((c) => matchesSavedCollege(c, { slug: base.slug, scorecardId: scId }));
 
     const ownership = num(r["school.ownership"]);
     const testReq = num(r["latest.admissions.test_requirements"]);
 
-    const scId = num(r.id) ?? undefined;
     const detail = {
       ...base,
       ...(saved ?? {}),
       // Keep US News rank + campus photo even if the saved workspace row is sparse.
       rank: saved?.rank ?? base.rank,
       photo: saved?.photo || base.photo || null,
-      scorecardId: scId,
+      scorecardId: scId ?? undefined,
       tags: saved?.tags ?? tags,
       tier: saved?.tier ?? tier,
       coa: money(num(r["latest.cost.attendance.academic_year"])),
@@ -198,8 +199,7 @@ export async function GET(req: NextRequest) {
     );
     return json({ success: true, data: detail }, 200, setCookie);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Lookup failed.";
     console.error(`[colleges] detail failed for id=${idParam}:`, err);
-    return json({ success: false, error: message }, 502, setCookie);
+    return json({ success: false, error: "College details are temporarily unavailable." }, 502, setCookie);
   }
 }

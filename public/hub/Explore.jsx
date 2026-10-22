@@ -106,7 +106,13 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   // Debounced live search against the College Scorecard.
   React.useEffect(() => {
     const term = q.trim();
-    if (term.length < 2) { setResults(null); setSearching(false); return; }
+    if (term.length < 2) {
+      setResults(null);
+      setSearching(false);
+      // A failed search must not keep its alert up on the ranking.
+      if ((browse || []).length) setError("");
+      return;
+    }
     let cancelled = false;
     setSearching(true);
     const t = setTimeout(async () => {
@@ -138,12 +144,12 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
     requestAnimationFrame(() => window.scrollTo(0, y));
   }, [openSlug]);
 
-  const onListSlugs = new Set(myList.map((c) => c.slug));
+  const savedMatch = (c) => myList.find((school) => school.slug === c.slug || (c.scorecardId && school.scorecardId === c.scorecardId));
   const source = searchMode ? (results || []) : (browse || []);
   const list = source
     .filter((c) => (setting === "all" ? true : c.setting === setting))
     .filter((c) => (favOnly ? favorites.includes(c.slug) : true))
-    .map((c) => ({ ...c, onList: onListSlugs.has(c.slug) }));
+    .map((c) => ({ ...c, onList: Boolean(savedMatch(c)) }));
 
   const current = openSlug
     ? [openRow, ...source, ...(browse || [])].find((c) => c && c.slug === openSlug) || null
@@ -184,7 +190,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
     try {
       // Save the full record when it is loaded, minus the bulky programs list
       // (re-fetched from Scorecard on demand).
-      const rich = detail && detail.slug === c.slug ? detail : c;
+      const rich = detail && (detail.slug === c.slug || (detail.scorecardId && detail.scorecardId === c.scorecardId)) ? detail : c;
       const { onList, programs, ...college } = rich;
       const res = await fetch("/api/workspace/colleges", {
         method: "POST", credentials: "same-origin",
@@ -199,9 +205,10 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   };
 
   const removeCollege = async (c) => {
+    const slug = savedMatch(c)?.slug || c.slug;
     setBusySlug(c.slug); setError("");
     try {
-      const res = await fetch(`/api/workspace/colleges?slug=${encodeURIComponent(c.slug)}`, {
+      const res = await fetch(`/api/workspace/colleges?slug=${encodeURIComponent(slug)}`, {
         method: "DELETE", credentials: "same-origin",
       });
       const j = await res.json();
@@ -220,9 +227,9 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
         {error ? <div className="cf-notice" role="alert">{error}</div> : null}
         {current ? (
           <ExploreDetail key={current.slug} c={current} detail={detail} loading={detailLoading} edition={edition}
-            savedCollege={myList.find((school) => school.slug === current.slug)}
+            savedCollege={savedMatch(current)}
             favorite={favorites.includes(current.slug)} onToggleFavorite={() => onToggleFavorite(current.slug)}
-            onAdd={addCollege} onRemove={removeCollege} onList={onListSlugs.has(current.slug)}
+            onAdd={addCollege} onRemove={removeCollege} onList={Boolean(savedMatch(current))}
             busy={busySlug === current.slug} />
         ) : browseLoading ? (
           <div className="cf-notice" role="status">Loading this school…</div>
