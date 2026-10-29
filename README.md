@@ -28,6 +28,8 @@ Open the app and choose **Set up my workspace**, or explore colleges first. AI s
 | **Planner / Timeline** | Persistent checklist, manually editable milestones, dated school deadlines |
 | **Track** | LORs, scholarships, FAFSA / CSS checklist + official links |
 | **Compare** | Side-by-side school metrics |
+| **Scattergrams** | Import your high school's Maia Learning scattergrams with a bookmarklet; kept private to your workspace and never shared |
+| **Rankings** | Public `/rankings` page for the fair ranking: overall, by major, and beats expectations |
 | **Share** | Recovery code (multi-device), advisor read-only links + notes, exports (txt / brief / ics / json) |
 
 ## How the AI populates the site
@@ -64,15 +66,22 @@ The hub JSX remains in `public/hub/`. `npm run dev` compiles it and watches for 
 See `.env.example`. Optional:
 
 - `OPENCODE_API_KEY` — fallback if no Grok/ChatGPT connected
-- Web search key for live admit/deadline research
+- `EXA_API_KEY` and/or `TINYFISH_API_KEY` — web search for live admit/deadline research
+- `COLLEGE_SCORECARD_API_KEY` — College Scorecard API key (light use often works without one)
+- `CF_DATA_DIR` — move the local data store
 - `BLOB_READ_WRITE_TOKEN` — required on Vercel (from Blob store)
+
+## Privacy
+
+The site, hub and share pages load a page-view script from `analytics.n3el.dev`, a stats service run by the developer.
 
 ## Deploy
 
 Live: **https://forge.n3el.dev**
 
+Pushes to `main` deploy to production through Vercel's Git integration. To run locally with the production environment variables:
+
 ```bash
-vercel deploy --prod
 vercel env pull .env.local
 ```
 
