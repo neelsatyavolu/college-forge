@@ -269,15 +269,17 @@ function ConnectStep({ status, onConnected }) {
             <ol style={{ margin: "8px 0 0", paddingLeft: 18 }}>
               <li>Approve the request.</li>
               <li>
-                You’ll land on a <strong style={{ color: "var(--ink)" }}>page that fails to load</strong> (localhost). That’s expected.
+                {flow === "grok"
+                  ? "Copy the displayed authorization code or full callback URL."
+                  : <>You’ll land on a <strong style={{ color: "var(--ink)" }}>page that fails to load</strong> (localhost). That’s expected.</>}
               </li>
-              <li>Copy that page’s full URL and paste it below.</li>
+              <li>{flow === "grok" ? "Paste the code or URL below." : "Copy that page’s full URL and paste it below."}</li>
             </ol>
           </div>
           <OnboardInput
             value={callback}
             onChange={(e) => setCallback(e.target.value)}
-            placeholder="Paste the localhost URL from the address bar…"
+            placeholder={flow === "grok" ? "Paste the authorization code or callback URL…" : "Paste the localhost URL from the address bar…"}
           />
           <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
             <OnboardButton size="sm" onClick={complete} disabled={busy || !callback.trim()}>
@@ -289,7 +291,7 @@ function ConnectStep({ status, onConnected }) {
           </div>
         </div>
       )}
-      {err ? <p style={{ margin: "14px 0 0", color: "var(--error)", fontSize: 13 }}>{err}</p> : null}
+      {err ? <p role="alert" style={{ margin: "14px 0 0", color: "var(--error)", fontSize: 13 }}>{err}</p> : null}
     </div>
   );
 }

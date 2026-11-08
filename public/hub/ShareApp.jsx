@@ -82,8 +82,16 @@ function ShareApp() {
   const a = d.applicant || {};
   const p = d.profile || {};
   const essays = [...(d.essays?.commonApp || []), ...Object.entries(d.essays?.supplements || {}).flatMap(([school, items]) => items.map((essay) => ({ ...essay, group: essay.group || school })))];
+  const collegeEvents = (college) => {
+    if (college.deadlines?.length) return window.cfDeadlinePlan.planDeadlines(college);
+    const raw = String(college.deadline || "").trim();
+    if (!raw) return [];
+    const parts = raw.split("·").map((part) => part.trim()).filter(Boolean);
+    if (parts.length >= 2) return [{ date: parts[parts.length - 1], plan: parts[0] }];
+    return [{ date: raw, plan: "Application" }];
+  };
   const timeline = [...(d.criticalDates || []).map((date) => ({ date: date.date, title: date.label, detail: date.detail })),
-    ...(d.colleges || []).flatMap((college) => (college.deadlines?.length ? window.cfDeadlinePlan.planDeadlines(college) : college.deadline ? [{ date: college.deadline, plan: "Application" }] : []).map((date) => ({ date: date.date, title: `${college.name} — ${date.plan}` }))),
+    ...(d.colleges || []).flatMap((college) => collegeEvents(college).map((date) => ({ date: date.date, title: `${college.name} — ${date.plan}` }))),
     ...(d.scholarships || []).filter((scholarship) => scholarship.deadline).map((scholarship) => ({ date: scholarship.deadline, title: `Scholarship: ${scholarship.name}` })),
     ...(d.recommendations || []).filter((letter) => letter.deadline).map((letter) => ({ date: letter.deadline, title: `Letter: ${letter.name}` }))];
 

@@ -105,15 +105,14 @@ async function callCodex(
         `Codex backend timed out after ${UPSTREAM_TIMEOUT_MS / 1000}s on round ${round}.`
       );
     }
-    throw new Error(
-      `Codex backend request failed: ${err instanceof Error ? err.message : String(err)}`
-    );
+    console.error("[codex] backend request failed");
+    throw new Error("Could not reach ChatGPT. Try again or reconnect in Settings.");
   }
 
   if (!res.ok || !res.body) {
     clearTimeout(timer);
-    const detail = await res.text().catch(() => "");
-    throw new Error(`Codex backend failed (${res.status}): ${detail.slice(0, 400)}`);
+    console.error(`[codex] backend failed (${res.status})`);
+    throw new Error(`ChatGPT request failed (${res.status}). Try again or reconnect in Settings.`);
   }
 
   try {
@@ -296,7 +295,8 @@ async function parseCodexStream(
   if (buffer.trim()) flushBlock(buffer);
 
   if (failureMessage) {
-    throw new Error(`Codex stream failed: ${failureMessage}`);
+    console.error("[codex] stream failed");
+    throw new Error("ChatGPT could not finish the response. Try again or reconnect in Settings.");
   }
 
   if (streamedText || toolCalls.length > 0) {

@@ -108,12 +108,11 @@ function App() {
     return () => media.removeEventListener("change", change);
   }, []);
   React.useEffect(() => {
-    if (menuOpen && sidebarRef.current) sidebarRef.current.querySelector('[aria-current="page"]').focus();
+    if (menuOpen && sidebarRef.current) sidebarRef.current.querySelector('[aria-current="page"]')?.focus();
   }, [menuOpen]);
   React.useEffect(() => {
     const onHash = () => {
-      const id = window.location.hash.slice(1).split("/")[0];
-      if (!id || NAV.some(n => n.id === id)) setView(readView());
+      setView(readView());
       setMenuOpen(false);
     };
     window.addEventListener("hashchange", onHash);

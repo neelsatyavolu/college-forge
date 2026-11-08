@@ -97,8 +97,8 @@ async function callOpencode(
     });
 
     if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      throw new Error(`OpenCode request failed (${res.status}): ${detail.slice(0, 400)}`);
+      console.error(`[opencode] request failed (${res.status})`);
+      throw new Error(`OpenCode request failed (${res.status}). Try again.`);
     }
 
     const json = (await res.json()) as {

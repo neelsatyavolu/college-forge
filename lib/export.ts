@@ -208,7 +208,13 @@ export function exportCalendar(ws: Workspace): { text: string; included: number;
   for (const date of ws.criticalDates || []) events.push({ date: date.date, title: date.label, detail: date.detail });
   for (const college of ws.colleges || []) {
     for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name });
-    if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name });
+    if (college.deadline && !college.deadlines?.length) {
+      // Chosen rounds are stored as "EA · Nov 1". The calendar only understands the date.
+      const parts = college.deadline.split("·").map((part) => part.trim()).filter(Boolean);
+      const date = parts.length >= 2 ? parts[parts.length - 1] : college.deadline;
+      const plan = parts.length >= 2 ? parts[0] : "application";
+      events.push({ date, title: `${college.short || college.name} — ${plan}`, detail: college.name });
+    }
   }
   for (const scholarship of ws.scholarships || []) {
     if (scholarship.deadline) events.push({ date: scholarship.deadline, title: `Scholarship: ${scholarship.name}`, detail: scholarship.notes });

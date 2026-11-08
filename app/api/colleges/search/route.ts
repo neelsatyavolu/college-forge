@@ -3,6 +3,7 @@ import { expandAlias } from "@/lib/college-aliases";
 import {
   scorecardToCollege,
   fitFor,
+  matchesSavedCollege,
   usNewsToCollege,
   withUsNews,
   type ScorecardCollege,
@@ -60,8 +61,8 @@ async function fetchScorecard(term: string, apiKey: string): Promise<Hit[]> {
   url.searchParams.set("sort", "latest.student.size:desc");
   const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Scorecard ${res.status}: ${text.slice(0, 200)}`);
+    console.error(`[colleges] scorecard search failed (${res.status})`);
+    throw new Error("College search is temporarily unavailable.");
   }
   const body = (await res.json()) as { results?: Hit[] };
   return body.results ?? [];
@@ -155,7 +156,6 @@ export async function GET(req: NextRequest) {
     try {
       const ws = await getWorkspace(id);
       const applicantSat = ws.profile.testing.sat || ws.applicant.sat;
-      const onList = new Set(ws.colleges.map((c) => c.slug));
       const data = US_NEWS_TOP_250.map((u) => {
         const college = usNewsToCollege(u);
         const { tags, tier } = fitFor(college, applicantSat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
@@ -164,13 +164,13 @@ export async function GET(req: NextRequest) {
           scorecardId: u.scorecardId,
           tags,
           tier,
-          onList: onList.has(college.slug),
+          onList: ws.colleges.some((saved) => matchesSavedCollege(saved, college)),
         };
       });
       return json({ success: true, data, edition: US_NEWS_EDITION, source: "us-news-top-250" }, 200, setCookie);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Browse failed.";
-      return json({ success: false, error: message }, 502, setCookie);
+      console.error("[colleges] browse failed:", err);
+      return json({ success: false, error: "Could not load the college ranking." }, 502, setCookie);
     }
   }
 
@@ -201,7 +201,6 @@ export async function GET(req: NextRequest) {
     // Tag each result against the applicant's SAT so the list shows real fit.
     const ws = await getWorkspace(id);
     const applicantSat = ws.profile.testing.sat || ws.applicant.sat;
-    const onList = new Set(ws.colleges.map((c) => c.slug));
 
     const data = rankByRelevance([...merged.values()], q, expanded)
       .slice(0, 25)
@@ -211,14 +210,19 @@ export async function GET(req: NextRequest) {
         const college = withUsNews(scorecardToCollege(sc), sc.id);
         const { tags, tier } = fitFor(college, applicantSat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
         // scorecardId lets the detail panel fetch the heavy per-school record.
-        return { ...college, scorecardId: sc.id, tags, tier, onList: onList.has(college.slug) };
+        return {
+          ...college,
+          scorecardId: sc.id,
+          tags,
+          tier,
+          onList: ws.colleges.some((saved) => matchesSavedCollege(saved, { slug: college.slug, scorecardId: sc.id })),
+        };
       });
 
     console.log(`[colleges] q="${q}"${expanded ? ` (expanded="${expanded}")` : ""} -> ${data.length} results`);
     return json({ success: true, data, source: "scorecard" }, 200, setCookie);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Search failed.";
     console.error(`[colleges] search failed for q="${q}":`, err);
-    return json({ success: false, error: message }, 502, setCookie);
+    return json({ success: false, error: "College search is temporarily unavailable." }, 502, setCookie);
   }
 }
