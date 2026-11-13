@@ -39,7 +39,7 @@ function AddSchool({ tracked, shortlist, onAdd, onClose }) {
   return (
     <section className="cf-panel" aria-labelledby="add-school-title">
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
-        <h2 id="add-school-title">Add a school</h2>
+        <h2 id="add-school-title">Add a portal</h2>
         <button type="button" className="cf-link-btn" onClick={onClose}>Done</button>
       </div>
       <div className="cf-picker">

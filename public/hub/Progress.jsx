@@ -50,6 +50,14 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
   const [error, setError] = React.useState("");
   const [sharing, setSharing] = React.useState(false);
   const [flagText, setFlagText] = React.useState("");
+  const [open, setOpen] = React.useState(null);
+  const [addOpen, setAddOpen] = React.useState(false);
+  const onAdd = async (input) => {
+    const j = await window.cfApi.applications({ action: "add", ...input });
+    onTrackerChange(j.data);
+    setNotice(`${j.app.name} added. Open it to set the round, deadline and follow-ups.`);
+    setOpen(j.app.id);
+  };
   const act = async (body, message) => {
     setBusy(true); setError(""); setNotice("");
     try {
@@ -68,25 +76,28 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
           <p className="cf-page-lede">Where every application stands, by round, with follow-ups and anything flagged. This is the page parents and counselors see when you share it{links ? ` (shared with ${links} ${links === 1 ? "person" : "people"})` : ""}.</p>
         </div>
         <div className="cf-row-actions">
-          <Button size="sm" variant={sharing ? "secondary" : "primary"} onClick={() => setSharing(!sharing)}>Share progress</Button>
+          <Button size="sm" variant="secondary" onClick={() => setSharing(!sharing)}>Share progress</Button>
+          <Button size="sm" onClick={() => setAddOpen(!addOpen)}>Add a school</Button>
         </div>
       </header>
       {busy || notice ? <div role="status" aria-live="polite" className="cf-apps-progress">{busy ? "Saving…" : notice}</div> : <div role="status" aria-live="polite" className="cf-sr-only" />}
       {error ? <div role="alert" className="cf-notice">{error}</div> : null}
+      {addOpen ? <AddSchool tracked={tracker.apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setAddOpen(false)} /> : null}
       {sharing ? <SharePanel data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setSharing(false)} /> : null}
       {tracker.apps.length ? (
         <React.Fragment>
-          <ProgressView tracker={tracker} editable act={act} busy={busy} />
+          <ProgressView tracker={tracker} editable act={act} busy={busy} openId={open} onToggle={(id) => setOpen(open === id ? null : id)}
+            renderDetails={(app) => <AppDetails key={app.id} app={app} act={act} busy={busy} checking={false} onCheck={() => act({ action: "check", ids: [app.id] }, "Checked.")} />} />
           <div className="cf-apps-footer">
             <form className="cf-flag-form" onSubmit={(e) => { e.preventDefault(); act({ action: "flag-add", text: flagText }, "Flag added.").then((ok) => ok && setFlagText("")); }}>
               <label className="cf-sr-only" htmlFor="new-flag">Flag something that needs attention</label>
               <input id="new-flag" value={flagText} onChange={(e) => setFlagText(e.target.value)} placeholder="Flag something that needs attention" maxLength={500} />
               <Button type="submit" size="sm" variant="secondary" disabled={busy || !flagText.trim()}>Flag it</Button>
             </form>
-            <a className="cf-link-btn" href="#applications" style={{ display: "inline-flex", alignItems: "center" }}>Edit schools, dates and logins on Applications →</a>
+            <a className="cf-link-btn" href="#applications" style={{ display: "inline-flex", alignItems: "center" }}>Saved logins and what each portal says are on Portals →</a>
           </div>
         </React.Fragment>
-      ) : <div className="cf-empty">Add schools on the <a href="#applications">Applications</a> tab and they’ll show up here by round.</div>}
+      ) : <div className="cf-empty">Add the schools you’re applying to with “Add a school” and they’ll show up here by round.</div>}
     </div>
   );
 }

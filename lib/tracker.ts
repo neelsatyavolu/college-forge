@@ -252,14 +252,32 @@ export function withResult(app: TrackedApp, result: PortalResult): TrackedApp {
 const norm = (s: string) =>
   s.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9 ]/g, " ").replace(/\b(the|at)\b/g, " ").replace(/\s+/g, " ").trim();
 const BY_NAME = new Map<string, College>();
+/** Full names the catalog writes short ("UC Davis" is also "University of California, Davis"). */
+const LONG_NAMES: Record<string, string[]> = {
+  ucla: ["University of California, Los Angeles"],
+  psu: ["Pennsylvania State University", "Penn State University", "Penn State University Park"],
+  wustl: ["WashU in St. Louis", "WashU St. Louis"],
+  iu: ["Indiana University"],
+  unc: ["University of North Carolina at Chapel Hill", "University of North Carolina"],
+  umd: ["University of Maryland College Park"],
+  umich: ["University of Michigan Ann Arbor"],
+  rutgers: ["Rutgers University New Brunswick", "Rutgers New Brunswick"],
+};
 for (const c of COLLEGES) {
   BY_NAME.set(norm(c.name), c);
   for (const a of c.aliases) if (!BY_NAME.has(norm(a))) BY_NAME.set(norm(a), c);
+  const long = [...(LONG_NAMES[c.id] ?? []), ...(/^UC /.test(c.name) ? [`University of California ${c.name.slice(3)}`] : [])];
+  for (const l of long) if (!BY_NAME.has(norm(l))) BY_NAME.set(norm(l), c);
 }
 
 /** A catalog school for a name ("Univ. of Michigan", "UMich") or an id, if one matches exactly. */
 export function matchCatalog(nameOrId: string): College | undefined {
-  return collegeById(nameOrId.trim().toLowerCase()) ?? BY_NAME.get(norm(nameOrId));
+  const exact = collegeById(nameOrId.trim().toLowerCase()) ?? BY_NAME.get(norm(nameOrId));
+  if (exact) return exact;
+  // "University of Michigan-Ann Arbor", "University of Maryland, College Park", "SUNY Stony Brook": try the name without the campus.
+  const base = nameOrId.split(/\s*[-–—,]\s*/)[0]!;
+  const noSuny = nameOrId.replace(/^\s*SUNY\s+(at\s+)?/i, "");
+  return (base !== nameOrId ? BY_NAME.get(norm(base)) : undefined) ?? (noSuny !== nameOrId ? BY_NAME.get(norm(noSuny)) ?? BY_NAME.get(norm(`${noSuny} University`)) : undefined);
 }
 
 /** Compact catalog for the hub's school picker. */
@@ -394,12 +412,26 @@ export function migrateOldStatuses(
   return added.length ? { ...tracker, apps: [...tracker.apps, ...added] } : tracker;
 }
 
+/** A school saved without a catalog match (an older name form) picks up its catalog entry, logo and portal. */
+function relink(app: TrackedApp): TrackedApp {
+  if (app.collegeId) return app;
+  const c = matchCatalog(app.name);
+  if (!c) return app;
+  return {
+    ...app,
+    collegeId: c.id,
+    portalName: app.portalName === "Applicant portal" ? c.portalName : app.portalName,
+    portalUrl: app.portalUrl || c.loginUrl,
+    platform: app.platform === "other" ? c.platform : app.platform,
+  };
+}
+
 /** Normalizes whatever was stored (older or partial data) into a valid tracker. */
 export function normalizeTracker(raw: unknown): Tracker {
   if (!raw || typeof raw !== "object") return emptyTracker();
   const t = raw as Partial<Tracker>;
   const apps = Array.isArray(t.apps)
-    ? t.apps.filter((a): a is TrackedApp => !!a && typeof a.id === "string" && typeof a.name === "string" && isStatus(a.status))
+    ? t.apps.filter((a): a is TrackedApp => !!a && typeof a.id === "string" && typeof a.name === "string" && isStatus(a.status)).map(relink)
     : [];
   const flags = Array.isArray(t.flags) ? t.flags.filter((f): f is Flag => !!f && typeof f.id === "string" && typeof f.text === "string") : [];
   return { apps, autocheck: t.autocheck !== false, flags };

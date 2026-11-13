@@ -520,3 +520,13 @@ test('the consent form works with what browsers really send (Origin: null, Sec-F
   const evil = await post({ origin: 'https://evil.example', 'sec-fetch-site': 'cross-site' });
   assert.equal(evil.status, 400);
 }));
+
+test('UC campuses match by their full names, and older saved schools relink to the catalog', () => {
+  for (const [full, id] of [['University of California, Berkeley', 'berkeley'], ['University of California, Los Angeles', 'ucla'], ['University of California, San Diego', 'ucsd'], ['University of California, Santa Cruz', 'ucsc'], ['University of California, Merced', 'ucmerced']]) {
+    assert.equal(tracker.matchCatalog(full)?.id, id, full);
+  }
+  const stale = { ...app(), collegeId: null, name: 'University of California, Davis', portalName: 'Applicant portal', portalUrl: '', platform: 'other' };
+  const t = tracker.normalizeTracker({ apps: [stale], autocheck: true, flags: [] });
+  assert.equal(t.apps[0].collegeId, 'ucdavis');
+  assert.match(t.apps[0].portalUrl, /^https:/);
+});

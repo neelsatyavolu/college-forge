@@ -1,5 +1,5 @@
 // The progress page: every application by round, with flags, follow-ups and decisions.
-// Used by the hub's Applications tab (editable) and by progress share links (read-only).
+// Used by the hub's Progress tab (editable) and by progress share links (read-only).
 
 const UC_NAME = /^(university of california|uc )/i;
 const EARLY = ["ED", "EA", "REA"];

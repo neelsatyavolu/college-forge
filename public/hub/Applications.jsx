@@ -191,9 +191,14 @@ function DatesView({ apps, criticalDates }) {
   );
 }
 
+/**
+ * Portals: the schools whose applicant portal you've added, which means everything you've submitted or saved
+ * a login for. Schools you haven't submitted yet live on Progress.
+ */
 function Applications({ data, tracker, onTrackerChange }) {
   const { APP_STAGES } = window.cfApp;
-  const apps = tracker.apps;
+  const apps = tracker.apps.filter((a) => a.stage !== "working" || (a.login && a.login.hasPassword));
+  const notYet = tracker.apps.length - apps.length;
   const [view, setView] = React.useState(() => (window.location.hash.indexOf("dates") > -1 ? "dates" : "status"));
   const [panel, setPanel] = React.useState(() => (window.location.hash.indexOf("import") > -1 ? "import" : apps.length ? null : "add"));
   const [open, setOpen] = React.useState(null);
@@ -247,7 +252,8 @@ function Applications({ data, tracker, onTrackerChange }) {
   const counts = APP_STAGES.map((s) => [s, apps.filter((a) => a.stage === s.id).length]).filter(([, n]) => n);
 
   const onAdd = async (input) => {
-    const j = await window.cfApi.applications({ action: "add", ...input });
+    // A portal exists once you've applied, so a school added here starts as submitted.
+    const j = await window.cfApi.applications({ action: "add", status: "submitted", ...input });
     onTrackerChange(j.data);
     setNotice(`${j.app.name} added. Set its round and deadline, and save the portal login so Forge can check it.`);
     setOpen(j.app.id);
@@ -257,12 +263,12 @@ function Applications({ data, tracker, onTrackerChange }) {
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
-          <h1 className="cf-page-title">Applications</h1>
-          <p className="cf-page-lede">Every school you’re applying to, where it stands, and what comes next. Forge signs in to your portals to keep this current.</p>
+          <h1 className="cf-page-title">Portals</h1>
+          <p className="cf-page-lede">Every applicant portal you’ve added: what each school says, what it’s still missing, and when to expect a decision. Forge signs in every 12 hours to keep this current.{notYet ? <React.Fragment>{" "}<a href="#progress">{notYet} school{notYet === 1 ? "" : "s"} you haven’t submitted yet {notYet === 1 ? "is" : "are"} on Progress.</a></React.Fragment> : null}</p>
         </div>
         <div className="cf-row-actions">
           {withLogin.length ? <Button variant="secondary" size="sm" disabled={checkingAny} onClick={() => checkSome(withLogin)}>{checkingAny ? "Checking portals…" : "Check portals now"}</Button> : null}
-          <Button size="sm" onClick={() => setPanel(panel === "add" ? null : "add")}>Add a school</Button>
+          <Button size="sm" onClick={() => setPanel(panel === "add" ? null : "add")}>Add a portal</Button>
         </div>
       </header>
 
@@ -281,7 +287,7 @@ function Applications({ data, tracker, onTrackerChange }) {
       {apps.length === 0 ? (
         panel !== "import" ? (
           <div className="cf-empty">
-            No applications yet. Add the schools you’re applying to above.{" "}
+            No portals yet. Once you submit, add the school here and save its portal login.{" "}
             <button type="button" className="cf-link-btn" onClick={() => setPanel("import")}>Coming from College Apps? Bring your schools over.</button>
           </div>
         ) : null
@@ -316,3 +322,4 @@ function Applications({ data, tracker, onTrackerChange }) {
 }
 
 window.Applications = Applications;
+window.AppDetails = AppDetails;

@@ -2,7 +2,7 @@ const { Button } = window.CollegeForgeDesignSystem_e95e63;
 const Onboarding = window.Onboarding;
 
 const NAV = [
-  { id: "applications", label: "Applications", group: "Applications", icon: "inbox" },
+  { id: "applications", label: "Portals", group: "Applications", icon: "inbox" },
   { id: "progress", label: "Progress", group: "Applications", icon: "progress" },
   { id: "decisions", label: "Decisions", group: "Applications", icon: "mail" },
   { id: "essays", label: "Essays", group: "Apply", icon: "edit" },
@@ -16,7 +16,7 @@ const NAV = [
 ];
 const NAV_GROUPS = ["Applications", "Apply", "Find colleges", "You"];
 // Tabs that were folded into others keep working as links.
-const VIEW_ALIASES = { overview: "applications", timeline: "applications", planner: "applications", compare: "shortlist", scattergrams: "explore" };
+const VIEW_ALIASES = { portals: "applications", overview: "applications", timeline: "applications", planner: "applications", compare: "shortlist", scattergrams: "explore" };
 // Full pages outside the hash-routed workspace views.
 const PAGE_LINKS = [{ href: "/rankings", label: "Career rankings", group: "Find colleges", icon: "chart" }];
 
@@ -181,6 +181,7 @@ function App() {
     navigate("recommendations");
   };
   const hiddenDecisions = tracker.apps.filter(a => a.decision && a.decision.state === "hidden").length;
+  const portalCount = tracker.apps.filter(a => a.stage !== "working" || (a.login && a.login.hasPassword)).length;
   if (loading) return <div className="cf-loading-screen" role="status"><span className="cf-loading-mark">✱</span>Opening your workspace…</div>;
   if (account && !account.signedIn) return <SignIn />;
   if (loadError) return <div className="cf-loading-screen"><div role="alert">{loadError}</div><Button onClick={refresh}>Try again</Button></div>;
@@ -206,7 +207,7 @@ function App() {
           {NAV_GROUPS.map(group => <div className="cf-nav-group" key={group}>
             <div className="cf-nav-group-label">{group}</div>
             {NAV.filter(n => n.group === group).map(n => <a key={n.id} href={"#" + n.id} className="cf-nav-link" aria-current={view === n.id ? "page" : undefined}>
-              <NavIcon name={n.icon} /><span>{n.label}</span>{n.id === "shortlist" && data.colleges.length > 0 && <span className="cf-nav-count">{data.colleges.length}</span>}{n.id === "applications" && tracker.apps.length > 0 && <span className="cf-nav-count">{tracker.apps.length}</span>}{n.id === "decisions" && hiddenDecisions > 0 && <span className="cf-nav-count" style={{ background: "var(--coral)", color: "var(--on-primary)" }} aria-label={`${hiddenDecisions} new`}>{hiddenDecisions}</span>}
+              <NavIcon name={n.icon} /><span>{n.label}</span>{n.id === "shortlist" && data.colleges.length > 0 && <span className="cf-nav-count">{data.colleges.length}</span>}{n.id === "applications" && portalCount > 0 && <span className="cf-nav-count">{portalCount}</span>}{n.id === "progress" && tracker.apps.length > 0 && <span className="cf-nav-count">{tracker.apps.length}</span>}{n.id === "decisions" && hiddenDecisions > 0 && <span className="cf-nav-count" style={{ background: "var(--coral)", color: "var(--on-primary)" }} aria-label={`${hiddenDecisions} new`}>{hiddenDecisions}</span>}
             </a>)}
             {PAGE_LINKS.filter(n => n.group === group).map(n => <a key={n.href} href={n.href} className="cf-nav-link"><NavIcon name={n.icon} /><span>{n.label}</span></a>)}
           </div>)}

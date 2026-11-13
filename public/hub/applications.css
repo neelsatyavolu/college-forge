@@ -73,7 +73,7 @@
 .cf-dates .cf-agenda-row p { font-size: 12px; }
 .cf-dates__month { padding: 18px 18px 6px; font: 500 20px/1.2 var(--font-display); color: var(--ink); border-bottom: 1px solid var(--hairline); }
 
-/* Progress page (Applications tab and progress share links) */
+/* Progress page (Progress tab and progress share links) */
 .cf-ptabs { display: flex; gap: 0 22px; flex-wrap: wrap; border-bottom: 1px solid var(--hairline); margin: 4px 0 22px; }
 .cf-ptab { position: relative; display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--muted); font: 500 12px/1 var(--font-sans); letter-spacing: 1.3px; text-transform: uppercase; cursor: pointer; transition: color 140ms; }
 .cf-ptab:hover { color: var(--ink); }

@@ -230,7 +230,7 @@ export const TOOLS: Tool[] = [
         throw new TrackerError("That's a lot of portal checks this hour. Forge also checks every 12 hours on its own.");
       }
       const checked = await runChecks(ws, { appIds: ids, concurrency: 4 });
-      if (!checked.length) return { checked: 0, note: "No portal logins are saved in Forge yet. The student can add them on the Applications tab." };
+      if (!checked.length) return { checked: 0, note: "No portal logins are saved in Forge yet. The student can add them on the Portals tab." };
       return { checked: checked.length, applications: checked.map((a) => brief(viewApp(a))) };
     },
   }),

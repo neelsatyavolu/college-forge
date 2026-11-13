@@ -53,7 +53,7 @@ function SchoolRow({ s, last, tracked, onTier, onTrack, onRemove, busy, error })
               </select>
             </label>
             {tracked
-              ? <a href="#applications" style={{ fontSize: 12, color: "var(--workspace-accent)" }}>Applying · {tracked.statusLabel} →</a>
+              ? <a href="#progress" style={{ fontSize: 12, color: "var(--workspace-accent)" }}>Applying · {tracked.statusLabel} →</a>
               : <Button variant="secondary" size="sm" disabled={busy} onClick={() => onTrack(s)}>Track application</Button>}
             {!confirmRemove ? <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirmRemove(true)}>Remove school</Button> : null}
           </div>
@@ -131,7 +131,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
     try {
       const j = await window.cfApi.applications({ action: "add", name: c.name, slug: c.slug });
       if (onTrackerChange) onTrackerChange(j.data);
-      setNotice(`${c.name} is on your Applications tab.`);
+      setNotice(`${c.name} is on your Progress tab.`);
     } catch (e) { setError({ slug: c.slug, message: e.message }); } finally { setBusy(false); }
   };
   const onRemove = (slug) => saveChange(slug, async () => {
@@ -147,7 +147,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
         <div>
           <h1 className="cf-page-title">Your shortlist</h1>
           <p className="cf-page-lede">
-            Schools you’re considering. When you decide to apply, choose Track application and it moves to your Applications tab. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds.
+            Schools you’re considering. When you decide to apply, choose Track application and it moves to your Progress tab. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds.
             {ucCount > 0
               ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
               : ""}

@@ -418,7 +418,7 @@ export function makeHubTools(
     {
       name: "set_application_status",
       description:
-        "Track an application on the Applications tab (adds the school if it isn't tracked yet). school: a shortlist slug or the college's name. status ∈ planning (not started) | in_progress | submitted | complete (under review) | deferred | waitlisted | admitted | committed | denied | withdrawn. Optional round (ED, ED2, EA, REA, RD, Rolling), deadline (yyyy-mm-dd), notes.",
+        "Track an application (Progress and Portals tabs) (adds the school if it isn't tracked yet). school: a shortlist slug or the college's name. status ∈ planning (not started) | in_progress | submitted | complete (under review) | deferred | waitlisted | admitted | committed | denied | withdrawn. Optional round (ED, ED2, EA, REA, RD, Rolling), deadline (yyyy-mm-dd), notes.",
       parameters: {
         type: "object",
         properties: {

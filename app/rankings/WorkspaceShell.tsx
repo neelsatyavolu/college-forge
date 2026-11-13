@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 // Mirrors public/hub/App.jsx NAV so the rankings page reads as part of the workspace.
 const NAV = [
-  { href: "/hub/index.html#applications", label: "Applications", group: "Applications", icon: "inbox" },
+  { href: "/hub/index.html#applications", label: "Portals", group: "Applications", icon: "inbox" },
   { href: "/hub/index.html#progress", label: "Progress", group: "Applications", icon: "progress" },
   { href: "/hub/index.html#decisions", label: "Decisions", group: "Applications", icon: "mail" },
   { href: "/hub/index.html#essays", label: "Essays", group: "Apply", icon: "edit" },
