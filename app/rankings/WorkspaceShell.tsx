@@ -2,25 +2,24 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 // Mirrors public/hub/App.jsx NAV so the rankings page reads as part of the workspace.
 const NAV = [
-  { href: "/hub/index.html#overview", label: "Overview", group: "Your workspace", icon: "home" },
-  { href: "/hub/index.html#profile", label: "Your profile", group: "Your workspace", icon: "user" },
-  { href: "/hub/index.html#recommendations", label: "Colleges for you", group: "Discover", icon: "spark" },
-  { href: "/hub/index.html#explore", label: "Explore colleges", group: "Discover", icon: "search" },
-  { href: "/hub/index.html#shortlist", label: "Your shortlist", group: "Discover", icon: "bookmark" },
-  { href: "/hub/index.html#compare", label: "Compare schools", group: "Discover", icon: "columns" },
-  { href: "/hub/index.html#scattergrams", label: "Scattergrams", group: "Discover", icon: "scatter" },
-  { href: "/rankings", label: "Career rankings", group: "Discover", icon: "chart", current: true },
+  { href: "/hub/index.html#applications", label: "Applications", group: "Applications", icon: "inbox" },
+  { href: "/hub/index.html#decisions", label: "Decisions", group: "Applications", icon: "mail" },
   { href: "/hub/index.html#essays", label: "Essays", group: "Apply", icon: "edit" },
-  { href: "/hub/index.html#planner", label: "Application plan", group: "Apply", icon: "check" },
-  { href: "/hub/index.html#timeline", label: "Dates & deadlines", group: "Apply", icon: "calendar" },
   { href: "/hub/index.html#track", label: "Letters & aid", group: "Apply", icon: "folder" },
-  { href: "/hub/index.html#share", label: "Share & export", group: "Workspace", icon: "share" },
-  { href: "/hub/index.html#settings", label: "Settings", group: "Workspace", icon: "settings" },
+  { href: "/hub/index.html#recommendations", label: "Colleges for you", group: "Find colleges", icon: "spark" },
+  { href: "/hub/index.html#explore", label: "Explore colleges", group: "Find colleges", icon: "search" },
+  { href: "/hub/index.html#shortlist", label: "Your shortlist", group: "Find colleges", icon: "bookmark" },
+  { href: "/rankings", label: "Career rankings", group: "Find colleges", icon: "chart", current: true },
+  { href: "/hub/index.html#profile", label: "Your profile", group: "You", icon: "user" },
+  { href: "/hub/index.html#share", label: "Share & export", group: "You", icon: "share" },
+  { href: "/hub/index.html#settings", label: "Settings", group: "You", icon: "settings" },
 ];
-const GROUPS = ["Your workspace", "Discover", "Apply", "Workspace"];
+const GROUPS = ["Applications", "Apply", "Find colleges", "You"];
 
 const ICONS: Record<string, string> = {
   home: "M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9",
+  inbox: "M3 13h5l2 3h4l2-3h5M5 5h14l2 8v6H3v-6Z",
+  mail: "M3 6h18v12H3ZM3 7l9 6 9-6",
   user: "M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2",
   spark: "m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z",
   search: "M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0m-2 5 6 6",
@@ -76,7 +75,7 @@ export default function WorkspaceShell({ theme, onToggleTheme, topline, children
     <div className="cf-workspace">
       <a className="cf-skip-link" href="#rankings-main">Skip to content</a>
       <header className="cf-mobile-bar">
-        <a href="/hub/index.html#overview" className="cf-brand"><span aria-hidden="true">✱</span>College Forge</a>
+        <a href="/hub/index.html#applications" className="cf-brand"><span aria-hidden="true">✱</span>College Forge</a>
         <button
           className="cf-icon-btn"
           aria-label={menuOpen ? "Close navigation" : "Open navigation"}
@@ -94,7 +93,7 @@ export default function WorkspaceShell({ theme, onToggleTheme, topline, children
         ref={sidebarRef}
         aria-hidden={hidden || undefined}
       >
-        <a href="/hub/index.html#overview" className="cf-brand"><span aria-hidden="true">✱</span>College Forge</a>
+        <a href="/hub/index.html#applications" className="cf-brand"><span aria-hidden="true">✱</span>College Forge</a>
         <div className="cf-workspace-label">A little clarity for what’s next.</div>
         <nav aria-label="Workspace">
           {GROUPS.map((group) => (

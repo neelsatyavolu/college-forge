@@ -34,16 +34,47 @@ window.cfApi = {
     return j;
   },
 
-  async getScattergrams() {
-    const res = await fetch("/api/workspace/scattergrams", { credentials: "same-origin" });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok || j.success === false) throw new Error((j && j.error) || "Failed to load scattergrams");
-    return j.data;
+  async me() {
+    const res = await fetch("/api/me", { credentials: "same-origin", cache: "no-store" });
+    if (!res.ok) throw new Error("Couldn't reach Forge");
+    return res.json();
   },
 
-  async deleteScattergrams() {
-    const res = await fetch("/api/workspace/scattergrams", { method: "DELETE", credentials: "same-origin" });
-    if (!res.ok) throw new Error("Delete failed");
+  /** Applications tracker: GET the list, or POST one action ({ action, ... }). */
+  async applications(body) {
+    const res = await fetch("/api/applications", body ? {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    } : { credentials: "same-origin", cache: "no-store" });
+    const j = await res.json().catch(() => ({}));
+    if (res.status === 401) { window.location.reload(); throw new Error("Please sign in again."); }
+    if (!res.ok || j.success === false) throw new Error((j && j.error) || "That didn't save. Try again.");
+    return j;
+  },
+
+  async catalog() {
+    if (!this._catalog) {
+      this._catalog = fetch("/api/applications/catalog").then((r) => {
+        if (!r.ok) throw new Error("Couldn't load the school list");
+        return r.json();
+      }).catch((e) => { this._catalog = null; throw e; });
+    }
+    return this._catalog;
+  },
+
+  async connections(revokeId) {
+    const res = await fetch("/api/connections", revokeId ? {
+      method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: revokeId }),
+    } : { credentials: "same-origin", cache: "no-store" });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || j.success === false) throw new Error("Couldn't load connected assistants.");
+    return j.data || [];
+  },
+
+  async signOut() {
+    await fetch("/api/xanom/logout", { method: "POST", credentials: "same-origin" });
   },
 
   exportUrl(format) {

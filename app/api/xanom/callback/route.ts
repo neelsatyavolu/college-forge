@@ -30,6 +30,6 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     const code = err instanceof XanomError ? err.code : "failed";
     if (!(err instanceof XanomError)) console.error("xanom callback failed", err instanceof Error ? err.message : "unknown");
-    return redirect(new URL(`/hub/?signin_error=${encodeURIComponent(code.slice(0, 40))}`, origin), [clearFlow()]);
+    return redirect(new URL(`/hub/index.html?signin_error=${encodeURIComponent(code.slice(0, 40))}`, origin), [clearFlow()]);
   }
 }

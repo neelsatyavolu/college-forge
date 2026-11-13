@@ -6,10 +6,6 @@ const TIER_META = {
   safety: { label: "Likely", dot: "var(--accent-teal)" },
 };
 
-const APP_STATUSES = [
-  "researching", "preparing", "submitted", "accepted", "rejected", "waitlisted", "deferred", "withdrawn",
-];
-
 const SUPP_STYLE = {
   "No supps": { bg: "color-mix(in srgb, var(--success) 14%, transparent)", color: "var(--success)" },
   "Supps optional": { bg: "color-mix(in srgb, var(--warning) 16%, transparent)", color: "var(--warning)" },
@@ -23,7 +19,7 @@ function SuppPill({ load }) {
   );
 }
 
-function SchoolRow({ s, last, status, onTier, onStatus, onRemove, busy, error }) {
+function SchoolRow({ s, last, tracked, onTier, onTrack, onRemove, busy, error }) {
   const [confirmRemove, setConfirmRemove] = React.useState(false);
   return (
     <div style={{ display: "block", background: s.priority ? "color-mix(in srgb, var(--coral) 5%, transparent)" : "transparent", borderBottom: last ? "none" : "1px solid var(--hairline)" }}>
@@ -56,13 +52,9 @@ function SchoolRow({ s, last, status, onTier, onStatus, onRemove, busy, error })
                 <option value="safety">Likely</option>
               </select>
             </label>
-            <label style={{ fontSize: 11, color: "var(--muted)", display: "flex", alignItems: "center", gap: 6 }}>
-              Status
-              <select disabled={busy} value={status || "researching"} onChange={(e) => onStatus(s.slug, e.target.value)}
-                style={{ fontSize: 12, padding: "4px 8px", borderRadius: "var(--radius-xs)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)" }}>
-                {APP_STATUSES.map((st) => <option key={st} value={st}>{st}</option>)}
-              </select>
-            </label>
+            {tracked
+              ? <a href="#applications" style={{ fontSize: 12, color: "var(--workspace-accent)" }}>Applying · {tracked.statusLabel} →</a>
+              : <Button variant="secondary" size="sm" disabled={busy} onClick={() => onTrack(s)}>Track application</Button>}
             {!confirmRemove ? <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirmRemove(true)}>Remove school</Button> : null}
           </div>
           {confirmRemove ? <div style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-sm)" }}>
@@ -100,12 +92,13 @@ function applicationSlotCount(colleges) {
   return nonUc + (hasUc ? 1 : 0);
 }
 
-function Shortlist({ data, onAsk, onWorkspaceChange }) {
+function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange }) {
   const [filter, setFilter] = React.useState("all");
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [notice, setNotice] = React.useState("");
-  const apps = data.applications || {};
+  const trackedApps = (tracker && tracker.apps) || [];
+  const trackedFor = (c) => trackedApps.find((a) => a.slug === c.slug) || trackedApps.find((a) => a.name.toLowerCase() === String(c.name || "").toLowerCase());
   const byTier = {
     reach: data.colleges.filter((c) => c.tier === "reach"),
     target: data.colleges.filter((c) => c.tier === "target"),
@@ -133,7 +126,14 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
     } finally { setBusy(false); }
   };
   const onTier = (slug, tier) => saveChange(slug, () => window.cfApi.patch({ collegePatch: { slug, tier } }), "School tier updated.");
-  const onStatus = (slug, status) => saveChange(slug, () => window.cfApi.patch({ application: { slug, status } }), "Application status updated.");
+  const onTrack = async (c) => {
+    setBusy(true); setError(null); setNotice("");
+    try {
+      const j = await window.cfApi.applications({ action: "add", name: c.name, slug: c.slug });
+      if (onTrackerChange) onTrackerChange(j.data);
+      setNotice(`${c.name} is on your Applications tab.`);
+    } catch (e) { setError({ slug: c.slug, message: e.message }); } finally { setBusy(false); }
+  };
   const onRemove = (slug) => saveChange(slug, async () => {
     const response = await fetch(`/api/workspace/colleges?slug=${encodeURIComponent(slug)}`, { method: "DELETE", credentials: "same-origin" });
     const result = await response.json();
@@ -145,9 +145,9 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
-          <h1 className="cf-page-title">School list</h1>
+          <h1 className="cf-page-title">Your shortlist</h1>
           <p className="cf-page-lede">
-            Track your schools and application progress. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds.
+            Schools you’re considering. When you decide to apply, choose Track application and it moves to your Applications tab. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds.
             {ucCount > 0
               ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
               : ""}
@@ -204,8 +204,8 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
                 <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                   {list.map((s, i) => (
                     <SchoolRow key={s.slug} s={s} last={i === list.length - 1}
-                      status={apps[s.slug] && apps[s.slug].status}
-                      onTier={onTier} onStatus={onStatus} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
+                      tracked={trackedFor(s)}
+                      onTier={onTier} onTrack={onTrack} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                   ))}
                 </div>
               </section>
@@ -220,8 +220,8 @@ function Shortlist({ data, onAsk, onWorkspaceChange }) {
               <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                 {untiered.map((s, i) => (
                   <SchoolRow key={s.slug} s={s} last={i === untiered.length - 1}
-                    status={apps[s.slug] && apps[s.slug].status}
-                    onTier={onTier} onStatus={onStatus} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
+                    tracked={trackedFor(s)}
+                    onTier={onTier} onTrack={onTrack} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                 ))}
               </div>
             </section>

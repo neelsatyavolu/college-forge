@@ -165,7 +165,85 @@ function ProviderRow({ name, label, blurb, connected, models, modelValue, onMode
   );
 }
 
-function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }) {
+
+function CopyField({ value, label }) {
+  const [copied, setCopied] = React.useState(false);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch (e) { setCopied(false); }
+  };
+  return (
+    <div className="cf-copy">
+      <code aria-label={label}>{value}</code>
+      <Button size="sm" variant="secondary" onClick={copy}>{copied ? "Copied" : "Copy"}</Button>
+    </div>
+  );
+}
+
+function AccountPanel({ account }) {
+  const [busy, setBusy] = React.useState(false);
+  const user = account && account.user;
+  return (
+    <Panel title="Account">
+      <div style={{ display: "grid", gap: 12 }}>
+        <p className="cf-help" style={{ color: "var(--body)" }}>Signed in with Xanom as <strong style={{ color: "var(--ink)" }}>{user ? user.email : "…"}</strong>. Your applications, essays and lists follow this account to any device.</p>
+        <div className="cf-row-actions">
+          <a className="cf-link-btn" href="https://accounts.xanom.co/" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center" }}>Manage at accounts.xanom.co ↗</a>
+          <Button size="sm" variant="secondary" disabled={busy} onClick={async () => { setBusy(true); await window.cfApi.signOut(); window.location.reload(); }}>{busy ? "Signing out…" : "Sign out of Forge"}</Button>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+function AssistantPanel() {
+  const url = window.location.origin + "/mcp";
+  const [list, setList] = React.useState(null);
+  const [error, setError] = React.useState("");
+  const load = React.useCallback(() => window.cfApi.connections().then(setList).catch((e) => setError(e.message)), []);
+  React.useEffect(() => { load(); }, [load]);
+  const disconnect = async (id) => {
+    setError("");
+    try { await window.cfApi.connections(id); await load(); } catch (e) { setError(e.message); }
+  };
+  return (
+    <Panel title="Connect an assistant">
+      <div style={{ display: "grid", gap: 16 }}>
+        <p className="cf-help" style={{ color: "var(--body)" }}>Let Grok, ChatGPT, Claude or another assistant read and update your applications: statuses, deadlines, decisions and notes. It can’t see your portal passwords or essays, and you approve it once with your Xanom sign-in.</p>
+        <CopyField value={url} label="Forge MCP server address" />
+        <div className="cf-fields" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18 }}>
+          <div>
+            <h3 className="cf-subhead">Grok and Grok Bot</h3>
+            <ol className="cf-steps"><li>Open grok.com/connectors.</li><li>New Connector, then Custom.</li><li>Paste the address above, leave client ID and secret empty, and allow access.</li></ol>
+          </div>
+          <div>
+            <h3 className="cf-subhead">ChatGPT</h3>
+            <ol className="cf-steps"><li>Settings, then Apps and connectors.</li><li>Create a connector with the address above.</li><li>Sign in with Xanom when asked.</li></ol>
+          </div>
+          <div>
+            <h3 className="cf-subhead">Claude</h3>
+            <ol className="cf-steps"><li>Settings, then Connectors.</li><li>Add custom connector with the address above.</li><li>Sign in with Xanom when asked.</li></ol>
+          </div>
+        </div>
+        <div>
+          <h3 className="cf-subhead">Connected</h3>
+          {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>{error}</p> : null}
+          {list === null ? <p className="cf-help">Loading…</p> : list.length === 0 ? <p className="cf-help">No assistants connected yet.</p> : (
+            <ul className="cf-apps-list">
+              {list.map((c) => (
+                <li key={c.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "12px 16px", flexWrap: "wrap" }}>
+                  <span><strong style={{ fontWeight: 500, color: "var(--ink)" }}>{c.name}</strong><span className="cf-help" style={{ display: "block" }}>{c.host} · last used {new Date(c.lastUsed).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></span>
+                  <Button size="sm" variant="secondary" onClick={() => disconnect(c.id)}>Disconnect</Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+function Settings({ theme, account, onToggleTheme, onStartOnboarding, onWorkspaceChange }) {
   const [status, setStatus] = React.useState(null);
   const [prefs, setPrefs] = React.useState(loadAiPrefs);
   const [busy, setBusy] = React.useState("");
@@ -284,7 +362,7 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
         <div>
           <h1 className="cf-page-title">Settings</h1>
           <p className="cf-page-lede">
-            Connect AI providers for the copilot, pick models, and adjust appearance. Provider sessions stay on this browser; preferences are saved locally.
+            Your account, assistants that can use your applications, the copilot’s AI provider, and appearance.
           </p>
         </div>
       </header>
@@ -292,6 +370,9 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
       {statusError ? <div role="alert" className="cf-notice">{statusError} <button type="button" onClick={loadStatus} disabled={loading}>Retry connections</button></div> : null}
       {err ? <div role="alert" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--error) 12%, transparent)", color: "var(--error)", fontSize: 13 }}>{err}</div> : null}
       {msg ? <div role="status" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--accent-teal, #2a9d8f) 12%, transparent)", color: "var(--ink)", fontSize: 13 }}>{msg}</div> : null}
+
+      <AccountPanel account={account} />
+      <AssistantPanel />
 
       <Panel title="AI providers" action={
         loading ? null : (
@@ -438,14 +519,13 @@ function Settings({ theme, onToggleTheme, onStartOnboarding, onWorkspaceChange }
       <Panel title="About this hub">
         <SectionLabel style={{ marginBottom: 8 }}>Data & privacy</SectionLabel>
         <ul style={{ margin: "0 0 16px", paddingLeft: 18, fontSize: 13.5, color: "var(--body)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: 6 }}>
-          <li>Your work is saved online. Keep a recovery code so you can open it from another browser or device.</li>
+          <li>Your work is saved to your Xanom account. Portal passwords are encrypted and only used to check your portals.</li>
           <li>AI sign-ins stay in this browser. Only connect the account you want the copilot to use.</li>
           <li>Your model and appearance preferences are saved in this browser.</li>
         </ul>
         <SectionLabel style={{ marginBottom: 8 }}>Tips</SectionLabel>
         <p style={{ margin: 0, fontSize: 13.5, color: "var(--body)", lineHeight: 1.55 }}>
-          Use <strong style={{ color: "var(--ink)" }}>Share</strong> for multi-device recovery codes and advisor links.
-          Download drafts and an application pack there to use in your college applications.
+          Use <strong style={{ color: "var(--ink)" }}>Share & export</strong> for advisor links and to download drafts and an application pack.
         </p>
       </Panel>
     </div>

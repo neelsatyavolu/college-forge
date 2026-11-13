@@ -29,6 +29,6 @@ export async function GET(req: Request) {
       { label: "Decisions", value: String(decided) },
     ],
     recent: [],
-    url: `${ORIGIN}/hub/`,
+    url: `${ORIGIN}/hub/index.html`,
   });
 }

@@ -50,7 +50,8 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
     roundFromPortal: !app.round && !!app.portal?.round,
     deadline: app.deadline,
     decisionDate: decisionDateOf(app, today),
-    nextDate: nextDate(app, today),
+    // Once a decision is posted, its expected date is no longer news.
+    nextDate: decision.state === "hidden" || decision.state === "revealed" ? null : nextDate(app, today),
     decision,
     portal: portal
       ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: portal.checklist }

@@ -135,11 +135,26 @@ function ShareApp() {
         </section>
       ) : null}
 
+      {d.tracker && d.tracker.apps && d.tracker.apps.length ? (
+        <section style={{ marginBottom: 28 }}>
+          <SectionLabel style={{ marginBottom: 10 }}>Applications ({d.tracker.apps.length})</SectionLabel>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            {d.tracker.apps.map((a) => (
+              <li key={a.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--hairline-soft)", display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                <span style={{ color: "var(--ink)" }}><strong>{a.name}</strong>{a.round ? ` · ${a.round}` : ""}{a.deadline ? ` · due ${a.deadline}` : ""}</span>
+                <Badge variant="cream" uppercase>{({ planning: "Not started", in_progress: "In progress", submitted: "Submitted", complete: "Under review", deferred: "Deferred", waitlisted: "Waitlisted", admitted: "Admitted", committed: "Committed", denied: "Denied", withdrawn: "Withdrawn" })[a.status] || a.status}</Badge>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <section style={{ marginBottom: 28 }}>
         <SectionLabel style={{ marginBottom: 10 }}>School list ({(d.colleges || []).length})</SectionLabel>
         <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
           {(d.colleges || []).map((c) => {
-            const st = (d.applications && d.applications[c.slug] && d.applications[c.slug].status) || "researching";
+            const app = ((d.tracker && d.tracker.apps) || []).find((a) => a.slug === c.slug);
+            const st = app ? ({ planning: "Not started", in_progress: "In progress", submitted: "Submitted", complete: "Under review", deferred: "Deferred", waitlisted: "Waitlisted", admitted: "Admitted", committed: "Committed", denied: "Denied", withdrawn: "Withdrawn" })[app.status] || app.status : "Considering";
             return (
               <li key={c.slug} style={{ padding: "10px 0", borderBottom: "1px solid var(--hairline-soft)", display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                 <span style={{ color: "var(--ink)" }}><strong>{c.name || c.short}</strong> · {c.tier === "safety" ? "Likely" : c.tier || "Not assessed"} · {c.deadline || "TBD"}</span>

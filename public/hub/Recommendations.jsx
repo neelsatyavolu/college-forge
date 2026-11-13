@@ -4,7 +4,7 @@ function recommendationMoney(value) {
   return typeof value === "number" && Number.isFinite(value) ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value) : "Not reported";
 }
 
-function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate }) {
+function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate, onStartSetup }) {
   const [result, setResult] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
@@ -53,7 +53,7 @@ function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate }) {
       </form>}
       {error && <div className="cf-notice" role="alert">{error} <button className="cf-quiet-button" onClick={() => setRevision(v => v + 1)}>Try loading again</button></div>}
       {notice && <div className="cf-notice" role="status">{notice}</div>}
-      <div className="cf-recommendation-intro"><div><strong>{data.profile.intended || "Exploring your options"}</strong><p>{data.profile.intended ? "Major evidence appears where published data is available." : "Add your major and academics to make this list more personal."} <a href="#profile">Edit profile →</a></p></div><Button variant="secondary" size="sm" onClick={() => onAsk("Review my recommended colleges using the ranking evidence. Explain the best fits, compare the source evidence, flag missing information, and help me build a balanced list. Do not change my saved list until I ask.")}>Discuss with AI ✱</Button></div>
+      <div className="cf-recommendation-intro"><div><strong>{data.profile.intended || "Exploring your options"}</strong><p>{data.profile.intended ? "Major evidence appears where published data is available." : "Add your major and academics to make this list more personal."} <a href="#profile">Edit profile →</a>{!data.applicant.name && onStartSetup ? <React.Fragment>{" "}<button type="button" className="cf-link-btn" onClick={onStartSetup}>Or answer a few questions to build a list →</button></React.Fragment> : null}</p></div><Button variant="secondary" size="sm" onClick={() => onAsk("Review my recommended colleges using the ranking evidence. Explain the best fits, compare the source evidence, flag missing information, and help me build a balanced list. Do not change my saved list until I ask.")}>Discuss with AI ✱</Button></div>
       {loading ? <div className="cf-notice" role="status">Finding colleges in the ranking data…</div> : result && <React.Fragment>
         {result.profileGaps.length > 0 && <details className="cf-notice"><summary>Make this list more useful · {result.profileGaps.length} things to check</summary><ul>{result.profileGaps.map(gap => <li key={gap}>{gap}</li>)}</ul></details>}
         <div className="cf-section-heading"><h2>{result.recommendations.length} starting points</h2><span>250-college snapshot · {result.generatedAt}</span></div>

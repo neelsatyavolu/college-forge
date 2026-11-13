@@ -1,0 +1,24 @@
+/* /oauth/authorize — the consent page assistants send people to. Built on /styles.css tokens. */
+:root { color-scheme: light dark; --coral: #a84f35; --coral-active: #843b26; --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+@media (prefers-color-scheme: dark) {
+  :root { --canvas: #181715; --ink: #faf9f5; --body: #d6d2c8; --muted: #a09d96; --hairline: #34312c; --surface-soft: #1f1e1b; --coral: #e8a080; --coral-active: #f1b89e; --on-primary: #181715; }
+}
+html, body { margin: 0; min-height: 100%; background: var(--canvas); color: var(--ink); font-family: "DM Sans", var(--font-sans); }
+.oa { min-height: 100vh; box-sizing: border-box; display: grid; align-content: center; gap: 20px; width: min(520px, 100% - 32px); margin-inline: auto; padding-block: 48px; }
+.oa__brand { margin: 0; font: 500 22px/1 var(--font-display); color: var(--ink); }
+.oa__brand::before { content: "✱"; color: var(--coral); margin-right: 8px; }
+.oa h1 { margin: 0; font: 500 clamp(32px, 6vw, 44px)/1.08 var(--font-display); letter-spacing: -0.6px; text-wrap: balance; }
+.oa__lede { margin: 0; font-size: 16px; line-height: 1.6; color: var(--body); }
+.oa__list { margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.oa__list > div { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+.oa__list dt { font-size: 13px; font-weight: 500; color: var(--muted); }
+.oa__list dd { margin: 0; font-size: 15px; line-height: 1.55; color: var(--body); }
+.oa__list code { font-family: var(--font-mono); font-size: 14px; color: var(--ink); }
+.oa__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.oa__btn { min-height: 48px; padding: 0 24px; border-radius: 8px; border: 1px solid var(--hairline); background: var(--canvas); color: var(--ink); font: 500 16px/1 "DM Sans", var(--font-sans); cursor: pointer; transition: background 140ms, border-color 140ms; }
+.oa__btn:hover { border-color: var(--muted); }
+.oa__btn--primary { background: var(--coral); border-color: var(--coral); color: var(--on-primary); }
+.oa__btn--primary:hover { background: var(--coral-active); border-color: var(--coral-active); }
+.oa__btn:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+::selection { background: color-mix(in srgb, var(--coral) 28%, transparent); }
+@media (max-width: 480px) { .oa__list > div { grid-template-columns: 1fr; gap: 4px; } .oa__btn { flex: 1; } }

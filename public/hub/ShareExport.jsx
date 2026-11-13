@@ -13,9 +13,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
   const [busy, setBusy] = React.useState("");
   const [msg, setMsg] = React.useState("");
   const [err, setErr] = React.useState("");
-  const [confirmClaim, setConfirmClaim] = React.useState(false);
   const [essayId, setEssayId] = React.useState("");
-  const [claimCode, setClaimCode] = React.useState("");
   const [newShareUrl, setNewShareUrl] = React.useState("");
   const shares = (data.shares || []).filter((s) => !s.revokedAt);
   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -31,29 +29,6 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
     }
     setBusy("");
   };
-
-  const createRecovery = () =>
-    run("recovery", async () => {
-      const j = await window.cfApi.postAction("create-recovery");
-      if (onWorkspaceChange && j.data) onWorkspaceChange(j.data);
-      setMsg("Recovery code ready — save it somewhere safe. It links this hub across devices.");
-    });
-
-  const claimRecovery = () =>
-    run("claim", async () => {
-      if (window.cfFlushEssayDrafts) await window.cfFlushEssayDrafts();
-      const j = await window.cfApi.postAction("claim-recovery", { code: claimCode.trim() });
-      if (!j.data) throw new Error("The workspace could not be opened. Please try again.");
-      const applySwitch = onWorkspaceSwitch || onWorkspaceChange;
-      if (applySwitch) applySwitch(j.data);
-      else window.CF_DATA = j.data;
-      try { localStorage.removeItem("cf.favorites"); } catch (_) {}
-      setNewShareUrl("");
-      setClaimCode("");
-      setConfirmClaim(false);
-      setMsg("Workspace linked. Loading your saved data…");
-      window.location.reload();
-    });
 
   const createShare = () =>
     run("share", async () => {
@@ -105,7 +80,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
         <div>
           <h1 className="cf-page-title">Share & export</h1>
           <p className="cf-page-lede">
-            Save your work across devices, share it with an advisor, and download drafts or deadlines for your applications.
+            Share a read-only view with a counselor or parent, and download your drafts, deadlines or a full backup. Your work follows your Xanom account to any device.
           </p>
         </div>
       </header>
@@ -113,44 +88,9 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
       {err ? <div role="alert" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--error) 12%, transparent)", color: "var(--error)", fontSize: 13 }}>{err}</div> : null}
       {msg ? <div role="status" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--accent-teal) 12%, transparent)", color: "var(--ink)", fontSize: 13 }}>{msg}</div> : null}
 
-      <Panel title="Multi-device recovery">
-        <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
-          Your hub is tied to a browser cookie. Create a recovery code, then enter it on another phone or laptop to open the same workspace.
-        </p>
-        {data.recoveryCode ? (
-          <div style={{ marginBottom: 12, padding: "12px 16px", background: "var(--surface-soft)", borderRadius: "var(--radius-md)", fontFamily: "var(--font-mono)", fontSize: 22, letterSpacing: "0.15em", overflowWrap: "anywhere", color: "var(--ink)" }}>
-            {data.recoveryCode}
-          </div>
-        ) : (
-          <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--muted)" }}>No recovery code yet.</p>
-        )}
-        <Button size="sm" onClick={createRecovery} disabled={!!busy}>
-          {busy === "recovery" ? "Working…" : data.recoveryCode ? "Show existing code" : "Create recovery code"}
-        </Button>
-
-        <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--hairline)" }}>
-          <label htmlFor="workspace-recovery-code" style={{ display: "block", fontSize: 13, color: "var(--ink)", marginBottom: 8 }}>Open another workspace with a recovery code</label>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input id="workspace-recovery-code" autoComplete="off" spellCheck={false}
-              value={claimCode}
-              onChange={(e) => { setClaimCode(e.target.value.toUpperCase()); setConfirmClaim(false); }}
-              placeholder="ABCD2345"
-              style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", fontFamily: "var(--font-mono)", letterSpacing: "0.1em", fontSize: 14, background: "var(--canvas)", color: "var(--ink)" }}
-            />
-            <Button size="sm" variant="secondary" onClick={() => setConfirmClaim(true)} disabled={!!busy || claimCode.trim().length < 6}>
-              Open workspace
-            </Button>
-          </div>
-          {confirmClaim ? <div style={{ marginTop: 12, padding: 12, border: "1px solid var(--hairline)", borderRadius: "var(--radius-sm)" }}>
-            <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--body)", lineHeight: 1.6 }}>This switches this browser to the workspace for that code. Save your current recovery code or download a backup first so you can return. Your two workspaces will not be merged.</p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><Button size="sm" onClick={claimRecovery} disabled={!!busy}>{busy === "claim" ? "Linking…" : "Switch workspace"}</Button><Button size="sm" variant="secondary" onClick={() => setConfirmClaim(false)} disabled={!!busy}>Stay here</Button></div>
-          </div> : null}
-        </div>
-      </Panel>
-
       <Panel title="Advisor share links">
         <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
-          Anyone with a share link can read your profile, school list, essay drafts, and timeline, and leave notes. Revoke a link below to end access.
+          Anyone with a share link can read your profile, school list, application statuses, essay drafts and dates, and leave notes. They never see portal logins or a decision you haven’t opened. Revoke a link below to end access.
         </p>
         <Button size="sm" onClick={createShare} disabled={!!busy}>
           {busy === "share" ? "Creating…" : "Create share link"}

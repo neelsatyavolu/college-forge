@@ -5,7 +5,7 @@ import { appOrigin } from "@/lib/origin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const safePath = (p: string | null) => (p && p.startsWith("/") && !p.startsWith("//") && !p.startsWith("/\\") ? p : "/hub/");
+const safePath = (p: string | null) => (p && p.startsWith("/") && !p.startsWith("//") && !p.startsWith("/\\") ? p : "/hub/index.html");
 
 /** Arrives from forge.n3el.dev with that browser's workspace, so the first Xanom sign-in can keep it. */
 export async function GET(req: NextRequest) {

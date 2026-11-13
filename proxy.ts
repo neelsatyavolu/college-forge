@@ -13,7 +13,7 @@ export function proxy(req: NextRequest) {
   if (req.method === "GET" && ws && /^[a-zA-Z0-9_-]{8,64}$/.test(ws) && process.env.SESSION_SECRET) {
     const url = new URL("/api/handoff", NEW_ORIGIN);
     url.searchParams.set("t", signHandoff(ws));
-    url.searchParams.set("next", path.startsWith("/api/") ? "/hub/" : path);
+    url.searchParams.set("next", path.startsWith("/api/") ? "/hub/index.html" : path);
     return NextResponse.redirect(url, 302);
   }
   return NextResponse.redirect(new URL(path, NEW_ORIGIN), 308);

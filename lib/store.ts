@@ -512,15 +512,8 @@ export async function resetWorkspace(id: string): Promise<Workspace> {
   return updateWorkspace(id, () => emptyWorkspace());
 }
 
-export async function readScattergramText(id: string): Promise<string | null> {
-  return readText(scattergramKey(id));
-}
-
-export async function writeScattergramText(id: string, text: string): Promise<void> {
-  await writeText(scattergramKey(id), text, "application/json");
-}
-
-export async function deleteScattergramText(id: string): Promise<void> {
+/** Scattergram imports were removed; a reset still clears any a workspace saved before. */
+async function deleteScattergramText(id: string): Promise<void> {
   await deleteText(scattergramKey(id));
 }
 

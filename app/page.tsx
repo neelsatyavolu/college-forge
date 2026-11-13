@@ -52,8 +52,8 @@ const FEATURES = [
     body: "The 2026–27 Common App prompts and each school’s supplements, with their word limits. Drafts save as you type.",
   },
   {
-    title: "Deadlines and paperwork",
-    body: "Rounds and school deadlines on one timeline, a checklist that remembers what’s done, recommendation letters, scholarships, and FAFSA and CSS Profile steps with links to the official sites.",
+    title: "Every application, tracked",
+    body: "Each school’s status, round, deadline and decision date in one list. Save a portal login and Forge checks it every 12 hours, flags missing documents, and keeps a posted decision covered until you choose to open it.",
   },
   {
     title: "Your counselor, in the loop",
@@ -63,16 +63,16 @@ const FEATURES = [
 
 const TRUST = [
   {
-    title: "No sign-up",
-    body: "Your workspace belongs to this browser. A recovery code opens it on another device.",
+    title: "One Xanom account",
+    body: "Sign in with the Xanom account you use for Mullwell, Lodestar and Tare, and your workspace follows you to any device. Moving from College Apps takes one step.",
   },
   {
     title: "Your AI, or none",
-    body: "Connect your own Grok or ChatGPT account and the copilot can read your transcript, fill in your profile and build your plan. Everything also works by hand.",
+    body: "Connect your own Grok or ChatGPT account and the copilot can read your transcript, fill in your profile and build your plan. Or add Forge as a connector in Grok, ChatGPT or Claude and ask them about your applications. Everything also works by hand.",
   },
   {
     title: "Nothing submitted for you",
-    body: "Forge isn’t connected to the Common App and never signs in anywhere on your behalf. You paste in what you wrote.",
+    body: "Forge isn’t connected to the Common App and never submits anything. It signs in to an application portal only to read your status, and only with a login you saved. Passwords stay encrypted.",
   },
 ];
 

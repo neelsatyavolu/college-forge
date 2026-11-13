@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const { url, cookie } = await startSignIn({
       redirectUri: `${appOrigin(req)}/api/xanom/callback`,
       intent,
-      returnTo: q.get("return") ?? "/hub/",
+      returnTo: q.get("return") ?? "/hub/index.html",
       prompt: q.get("prompt") === "login" ? "login" : undefined,
     });
     const headers = new Headers({ location: url, "cache-control": "no-store" });
@@ -22,6 +22,6 @@ export async function GET(req: NextRequest) {
     return new Response(null, { status: 302, headers });
   } catch (err) {
     console.error("xanom start failed", err instanceof Error ? err.message : "unknown");
-    return Response.redirect(new URL("/hub/?signin_error=unavailable", appOrigin(req)), 302);
+    return Response.redirect(new URL("/hub/index.html?signin_error=unavailable", appOrigin(req)), 302);
   }
 }

@@ -1,0 +1,113 @@
+/* Applications, Decisions and sign-in — built on the hub tokens in /styles.css and workspace.css. */
+
+.cf-apps-summary { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: -8px 0 26px; font-size: 13px; color: var(--muted); }
+.cf-apps-summary strong { font: 500 24px/1 var(--font-display); color: var(--ink); margin-right: 6px; font-variant-numeric: lining-nums tabular-nums; }
+.cf-apps-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+.cf-apps-toolbar__views { display: flex; gap: 4px; }
+.cf-apps-auto { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); cursor: pointer; min-height: 36px; }
+.cf-apps-auto input { accent-color: var(--coral); width: 16px; height: 16px; }
+.cf-apps-progress { font-size: 13px; color: var(--muted); min-height: 20px; margin: -10px 0 16px; }
+
+.cf-apps-group { margin-bottom: 36px; }
+.cf-apps-group__head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.cf-apps-group__head h2 { margin: 0; font: 500 clamp(22px, 3vw, 27px)/1.2 var(--font-display); letter-spacing: -0.3px; color: var(--ink); }
+.cf-apps-group__head span { font-size: 13px; color: var(--muted); font-variant-numeric: lining-nums tabular-nums; }
+.cf-apps-list { list-style: none; margin: 0; padding: 0; background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-lg); }
+.cf-apps-list > li + li { border-top: 1px solid var(--hairline); }
+
+.cf-app-row { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 4px 14px; align-items: start; padding: 16px 18px; }
+.cf-app-row__name { margin: 0; font: 500 19px/1.3 var(--font-display); color: var(--ink); overflow-wrap: anywhere; }
+.cf-app-row__meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 3px; font-size: 13px; color: var(--muted); }
+.cf-app-row__meta b { font-weight: 500; color: var(--body); font-variant-numeric: tabular-nums; }
+.cf-app-row__meta .is-soon { color: var(--coral); }
+.cf-app-row__portal { grid-column: 2 / -1; font-size: 13px; line-height: 1.55; color: var(--body); }
+.cf-app-row__portal .is-error { color: var(--muted); }
+.cf-app-row__portal .is-decision { color: var(--coral); font-weight: 500; }
+.cf-app-row__missing { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.cf-app-row__missing span { font-size: 12px; padding: 3px 9px; border-radius: var(--radius-pill); background: var(--surface-soft); color: var(--body); }
+.cf-app-row__side { display: flex; align-items: center; gap: 6px; }
+.cf-app-row__more { grid-column: 2 / -1; }
+
+.cf-school-mark { width: 36px; height: 36px; border-radius: var(--radius-sm); display: grid; place-items: center; overflow: hidden; background: var(--surface-soft); font: 600 11px/1 var(--font-sans); letter-spacing: 0.02em; flex-shrink: 0; }
+.cf-school-mark img { width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 3px; box-sizing: border-box; }
+
+.cf-status { position: relative; display: inline-flex; align-items: center; }
+.cf-status::before { content: ""; position: absolute; left: 11px; width: 7px; height: 7px; border-radius: 50%; background: var(--tone, var(--muted-soft)); pointer-events: none; }
+.cf-status select { appearance: none; -webkit-appearance: none; min-height: 36px; padding: 0 30px 0 25px; border-radius: var(--radius-pill); border: 1px solid var(--hairline); background: var(--canvas) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%238e8b82' stroke-width='1.5'%3E%3Cpath d='m1 1 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 12px center; color: var(--ink); font: 500 13px/1 var(--font-sans); cursor: pointer; transition: border-color 140ms; }
+.cf-status select:hover { border-color: var(--muted-soft); }
+.cf-status select:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+.cf-more-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 4px; border: 0; background: none; color: var(--muted); font-size: 13px; cursor: pointer; }
+.cf-more-btn:hover { color: var(--ink); }
+.cf-more-btn svg { transition: transform 160ms ease-out; }
+.cf-more-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.cf-app-details { margin-top: 10px; padding: 16px 0 4px; border-top: 1px dashed var(--hairline); display: grid; gap: 18px; }
+.cf-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px 16px; }
+.cf-field { display: grid; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.cf-field input, .cf-field select, .cf-field textarea { font: 400 15px/1.4 var(--font-sans); color: var(--ink); background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-sm); padding: 9px 11px; min-height: 42px; box-sizing: border-box; width: 100%; }
+.cf-field textarea { min-height: 84px; resize: vertical; line-height: 1.55; }
+.cf-field input:focus-visible, .cf-field select:focus-visible, .cf-field textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; border-color: transparent; }
+.cf-field small { font-weight: 400; color: var(--muted); }
+.cf-subhead { margin: 0 0 8px; font: 500 17px/1.3 var(--font-display); color: var(--ink); }
+.cf-help { margin: 0; font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 66ch; }
+.cf-row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cf-link-btn { border: 0; background: none; padding: 0; min-height: 36px; color: var(--workspace-accent); font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--hairline); }
+.cf-link-btn:hover { text-decoration-color: currentColor; }
+.cf-link-btn--danger { color: var(--error); }
+
+.cf-panel { border: 1px solid var(--hairline); border-radius: var(--radius-lg); background: var(--canvas); padding: 22px; margin-bottom: 26px; display: grid; gap: 14px; }
+.cf-panel h2 { margin: 0; font: 500 23px/1.2 var(--font-display); color: var(--ink); }
+.cf-panel--soft { background: var(--surface-soft); border-color: transparent; }
+
+.cf-picker { display: grid; gap: 10px; }
+.cf-picker__results { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow: auto; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
+.cf-picker__results li + li { border-top: 1px solid var(--hairline-soft); }
+.cf-picker__results button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 12px; border: 0; background: none; text-align: left; color: var(--ink); font-size: 14px; cursor: pointer; }
+.cf-picker__results button:hover, .cf-picker__results button:focus-visible { background: var(--surface-soft); outline: none; }
+.cf-picker__results small { display: block; color: var(--muted); font-size: 12px; }
+.cf-picker__results .cf-school-mark { width: 30px; height: 30px; }
+
+.cf-dates { display: grid; gap: 0; border: 1px solid var(--hairline); border-radius: var(--radius-lg); }
+.cf-dates .cf-agenda-row h3 { font-size: 15px; }
+.cf-dates .cf-agenda-row p { font-size: 12px; }
+.cf-dates__month { padding: 18px 18px 6px; font: 500 20px/1.2 var(--font-display); color: var(--ink); border-bottom: 1px solid var(--hairline); }
+
+/* Decisions */
+.cf-decision { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 6px 14px; align-items: center; padding: 18px; }
+.cf-decision__school { margin: 0; font: 500 19px/1.3 var(--font-display); color: var(--ink); }
+.cf-decision__note { font-size: 13px; color: var(--muted); }
+.cf-decision__reveal { grid-column: 2 / -1; display: grid; gap: 12px; }
+.cf-decision__words { margin: 0; font: 500 clamp(30px, 4vw, 42px)/1.1 var(--font-display); letter-spacing: -0.5px; color: var(--ink); animation: cf-reveal 620ms cubic-bezier(.16, 1, .3, 1) both; }
+.cf-decision__words.is-admit { color: var(--workspace-accent); }
+@keyframes cf-reveal { from { opacity: 0; filter: blur(10px); transform: translateY(6px); } to { opacity: 1; filter: blur(0); transform: none; } }
+@media (prefers-reduced-motion: reduce) { .cf-decision__words { animation: none; } .cf-more-btn svg { transition: none; } }
+.cf-outcome { font: 500 13px/1 var(--font-sans); padding: 7px 12px; border-radius: var(--radius-pill); background: color-mix(in srgb, var(--tone) 14%, transparent); color: var(--ink); white-space: nowrap; }
+
+/* Sign-in */
+.cf-signin { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 40px var(--page-gutter, 20px); background: var(--canvas); box-sizing: border-box; }
+.cf-signin__card { width: min(520px, 100%); display: grid; gap: 22px; }
+.cf-signin h1 { margin: 0; font: 500 clamp(40px, 6vw, 58px)/1.04 var(--font-display); letter-spacing: -1px; color: var(--ink); text-wrap: balance; }
+.cf-signin p { margin: 0; font-size: 16px; line-height: 1.65; color: var(--body); max-width: 46ch; }
+.cf-signin__go { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 0 24px; border-radius: var(--radius-md); background: var(--coral); color: var(--on-primary); font: 500 16px/1 var(--font-sans); text-decoration: none; justify-self: start; transition: background 140ms, transform 140ms; }
+.cf-signin__go:hover { background: var(--coral-active); color: var(--on-primary); }
+.cf-signin__go:active { transform: translateY(1px); }
+.cf-signin__go:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.cf-signin small { font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 52ch; }
+.cf-signin__list { margin: 0; padding: 18px 0 0; border-top: 1px solid var(--hairline); display: grid; gap: 10px; list-style: none; font-size: 14px; color: var(--body); }
+.cf-signin__list li { display: grid; grid-template-columns: 18px 1fr; gap: 10px; }
+.cf-signin__list svg { margin-top: 3px; color: var(--workspace-accent); }
+
+/* Settings: account and assistants */
+.cf-copy { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
+.cf-copy code { flex: 1 1 260px; min-height: 42px; display: flex; align-items: center; padding: 0 12px; border-radius: var(--radius-sm); background: var(--surface-soft); color: var(--ink); font: 400 14px/1.3 var(--font-mono); overflow-wrap: anywhere; }
+.cf-steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; line-height: 1.6; color: var(--body); }
+
+::selection { background: color-mix(in srgb, var(--coral) 28%, transparent); color: var(--ink); }
+
+@media (max-width: 600px) {
+  .cf-app-row, .cf-decision { grid-template-columns: 30px minmax(0, 1fr); padding: 14px; }
+  .cf-app-row__side, .cf-decision > .cf-row-actions { grid-column: 2 / -1; }
+  .cf-school-mark { width: 30px; height: 30px; }
+  .cf-apps-summary strong { font-size: 19px; }
+}

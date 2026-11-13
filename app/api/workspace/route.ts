@@ -13,6 +13,7 @@ import {
 import { seedRecommendedColleges } from "@/lib/college-recommendations";
 import { syncEssaySupplements } from "@/lib/essay-supplements";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { deleteAllLogins } from "@/lib/portal-logins";
 import { applyWorkspacePatch, type WorkspacePatch } from "@/lib/workspace-patch";
 import {
   getRecovery,
@@ -94,6 +95,8 @@ export async function POST(req: NextRequest) {
 
   if (action === "reset") {
     const ws = await resetWorkspace(id);
+    // A reset clears the tracker, so its saved portal logins go too.
+    await deleteAllLogins(id).catch(() => undefined);
     return withCookie(ws, setCookie);
   }
 

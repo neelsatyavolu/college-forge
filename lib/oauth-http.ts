@@ -21,7 +21,7 @@ export function resourceMetadata(req: Request) {
     scopes_supported: ["applications"],
     bearer_methods_supported: ["header"],
     resource_name: "Forge applications",
-    resource_documentation: `${origin}/hub/#settings`,
+    resource_documentation: `${origin}/hub/index.html#settings`,
   };
 }
 
