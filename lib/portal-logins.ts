@@ -7,7 +7,8 @@ import { deleteDoc, readDoc, updateDoc } from "./doc-store";
  * Only the server's portal checker reads them back.
  */
 
-export type PortalLogin = { username: string; password: string };
+/** `host` is the portal host the login was saved for; checks refuse to send it anywhere else. */
+export type PortalLogin = { username: string; password: string; host?: string };
 type Sealed = { v: 1; iv: string; ct: string; tag: string };
 
 function key(): Buffer {
@@ -47,7 +48,7 @@ export async function saveLogins(workspaceId: string, changes: Record<string, Po
   await updateDoc<Sealed>(docKey(workspaceId), (current) => {
     const next = { ...open(workspaceId, current) };
     for (const [appId, login] of Object.entries(changes)) {
-      if (login) next[appId] = { username: login.username.slice(0, 254), password: login.password.slice(0, 256) };
+      if (login) next[appId] = { username: login.username.slice(0, 254), password: login.password.slice(0, 256), ...(login.host ? { host: login.host } : {}) };
       else delete next[appId];
     }
     return seal(workspaceId, next);

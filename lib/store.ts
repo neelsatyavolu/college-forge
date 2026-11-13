@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
 import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
+import { listDocs } from "./doc-store";
 import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type Tracker } from "./tracker";
 
 // ── Workspace data model ──────────────────────────────────────────────────
@@ -496,6 +497,28 @@ async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<
   throw new Error("Workspace update retry limit reached.");
 }
 
+/**
+ * Moves an anonymous workspace to a fresh id when someone signs in, and retires the old id, so the old
+ * cookie (or anyone who saw it) opens an empty workspace from then on. Returns the new id, or null when
+ * there was nothing stored under the old one.
+ */
+export async function adoptWorkspace(anonymousId: string): Promise<string | null> {
+  const raw = await readText(workspaceKey(anonymousId));
+  if (raw === null) return null;
+  const newId = newWorkspaceId();
+  const oldUploads = `uploads/${safeId(anonymousId)}/`;
+  const uploads = await listDocs(oldUploads);
+  for (const key of uploads) {
+    const text = await readText(key);
+    if (text !== null) await writeText(`uploads/${newId}/${key.slice(oldUploads.length)}`, text, "text/plain");
+  }
+  await writeText(workspaceKey(newId), raw, "application/json");
+  await deleteText(workspaceKey(anonymousId));
+  for (const key of uploads) await deleteText(key);
+  await deleteText(scattergramKey(anonymousId)).catch(() => undefined);
+  return newId;
+}
+
 /** Read without writing unless initialization or a persisted namespace migration is needed. */
 export async function getWorkspace(id: string): Promise<Workspace> {
   const { workspace, needsWrite } = decodeWorkspace(await readText(workspaceKey(id)));
@@ -533,6 +556,32 @@ export async function readUpload(id: string, name: string): Promise<string | nul
   return raw.length <= UPLOAD_READ_CAP ? raw : raw.slice(0, UPLOAD_READ_CAP) + "\n\n[…truncated…]";
 }
 
+/**
+ * The tracker as the browser may see it in workspace responses: a portal's words for a decision only
+ * after the student opened it, and no `decisionSeen` (it contains those words).
+ */
+export function redactTracker(tracker: Tracker): Tracker {
+  return {
+    ...tracker,
+    apps: tracker.apps.map((app) => {
+      const { decisionSeen: _d, ...rest } = app;
+      const portal = shownPortal(app);
+      return portal ? { ...rest, portal } : rest;
+    }),
+  };
+}
+
+/** Any response body that carries a workspace (directly or as `data`), with its tracker redacted. */
+export function redactWorkspaceBody<T>(body: T): T {
+  if (!body || typeof body !== "object") return body;
+  const b = body as Record<string, unknown>;
+  if (b.tracker && typeof b.tracker === "object" && Array.isArray((b.tracker as Tracker).apps)) {
+    return { ...b, tracker: redactTracker(b.tracker as Tracker) } as T;
+  }
+  if (b.data && typeof b.data === "object") return { ...b, data: redactWorkspaceBody(b.data) } as T;
+  return body;
+}
+
 /** Public share payload — strips recovery codes and internal share tokens list details if needed. */
 export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" | "shares" | "uploads"> & {
   uploads: { name: string; chars: number }[];
@@ -543,7 +592,7 @@ export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" |
     // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
     tracker: {
       autocheck: tracker.autocheck,
-      apps: tracker.apps.map(({ login: _l, decisionSeen: _d, ...app }) => ({ ...app, portal: shownPortal({ ...app, decisionSeen: _d }) })),
+      apps: redactTracker(tracker).apps.map(({ login: _l, ...app }) => app),
     },
     uploads: uploads.map((u) => ({ name: u.name, chars: u.chars })),
   };

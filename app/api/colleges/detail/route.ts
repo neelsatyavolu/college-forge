@@ -133,7 +133,7 @@ function normalizeUrl(u: string): string | undefined {
 
 export async function GET(req: NextRequest) {
   const idParam = (req.nextUrl.searchParams.get("id") ?? "").trim();
-  const { id: wsId, setCookie } = getWorkspaceId(req);
+  const { id: wsId, setCookie } = await getWorkspaceId(req);
 
   if (!/^\d+$/.test(idParam)) {
     return json({ success: false, error: "A numeric Scorecard 'id' is required." }, 400, setCookie);

@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { updateWorkspace, type College } from "@/lib/store";
+import { redactWorkspaceBody, updateWorkspace, type College } from "@/lib/store";
 import { upsertCollegeInto, removeCollegeFrom, slugify } from "@/lib/colleges";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
@@ -12,12 +12,12 @@ function json(body: unknown, status = 200, setCookie?: string): Response {
     "cache-control": "no-store",
   };
   if (setCookie) headers["set-cookie"] = setCookie;
-  return new Response(JSON.stringify(body), { status, headers });
+  return new Response(JSON.stringify(redactWorkspaceBody(body)), { status, headers });
 }
 
 /** Add (or update) a college on the user's list from the Explore page. */
 export async function POST(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
 
   let body: { college?: Partial<College> };
   try {
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
 /** Remove a college: DELETE /api/workspace/colleges?slug=… */
 export async function DELETE(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
   const slug = (req.nextUrl.searchParams.get("slug") ?? "").trim();
   if (!slug) return json({ success: false, error: "slug is required." }, 400, setCookie);
 

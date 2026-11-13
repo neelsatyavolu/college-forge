@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSession } from "@/lib/workspace-cookie";
 import { runChecks } from "@/lib/portal-check";
 import { ImportError } from "@/lib/collegeapps-import";
+import { allow } from "@/lib/rate-limit";
 import { STATUS_IDS, ROUNDS } from "@/lib/tracker";
 import {
   TrackerError,
@@ -89,10 +90,16 @@ export async function POST(req: NextRequest) {
       case "autocheck":
         return json({ success: true, data: await setAutocheck(ws, b.on) });
       case "check": {
+        if (!(await allow(`check:${session.sub}`, 120, 60 * 60 * 1000))) {
+          return json({ success: false, error: "That's a lot of checks this hour. Forge keeps checking on its own every 12 hours." }, 429);
+        }
         const checked = await runChecks(ws, { appIds: b.ids });
         return json({ success: true, checked: checked.map((a) => viewApp(a)), data: await listApps(ws) });
       }
       case "import-collegeapps": {
+        if (!(await allow(`import:${session.sub}`, 5, 15 * 60 * 1000))) {
+          return json({ success: false, error: "Too many tries. Wait 15 minutes, then try again." }, 429);
+        }
         const r = await importFromCollegeApps(ws, b.email, b.password);
         return json({ success: true, added: r.added, linked: r.linked, total: r.total, data: r.tracker });
       }

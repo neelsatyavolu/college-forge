@@ -1,11 +1,15 @@
 import { OAuthError, registerClient } from "@/lib/oauth";
 import { corsJson, preflight } from "@/lib/oauth-http";
+import { allow, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const OPTIONS = preflight;
 
 /** RFC 7591 dynamic client registration. Every client is public and must use PKCE. */
 export async function POST(req: Request) {
+  if (!(await allow(`register:${clientIp(req)}`, 20, 60 * 60 * 1000))) {
+    return corsJson({ error: "slow_down", error_description: "Too many registrations from this address. Try again later." }, 429);
+  }
   try {
     const c = await registerClient(await req.json().catch(() => null));
     return corsJson(

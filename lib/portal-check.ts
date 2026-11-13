@@ -22,13 +22,35 @@ const hostOf = (url: string): string | null => {
 
 export type CheckPlan = { ok: true; url: string } | { ok: false; reason: string };
 
-/** Every catalog school can be tried; a school added by link only if it's a Slate portal. */
+/** Hosts a catalog school's login may go to: its portal, its sign-in and activation hosts, and its own domains. */
+function catalogAllows(college: NonNullable<ReturnType<typeof collegeById>>, host: string): boolean {
+  if (host === hostOf(college.loginUrl) || college.hosts.includes(host)) return true;
+  return college.domains.some((d) => host === d || host.endsWith(`.${d}`));
+}
+
+/** Where a portal login for this application may be sent, or null. */
+export function loginHost(app: TrackedApp): string | null {
+  const college = app.collegeId ? collegeById(app.collegeId) : undefined;
+  const own = hostOf(app.portalUrl);
+  if (college) return own && catalogAllows(college, own) ? own : hostOf(college.loginUrl);
+  return own;
+}
+
+/**
+ * Every catalog school can be tried; a school added by link only if it's a Slate portal. A login only goes
+ * to the host it was saved for: a catalog school's own hosts, or for other schools the exact portal host
+ * at the time the login was saved. Changing a portal link afterwards stops checks until the login is saved again.
+ */
 export function planCheck(app: TrackedApp, login: PortalLogin | undefined): CheckPlan {
   const college = app.collegeId ? collegeById(app.collegeId) : undefined;
   if (!college && app.platform !== "slate") return { ok: false, reason: "This portal can't be checked automatically. Check it by hand." };
-  const host = hostOf(app.portalUrl) ?? (college ? hostOf(college.loginUrl) : null);
+  const host = loginHost(app);
   if (!host) return { ok: false, reason: "Add the portal link to check it automatically." };
   if (!login?.username || !login.password) return { ok: false, reason: "Save this portal's username and password to check it automatically." };
+  if (!college && login.host !== host) return { ok: false, reason: "The portal link changed since the login was saved. Save the login again to check it." };
+  if (college && login.host && login.host !== host && !catalogAllows(college, login.host)) {
+    return { ok: false, reason: "The portal link changed since the login was saved. Save the login again to check it." };
+  }
   return { ok: true, url: `https://${host}/apply/status` };
 }
 
@@ -70,8 +92,11 @@ export async function checkApp(app: TrackedApp, login: PortalLogin | undefined, 
   }
 }
 
-export const isDue = (app: TrackedApp, now = Date.now()) =>
-  !!app.login?.hasPassword && (!app.portal || now - app.portal.checkedAt >= CHECK_INTERVAL_MS);
+/** Due 12 hours after the last attempt, good or failed, so a portal stuck on Duo isn't retried every hour. */
+export const isDue = (app: TrackedApp, now = Date.now()) => {
+  const last = Math.max(app.portal?.checkedAt ?? 0, app.lastFailure?.at ?? 0);
+  return !!app.login?.hasPassword && now - last >= CHECK_INTERVAL_MS;
+};
 
 /**
  * Checks the given applications (or every one with a saved login) a few at a time, then saves all
@@ -82,6 +107,8 @@ export async function runChecks(
   opts: { appIds?: string[]; onlyDue?: boolean; concurrency?: number } = {},
 ): Promise<TrackedApp[]> {
   const ws = await getWorkspace(workspaceId);
+  // The workspace's own switch is the authority for automatic checks, whatever the sweep's index says.
+  if (opts.onlyDue && !ws.tracker.autocheck) return [];
   const logins = await readLogins(workspaceId);
   const now = Date.now();
   const targets = ws.tracker.apps.filter(

@@ -231,7 +231,7 @@ function AssistantPanel() {
             <ul className="cf-apps-list">
               {list.map((c) => (
                 <li key={c.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "12px 16px", flexWrap: "wrap" }}>
-                  <span><strong style={{ fontWeight: 500, color: "var(--ink)" }}>{c.name}</strong><span className="cf-help" style={{ display: "block" }}>{c.host} · last used {new Date(c.lastUsed).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></span>
+                  <span><strong style={{ fontWeight: 500, color: "var(--ink)" }}>{c.name}</strong><span className="cf-help" style={{ display: "block" }}>{c.host} · connected {new Date(c.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></span>
                   <Button size="sm" variant="secondary" onClick={() => disconnect(c.id)}>Disconnect</Button>
                 </li>
               ))}

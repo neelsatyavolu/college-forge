@@ -58,8 +58,8 @@ export async function GET(req: NextRequest) {
 <h1>Let ${esc(ar.client.client_name)} use your applications?</h1>
 <p class="oa__lede">It will act for <strong>${esc(session.email)}</strong> until you disconnect it in Forge settings.</p>
 <dl class="oa__list">
-  <div><dt>It can</dt><dd>See your schools, statuses, deadlines, decision dates, portal checks and notes; add, edit and remove applications; record decisions; run portal checks.</dd></div>
-  <div><dt>It can't</dt><dd>See your portal passwords, your essays or your Forge account settings.</dd></div>
+  <div><dt>It can</dt><dd>See your schools, statuses, deadlines, decision dates, portal checks and notes, your shortlist, and your profile summary (school, major, GPA and scores). Add, edit and remove applications, record decisions, and run portal checks. When you ask it to, open a decision a portal posted, which marks it as seen.</dd></div>
+  <div><dt>It can't</dt><dd>See your portal passwords or essays, change portal links or logins, or change your Forge account.</dd></div>
   <div><dt>Returns to</dt><dd><code>${esc(host)}</code></dd></div>
 </dl>
 <form method="post" class="oa__actions">

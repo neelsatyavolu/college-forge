@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
-import { listDocs, readDoc } from "@/lib/doc-store";
+import { deleteDoc, listDocs, readDoc } from "@/lib/doc-store";
+import { getWorkspace } from "@/lib/store";
 import { runChecks } from "@/lib/portal-check";
 
 export const runtime = "nodejs";
@@ -30,6 +31,11 @@ async function sweep(req: Request) {
     const entry = await readDoc<{ workspaceId: string }>(key).catch(() => null);
     if (!entry?.workspaceId) continue;
     try {
+      const ws = await getWorkspace(entry.workspaceId);
+      if (!ws.tracker.autocheck || !ws.tracker.apps.some((a) => a.login?.hasPassword)) {
+        await deleteDoc(key); // stale index entry: checks were turned off or every login was removed
+        continue;
+      }
       const done = await runChecks(entry.workspaceId, { onlyDue: true, concurrency: 4 });
       workspaces++;
       checked += done.length;

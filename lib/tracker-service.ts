@@ -1,7 +1,8 @@
 import { logoUrl } from "./catalog";
 import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
-import { saveLogins, type PortalLogin } from "./portal-logins";
+import { readLogins, saveLogins, type PortalLogin } from "./portal-logins";
+import { loginHost } from "./portal-check";
 import { getWorkspace, updateWorkspace, type Workspace } from "./store";
 import {
   decisionDateOf,
@@ -57,6 +58,7 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
       ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: portal.checklist }
       : null,
     missing: missingItems(app),
+    lastFailure: app.lastFailure ?? null,
     notes: app.notes,
     login: app.login ?? null,
     lastChecked: app.lastChecked,
@@ -65,17 +67,21 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
 }
 export type AppView = ReturnType<typeof viewApp>;
 
-export function viewTracker(tracker: Tracker, today = todayIso()) {
-  return { autocheck: tracker.autocheck, apps: tracker.apps.map((a) => viewApp(a, today)) };
+/** `revision` is the workspace's; the hub ignores a response older than one it already has. */
+export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0) {
+  return { revision, autocheck: tracker.autocheck, apps: tracker.apps.map((a) => viewApp(a, today)) };
 }
 
 const autocheckKey = (workspaceId: string) => `autocheck/${workspaceId.replace(/[^a-zA-Z0-9_-]/g, "")}.json`;
 
 /** Keeps the sweep's index in step: listed while automatic checks are on and some login is saved. */
-async function syncAutocheckIndex(workspaceId: string, tracker: Tracker): Promise<void> {
+async function syncAutocheckIndex(workspaceId: string, _after?: Tracker): Promise<void> {
+  // Re-read rather than trust the caller's copy, so a slower request can't restore an index entry a newer one removed.
+  // The sweep also checks the workspace's own switch, so a stale entry never causes a check.
+  const { tracker } = await getWorkspace(workspaceId);
   const wanted = tracker.autocheck && tracker.apps.some((a) => a.login?.hasPassword);
   if (wanted) await writeDoc(autocheckKey(workspaceId), { workspaceId });
-  else await deleteDoc(autocheckKey(workspaceId)).catch(() => undefined);
+  else await deleteDoc(autocheckKey(workspaceId));
 }
 
 function mustFind(tracker: Tracker, ref: string): TrackedApp {
@@ -96,7 +102,8 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
 }
 
 export async function listApps(workspaceId: string) {
-  return viewTracker((await getWorkspace(workspaceId)).tracker);
+  const ws = await getWorkspace(workspaceId);
+  return viewTracker(ws.tracker, todayIso(), ws.revision);
 }
 
 export async function addApp(
@@ -125,13 +132,29 @@ export async function addApp(
   return viewApp(ws.tracker.apps.find((a) => a.id === createdId)!);
 }
 
-export async function updateApp(workspaceId: string, ref: string, edit: AppEdit): Promise<AppView> {
+/**
+ * Edits one application. `edit` may be a function of the current application, so changes that depend on it
+ * (appending a note) are computed inside the same write. Moving the portal to a different host forgets the
+ * saved login, so a password is never sent somewhere it wasn't saved for.
+ */
+export async function updateApp(workspaceId: string, ref: string, edit: AppEdit | ((app: TrackedApp) => AppEdit)): Promise<AppView> {
   let id = "";
+  let dropLogin = false;
   const ws = await mutate(workspaceId, (tracker) => {
     const app = mustFind(tracker, ref);
     id = app.id;
-    return replaceApp(tracker, editApp(app, edit));
+    let next = editApp(app, typeof edit === "function" ? edit(app) : edit);
+    dropLogin = !!app.login && loginHost(next) !== loginHost(app);
+    if (dropLogin) {
+      const { login: _l, ...rest } = next;
+      next = rest;
+    }
+    return replaceApp(tracker, next);
   });
+  if (dropLogin) {
+    await saveLogins(workspaceId, { [id]: null });
+    await syncAutocheckIndex(workspaceId, ws.tracker);
+  }
   return viewApp(ws.tracker.apps.find((a) => a.id === id)!);
 }
 
@@ -160,7 +183,9 @@ export async function reveal(workspaceId: string, ref: string): Promise<AppView>
 export async function setLogin(workspaceId: string, ref: string, login: PortalLogin | null): Promise<AppView> {
   if (login && (!login.username.trim() || !login.password)) throw new TrackerError("Enter both the portal username and password.");
   const current = mustFind((await getWorkspace(workspaceId)).tracker, ref);
-  await saveLogins(workspaceId, { [current.id]: login ? { username: login.username.trim(), password: login.password } : null });
+  const host = loginHost(current);
+  if (login && !host) throw new TrackerError("Add the portal link before saving its login.");
+  await saveLogins(workspaceId, { [current.id]: login ? { username: login.username.trim(), password: login.password, host: host! } : null });
   const ws = await mutate(workspaceId, (tracker) => {
     const app = tracker.apps.find((a) => a.id === current.id);
     if (!app) return tracker;
@@ -175,40 +200,52 @@ export async function setLogin(workspaceId: string, ref: string, login: PortalLo
 export async function setAutocheck(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, autocheck: on }));
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewTracker(ws.tracker);
+  return viewTracker(ws.tracker, todayIso(), ws.revision);
 }
 
-/** Brings a College Apps account in: new schools are added, schools already here only gain a missing login. */
+/**
+ * Brings a College Apps account in: new schools are added, schools already here only gain a missing login.
+ * Logins are saved before the applications that point at them, so a failure part way can be retried.
+ */
 export async function importFromCollegeApps(workspaceId: string, email: string, password: string) {
   if (!email.includes("@") || !password) throw new TrackerError("Enter your College Apps email and password.");
   const incoming = toTracked(await fetchCollegeAppsVault(email, password));
+  const before = await getWorkspace(workspaceId);
+  const saved = await readLogins(workspaceId);
+  const same = (a: TrackedApp, b: TrackedApp) => (!!b.collegeId && a.collegeId === b.collegeId) || a.name.toLowerCase() === b.name.toLowerCase();
   const logins: Record<string, PortalLogin> = {};
+  for (const { app, login } of incoming) {
+    if (!login) continue;
+    const existing = before.tracker.apps.find((a) => same(a, app));
+    if (!existing) logins[app.id] = login;
+    else if (!saved[existing.id]) logins[existing.id] = login;
+  }
+  if (Object.keys(logins).length) await saveLogins(workspaceId, logins);
   let added = 0;
   let linked = 0;
   const ws = await mutate(workspaceId, (tracker) => {
     let next = tracker;
     added = 0;
     linked = 0;
-    for (const k of Object.keys(logins)) delete logins[k];
-    for (const { app, login } of incoming) {
-      const existing = next.apps.find((a) => (app.collegeId && a.collegeId === app.collegeId) || a.name.toLowerCase() === app.name.toLowerCase());
+    for (const { app } of incoming) {
+      const existing = next.apps.find((a) => same(a, app));
       if (existing) {
+        const login = logins[existing.id];
         if (login && !existing.login?.hasPassword) {
-          logins[existing.id] = login;
           next = replaceApp(next, { ...existing, login: { username: login.username, hasPassword: true }, updatedAt: Date.now() });
           linked++;
         }
         continue;
       }
-      if (login) logins[app.id] = login;
-      next = { ...next, apps: [...next.apps, app] };
+      const { login: _meta, ...rest } = app;
+      const login = logins[app.id];
+      next = { ...next, apps: [...next.apps, login ? { ...rest, login: { username: login.username, hasPassword: true } } : rest] };
       added++;
     }
     return next;
   });
-  if (Object.keys(logins).length) await saveLogins(workspaceId, logins);
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker) };
+  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision) };
 }
 
 /** Upcoming deadlines and decision dates, soonest first, plus the student's own dates from the timeline. */

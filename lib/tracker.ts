@@ -67,6 +67,8 @@ export interface TrackedApp {
   portal?: PortalResult;
   /** Which posted decision the student revealed on the Decisions tab. */
   decisionSeen?: string;
+  /** The latest check that failed after an earlier one worked; the earlier result stays in `portal`. */
+  lastFailure?: { at: number; error: string };
   /** Mirrors whether an encrypted login is saved (the login itself is never in the workspace). */
   login?: { username: string; hasPassword: boolean };
   createdAt: number;
@@ -192,16 +194,26 @@ function followsPortal(mine: string, before: string | undefined, now: string | u
   return mine === before || (!!now && now !== mine);
 }
 
+/**
+ * Applies a check. A failed check never replaces a good result (an outage or a Duo prompt must not hide a
+ * posted decision): it's kept as `lastFailure` beside the last good snapshot. A result older than the saved
+ * one is ignored, so a slow check can't overwrite a newer one.
+ */
 export function withResult(app: TrackedApp, result: PortalResult): TrackedApp {
   const prev = app.portal;
-  const portal = result.ok ? result : { ...result, decisionDate: prev?.decisionDate, round: prev?.round };
+  if (prev && result.checkedAt < prev.checkedAt) return app;
+  if (!result.ok) {
+    if (prev?.ok) return { ...app, lastFailure: { at: result.checkedAt, error: result.error }, updatedAt: Math.max(result.checkedAt, app.updatedAt + 1) };
+    return { ...app, portal: result, updatedAt: Math.max(result.checkedAt, app.updatedAt + 1) };
+  }
+  const { lastFailure: _f, ...rest } = app;
   return {
-    ...app,
-    portal,
+    ...rest,
+    portal: result,
     status: suggestedStatus(app, result),
-    lastChecked: result.ok ? result.checkedAt : app.lastChecked,
-    decisionDate: followsPortal(app.decisionDate, prev?.decisionDate, result.ok ? result.decisionDate : "") ? "" : app.decisionDate,
-    round: (followsPortal(app.round, prev?.round, result.ok ? result.round : "") ? "" : app.round) as RoundId,
+    lastChecked: result.checkedAt,
+    decisionDate: followsPortal(app.decisionDate, prev?.decisionDate, result.decisionDate) ? "" : app.decisionDate,
+    round: (followsPortal(app.round, prev?.round, result.round) ? "" : app.round) as RoundId,
     updatedAt: Math.max(result.checkedAt, app.updatedAt + 1),
   };
 }

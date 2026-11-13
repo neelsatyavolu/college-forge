@@ -12,10 +12,12 @@ function PortalLine({ app }) {
     return <div className="cf-app-row__portal"><span className="is-error">Login saved. The next check fills this in.</span></div>;
   }
   if (!p.ok) return <div className="cf-app-row__portal"><span className="is-error">{p.error} · tried {ago(p.checkedAt)}</span></div>;
+  const failed = app.lastFailure ? <div className="is-error">Latest check didn’t finish: {app.lastFailure.error} ({ago(app.lastFailure.at)}). Showing the last good check.</div> : null;
   return (
     <div className="cf-app-row__portal">
       <span>{p.statusText ? <React.Fragment>Portal says <b style={{ fontWeight: 500, color: "var(--ink)" }}>“{p.statusText}”</b></React.Fragment> : "Portal checked"}</span>
       <span style={{ color: "var(--muted)" }}> · {ago(p.checkedAt)}</span>
+      {failed}
       {app.missing.length ? (
         <div className="cf-app-row__missing" aria-label="Still missing">
           {app.missing.slice(0, 6).map((m) => <span key={m}>Missing: {m}</span>)}

@@ -1,5 +1,6 @@
 import { isRound, isStatus, newApp, type PortalResult, type RoundId, type StatusId, type TrackedApp } from "./tracker";
 import type { PortalLogin } from "./portal-logins";
+import { loginHost } from "./portal-check";
 
 /**
  * Moves a College Apps account into Forge. College Apps encrypts everything in the browser with keys derived
@@ -109,6 +110,11 @@ export function toTracked(apps: CaApp[], now = Date.now()): { app: TrackedApp; l
       ...(a.decisionSeen ? { decisionSeen: a.decisionSeen } : {}),
       ...(chosen ? { login: { username: chosen.username!, hasPassword: true } } : {}),
     };
-    return { app, login: chosen ? { username: chosen.username!, password: chosen.password! } : null };
+    const target = loginHost(app);
+    if (!chosen || !target) {
+      const { login: _l, ...rest } = app;
+      return { app: rest, login: null };
+    }
+    return { app, login: { username: chosen.username!, password: chosen.password!, host: target } };
   });
 }

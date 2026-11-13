@@ -1,5 +1,5 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import { deleteDoc, listDocs, readDoc, writeDoc } from "./doc-store";
+import { deleteDoc, listDocs, readDoc, updateDoc, writeDoc } from "./doc-store";
 
 /**
  * Forge's own OAuth 2.1 authorization server for the MCP endpoint: dynamic client registration (public
@@ -13,9 +13,9 @@ const REFRESH_TTL_S = 60 * 60 * 24 * 90;
 const CODE_TTL_S = 120;
 
 export type Client = { client_id: string; client_name: string; redirect_uris: string[]; created_at: number };
-type Code = { client_id: string; redirect_uri: string; code_challenge: string; sub: string; workspaceId: string; grantId: string; exp: number };
-type Token = { kind: "access" | "refresh"; client_id: string; sub: string; workspaceId: string; grantId: string; exp: number };
-export type Grant = { grantId: string; client_id: string; client_name: string; redirect_host: string; created_at: number; last_used: number };
+type Code = { client_id: string; redirect_uri: string; code_challenge: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean };
+type Token = { kind: "access" | "refresh"; client_id: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean };
+export type Grant = { grantId: string; client_id: string; client_name: string; redirect_host: string; created_at: number };
 
 export class OAuthError extends Error {
   constructor(public code: string, message: string, public status = 400) {
@@ -108,7 +108,7 @@ export async function issueCode(client: Client, redirect_uri: string, code_chall
     }
   })();
   await writeDoc(grantKey(sub, grantId), {
-    grantId, client_id: client.client_id, client_name: client.client_name, redirect_host: host, created_at: now(), last_used: now(),
+    grantId, client_id: client.client_id, client_name: client.client_name, redirect_host: host, created_at: now(),
   } satisfies Grant);
   const code = token();
   await writeDoc(codeKey(code), { client_id: client.client_id, redirect_uri, code_challenge, sub, workspaceId, grantId, exp: now() + CODE_TTL_S } satisfies Code);
@@ -126,15 +126,39 @@ async function issueTokens(base: Omit<Token, "kind" | "exp">) {
 const pkceOk = (verifier: string, challenge: string) =>
   /^[A-Za-z0-9._~-]{43,128}$/.test(verifier) && createHash("sha256").update(verifier).digest("base64url") === challenge;
 
+/**
+ * Marks a one-time record used with a conditional write, so two racing requests can't both redeem it.
+ * Returns the record as it was, or null if it is missing. A record that was already used comes back with
+ * `used: true` so the caller can treat it as replay.
+ */
+async function claim<T extends { used?: boolean }>(key: string): Promise<T | null> {
+  let before: T | null = null;
+  try {
+    await updateDoc<T>(key, (cur) => {
+      before = cur;
+      if (!cur) throw new OAuthError("invalid_grant", "missing");
+      return { ...cur, used: true };
+    });
+  } catch (err) {
+    if (err instanceof OAuthError) return null;
+    throw err;
+  }
+  return before;
+}
+
 export async function exchange(form: URLSearchParams) {
   const grant = form.get("grant_type");
   const clientId = form.get("client_id");
   if (grant === "authorization_code") {
     const code = form.get("code") ?? "";
-    if (!code) throw new OAuthError("invalid_request", "code is required.");
-    const rec = await readDoc<Code>(codeKey(code));
-    await deleteDoc(codeKey(code));
+    if (!code || code.length > 200) throw new OAuthError("invalid_request", "code is required.");
+    const rec = await claim<Code>(codeKey(code));
     if (!rec || rec.exp < now()) throw new OAuthError("invalid_grant", "The authorization code is invalid or expired.");
+    if (rec.used) {
+      // A replayed code means it leaked: end everything issued from it (RFC 9700 §4.5).
+      await revokeGrant(rec.sub, rec.grantId);
+      throw new OAuthError("invalid_grant", "The authorization code is invalid or expired.");
+    }
     if ((clientId && clientId !== rec.client_id) || form.get("redirect_uri") !== rec.redirect_uri) {
       throw new OAuthError("invalid_grant", "The code was issued to a different client or redirect URI.");
     }
@@ -143,12 +167,16 @@ export async function exchange(form: URLSearchParams) {
   }
   if (grant === "refresh_token") {
     const rt = form.get("refresh_token") ?? "";
-    const rec = rt ? await readDoc<Token>(tokenKey(rt)) : null;
+    const rec = rt && rt.length <= 200 ? await claim<Token>(tokenKey(rt)) : null;
     if (!rec || rec.kind !== "refresh" || rec.exp < now() || (clientId && clientId !== rec.client_id)) {
       throw new OAuthError("invalid_grant", "The refresh token is invalid or expired.");
     }
+    if (rec.used) {
+      // Refresh tokens rotate; seeing an old one again means a copy is in someone else's hands.
+      await revokeGrant(rec.sub, rec.grantId);
+      throw new OAuthError("invalid_grant", "The refresh token is invalid or expired.");
+    }
     if (!(await readDoc<Grant>(grantKey(rec.sub, rec.grantId)))) throw new OAuthError("invalid_grant", "Access was removed in Forge settings.");
-    await deleteDoc(tokenKey(rt));
     return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId });
   }
   throw new OAuthError("unsupported_grant_type", "Use authorization_code or refresh_token.");
@@ -160,9 +188,8 @@ export async function verifyAccess(authorization: string | null): Promise<{ sub:
   if (!t) return null;
   const rec = await readDoc<Token>(tokenKey(t));
   if (!rec || rec.kind !== "access" || rec.exp < now()) return null;
-  const grant = await readDoc<Grant>(grantKey(rec.sub, rec.grantId));
-  if (!grant) return null;
-  if (now() - grant.last_used > 3600) await writeDoc(grantKey(rec.sub, rec.grantId), { ...grant, last_used: now() }).catch(() => undefined);
+  // Read only: writing here could recreate a grant that Disconnect deleted a moment ago.
+  if (!(await readDoc<Grant>(grantKey(rec.sub, rec.grantId)))) return null;
   return { sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId };
 }
 
@@ -170,7 +197,7 @@ export async function listGrants(sub: string): Promise<Grant[]> {
   if (!safe(sub)) return [];
   const keys = await listDocs(`oauth-grants/${sub}/`);
   const grants = await Promise.all(keys.map((k) => readDoc<Grant>(k).catch(() => null)));
-  return grants.filter((g): g is Grant => !!g).sort((a, b) => b.last_used - a.last_used);
+  return grants.filter((g): g is Grant => !!g).sort((a, b) => b.created_at - a.created_at);
 }
 
 /** Disconnecting deletes the grant; its tokens stop working on their next use. */

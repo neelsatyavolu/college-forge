@@ -1,10 +1,11 @@
 const { Button } = window.CollegeForgeDesignSystem_e95e63;
 
+// Negative outcomes first: "Not admitted" contains "admitted".
 const OUTCOME_GUESS = [
-  [/\b(admit|admitted|accept|accepted|congratulations|offered)\b/i, "admitted"],
-  [/\b(deny|denied|not admitted|rejected|not csu eligible)\b/i, "denied"],
+  [/\b(not admitted|not accepted|not offered|deny|denied|rejected|not csu eligible|unable to offer)\b/i, "denied"],
   [/\bwait ?list(ed)?\b/i, "waitlisted"],
   [/\bdefer(red)?\b/i, "deferred"],
+  [/\b(admit|admitted|accept|accepted|congratulations|offered)\b/i, "admitted"],
 ];
 const guessOutcome = (text) => (OUTCOME_GUESS.find(([re]) => re.test(text || "")) || [])[1] || "";
 

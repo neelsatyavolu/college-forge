@@ -53,7 +53,7 @@ async function extractText(name: string, type: string, buf: Buffer): Promise<str
 }
 
 export async function POST(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
 
   let form: FormData;
   try {

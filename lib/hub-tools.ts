@@ -12,8 +12,7 @@ import { gateAiCollegeAdd } from "./seed-college-list";
 import { recommendColleges } from "./college-recommendations";
 import { mergeSupplements } from "./essay-supplements";
 import { applyRounds, workloadSummary, type RoundChoice } from "./application-rounds";
-import { findApp, isRound, isStatus } from "./tracker";
-import { addApp, updateApp } from "./tracker-service";
+import { editApp, findApp, isRound, isStatus, newApp, replaceApp, statusInfo } from "./tracker";
 
 // Only copy keys the caller actually provided, so partial updates never wipe
 // existing fields with undefined.
@@ -631,19 +630,23 @@ export function makeHubTools(
             return "set_application_status requires school and status.";
           }
           if (!isStatus(a.status)) return `Unknown status "${a.status}".`;
-          const ws = await getWorkspace(workspaceId);
-          const shortlisted = ws.colleges.find((c) => c.slug === a.school);
           const edit = {
             status: a.status,
             ...(isRound(a.round) ? { round: a.round } : {}),
             ...(typeof a.deadline === "string" && /^\d{4}-\d{2}-\d{2}$/.test(a.deadline) ? { deadline: a.deadline } : {}),
             ...(typeof a.notes === "string" ? { notes: a.notes } : {}),
           };
-          const existing = findApp(ws.tracker, shortlisted?.slug ?? a.school) ?? (shortlisted ? findApp(ws.tracker, shortlisted.name) : undefined);
-          const app = existing
-            ? await updateApp(workspaceId, existing.id, edit)
-            : await addApp(workspaceId, { name: shortlisted?.name ?? a.school, slug: shortlisted?.slug, ...edit });
-          return `${app.name}: ${app.statusLabel}.`;
+          let label = "";
+          // Through the scoped mutate, so a tool call from before a reset can't write into the new workspace.
+          await mutate((ws) => {
+            const school = a.school as string;
+            const shortlisted = ws.colleges.find((c) => c.slug === school);
+            const existing = findApp(ws.tracker, shortlisted?.slug ?? school) ?? (shortlisted ? findApp(ws.tracker, shortlisted.name) : undefined);
+            const next = editApp(existing ?? newApp({ name: shortlisted?.name ?? school, slug: shortlisted?.slug }), edit);
+            label = `${next.name}: ${statusInfo(next.status).label}.`;
+            return { ...ws, tracker: existing ? replaceApp(ws.tracker, next) : { ...ws.tracker, apps: [...ws.tracker.apps, next] } };
+          });
+          return label;
         }
         default:
           console.error(`[hub-tools] ws=${wsTag} unknown tool ${name}`);

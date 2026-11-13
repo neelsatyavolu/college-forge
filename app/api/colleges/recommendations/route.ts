@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
   const headers: Record<string, string> = { "cache-control": "no-store" };
   if (setCookie) headers["set-cookie"] = setCookie;
   const data = recommendColleges(await getWorkspace(id));

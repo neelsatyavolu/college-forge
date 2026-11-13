@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import {
+  redactWorkspaceBody,
   getWorkspace,
   resetWorkspace,
   updateWorkspace,
@@ -33,7 +34,7 @@ function withCookie(data: unknown, setCookie?: string, status = 200): Response {
     "cache-control": "no-store",
   };
   if (setCookie) headers["set-cookie"] = setCookie;
-  return new Response(JSON.stringify(data), { status, headers });
+  return new Response(JSON.stringify(redactWorkspaceBody(data)), { status, headers });
 }
 
 function workspaceCookie(id: string): string {
@@ -43,7 +44,7 @@ function workspaceCookie(id: string): string {
 }
 
 export async function GET(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
   const ws = await getWorkspace(id);
   return withCookie(ws, setCookie);
 }
@@ -83,7 +84,7 @@ function str(v: unknown): string {
 }
 
 export async function POST(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
   let body: Body = {};
   try {
     body = (await req.json()) as Body;
@@ -293,7 +294,7 @@ export async function POST(req: NextRequest) {
 
 /** PATCH /api/workspace with a WorkspacePatch body */
 export async function PATCH(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
   let patch: WorkspacePatch = {};
   try {
     patch = (await req.json()) as WorkspacePatch;

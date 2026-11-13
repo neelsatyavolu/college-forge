@@ -1,5 +1,7 @@
-import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
-import { readDoc, updateDoc } from "./doc-store";
+import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+import { deleteDoc, readDoc, updateDoc, writeDoc } from "./doc-store";
+import { getShare, putShare } from "./share-store";
+import { adoptWorkspace, getWorkspace } from "./store";
 
 /**
  * Forge accounts are Xanom accounts. Each Xanom `sub` owns exactly one workspace; the signed `forge_session`
@@ -62,8 +64,9 @@ const ownerKey = (workspaceId: string) => `workspace-owner/${safe(workspaceId)}.
 export const getAccount = (sub: string) => readDoc<Account>(accountKey(sub));
 
 /**
- * Finds or creates the account for a Xanom user. A first sign-in adopts the browser's anonymous workspace
- * (so what someone did before signing in is kept), unless another account already owns it.
+ * Finds or creates the account for a Xanom user. A first sign-in brings along the browser's anonymous
+ * workspace (so what someone did before signing in is kept) by moving it to a new id that only this
+ * account's session can open. Share links follow it.
  */
 export async function signInAccount(
   user: { sub: string; email: string; name: string },
@@ -73,11 +76,9 @@ export async function signInAccount(
   const existing = await getAccount(user.sub);
   let workspaceId = existing?.workspaceId;
   if (!workspaceId) {
-    workspaceId = randomUUID();
-    if (anonymousWorkspaceId && /^[a-zA-Z0-9_-]{8,64}$/.test(anonymousWorkspaceId)) {
-      const owner = await updateDoc<{ sub: string }>(ownerKey(anonymousWorkspaceId), (cur) => cur ?? { sub: user.sub });
-      if (owner.sub === user.sub) workspaceId = anonymousWorkspaceId;
-    }
+    const adopted = anonymousWorkspaceId && /^[a-zA-Z0-9_-]{8,64}$/.test(anonymousWorkspaceId) ? await adoptWorkspace(anonymousWorkspaceId) : null;
+    if (adopted) await moveShareLinks(adopted);
+    workspaceId = adopted ?? randomUUID();
   }
   const ws = workspaceId;
   await updateDoc<{ sub: string }>(ownerKey(ws), (cur) => cur ?? { sub: user.sub });
@@ -91,27 +92,43 @@ export async function signInAccount(
   }));
 }
 
+async function moveShareLinks(workspaceId: string): Promise<void> {
+  const ws = await getWorkspace(workspaceId);
+  for (const meta of ws.shares || []) {
+    const rec = await getShare(meta.token);
+    if (rec) await putShare({ ...rec, workspaceId });
+  }
+}
+
 /** Who owns a workspace (for the automatic-check sweep and summaries). */
 export async function ownerOf(workspaceId: string): Promise<string | null> {
   return (await readDoc<{ sub: string }>(ownerKey(workspaceId)))?.sub ?? null;
 }
 
-/** Short-lived signed link that carries a forge.n3el.dev workspace cookie over to forge.xanom.co. */
-export function signHandoff(workspaceId: string, now = Date.now()): string {
-  const body = b64(JSON.stringify({ ws: workspaceId, exp: Math.floor(now / 1000) + 120 }));
-  return `${body}.${b64(createHmac("sha256", secret()).update(`forge-handoff.${body}`).digest())}`;
+const handoffKey = (token: string) => `handoff/${createHash("sha256").update(token).digest("hex")}.json`;
+
+/**
+ * One-time token that carries a forge.n3el.dev workspace cookie over to forge.xanom.co. The URL holds only
+ * a random token; the workspace id stays in storage for two minutes.
+ */
+export async function createHandoff(workspaceId: string, now = Date.now()): Promise<string> {
+  const token = randomBytes(24).toString("base64url");
+  await writeDoc(handoffKey(token), { ws: workspaceId, exp: now + 120_000 });
+  return token;
 }
 
-export function readHandoff(token: string, now = Date.now()): string | null {
-  const [body, sig] = token.split(".");
-  if (!body || !sig || !process.env.SESSION_SECRET) return null;
-  const expected = createHmac("sha256", secret()).update(`forge-handoff.${body}`).digest();
-  const given = Buffer.from(sig, "base64url");
-  if (given.length !== expected.length || !timingSafeEqual(given, expected)) return null;
+export async function claimHandoff(token: string, now = Date.now()): Promise<string | null> {
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
+  let ws: string | null = null;
   try {
-    const p = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as { ws: string; exp: number };
-    return p.exp * 1000 >= now && /^[a-zA-Z0-9_-]{8,64}$/.test(p.ws) ? p.ws : null;
+    await updateDoc<{ ws: string; exp: number; used?: boolean }>(handoffKey(token), (cur) => {
+      if (!cur || cur.used || cur.exp < now) throw new Error("expired");
+      ws = cur.ws;
+      return { ...cur, used: true };
+    });
   } catch {
     return null;
   }
+  await deleteDoc(handoffKey(token)).catch(() => undefined);
+  return ws && /^[a-zA-Z0-9_-]{8,64}$/.test(ws) ? ws : null;
 }

@@ -147,7 +147,7 @@ function json(body: unknown, status = 200, setCookie?: string): Response {
 export async function GET(req: NextRequest) {
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim();
   const browse = req.nextUrl.searchParams.get("browse") === "1" || q.length === 0;
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
 
   // Default browse: US News National Universities top ~250 (photos + ranks).
   // Search (q ≥ 2) still hits the live College Scorecard for every school.

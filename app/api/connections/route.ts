@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   if (!s) return Response.json({ success: false, signedOut: true }, { status: 401 });
   const grants = await listGrants(s.sub);
   return Response.json(
-    { success: true, data: grants.map((g) => ({ id: g.grantId, name: g.client_name, host: g.redirect_host, createdAt: g.created_at * 1000, lastUsed: g.last_used * 1000 })) },
+    { success: true, data: grants.map((g) => ({ id: g.grantId, name: g.client_name, host: g.redirect_host, createdAt: g.created_at * 1000 })) },
     { headers: { "cache-control": "no-store" } },
   );
 }

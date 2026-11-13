@@ -207,7 +207,14 @@ export function exportCalendar(ws: Workspace): { text: string; included: number;
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const events: { date: string; title: string; detail?: string }[] = [];
   for (const date of ws.criticalDates || []) events.push({ date: date.date, title: date.label, detail: date.detail });
-  for (const college of ws.colleges || []) {
+  const tracked = ws.tracker?.apps || [];
+  for (const app of tracked) {
+    const stage = statusInfo(app.status).stage;
+    if (app.deadline && stage === "working") events.push({ date: app.deadline, title: `${app.name} — application due${app.round ? ` (${app.round})` : ""}`, detail: app.name });
+    if (app.decisionDate && (stage === "working" || stage === "waiting")) events.push({ date: app.decisionDate, title: `${app.name} — decision`, detail: app.name });
+  }
+  // Shortlist dates only for schools the Applications tab doesn't already cover.
+  for (const college of (ws.colleges || []).filter((c) => !tracked.some((a) => a.slug === c.slug))) {
     for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name });
     if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name });
   }

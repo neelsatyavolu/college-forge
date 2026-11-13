@@ -53,7 +53,10 @@ function readView() {
 
 function App() {
   const [account, setAccount] = React.useState(null);
-  const [tracker, setTracker] = React.useState({ autocheck: true, apps: [] });
+  const [tracker, setTrackerState] = React.useState({ revision: -1, autocheck: true, apps: [] });
+  // Parallel portal checks answer out of order; keep the newest workspace revision.
+  const setTracker = React.useCallback(t => { if (t) setTrackerState(cur => ((t.revision || 0) >= (cur.revision || 0) ? t : cur)); }, []);
+  const reloadTracker = React.useCallback(() => window.cfApi.applications().then(j => setTrackerState(j.data)).catch(() => {}), []);
   const [data, setData] = React.useState(window.CF_DATA);
   const [loading, setLoading] = React.useState(true);
   const [loadError, setLoadError] = React.useState("");
@@ -90,7 +93,8 @@ function App() {
     setChatOpen(false);
     setChatPrompt(null);
     applyWorkspace(ws, true);
-  }, [applyWorkspace]);
+    reloadTracker();
+  }, [applyWorkspace, reloadTracker]);
   const refresh = React.useCallback(async () => {
     const requestedScope = window.CF_DATA?.draftStorageKey;
     try {
@@ -98,7 +102,7 @@ function App() {
       setAccount(me);
       if (!me.signedIn) { setLoading(false); return; }
       const [ws, apps] = await Promise.all([window.cfApi.getWorkspace(), window.cfApi.applications()]);
-      setTracker(apps.data);
+      setTrackerState(apps.data);
       if (requestedScope && requestedScope !== window.CF_DATA?.draftStorageKey) return;
       applyWorkspace(ws, true);
       setLoadError("");
@@ -170,6 +174,7 @@ function App() {
   };
   const completeOnboarding = async ws => {
     if (ws) applyWorkspace(ws); else await refresh();
+    reloadTracker();
     setRunOnboarding(false);
     navigate("recommendations");
   };

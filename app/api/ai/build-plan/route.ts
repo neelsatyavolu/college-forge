@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 /** The chat requests the hub build should run next (see lib/build-plan.ts). */
 export async function GET(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
   if (setCookie) {
     return Response.json({ error: "Open your hub first so there is a workspace to build." }, { status: 400 });
   }

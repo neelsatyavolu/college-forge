@@ -113,18 +113,26 @@ test('session cookies are signed and expire', () => {
   const forged = Buffer.from(JSON.stringify({ ...JSON.parse(Buffer.from(body, 'base64url')), workspaceId: 'someone-else' })).toString('base64url');
   assert.equal(session.readSession(`${forged}.${sig}`), null);
   assert.equal(session.readSession(v, Date.now() + 200 * 86400_000), null);
-  const h = session.signHandoff('ws-abcdefgh');
-  assert.equal(session.readHandoff(h), 'ws-abcdefgh');
-  assert.equal(session.readHandoff(h, Date.now() + 10 * 60_000), null);
 });
 
-test('first sign-in adopts the anonymous workspace; another account cannot take it', () => isolated(async () => {
+test('first sign-in moves the anonymous workspace to a new id that only the account can open', () => isolated(async () => {
+  await store.updateWorkspace('anon-workspace-1', (w) => ({ ...w, applicant: { ...w.applicant, name: 'Kept' } }));
   const a = await session.signInAccount({ sub: 'xa_ONE', email: 'one@x.co', name: 'One' }, 'anon-workspace-1');
-  assert.equal(a.workspaceId, 'anon-workspace-1');
+  assert.notEqual(a.workspaceId, 'anon-workspace-1');
+  assert.equal((await store.getWorkspace(a.workspaceId)).applicant.name, 'Kept');
+  assert.equal((await store.getWorkspace('anon-workspace-1')).applicant.name, '', 'old id now opens an empty workspace');
   const again = await session.signInAccount({ sub: 'xa_ONE', email: 'one@x.co', name: 'One' }, 'other-anon-ws');
-  assert.equal(again.workspaceId, 'anon-workspace-1');
-  const b = await session.signInAccount({ sub: 'xa_TWO', email: 'two@x.co', name: 'Two' }, 'anon-workspace-1');
-  assert.notEqual(b.workspaceId, 'anon-workspace-1');
+  assert.equal(again.workspaceId, a.workspaceId);
+  const { getWorkspaceId } = require('../lib/workspace-cookie.ts');
+  const anonReq = new NextRequest('http://localhost/api/workspace', { headers: { cookie: `cf_workspace=${a.workspaceId}` } });
+  assert.notEqual((await getWorkspaceId(anonReq)).id, a.workspaceId, 'an account workspace never opens from the anonymous cookie');
+}));
+
+test('handoff tokens are opaque and work once', () => isolated(async () => {
+  const t = await session.createHandoff('ws-abcdefgh');
+  assert.doesNotMatch(Buffer.from(t, 'base64url').toString('latin1'), /ws-abcdefgh/);
+  assert.equal(await session.claimHandoff(t), 'ws-abcdefgh');
+  assert.equal(await session.claimHandoff(t), null);
 }));
 
 // ── Tracker service and logins ────────────────────────────────────────────
@@ -246,14 +254,21 @@ test('OAuth: PKCE, single-use codes, refresh rotation and disconnect', () => iso
   await assert.rejects(oauth.exchange(new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: 'https://grok.com/cb', code_verifier: 'x'.repeat(43) })), /PKCE|invalid/);
   const code2 = await oauth.issueCode(client, 'https://grok.com/cb', challenge, 'xa_OA', 'ws-oauth-1');
   const tokens = await oauth.exchange(new URLSearchParams({ grant_type: 'authorization_code', code: code2, redirect_uri: 'https://grok.com/cb', code_verifier: verifier }));
-  await assert.rejects(oauth.exchange(new URLSearchParams({ grant_type: 'authorization_code', code: code2, redirect_uri: 'https://grok.com/cb', code_verifier: verifier })), /invalid or expired/);
   assert.equal((await oauth.verifyAccess(`Bearer ${tokens.access_token}`)).workspaceId, 'ws-oauth-1');
   const refreshed = await oauth.exchange(new URLSearchParams({ grant_type: 'refresh_token', refresh_token: tokens.refresh_token }));
-  await assert.rejects(oauth.exchange(new URLSearchParams({ grant_type: 'refresh_token', refresh_token: tokens.refresh_token })), /invalid or expired/);
+  assert.equal((await oauth.verifyAccess(`Bearer ${refreshed.access_token}`)).workspaceId, 'ws-oauth-1');
+  // Disconnect ends both the access token and the rotated refresh token.
   const grants = await oauth.listGrants('xa_OA');
   assert.equal(grants.length, 2);
   for (const g of grants) await oauth.revokeGrant('xa_OA', g.grantId);
   assert.equal(await oauth.verifyAccess(`Bearer ${refreshed.access_token}`), null);
+  await assert.rejects(oauth.exchange(new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshed.refresh_token })), /removed|invalid/);
+  // Replaying an old refresh token is treated as theft.
+  const code3 = await oauth.issueCode(client, 'https://grok.com/cb', challenge, 'xa_OA', 'ws-oauth-1');
+  const t3 = await oauth.exchange(new URLSearchParams({ grant_type: 'authorization_code', code: code3, redirect_uri: 'https://grok.com/cb', code_verifier: verifier }));
+  const r3 = await oauth.exchange(new URLSearchParams({ grant_type: 'refresh_token', refresh_token: t3.refresh_token }));
+  await assert.rejects(oauth.exchange(new URLSearchParams({ grant_type: 'refresh_token', refresh_token: t3.refresh_token })), /invalid or expired/);
+  assert.equal(await oauth.verifyAccess(`Bearer ${r3.access_token}`), null);
 }));
 
 const rpc = (token, body) => new Request('http://localhost/mcp', { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json, text/event-stream', ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
@@ -303,4 +318,78 @@ test('applications API requires a session and never returns passwords', () => is
   assert.doesNotMatch(JSON.stringify(withLogin), /topsecret/);
   const invalid = await post({ action: 'update', id: added.app.id, edit: { status: 'accepted' } });
   assert.equal(invalid.status, 400);
+}));
+
+// ── Review fixes ─────────────────────────────────────────────────────────────
+
+test('a failed check keeps the last good result, and an older result never replaces a newer one', () => {
+  const posted = tracker.withResult(app({ status: 'complete' }), result({ checkedAt: 5000, statusText: 'Admitted', update: 'View decision' }));
+  const failed = tracker.withResult(posted, result({ checkedAt: 6000, ok: false, error: 'Duo push needed' }));
+  assert.equal(tracker.decisionOf(failed).state, 'hidden');
+  assert.equal(failed.lastFailure.error, 'Duo push needed');
+  const stale = tracker.withResult(posted, result({ checkedAt: 4000, statusText: 'Awaiting materials' }));
+  assert.equal(stale.portal.statusText, 'Admitted');
+});
+
+test('moving a portal to another host forgets its login; checks only go to the saved host', () => isolated(async () => {
+  const ws = 'svc-bind-1';
+  const custom = await service.addApp(ws, { name: 'Tiny Slate College', portalUrl: 'https://apply.tiny.edu/apply/status' });
+  await store.updateWorkspace(ws, (w) => ({ ...w, tracker: tracker.replaceApp(w.tracker, { ...w.tracker.apps[0], platform: 'slate' }) }));
+  await service.setLogin(ws, custom.id, { username: 'u', password: 'p' });
+  const { planCheck } = require('../lib/portal-check.ts');
+  const logins = require('../lib/portal-logins.ts');
+  let saved = (await logins.readLogins(ws))[custom.id];
+  assert.equal(saved.host, 'apply.tiny.edu');
+  let current = (await store.getWorkspace(ws)).tracker.apps[0];
+  assert.equal(planCheck(current, saved).ok, true);
+  assert.equal(planCheck({ ...current, portalUrl: 'https://evil.example/apply/status' }, saved).ok, false);
+  const moved = await service.updateApp(ws, custom.id, { portalUrl: 'https://evil.example/apply/status' });
+  assert.equal(moved.login, null);
+  assert.equal((await logins.readLogins(ws))[custom.id], undefined);
+  const purdue = await service.addApp(ws, { name: 'Purdue University' });
+  await service.setLogin(ws, purdue.id, { username: 'u', password: 'p' });
+  saved = (await logins.readLogins(ws))[purdue.id];
+  current = (await store.getWorkspace(ws)).tracker.apps.find((a) => a.id === purdue.id);
+  const plan = planCheck({ ...current, portalUrl: 'https://evil.example/x' }, saved);
+  assert.match(plan.url, /purdue\.edu/, 'a catalog school falls back to its own portal, never the edited link');
+}));
+
+test('automatic checks respect the off switch', () => isolated(async () => {
+  const ws = 'svc-auto-1';
+  const a = await service.addApp(ws, { name: 'Purdue University' });
+  await service.setLogin(ws, a.id, { username: 'u', password: 'p' });
+  await service.setAutocheck(ws, false);
+  const { runChecks } = require('../lib/portal-check.ts');
+  assert.deepEqual(await runChecks(ws, { onlyDue: true }), []);
+}));
+
+test('a replayed authorization code ends the grant', () => isolated(async () => {
+  const client = await oauth.registerClient({ client_name: 'Grok', redirect_uris: ['https://grok.com/cb'] });
+  const { verifier, challenge } = pkce();
+  const code = await oauth.issueCode(client, 'https://grok.com/cb', challenge, 'xa_RP', 'ws-rp');
+  const form = () => new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: 'https://grok.com/cb', code_verifier: verifier });
+  const tokens = await oauth.exchange(form());
+  await assert.rejects(oauth.exchange(form()), /invalid or expired/);
+  assert.equal(await oauth.verifyAccess(`Bearer ${tokens.access_token}`), null);
+}));
+
+test('workspace responses never carry an unopened decision', () => {
+  const posted = tracker.withResult(app({ status: 'complete' }), result({ statusText: 'Admitted', update: 'Decision posted' }));
+  const body = store.redactWorkspaceBody({ success: true, data: { tracker: { autocheck: true, apps: [posted] } } });
+  assert.doesNotMatch(JSON.stringify(body), /Admitted/);
+  const seen = tracker.revealDecision(posted);
+  const open = store.redactWorkspaceBody({ tracker: { autocheck: true, apps: [seen] } });
+  assert.match(JSON.stringify(open), /Admitted/);
+  assert.doesNotMatch(JSON.stringify(open), /decisionSeen/);
+});
+
+test('record_decision resolves the school like every other tool and appends to its own notes', () => isolated(async () => {
+  const ws = 'mcp-resolve-1';
+  await service.addApp(ws, { name: 'Michigan State University', notes: 'MSU notes' });
+  await service.addApp(ws, { name: 'University of Michigan', notes: 'UM notes' });
+  const { callTool } = require('../lib/mcp-tools.ts');
+  const r = await callTool(ws, 'record_decision', { school: 'umich', decision: 'admitted', note: 'Honors' });
+  assert.equal(r.isError, undefined, JSON.stringify(r));
+  assert.equal(r.structuredContent.school, 'University of Michigan');
+  assert.equal(r.structuredContent.notes, 'UM notes\nHonors');
 }));

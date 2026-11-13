@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { runChecks } from "./portal-check";
+import { allow } from "./rate-limit";
 import { getWorkspace } from "./store";
-import { ROUNDS, STATUSES, STATUS_IDS, todayIso } from "./tracker";
+import { ROUNDS, STATUSES, STATUS_IDS, findApp, todayIso } from "./tracker";
 import {
   TrackerError,
   addApp,
@@ -49,6 +50,7 @@ function brief(a: AppView) {
           says: a.portal.ok ? a.portal.statusText || null : null,
           error: a.portal.ok ? null : a.portal.error,
           missing_items: a.missing,
+          last_check_failed: a.lastFailure ? `${new Date(a.lastFailure.at).toISOString()}: ${a.lastFailure.error}` : null,
         }
       : null,
     portal_link: a.portalUrl || null,
@@ -65,13 +67,12 @@ const fields = {
   decision_date: date.optional(),
   notes: z.string().max(4000).optional(),
 };
-const toEdit = (f: { status?: string; round?: string; deadline?: string; decision_date?: string; notes?: string; portal_url?: string }) => ({
+const toEdit = (f: { status?: string; round?: string; deadline?: string; decision_date?: string; notes?: string }) => ({
   ...(f.status !== undefined ? { status: f.status as (typeof STATUS_IDS)[number] } : {}),
   ...(f.round !== undefined ? { round: f.round as "" } : {}),
   ...(f.deadline !== undefined ? { deadline: f.deadline } : {}),
   ...(f.decision_date !== undefined ? { decisionDate: f.decision_date } : {}),
   ...(f.notes !== undefined ? { notes: f.notes } : {}),
-  ...(f.portal_url !== undefined ? { portalUrl: f.portal_url } : {}),
 });
 
 type Tool = {
@@ -107,11 +108,9 @@ export const TOOLS: Tool[] = [
     input: z.object({ school: z.string().min(1) }),
     readOnly: true,
     run: async (ws, { school }) => {
-      const t = await listApps(ws);
-      const match = t.apps.find((a) => a.id === school) ?? t.apps.filter((a) => a.name.toLowerCase().includes(school.toLowerCase()));
-      const one = Array.isArray(match) ? (match.length === 1 ? match[0] : null) : match;
-      if (!one) throw new TrackerError(`No single application matches "${school}". Use list_applications to see the schools.`);
-      return brief(one);
+      const app = findApp((await getWorkspace(ws)).tracker, school);
+      if (!app) throw new TrackerError(`No single application matches "${school}". Use list_applications to see the schools.`);
+      return brief(viewApp(app));
     },
   }),
   tool({
@@ -125,8 +124,8 @@ export const TOOLS: Tool[] = [
   tool({
     name: "update_application",
     title: "Update an application",
-    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date (yyyy-mm-dd or "" to clear), notes (replaces the notes) or portal_url. Only the fields you pass change.`,
-    input: z.object({ school: z.string().min(1), ...fields, portal_url: z.string().max(500).optional() }),
+    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date (yyyy-mm-dd or "" to clear) or notes (replaces the notes). Only the fields you pass change. Portal links and logins can only be changed in Forge itself.`,
+    input: z.object({ school: z.string().min(1), ...fields }),
     readOnly: false,
     run: async (ws, { school, ...f }) => brief(await updateApp(ws, school, toEdit(f))),
   }),
@@ -136,12 +135,8 @@ export const TOOLS: Tool[] = [
     description: "Records the decision the student got from a college: admitted, denied, waitlisted, deferred, committed (they're going there) or withdrawn. Optionally appends a note.",
     input: z.object({ school: z.string().min(1), decision: z.enum(DECISIONS), note: z.string().max(1000).optional() }),
     readOnly: false,
-    run: async (ws, { school, decision, note }) => {
-      const current = (await listApps(ws)).apps;
-      const app = current.find((a) => a.id === school) ?? current.find((a) => a.name.toLowerCase().includes(school.toLowerCase()));
-      const notes = note && app ? [app.notes, note].filter(Boolean).join("\n") : undefined;
-      return brief(await updateApp(ws, school, { status: decision, ...(notes !== undefined ? { notes } : {}) }));
-    },
+    run: async (ws, { school, decision, note }) =>
+      brief(await updateApp(ws, school, (app) => ({ status: decision, ...(note ? { notes: [app.notes, note].filter(Boolean).join("\n") } : {}) }))),
   }),
   tool({
     name: "reveal_decision",
@@ -178,10 +173,12 @@ export const TOOLS: Tool[] = [
     run: async (ws, { school }) => {
       let ids: string[] | undefined;
       if (school) {
-        const t = await listApps(ws);
-        const app = t.apps.find((a) => a.id === school) ?? t.apps.find((a) => a.name.toLowerCase().includes(school.toLowerCase()));
-        if (!app) throw new TrackerError(`No application matches "${school}".`);
+        const app = findApp((await getWorkspace(ws)).tracker, school);
+        if (!app) throw new TrackerError(`No single application matches "${school}".`);
         ids = [app.id];
+      }
+      if (!(await allow(`check-ws:${ws}`, 120, 60 * 60 * 1000))) {
+        throw new TrackerError("That's a lot of portal checks this hour. Forge also checks every 12 hours on its own.");
       }
       const checked = await runChecks(ws, { appIds: ids, concurrency: 4 });
       if (!checked.length) return { checked: 0, note: "No portal logins are saved in Forge yet. The student can add them on the Applications tab." };

@@ -26,7 +26,9 @@ export async function GET(req: NextRequest) {
     const { user, returnTo } = await finishSignIn(req.nextUrl.searchParams, req.cookies.get(FLOW_COOKIE)?.value);
     const account = await signInAccount(user, anonymousWorkspaceId(req));
     const session = signSession({ sub: account.sub, workspaceId: account.workspaceId, email: account.email, name: account.name });
-    return redirect(new URL(returnTo, origin), [clearFlow(), sessionCookie(session)]);
+    // The anonymous workspace moved to the account; this browser no longer needs (or should send) the old id.
+    const clearAnon = `cf_workspace=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+    return redirect(new URL(returnTo, origin), [clearFlow(), sessionCookie(session), clearAnon]);
   } catch (err) {
     const code = err instanceof XanomError ? err.code : "failed";
     if (!(err instanceof XanomError)) console.error("xanom callback failed", err instanceof Error ? err.message : "unknown");

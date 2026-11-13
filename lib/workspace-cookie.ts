@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { newWorkspaceId } from "./store";
-import { SESSION_COOKIE, readSession, type Session } from "./session";
+import { SESSION_COOKIE, ownerOf, readSession, type Session } from "./session";
 
 const COOKIE = "cf_workspace";
 const MAX_AGE = 60 * 60 * 24 * 365; // 1 year
@@ -10,12 +10,13 @@ const MAX_AGE = 60 * 60 * 24 * 365; // 1 year
  * minting a new one (and a Set-Cookie header to persist it) when absent.
  * Keeps every hub visitor on their own private workspace with no login.
  */
-export function getWorkspaceId(req: NextRequest): { id: string; setCookie?: string } {
+export async function getWorkspaceId(req: NextRequest): Promise<{ id: string; setCookie?: string }> {
   // Signed in: the account's workspace, whatever anonymous cookie the browser also has.
   const session = getSession(req);
   if (session) return { id: session.workspaceId };
   const existing = req.cookies.get(COOKIE)?.value;
-  if (existing && /^[a-zA-Z0-9_-]{8,64}$/.test(existing)) {
+  // An id that belongs to an account only opens with that account's session.
+  if (existing && /^[a-zA-Z0-9_-]{8,64}$/.test(existing) && !(await ownerOf(existing))) {
     return { id: existing };
   }
   const id = newWorkspaceId();

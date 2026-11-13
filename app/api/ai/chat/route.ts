@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "No messages provided." }, { status: 400 });
   }
 
-  const { id: workspaceId, setCookie } = getWorkspaceId(req);
+  const { id: workspaceId, setCookie } = await getWorkspaceId(req);
   const wsTag = workspaceId.slice(0, 8);
   if (setCookie) {
     // The browser should already hold a workspace cookie from GET /api/workspace.

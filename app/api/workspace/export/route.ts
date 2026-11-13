@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const { id, setCookie } = getWorkspaceId(req);
+  const { id, setCookie } = await getWorkspaceId(req);
   const ws = await getWorkspace(id);
   const format = (req.nextUrl.searchParams.get("format") || "txt").toLowerCase();
 
