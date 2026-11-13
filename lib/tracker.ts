@@ -8,7 +8,7 @@ import { COLLEGES, collegeById, expectedDecision, logoUrl, type College } from "
 
 export const STATUSES = [
   { id: "planning", label: "Not started", stage: "working" },
-  { id: "in_progress", label: "In progress", stage: "working" },
+  { id: "in_progress", label: "Writing", stage: "working" },
   { id: "submitted", label: "Submitted", stage: "waiting" },
   { id: "complete", label: "Under review", stage: "waiting" },
   { id: "deferred", label: "Deferred", stage: "waiting" },
@@ -67,6 +67,10 @@ export interface TrackedApp {
   portal?: PortalResult;
   /** Which posted decision the student revealed on the Decisions tab. */
   decisionSeen?: string;
+  /** yyyy-mm-dd the application went in; set automatically the first time it moves past "working". */
+  submittedAt?: string;
+  /** Small to-dos for this school ("Counselor uploads the SUNY form by Nov 1"). */
+  followUps?: FollowUp[];
   /** The latest check that failed after an earlier one worked; the earlier result stays in `portal`. */
   lastFailure?: { at: number; error: string };
   /** Mirrors whether an encrypted login is saved (the login itself is never in the workspace). */
@@ -75,13 +79,33 @@ export interface TrackedApp {
   updatedAt: number;
 }
 
+export interface FollowUp {
+  id: string;
+  text: string;
+  /** yyyy-mm-dd or "" */
+  due: string;
+  done: boolean;
+  createdAt: number;
+}
+
+/** Something that needs attention across applications ("Ms. Williamson's evaluation shows Not Started"). */
+export interface Flag {
+  id: string;
+  text: string;
+  /** Which applications it affects, in words ("All Common App schools") or a school's name. */
+  scope: string;
+  createdAt: number;
+  resolvedAt?: number;
+}
+
 export interface Tracker {
   apps: TrackedApp[];
   /** Automatic portal checks every 12 hours. */
   autocheck: boolean;
+  flags: Flag[];
 }
 
-export const emptyTracker = (): Tracker => ({ apps: [], autocheck: true });
+export const emptyTracker = (): Tracker => ({ apps: [], autocheck: true, flags: [] });
 
 export const statusInfo = (id: string) => STATUSES.find((s) => s.id === id) ?? STATUSES[0];
 export const isStatus = (v: unknown): v is StatusId => typeof v === "string" && STATUS_IDS.includes(v as StatusId);
@@ -293,6 +317,7 @@ export function findApp(tracker: Tracker, ref: string): TrackedApp | undefined {
 
 export interface AppEdit {
   status?: StatusId;
+  submittedAt?: string;
   round?: RoundId;
   deadline?: string;
   decisionDate?: string;
@@ -307,11 +332,18 @@ export function editApp(app: TrackedApp, edit: AppEdit, now = Date.now()): Track
   if (edit.round !== undefined && !isRound(edit.round)) throw new Error(`Unknown round "${edit.round}".`);
   if (edit.deadline !== undefined && !isDate(edit.deadline)) throw new Error("Deadline must be yyyy-mm-dd or empty.");
   if (edit.decisionDate !== undefined && !isDate(edit.decisionDate)) throw new Error("Decision date must be yyyy-mm-dd or empty.");
+  if (edit.submittedAt !== undefined && !isDate(edit.submittedAt)) throw new Error("Submitted date must be yyyy-mm-dd or empty.");
   if (edit.portalUrl !== undefined && edit.portalUrl !== "" && !/^https:\/\/[^\s/]+/.test(edit.portalUrl)) {
     throw new Error("Portal links must start with https://.");
   }
   const clean: Partial<TrackedApp> = {};
   if (edit.status !== undefined) clean.status = edit.status;
+  if (edit.submittedAt !== undefined) clean.submittedAt = edit.submittedAt;
+  // The first move past "working" records when it went in, unless a date was given.
+  const nextStatus = edit.status ?? app.status;
+  if (!app.submittedAt && edit.submittedAt === undefined && statusInfo(app.status).stage === "working" && statusInfo(nextStatus).stage !== "working") {
+    clean.submittedAt = todayIso(new Date(now));
+  }
   if (edit.round !== undefined) clean.round = edit.round;
   if (edit.deadline !== undefined) clean.deadline = edit.deadline;
   if (edit.decisionDate !== undefined) clean.decisionDate = edit.decisionDate;
@@ -369,5 +401,37 @@ export function normalizeTracker(raw: unknown): Tracker {
   const apps = Array.isArray(t.apps)
     ? t.apps.filter((a): a is TrackedApp => !!a && typeof a.id === "string" && typeof a.name === "string" && isStatus(a.status))
     : [];
-  return { apps, autocheck: t.autocheck !== false };
+  const flags = Array.isArray(t.flags) ? t.flags.filter((f): f is Flag => !!f && typeof f.id === "string" && typeof f.text === "string") : [];
+  return { apps, autocheck: t.autocheck !== false, flags };
+}
+
+// ── Follow-ups and flags ──────────────────────────────────────────────────
+
+const cleanText = (text: string, max: number) => {
+  const t = String(text ?? "").replace(/\s+/g, " ").trim().slice(0, max);
+  if (!t) throw new Error("Write what needs to happen.");
+  return t;
+};
+
+export function addFollowUp(app: TrackedApp, text: string, due = "", now = Date.now()): TrackedApp {
+  if (!isDate(due)) throw new Error("Due date must be yyyy-mm-dd or empty.");
+  const item: FollowUp = { id: randomUUID().slice(0, 8), text: cleanText(text, 300), due, done: false, createdAt: now };
+  return { ...app, followUps: [...(app.followUps ?? []), item].slice(-30), updatedAt: now };
+}
+
+export function setFollowUp(app: TrackedApp, id: string, change: { done?: boolean; remove?: boolean }, now = Date.now()): TrackedApp {
+  const list = app.followUps ?? [];
+  if (!list.some((f) => f.id === id)) throw new Error("No follow-up with that id on this application.");
+  const followUps = change.remove ? list.filter((f) => f.id !== id) : list.map((f) => (f.id === id ? { ...f, done: change.done ?? f.done } : f));
+  return { ...app, followUps, updatedAt: now };
+}
+
+export function addFlag(tracker: Tracker, text: string, scope = "", now = Date.now()): Tracker {
+  const flag: Flag = { id: randomUUID().slice(0, 8), text: cleanText(text, 500), scope: String(scope ?? "").trim().slice(0, 80), createdAt: now };
+  return { ...tracker, flags: [...tracker.flags.filter((f) => !f.resolvedAt || now - f.resolvedAt < 30 * 864e5), flag] };
+}
+
+export function resolveFlag(tracker: Tracker, id: string, now = Date.now()): Tracker {
+  if (!tracker.flags.some((f) => f.id === id)) throw new Error("No flag with that id.");
+  return { ...tracker, flags: tracker.flags.map((f) => (f.id === id ? { ...f, resolvedAt: now } : f)) };
 }

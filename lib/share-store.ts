@@ -6,6 +6,7 @@ export type ShareRecord = {
   token: string;
   workspaceId: string;
   label: string;
+  scope?: "progress" | "full";
   createdAt: number;
   revokedAt?: number;
 };

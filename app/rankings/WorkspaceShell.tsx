@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 // Mirrors public/hub/App.jsx NAV so the rankings page reads as part of the workspace.
 const NAV = [
   { href: "/hub/index.html#applications", label: "Applications", group: "Applications", icon: "inbox" },
+  { href: "/hub/index.html#progress", label: "Progress", group: "Applications", icon: "progress" },
   { href: "/hub/index.html#decisions", label: "Decisions", group: "Applications", icon: "mail" },
   { href: "/hub/index.html#essays", label: "Essays", group: "Apply", icon: "edit" },
   { href: "/hub/index.html#track", label: "Letters & aid", group: "Apply", icon: "folder" },
@@ -20,6 +21,7 @@ const ICONS: Record<string, string> = {
   home: "M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9",
   inbox: "M3 13h5l2 3h4l2-3h5M5 5h14l2 8v6H3v-6Z",
   mail: "M3 6h18v12H3ZM3 7l9 6 9-6",
+  progress: "M4 6h9M4 12h15M4 18h6M17 4v4M21 10v4M12 16v4",
   user: "M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2",
   spark: "m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z",
   search: "M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0m-2 5 6 6",

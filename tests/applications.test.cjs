@@ -419,3 +419,60 @@ test('tracking a shortlist school keeps its calendar deadline until the applicat
   const tracked = { ...base, tracker: { autocheck: true, apps: [{ ...app({ slug: 'p' }) }] } };
   assert.match(exportCalendar(tracked).text, /Purdue/);
 });
+
+// ── Progress page: follow-ups, flags, submitted dates, sharing ───────────────
+
+test('moving past working records a submitted date once', () => {
+  const sent = tracker.editApp(app({ status: 'in_progress' }), { status: 'submitted' }, Date.parse('2026-10-22T18:00:00Z'));
+  assert.equal(sent.submittedAt, '2026-10-22');
+  const later = tracker.editApp(sent, { status: 'complete' }, Date.parse('2026-11-02T18:00:00Z'));
+  assert.equal(later.submittedAt, '2026-10-22');
+  assert.equal(tracker.editApp(app(), { status: 'submitted', submittedAt: '2026-10-01' }).submittedAt, '2026-10-01');
+});
+
+test('follow-ups and flags through the service and MCP', () => isolated(async () => {
+  const ws = 'progress-ws-1';
+  await service.addApp(ws, { name: 'Stony Brook University', round: 'EA', status: 'complete' });
+  const { callTool } = require('../lib/mcp-tools.ts');
+  const fu = await callTool(ws, 'add_follow_up', { school: 'Stony Brook', text: 'Counselor uploads SUNY counselor form', due: '2026-11-01' });
+  assert.equal(fu.structuredContent.follow_ups.length, 1);
+  const fl = await callTool(ws, 'add_flag', { text: "Ms. Williamson's evaluation shows Not Started", scope: 'All Common App schools' });
+  assert.equal(fl.structuredContent.flags.length, 1);
+  const list = (await callTool(ws, 'list_applications', {})).structuredContent;
+  assert.equal(list.flags[0].scope, 'All Common App schools');
+  const done = await callTool(ws, 'complete_follow_up', { school: 'Stony Brook', follow_up_id: list.applications[0].follow_ups[0].id });
+  assert.equal(done.structuredContent.follow_ups.length, 0);
+  const cleared = await callTool(ws, 'resolve_flag', { flag_id: list.flags[0].id });
+  assert.equal(cleared.structuredContent.flags.length, 0);
+  const bad = await callTool(ws, 'add_follow_up', { school: 'Stony Brook', text: 'x', due: 'Nov 1' });
+  assert.equal(bad.isError, true);
+}));
+
+test('progress links show applications and decisions, never notes, logins, essays or unopened decisions', () => isolated(async () => {
+  const ws = 'share-ws-1';
+  const a = await service.addApp(ws, { name: 'Purdue University', status: 'complete', notes: 'private note about aid' });
+  await service.setLogin(ws, a.id, { username: 'stu', password: 'secretpw' });
+  await service.addApp(ws, { name: 'University of Michigan', status: 'admitted' });
+  await store.updateWorkspace(ws, (w) => ({ ...w, applicant: { ...w.applicant, name: 'Mira Patel' }, essayDrafts: { ps: 'my essay text' },
+    tracker: tracker.replaceApp(w.tracker, tracker.withResult(w.tracker.apps[0], result({ checkedAt: Date.now(), statusText: 'Admitted', update: 'Decision posted' }))) }));
+  const { callTool } = require('../lib/mcp-tools.ts');
+  const created = (await callTool(ws, 'create_share_link', { label: 'Mom and Dad' })).structuredContent;
+  assert.equal(created.scope, 'progress');
+  const token = new URL(created.url).searchParams.get('t');
+  const route = require('../app/api/share/[token]/route.ts');
+  const res = await route.GET(new NextRequest('http://localhost/api/share/' + token), { params: Promise.resolve({ token }) });
+  const body = await res.json();
+  assert.equal(body.data.scope, 'progress');
+  assert.equal(body.data.applicant.name, 'Mira');
+  const text = JSON.stringify(body);
+  for (const leak of ['secretpw', 'stu"', 'private note', 'my essay text', 'Patel']) assert.ok(!text.includes(leak), leak);
+  const purdue = body.data.progress.apps.find((x) => x.name === 'Purdue University');
+  assert.equal(purdue.decision.state, 'hidden');
+  assert.equal(purdue.portal.statusText, '');
+  assert.equal(body.data.progress.apps.find((x) => x.name === 'University of Michigan').statusLabel, 'Admitted');
+  const links = (await callTool(ws, 'list_share_links', {})).structuredContent.links;
+  assert.equal(links.length, 1);
+  await callTool(ws, 'revoke_share_link', { link: created.url });
+  const gone = await route.GET(new NextRequest('http://localhost/api/share/' + token), { params: Promise.resolve({ token }) });
+  assert.equal(gone.status, 404);
+}));

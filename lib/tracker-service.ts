@@ -18,6 +18,10 @@ import {
   revealDecision,
   shownPortal,
   statusInfo,
+  addFollowUp,
+  setFollowUp,
+  addFlag,
+  resolveFlag,
   todayIso,
   type AppEdit,
   type TrackedApp,
@@ -58,6 +62,8 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
       ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: portal.checklist }
       : null,
     missing: missingItems(app),
+    submittedAt: app.submittedAt ?? "",
+    followUps: (app.followUps ?? []).filter((f) => !f.done).sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999")),
     lastFailure: app.lastFailure ?? null,
     notes: app.notes,
     login: app.login ?? null,
@@ -69,7 +75,30 @@ export type AppView = ReturnType<typeof viewApp>;
 
 /** `revision` is the workspace's; the hub ignores a response older than one it already has. */
 export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0) {
-  return { revision, autocheck: tracker.autocheck, apps: tracker.apps.map((a) => viewApp(a, today)) };
+  return {
+    revision,
+    autocheck: tracker.autocheck,
+    flags: tracker.flags.filter((f) => !f.resolvedAt),
+    apps: tracker.apps.map((a) => viewApp(a, today)),
+  };
+}
+
+/**
+ * What a parent or counselor sees through a progress link: statuses, rounds, dates, follow-ups and flags.
+ * No logins, notes, portal links or check errors, and a decision the student hasn't opened shows only as posted.
+ */
+export function shareTracker(tracker: Tracker, today = todayIso()) {
+  const v = viewTracker(tracker, today);
+  return {
+    flags: v.flags.map(({ id, text, scope }) => ({ id, text, scope })),
+    apps: v.apps.map((a) => ({
+      id: a.id, name: a.name, logo: a.logo, status: a.status, statusLabel: a.statusLabel, stage: a.stage,
+      round: a.round, deadline: a.deadline, submittedAt: a.submittedAt, decisionDate: a.decisionDate, nextDate: a.nextDate,
+      decision: a.decision.state === "hidden" ? { state: "hidden" as const, portalText: "" } : a.decision,
+      portal: a.portal && a.portal.ok ? { checkedAt: a.portal.checkedAt, statusText: a.portal.statusText, update: a.portal.update } : null,
+      missing: a.missing, followUps: a.followUps.map(({ id, text, due }) => ({ id, text, due })),
+    })),
+  };
 }
 
 const autocheckKey = (workspaceId: string) => `autocheck/${workspaceId.replace(/[^a-zA-Z0-9_-]/g, "")}.json`;
@@ -94,7 +123,7 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
   try {
     return await updateWorkspace(workspaceId, (ws) => ({ ...ws, tracker: change(ws.tracker, ws) }));
   } catch (err) {
-    if (err instanceof Error && err.message && /^(Unknown|Deadline|Decision|Portal|No application|Already)/.test(err.message)) {
+    if (err instanceof Error && err.message && /^(Unknown|Deadline|Decision|Portal|No application|No follow-up|No flag|Already|Write what|Due date|Submitted date)/.test(err.message)) {
       throw new TrackerError(err.message);
     }
     throw err;
@@ -267,4 +296,32 @@ export function upcoming(ws: Workspace, today = todayIso(), days = 120) {
     if (/^\d{4}-\d{2}-\d{2}$/.test(d.date)) rows.push({ date: d.date, kind: "Date", label: d.label, estimated: false });
   }
   return rows.filter((r) => r.date >= today && r.date <= end).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// ── Follow-ups and flags ────────────────────────────────────────────────────
+
+async function changeApp(workspaceId: string, ref: string, change: (app: TrackedApp) => TrackedApp): Promise<AppView> {
+  let id = "";
+  const ws = await mutate(workspaceId, (tracker) => {
+    const app = mustFind(tracker, ref);
+    id = app.id;
+    return replaceApp(tracker, change(app));
+  });
+  return viewApp(ws.tracker.apps.find((a) => a.id === id)!);
+}
+
+export const addFollowUpTo = (workspaceId: string, ref: string, text: string, due = "") =>
+  changeApp(workspaceId, ref, (app) => addFollowUp(app, text, due));
+
+export const updateFollowUp = (workspaceId: string, ref: string, id: string, change: { done?: boolean; remove?: boolean }) =>
+  changeApp(workspaceId, ref, (app) => setFollowUp(app, id, change));
+
+export async function flag(workspaceId: string, text: string, scope = "") {
+  const ws = await mutate(workspaceId, (tracker) => addFlag(tracker, text, scope));
+  return viewTracker(ws.tracker, todayIso(), ws.revision);
+}
+
+export async function unflag(workspaceId: string, id: string) {
+  const ws = await mutate(workspaceId, (tracker) => resolveFlag(tracker, id));
+  return viewTracker(ws.tracker, todayIso(), ws.revision);
 }

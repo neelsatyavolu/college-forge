@@ -30,10 +30,11 @@ function PortalLine({ app }) {
 
 function AppDetails({ app, act, busy, checking, onCheck }) {
   const { APP_ROUNDS, fmtDate } = window.cfApp;
-  const [form, setForm] = React.useState({ round: app.roundFromPortal ? "" : app.round || "", deadline: app.deadline || "", decisionDate: app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "", notes: app.notes || "", portalUrl: app.portalUrl || "" });
+  const [form, setForm] = React.useState({ round: app.roundFromPortal ? "" : app.round || "", deadline: app.deadline || "", decisionDate: app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "", submittedAt: app.submittedAt || "", notes: app.notes || "", portalUrl: app.portalUrl || "" });
+  const [fu, setFu] = React.useState({ text: "", due: "" });
   const [login, setLogin] = React.useState({ username: (app.login && app.login.username) || "", password: "" });
   const [confirmRemove, setConfirmRemove] = React.useState(false);
-  const dirty = form.round !== (app.roundFromPortal ? "" : app.round || "") || form.deadline !== (app.deadline || "") || form.notes !== (app.notes || "") || form.portalUrl !== (app.portalUrl || "") ||
+  const dirty = form.round !== (app.roundFromPortal ? "" : app.round || "") || form.deadline !== (app.deadline || "") || form.notes !== (app.notes || "") || form.portalUrl !== (app.portalUrl || "") || form.submittedAt !== (app.submittedAt || "") ||
     form.decisionDate !== (app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "");
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const id = app.id;
@@ -48,6 +49,9 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
         </label>
         <label className="cf-field">Deadline
           <input type="date" value={form.deadline} onChange={set("deadline")} />
+        </label>
+        <label className="cf-field">Submitted
+          <input type="date" value={form.submittedAt} onChange={set("submittedAt")} />
         </label>
         <label className="cf-field">Decision date
           <input type="date" value={form.decisionDate} onChange={set("decisionDate")} />
@@ -64,6 +68,29 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
           {app.portalUrl ? <a href={app.portalUrl} target="_blank" rel="noopener noreferrer" className="cf-link-btn" style={{ display: "inline-flex", alignItems: "center" }}>Open {app.portalName || "portal"} ↗</a> : null}
         </div>
       </form>
+
+      <div>
+        <h3 className="cf-subhead">Follow-ups</h3>
+        {app.followUps && app.followUps.length ? (
+          <ul className="cf-followups" style={{ marginBottom: 10 }}>
+            {app.followUps.map((f) => (
+              <li key={f.id}><label>
+                <input type="checkbox" disabled={busy} onChange={() => act({ action: "followup-set", id, followUpId: f.id, done: true }, "Follow-up done.")} />
+                <span>{f.text}{f.due ? ` · ${fmtDate(f.due)}` : ""}</span>
+              </label></li>
+            ))}
+          </ul>
+        ) : <p className="cf-help" style={{ marginBottom: 10 }}>Nothing left to chase for this school. These show on your Progress tab.</p>}
+        <form className="cf-fields" style={{ alignItems: "end" }} onSubmit={(e) => { e.preventDefault(); act({ action: "followup-add", id, text: fu.text, due: fu.due }, "Follow-up added.").then((ok) => ok && setFu({ text: "", due: "" })); }}>
+          <label className="cf-field" style={{ gridColumn: "span 2" }}>Add a follow-up
+            <input value={fu.text} onChange={(e) => setFu({ ...fu, text: e.target.value })} placeholder="Counselor sends the mid-year report" maxLength={300} />
+          </label>
+          <label className="cf-field">Due
+            <input type="date" value={fu.due} onChange={(e) => setFu({ ...fu, due: e.target.value })} />
+          </label>
+          <div><Button type="submit" size="sm" variant="secondary" disabled={busy || !fu.text.trim()}>Add</Button></div>
+        </form>
+      </div>
 
       <form onSubmit={(e) => { e.preventDefault(); act({ action: "login", id, username: login.username, password: login.password }, "Login saved. Forge will check this portal for you.").then((ok) => ok && setLogin({ ...login, password: "" })); }}>
         <h3 className="cf-subhead">Portal login</h3>
@@ -202,7 +229,8 @@ function Applications({ data, tracker, onTrackerChange }) {
         try {
           const j = await window.cfApi.applications({ action: "check", ids: [a.id] });
           if (j.data) onTrackerChange(j.data);
-          if (j.checked && j.checked[0] && j.checked[0].portal && !j.checked[0].portal.ok) failed++;
+          const c = j.checked && j.checked[0];
+          if (c && (c.lastFailure || (c.portal && !c.portal.ok))) failed++;
         } catch (e) { failed++; }
         done++;
         setChecking((c) => { const n = { ...c }; delete n[a.id]; return n; });
@@ -240,7 +268,7 @@ function Applications({ data, tracker, onTrackerChange }) {
 
       {counts.length ? <div className="cf-apps-summary" aria-label="Summary">{counts.map(([s, n]) => <span key={s.id}><strong>{n}</strong>{s.label.toLowerCase()}</span>)}</div> : null}
 
-      <div role="status" aria-live="polite" className="cf-apps-progress">{busy ? "Saving…" : progress || notice}</div>
+      {busy || progress || notice ? <div role="status" aria-live="polite" className="cf-apps-progress">{busy ? "Saving…" : progress || notice}</div> : <div role="status" aria-live="polite" className="cf-sr-only" />}
       {error ? <div role="alert" className="cf-notice">{error}</div> : null}
 
       {panel === "import" ? <ImportCollegeApps onClose={() => { setPanel(null); if (window.location.hash.indexOf("import") > -1) window.location.hash = "applications"; }} onImported={(j) => {

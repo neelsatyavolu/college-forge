@@ -15,6 +15,7 @@ import { seedRecommendedColleges } from "@/lib/college-recommendations";
 import { syncEssaySupplements } from "@/lib/essay-supplements";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { deleteAllLogins } from "@/lib/portal-logins";
+import { createShareLink, revokeShareLink } from "@/lib/sharing";
 import { applyWorkspacePatch, type WorkspacePatch } from "@/lib/workspace-patch";
 import {
   getRecovery,
@@ -136,31 +137,15 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "create-share") {
-    const token = newShareToken();
-    const label = str(body.label) || "Advisor link";
-    const meta = { token, label, createdAt: Date.now() };
-    await putShare({ ...meta, workspaceId: id });
-    const next = await updateWorkspace(id, (ws) => ({
-      ...ws,
-      shares: [...(ws.shares || []).filter((s) => !s.revokedAt && s.token !== token), meta],
-    }));
-    return withCookie({ success: true, token, data: next }, setCookie);
+    const scope = (body as { scope?: string }).scope === "progress" ? "progress" : "full";
+    const { token, workspace } = await createShareLink(id, scope, str(body.label));
+    return withCookie({ success: true, token, data: workspace }, setCookie);
   }
 
   if (action === "revoke-share") {
     const token = str(body.token);
     if (!token) return withCookie({ success: false, error: "token required" }, setCookie, 400);
-    const existing = await getShare(token);
-    if (existing && existing.workspaceId === id) {
-      await putShare({ ...existing, revokedAt: Date.now() });
-    }
-    const next = await updateWorkspace(id, (ws) => ({
-      ...ws,
-      shares: (ws.shares || []).map((s) =>
-        s.token === token ? { ...s, revokedAt: Date.now() } : s
-      ),
-    }));
-    return withCookie({ success: true, data: next }, setCookie);
+    return withCookie({ success: true, data: await revokeShareLink(id, token) }, setCookie);
   }
 
   if (action === "complete-onboarding") {

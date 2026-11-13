@@ -30,9 +30,9 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
     setBusy("");
   };
 
-  const createShare = () =>
+  const createShare = (scope) =>
     run("share", async () => {
-      const j = await window.cfApi.postAction("create-share", { label: "Advisor link" });
+      const j = await window.cfApi.postAction("create-share", { scope, label: scope === "progress" ? "Progress link" : "Advisor link" });
       if (onWorkspaceChange && j.data) onWorkspaceChange(j.data);
       const url = origin + "/hub/share.html?t=" + encodeURIComponent(j.token);
       setNewShareUrl(url);
@@ -90,11 +90,14 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
 
       <Panel title="Advisor share links">
         <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
-          Anyone with a share link can read your profile, school list, application statuses, essay drafts and dates, and leave notes. They never see portal logins or a decision you haven’t opened. Revoke a link below to end access.
+          A progress link (for parents or a counselor) shows your applications page: schools, statuses, dates, follow-ups, flags and decisions. A full advisor link also shows your profile, school list and essay drafts. Anyone with either link can leave you notes. Neither shows portal logins or a decision you haven’t opened. Revoke a link below to end access.
         </p>
-        <Button size="sm" onClick={createShare} disabled={!!busy}>
-          {busy === "share" ? "Creating…" : "Create share link"}
-        </Button>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Button size="sm" onClick={() => createShare("progress")} disabled={!!busy}>
+            {busy === "share" ? "Creating…" : "Create progress link"}
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => createShare("full")} disabled={!!busy}>Create full advisor link</Button>
+        </div>
         {newShareUrl ? (
           <div style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-md)", wordBreak: "break-all", fontSize: 13 }}>
             <a href={newShareUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--coral)" }}>{newShareUrl}</a>
@@ -105,7 +108,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
             {shares.map((s) => (
               <li key={s.token} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--hairline-soft)", flexWrap: "wrap" }}>
                 <div>
-                  <div style={{ fontSize: 14, color: "var(--ink)" }}>{s.label || "Advisor link"}</div>
+                  <div style={{ fontSize: 14, color: "var(--ink)" }}>{s.label || "Advisor link"} <span style={{ color: "var(--muted)", fontSize: 12 }}>· {s.scope === "progress" ? "progress only" : "full hub"}</span></div>
                   <div style={{ fontSize: 12, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{s.token.slice(0, 12)}…</div>
                   <a href={origin + "/hub/share.html?t=" + encodeURIComponent(s.token)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--coral)" }}>Open link</a>
                 </div>

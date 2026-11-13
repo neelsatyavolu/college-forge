@@ -2,7 +2,7 @@
 
 const APP_STATUSES = [
   { id: "planning", label: "Not started", stage: "working", tone: "var(--muted-soft)" },
-  { id: "in_progress", label: "In progress", stage: "working", tone: "var(--accent-amber)" },
+  { id: "in_progress", label: "Writing", stage: "working", tone: "var(--accent-amber)" },
   { id: "submitted", label: "Submitted", stage: "waiting", tone: "var(--coral)" },
   { id: "complete", label: "Under review", stage: "waiting", tone: "var(--accent-teal)" },
   { id: "deferred", label: "Deferred", stage: "waiting", tone: "var(--accent-amber)" },

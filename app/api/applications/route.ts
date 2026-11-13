@@ -16,6 +16,10 @@ import {
   setLogin,
   updateApp,
   viewApp,
+  addFollowUpTo,
+  updateFollowUp,
+  flag,
+  unflag,
 } from "@/lib/tracker-service";
 
 export const runtime = "nodejs";
@@ -34,6 +38,7 @@ const edit = z.object({
   notes: z.string().max(4000).optional(),
   portalUrl: z.union([z.literal(""), z.string().max(500).regex(/^https:\/\//)]).optional(),
   name: z.string().max(120).optional(),
+  submittedAt: date.optional(),
 });
 const ref = z.string().min(1).max(200);
 
@@ -47,6 +52,10 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("autocheck"), on: z.boolean() }),
   z.object({ action: z.literal("check"), ids: z.array(ref).max(100).optional() }),
   z.object({ action: z.literal("import-collegeapps"), email: z.string().max(254), password: z.string().max(256) }),
+  z.object({ action: z.literal("followup-add"), id: ref, text: z.string().min(1).max(300), due: date.optional() }),
+  z.object({ action: z.literal("followup-set"), id: ref, followUpId: z.string().max(40), done: z.boolean().optional(), remove: z.boolean().optional() }),
+  z.object({ action: z.literal("flag-add"), text: z.string().min(1).max(500), scope: z.string().max(80).optional() }),
+  z.object({ action: z.literal("flag-resolve"), flagId: z.string().max(40) }),
 ]);
 
 function sameSite(req: NextRequest): boolean {
@@ -96,6 +105,14 @@ export async function POST(req: NextRequest) {
         const checked = await runChecks(ws, { appIds: b.ids });
         return json({ success: true, checked: checked.map((a) => viewApp(a)), data: await listApps(ws) });
       }
+      case "followup-add":
+        return json({ success: true, app: await addFollowUpTo(ws, b.id, b.text, b.due ?? ""), data: await listApps(ws) });
+      case "followup-set":
+        return json({ success: true, app: await updateFollowUp(ws, b.id, b.followUpId, { done: b.done, remove: b.remove }), data: await listApps(ws) });
+      case "flag-add":
+        return json({ success: true, data: await flag(ws, b.text, b.scope ?? "") });
+      case "flag-resolve":
+        return json({ success: true, data: await unflag(ws, b.flagId) });
       case "import-collegeapps": {
         if (!(await allow(`import:${session.sub}`, 5, 15 * 60 * 1000))) {
           return json({ success: false, error: "Too many tries. Wait 15 minutes, then try again." }, 429);

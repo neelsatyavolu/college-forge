@@ -80,12 +80,74 @@ function ShareApp() {
 
   const d = state.data;
   const a = d.applicant || {};
+  const progress = d.progress || { apps: [], flags: [] };
   const p = d.profile || {};
   const essays = [...(d.essays?.commonApp || []), ...Object.entries(d.essays?.supplements || {}).flatMap(([school, items]) => items.map((essay) => ({ ...essay, group: essay.group || school })))];
   const timeline = [...(d.criticalDates || []).map((date) => ({ date: date.date, title: date.label, detail: date.detail })),
     ...(d.colleges || []).flatMap((college) => (college.deadlines?.length ? window.cfDeadlinePlan.planDeadlines(college) : college.deadline ? [{ date: college.deadline, plan: "Application" }] : []).map((date) => ({ date: date.date, title: `${college.name} — ${date.plan}` }))),
     ...(d.scholarships || []).filter((scholarship) => scholarship.deadline).map((scholarship) => ({ date: scholarship.deadline, title: `Scholarship: ${scholarship.name}` })),
     ...(d.recommendations || []).filter((letter) => letter.deadline).map((letter) => ({ date: letter.deadline, title: `Letter: ${letter.name}` }))];
+
+  const notesSection = (
+    <React.Fragment>
+      <section style={{ marginBottom: 28, padding: 20, border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", background: "var(--surface-soft)" }}>
+        <SectionLabel style={{ marginBottom: 10 }}>Leave a note for the student</SectionLabel>
+        <label htmlFor="advisor-name" style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Your name</label>
+        <input id="advisor-name" maxLength={80}
+          placeholder="Your name"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          style={{ width: "100%", boxSizing: "border-box", marginBottom: 8, padding: "8px 10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)" }}
+        />
+        <label style={{ display: "block", fontSize: 13, marginBottom: 8 }}>Feedback about
+          <select value={essayId} onChange={(event) => setEssayId(event.target.value)} style={{ display: "block", width: "100%", padding: 8, marginTop: 6, color: "var(--ink)", background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-sm)" }}>
+            <option value="">General guidance</option>
+            {essays.map((essay) => <option key={essay.id} value={essay.id}>{essay.group ? `${essay.group} · ` : ""}{essay.label}</option>)}
+          </select>
+        </label>
+        <label htmlFor="advisor-note" style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Your note</label>
+        <textarea id="advisor-note" maxLength={4000}
+          placeholder="Feedback on essays, list balance, deadlines…"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          rows={4}
+          style={{ width: "100%", boxSizing: "border-box", padding: 10, borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", fontFamily: "var(--font-body)", fontSize: 14 }}
+        />
+        <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>{note.length}/4000 characters</div>
+        {noteError ? <p role="alert" style={{ color: "var(--error)", fontSize: 13 }}>{noteError}</p> : null}
+        <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <Button size="sm" onClick={submitNote} disabled={busy || !note.trim()}>{busy ? "Sending…" : "Send note"}</Button>
+          {msg ? <span role="status" style={{ fontSize: 13, color: "var(--muted)" }}>{msg}</span> : null}
+        </div>
+      </section>
+
+      {(d.advisorNotes || []).length > 0 ? (
+        <section>
+          <SectionLabel style={{ marginBottom: 10 }}>Notes so far</SectionLabel>
+          {(d.advisorNotes || []).map((n) => (
+            <div key={n.id} style={{ marginBottom: 12, padding: 12, border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)" }}>
+              <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 4 }}>{n.author} · {new Date(n.createdAt).toLocaleString()}</div>
+              <div style={{ fontSize: 14, color: "var(--body)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{n.body}</div>
+            </div>
+          ))}
+        </section>
+      ) : null}
+    </React.Fragment>
+  );
+
+  if (d.scope === "progress") {
+    return (
+      <div className="cf-share-page">
+        <header className="cf-share-head">
+          <div className="cf-share-brand"><span aria-hidden="true">✱</span>College Forge<span className="cf-badge" style={{ "--tone": "var(--muted-soft)" }}>Shared progress</span></div>
+          <h1>{a.name ? `${a.name}’s applications` : "College applications"}</h1>
+          <p>{a.cycle ? `${a.cycle} · ` : ""}Shared with {state.label}. This page stays current as applications move along. A decision shows here once {a.name || "the student"} has opened it.</p>
+        </header>
+        {progress.apps.length ? <ProgressView tracker={progress} editable={false} /> : <div className="cf-empty">No applications to show yet.</div>}
+        <div style={{ marginTop: 40 }}>{notesSection}</div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 880, margin: "0 auto", padding: "32px 20px 80px" }}>
@@ -135,17 +197,10 @@ function ShareApp() {
         </section>
       ) : null}
 
-      {d.tracker && d.tracker.apps && d.tracker.apps.length ? (
-        <section style={{ marginBottom: 28 }}>
-          <SectionLabel style={{ marginBottom: 10 }}>Applications ({d.tracker.apps.length})</SectionLabel>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-            {d.tracker.apps.map((a) => (
-              <li key={a.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--hairline-soft)", display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-                <span style={{ color: "var(--ink)" }}><strong>{a.name}</strong>{a.round ? ` · ${a.round}` : ""}{a.deadline ? ` · due ${a.deadline}` : ""}</span>
-                <Badge variant="cream" uppercase>{({ planning: "Not started", in_progress: "In progress", submitted: "Submitted", complete: "Under review", deferred: "Deferred", waitlisted: "Waitlisted", admitted: "Admitted", committed: "Committed", denied: "Denied", withdrawn: "Withdrawn" })[a.status] || a.status}</Badge>
-              </li>
-            ))}
-          </ul>
+      {progress.apps.length ? (
+        <section style={{ marginBottom: 36 }}>
+          <SectionLabel style={{ marginBottom: 12 }}>Applications ({progress.apps.length})</SectionLabel>
+          <ProgressView tracker={progress} editable={false} />
         </section>
       ) : null}
 
@@ -153,8 +208,8 @@ function ShareApp() {
         <SectionLabel style={{ marginBottom: 10 }}>School list ({(d.colleges || []).length})</SectionLabel>
         <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
           {(d.colleges || []).map((c) => {
-            const app = ((d.tracker && d.tracker.apps) || []).find((a) => a.slug === c.slug);
-            const st = app ? ({ planning: "Not started", in_progress: "In progress", submitted: "Submitted", complete: "Under review", deferred: "Deferred", waitlisted: "Waitlisted", admitted: "Admitted", committed: "Committed", denied: "Denied", withdrawn: "Withdrawn" })[app.status] || app.status : "Considering";
+            const app = ((d.tracker && d.tracker.apps) || []).find((x) => x.slug === c.slug);
+            const st = app ? ({ planning: "Not started", in_progress: "Writing", submitted: "Submitted", complete: "Under review", deferred: "Deferred", waitlisted: "Waitlisted", admitted: "Admitted", committed: "Committed", denied: "Denied", withdrawn: "Withdrawn" })[app.status] || app.status : "Considering";
             return (
               <li key={c.slug} style={{ padding: "10px 0", borderBottom: "1px solid var(--hairline-soft)", display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                 <span style={{ color: "var(--ink)" }}><strong>{c.name || c.short}</strong> · {c.tier === "safety" ? "Likely" : c.tier || "Not assessed"} · {c.deadline || "TBD"}</span>
@@ -219,48 +274,7 @@ function ShareApp() {
         }) : <p style={{ color: "var(--muted)", fontSize: 14 }}>No essay prompts tracked yet.</p>}
       </section>
 
-      <section style={{ marginBottom: 28, padding: 20, border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", background: "var(--surface-soft)" }}>
-        <SectionLabel style={{ marginBottom: 10 }}>Leave a note for the student</SectionLabel>
-        <label htmlFor="advisor-name" style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Your name</label>
-        <input id="advisor-name" maxLength={80}
-          placeholder="Your name"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          style={{ width: "100%", boxSizing: "border-box", marginBottom: 8, padding: "8px 10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)" }}
-        />
-        <label style={{ display: "block", fontSize: 13, marginBottom: 8 }}>Feedback about
-          <select value={essayId} onChange={(event) => setEssayId(event.target.value)} style={{ display: "block", width: "100%", padding: 8, marginTop: 6, color: "var(--ink)", background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-sm)" }}>
-            <option value="">General guidance</option>
-            {essays.map((essay) => <option key={essay.id} value={essay.id}>{essay.group ? `${essay.group} · ` : ""}{essay.label}</option>)}
-          </select>
-        </label>
-        <label htmlFor="advisor-note" style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Your note</label>
-        <textarea id="advisor-note" maxLength={4000}
-          placeholder="Feedback on essays, list balance, deadlines…"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          rows={4}
-          style={{ width: "100%", boxSizing: "border-box", padding: 10, borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", fontFamily: "var(--font-body)", fontSize: 14 }}
-        />
-        <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>{note.length}/4000 characters</div>
-        {noteError ? <p role="alert" style={{ color: "var(--error)", fontSize: 13 }}>{noteError}</p> : null}
-        <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <Button size="sm" onClick={submitNote} disabled={busy || !note.trim()}>{busy ? "Sending…" : "Send note"}</Button>
-          {msg ? <span role="status" style={{ fontSize: 13, color: "var(--muted)" }}>{msg}</span> : null}
-        </div>
-      </section>
-
-      {(d.advisorNotes || []).length > 0 ? (
-        <section>
-          <SectionLabel style={{ marginBottom: 10 }}>Notes so far</SectionLabel>
-          {(d.advisorNotes || []).map((n) => (
-            <div key={n.id} style={{ marginBottom: 12, padding: 12, border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)" }}>
-              <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 4 }}>{n.author} · {new Date(n.createdAt).toLocaleString()}</div>
-              <div style={{ fontSize: 14, color: "var(--body)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{n.body}</div>
-            </div>
-          ))}
-        </section>
-      ) : null}
+      {notesSection}
     </div>
   );
 }

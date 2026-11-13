@@ -1,12 +1,12 @@
 /* Applications, Decisions and sign-in — built on the hub tokens in /styles.css and workspace.css. */
 
-.cf-apps-summary { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: -8px 0 26px; font-size: 13px; color: var(--muted); }
+.cf-apps-summary { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: -6px 0 18px; font-size: 13px; color: var(--muted); }
 .cf-apps-summary strong { font: 500 24px/1 var(--font-display); color: var(--ink); margin-right: 6px; font-variant-numeric: lining-nums tabular-nums; }
 .cf-apps-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
 .cf-apps-toolbar__views { display: flex; gap: 4px; }
 .cf-apps-auto { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); cursor: pointer; min-height: 36px; }
 .cf-apps-auto input { accent-color: var(--coral); width: 16px; height: 16px; }
-.cf-apps-progress { font-size: 13px; color: var(--muted); min-height: 20px; margin: -10px 0 16px; }
+.cf-apps-progress { font-size: 13px; color: var(--muted); margin: -4px 0 14px; }
 
 .cf-apps-group { margin-bottom: 36px; }
 .cf-apps-group__head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
@@ -73,6 +73,76 @@
 .cf-dates .cf-agenda-row p { font-size: 12px; }
 .cf-dates__month { padding: 18px 18px 6px; font: 500 20px/1.2 var(--font-display); color: var(--ink); border-bottom: 1px solid var(--hairline); }
 
+/* Progress page (Applications tab and progress share links) */
+.cf-ptabs { display: flex; gap: 0 22px; flex-wrap: wrap; border-bottom: 1px solid var(--hairline); margin: 4px 0 22px; }
+.cf-ptab { position: relative; display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--muted); font: 500 12px/1 var(--font-sans); letter-spacing: 1.3px; text-transform: uppercase; cursor: pointer; transition: color 140ms; }
+.cf-ptab:hover { color: var(--ink); }
+.cf-ptab.is-active { color: var(--ink); }
+.cf-ptab.is-active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); }
+.cf-ptab:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
+.cf-ptab__n { font-weight: 400; letter-spacing: 0; color: var(--muted-soft); font-variant-numeric: tabular-nums; }
+.cf-psummary { margin: 0 0 26px; font-size: 15px; color: var(--body); }
+.cf-psummary strong { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.cf-psection { margin-bottom: 34px; }
+.cf-psection__title { margin: 0 0 10px; font: 500 12px/1 var(--font-sans); letter-spacing: 1.3px; text-transform: uppercase; color: var(--muted); }
+
+.cf-plist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.cf-prow { border-bottom: 1px solid var(--hairline); padding: 14px 2px; }
+.cf-prow__main { display: grid; grid-template-columns: 30px minmax(0, 1fr) 64px minmax(150px, 190px) 150px; gap: 14px; align-items: center; }
+.cf-prow__main .cf-school-mark { width: 30px; height: 30px; }
+.cf-prow__name { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 0; border: 0; background: none; text-align: left; font: 500 18px/1.3 var(--font-display); color: var(--ink); cursor: default; overflow-wrap: anywhere; }
+button.cf-prow__name { cursor: pointer; }
+button.cf-prow__name svg { color: var(--muted-soft); transition: transform 160ms ease-out; flex-shrink: 0; }
+button.cf-prow__name[aria-expanded="true"] svg { transform: rotate(180deg); }
+button.cf-prow__name:hover { color: var(--coral); }
+button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 2px; }
+.cf-prow__meta { display: contents; }
+.cf-prow__round { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cf-prow__when { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cf-prow__when.is-soon { color: var(--coral); font-weight: 500; }
+.cf-prow__when.is-late { color: var(--error); }
+.cf-prow__status { justify-self: end; }
+.cf-prow__sub { padding-left: 44px; }
+.cf-prow__sub:empty { display: none; }
+.cf-prow__note { margin-top: 6px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.cf-prow__note.is-decision, .cf-prow__note.is-decision a { color: var(--coral); font-weight: 500; }
+.cf-prow__main--fu { grid-template-columns: 30px minmax(0, 1fr) 150px; }
+.cf-prow__main--fu input { width: 18px; height: 18px; accent-color: var(--coral); justify-self: center; }
+.cf-prow__arrow { color: var(--muted); justify-self: center; }
+.cf-prow__fu { font-size: 15px; color: var(--ink); line-height: 1.45; }
+.cf-prow__fu small { display: block; font-size: 12px; color: var(--muted); }
+
+.cf-followups { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; font-size: 14px; color: var(--body); line-height: 1.5; }
+.cf-followups label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+.cf-followups input { margin-top: 4px; accent-color: var(--coral); }
+
+.cf-badge { display: inline-flex; align-items: center; justify-content: center; min-height: 28px; padding: 0 10px; border: 1px solid color-mix(in srgb, var(--tone, var(--muted-soft)) 70%, transparent); border-radius: var(--radius-xs); color: color-mix(in srgb, var(--tone, var(--muted)) 62%, var(--ink)); font: 600 11px/1 var(--font-sans); letter-spacing: 1.2px; text-transform: uppercase; white-space: nowrap; background: var(--canvas); }
+.cf-badge--solid { background: color-mix(in srgb, var(--tone) 14%, var(--canvas)); }
+.cf-badge--select { position: relative; padding: 0; }
+.cf-badge--select select { appearance: none; -webkit-appearance: none; min-height: 36px; padding: 0 26px 0 11px; border: 0; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%238e8b82' stroke-width='1.5'%3E%3Cpath d='m1 1 3.5 3.5L8 1'/%3E%3C/svg%3E") no-repeat right 9px center; color: inherit; font: inherit; letter-spacing: inherit; text-transform: uppercase; cursor: pointer; }
+.cf-badge--select select:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.cf-badge--select option { text-transform: none; letter-spacing: 0; color: var(--ink); background: var(--canvas); }
+
+.cf-flags { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.cf-flags li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline; padding: 14px 2px; border-bottom: 1px solid var(--hairline); }
+.cf-flags__mark { color: var(--error); font-weight: 700; text-align: center; }
+.cf-flags__text { font-size: 15px; line-height: 1.5; color: var(--ink); }
+.cf-flags__scope { font-size: 12px; color: var(--muted); text-align: right; }
+
+.cf-apps-footer { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--hairline); }
+.cf-flag-form { display: flex; gap: 8px; flex: 1 1 340px; }
+.cf-flag-form input { flex: 1; min-height: 38px; padding: 0 12px; border: 1px solid var(--hairline); border-radius: var(--radius-sm); background: var(--canvas); color: var(--ink); font: 400 14px/1 var(--font-sans); }
+.cf-flag-form input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+
+/* Progress share page */
+.cf-share-page { max-width: 1080px; margin: 0 auto; padding: 40px var(--page-gutter, 20px) 80px; }
+.cf-share-head { display: grid; gap: 12px; margin-bottom: 30px; }
+.cf-share-brand { display: flex; align-items: center; gap: 10px; font: 500 22px/1 var(--font-display); color: var(--ink); }
+.cf-share-brand > span:first-child { color: var(--coral); }
+.cf-share-brand .cf-badge { font-family: var(--font-sans); }
+.cf-share-head h1 { margin: 6px 0 0; font: 500 clamp(36px, 5vw, 50px)/1.08 var(--font-display); letter-spacing: -0.8px; color: var(--ink); }
+.cf-share-head p { margin: 0; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--body); }
+
 /* Decisions */
 .cf-decision { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 6px 14px; align-items: center; padding: 18px; }
 .cf-decision__school { margin: 0; font: 500 19px/1.3 var(--font-display); color: var(--ink); }
@@ -104,6 +174,17 @@
 .cf-steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; line-height: 1.6; color: var(--body); }
 
 ::selection { background: color-mix(in srgb, var(--coral) 28%, transparent); color: var(--ink); }
+
+@media (max-width: 760px) {
+  .cf-prow__main { grid-template-columns: 30px minmax(0, 1fr) auto; row-gap: 2px; align-items: start; }
+  .cf-prow__meta { display: flex; gap: 10px; grid-column: 2; grid-row: 2; }
+  .cf-prow__status { grid-column: 3; grid-row: 1 / span 2; }
+  .cf-prow__sub { padding-left: 44px; }
+  .cf-prow__main--fu { grid-template-columns: 30px minmax(0, 1fr); }
+  .cf-prow__main--fu .cf-prow__when { grid-column: 2; grid-row: 2; }
+  .cf-flags li { grid-template-columns: 22px minmax(0, 1fr); }
+  .cf-flags__scope { grid-column: 2; text-align: left; }
+}
 
 @media (max-width: 600px) {
   .cf-app-row, .cf-decision { grid-template-columns: 30px minmax(0, 1fr); padding: 14px; }

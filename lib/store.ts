@@ -133,6 +133,8 @@ export type AdvisorNote = {
 export type ShareMeta = {
   token: string;
   label: string;
+  /** "progress": applications, decisions and follow-ups only (parents, counselors). "full": the whole hub (advisors). */
+  scope?: "progress" | "full";
   createdAt: number;
   revokedAt?: number;
 };
@@ -595,6 +597,7 @@ export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" |
     // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
     tracker: {
       autocheck: tracker.autocheck,
+      flags: tracker.flags.filter((f) => !f.resolvedAt),
       apps: redactTracker(tracker).apps.map(({ login: _l, ...app }) => app),
     },
     uploads: uploads.map((u) => ({ name: u.name, chars: u.chars })),

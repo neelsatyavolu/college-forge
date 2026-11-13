@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getShare } from "@/lib/share-store";
-import { getWorkspace, updateWorkspace, publicShareView } from "@/lib/store";
+import { getWorkspace, updateWorkspace, publicShareView, type Workspace } from "@/lib/store";
+import { shareTracker } from "@/lib/tracker-service";
 import { applyWorkspacePatch } from "@/lib/workspace-patch";
 
 export const runtime = "nodejs";
@@ -9,6 +10,23 @@ export const dynamic = "force-dynamic";
 class ShareUnavailableError extends Error {}
 
 type Ctx = { params: Promise<{ token: string }> };
+
+/**
+ * A progress link (parents, counselors) gets the student's first name, applications, decisions, follow-ups
+ * and flags, and advisor notes. A full link also gets the rest of the hub, as before.
+ */
+function viewFor(ws: Workspace, scope: "progress" | "full" | undefined) {
+  const progress = shareTracker(ws.tracker);
+  if (scope === "progress") {
+    return {
+      scope: "progress" as const,
+      applicant: { name: (ws.applicant.name || "").trim().split(/\s+/)[0] || "", cycle: ws.applicant.cycle },
+      progress,
+      advisorNotes: ws.advisorNotes,
+    };
+  }
+  return { ...publicShareView(ws), scope: "full" as const, progress };
+}
 
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -31,7 +49,7 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
     success: true,
     label: share.label,
     createdAt: share.createdAt,
-    data: publicShareView(ws),
+    data: viewFor(ws, share.scope),
   });
 }
 
@@ -73,7 +91,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
         },
       });
     });
-    return json({ success: true, data: publicShareView(next) });
+    return json({ success: true, data: viewFor(next, share.scope) });
   } catch (error) {
     if (error instanceof ShareUnavailableError) return json({ success: false, error: "This share link is invalid or has been revoked." }, 404);
     throw error;

@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { runChecks } from "./portal-check";
 import { allow } from "./rate-limit";
+import { activeShareLinks, createShareLink, revokeShareLink, shareUrl } from "./sharing";
+
+const ORIGIN = (process.env.FORGE_ORIGIN || "https://forge.xanom.co").replace(/\/$/, "");
 import { getWorkspace } from "./store";
 import { ROUNDS, STATUSES, STATUS_IDS, findApp, todayIso } from "./tracker";
 import {
@@ -12,6 +15,10 @@ import {
   updateApp,
   upcoming,
   viewApp,
+  addFollowUpTo,
+  updateFollowUp,
+  flag,
+  unflag,
   type AppView,
 } from "./tracker-service";
 
@@ -53,6 +60,8 @@ function brief(a: AppView) {
           last_check_failed: a.lastFailure ? `${new Date(a.lastFailure.at).toISOString()}: ${a.lastFailure.error}` : null,
         }
       : null,
+    submitted: a.submittedAt || null,
+    follow_ups: a.followUps.map((f) => ({ id: f.id, text: f.text, due: f.due || null })),
     portal_link: a.portalUrl || null,
     portal_login_saved: !!a.login?.hasPassword,
     notes: a.notes || null,
@@ -65,9 +74,11 @@ const fields = {
   round: z.enum(ROUNDS).or(z.literal("")).optional(),
   deadline: date.optional(),
   decision_date: date.optional(),
+  submitted_date: date.optional(),
   notes: z.string().max(4000).optional(),
 };
-const toEdit = (f: { status?: string; round?: string; deadline?: string; decision_date?: string; notes?: string }) => ({
+const toEdit = (f: { status?: string; round?: string; deadline?: string; decision_date?: string; submitted_date?: string; notes?: string }) => ({
+  ...(f.submitted_date !== undefined ? { submittedAt: f.submitted_date } : {}),
   ...(f.status !== undefined ? { status: f.status as (typeof STATUS_IDS)[number] } : {}),
   ...(f.round !== undefined ? { round: f.round as "" } : {}),
   ...(f.deadline !== undefined ? { deadline: f.deadline } : {}),
@@ -98,7 +109,13 @@ export const TOOLS: Tool[] = [
     run: async (ws, { stage }) => {
       const t = await listApps(ws);
       const apps = t.apps.filter((a) => !stage || a.stage === stage).map(brief);
-      return { today: todayIso(), automatic_portal_checks: t.autocheck, count: apps.length, applications: apps };
+      return {
+        today: todayIso(),
+        automatic_portal_checks: t.autocheck,
+        count: apps.length,
+        flags: t.flags.map((f) => ({ id: f.id, text: f.text, scope: f.scope || null })),
+        applications: apps,
+      };
     },
   }),
   tool({
@@ -124,7 +141,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "update_application",
     title: "Update an application",
-    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date (yyyy-mm-dd or "" to clear) or notes (replaces the notes). Only the fields you pass change. Portal links and logins can only be changed in Forge itself.`,
+    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date, submitted_date (yyyy-mm-dd or "" to clear) or notes (replaces the notes). Moving an application to submitted records today as its submitted date unless you pass one. Only the fields you pass change. Portal links and logins can only be changed in Forge itself.`,
     input: z.object({ school: z.string().min(1), ...fields }),
     readOnly: false,
     run: async (ws, { school, ...f }) => brief(await updateApp(ws, school, toEdit(f))),
@@ -156,6 +173,38 @@ export const TOOLS: Tool[] = [
     run: async (ws, { school }) => removeApp(ws, school),
   }),
   tool({
+    name: "add_follow_up",
+    title: "Add a follow-up",
+    description: "Adds a to-do under one application, shown on the student's progress page as \"→ text · due\" (for example \"Counselor uploads the SUNY form\" due 2026-11-01). Use for anything that still has to happen for that school.",
+    input: z.object({ school: z.string().min(1), text: z.string().min(1).max(300), due: date.optional() }),
+    readOnly: false,
+    run: async (ws, { school, text, due }) => brief(await addFollowUpTo(ws, school, text, due ?? "")),
+  }),
+  tool({
+    name: "complete_follow_up",
+    title: "Complete or remove a follow-up",
+    description: "Marks a follow-up done (it disappears from the progress page), or removes it with remove: true. Get ids from list_applications.",
+    input: z.object({ school: z.string().min(1), follow_up_id: z.string().min(1), remove: z.boolean().optional() }),
+    readOnly: false,
+    run: async (ws, { school, follow_up_id, remove }) => brief(await updateFollowUp(ws, school, follow_up_id, remove ? { remove: true } : { done: true })),
+  }),
+  tool({
+    name: "add_flag",
+    title: "Flag a problem",
+    description: "Adds a flag at the top of the progress page for something that needs attention across applications, like a missing teacher evaluation. `scope` says what it affects (\"All Common App schools\" or a school's name).",
+    input: z.object({ text: z.string().min(1).max(500), scope: z.string().max(80).optional() }),
+    readOnly: false,
+    run: async (ws, { text, scope }) => ({ flags: (await flag(ws, text, scope ?? "")).flags }),
+  }),
+  tool({
+    name: "resolve_flag",
+    title: "Resolve a flag",
+    description: "Clears a flag once the problem is fixed. Get ids from list_applications.",
+    input: z.object({ flag_id: z.string().min(1) }),
+    readOnly: false,
+    run: async (ws, { flag_id }) => ({ flags: (await unflag(ws, flag_id)).flags }),
+  }),
+  tool({
     name: "upcoming_dates",
     title: "Upcoming dates",
     description: "Deadlines, decision dates (exact or estimated from last year) and the student's own dates in the next `days` days (default 120), soonest first.",
@@ -184,6 +233,49 @@ export const TOOLS: Tool[] = [
       if (!checked.length) return { checked: 0, note: "No portal logins are saved in Forge yet. The student can add them on the Applications tab." };
       return { checked: checked.length, applications: checked.map((a) => brief(viewApp(a))) };
     },
+  }),
+  tool({
+    name: "list_share_links",
+    title: "List share links",
+    description: "The student's active share links. \"progress\" links show parents or counselors the applications page (statuses, dates, follow-ups, flags, opened decisions); \"full\" links also show the profile and essay drafts to an advisor.",
+    input: z.object({}),
+    readOnly: true,
+    run: async (ws) => ({ links: (await activeShareLinks(ws)).map((l) => ({ id: l.token.slice(0, 10), label: l.label, scope: l.scope ?? "full", url: shareUrl(ORIGIN, l.token), created: new Date(l.createdAt).toISOString() })) }),
+  }),
+  tool({
+    name: "create_share_link",
+    title: "Create a share link",
+    description: "Makes a read-only link for a parent or counselor (scope \"progress\", the default) or an advisor who should also see essays and profile (scope \"full\"). Ask the student first and say who it's for in `label`. Anyone with the link can see it until it's turned off.",
+    input: z.object({ label: z.string().min(1).max(60), scope: z.enum(["progress", "full"]).optional() }),
+    readOnly: false,
+    run: async (ws, { label, scope }) => {
+      const { token } = await createShareLink(ws, scope ?? "progress", label);
+      return { label, scope: scope ?? "progress", url: shareUrl(ORIGIN, token) };
+    },
+  }),
+  tool({
+    name: "revoke_share_link",
+    title: "Turn off a share link",
+    description: "Turns off a share link for good. `link` is the id or url from list_share_links.",
+    input: z.object({ link: z.string().min(6) }),
+    readOnly: false,
+    run: async (ws, { link }) => {
+      const match = (await activeShareLinks(ws)).find((l) => link.includes(l.token) || l.token.startsWith(link));
+      if (!match) throw new TrackerError("No active share link matches that. Use list_share_links.");
+      await revokeShareLink(ws, match.token);
+      return { turned_off: match.label };
+    },
+  }),
+  tool({
+    name: "get_notes",
+    title: "Read notes from parents and counselors",
+    description: "Notes people left through the student's share links, newest first.",
+    input: z.object({ limit: z.number().int().min(1).max(100).optional() }),
+    readOnly: true,
+    run: async (ws, { limit }) => ({
+      notes: [...(await getWorkspace(ws)).advisorNotes].sort((a, b) => b.createdAt - a.createdAt).slice(0, limit ?? 20)
+        .map((n) => ({ from: n.author, at: new Date(n.createdAt).toISOString(), text: n.body, about_essay: n.essayId ?? null })),
+    }),
   }),
   tool({
     name: "get_shortlist",

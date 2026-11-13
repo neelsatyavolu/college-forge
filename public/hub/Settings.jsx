@@ -208,7 +208,7 @@ function AssistantPanel() {
   return (
     <Panel title="Connect an assistant">
       <div style={{ display: "grid", gap: 16 }}>
-        <p className="cf-help" style={{ color: "var(--body)" }}>Let Grok, ChatGPT, Claude or another assistant read and update your applications: statuses, deadlines, decisions and notes. It can’t see your portal passwords or essays, and you approve it once with your Xanom sign-in.</p>
+        <p className="cf-help" style={{ color: "var(--body)" }}>Let Grok, ChatGPT, Claude or another assistant keep your applications page current: add schools, update statuses and dates, record decisions, add follow-ups and flags, and manage share links for parents and counselors. It can’t see your portal passwords or essays, and you approve it once with your Xanom sign-in.</p>
         <CopyField value={url} label="Forge MCP server address" />
         <div className="cf-fields" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18 }}>
           <div>
