@@ -12,6 +12,8 @@ import { gateAiCollegeAdd } from "./seed-college-list";
 import { recommendColleges } from "./college-recommendations";
 import { mergeSupplements } from "./essay-supplements";
 import { applyRounds, workloadSummary, type RoundChoice } from "./application-rounds";
+import { findApp, isRound, isStatus } from "./tracker";
+import { addApp, updateApp } from "./tracker-service";
 
 // Only copy keys the caller actually provided, so partial updates never wipe
 // existing fields with undefined.
@@ -417,17 +419,17 @@ export function makeHubTools(
     {
       name: "set_application_status",
       description:
-        "Set pipeline status for one school. status ∈ researching | preparing | submitted | accepted | rejected | waitlisted | deferred | withdrawn.",
+        "Track an application on the Applications tab (adds the school if it isn't tracked yet). school: a shortlist slug or the college's name. status ∈ planning (not started) | in_progress | submitted | complete (under review) | deferred | waitlisted | admitted | committed | denied | withdrawn. Optional round (ED, ED2, EA, REA, RD, Rolling), deadline (yyyy-mm-dd), notes.",
       parameters: {
         type: "object",
         properties: {
-          slug: { type: "string" },
+          school: { type: "string" },
           status: { type: "string" },
-          submittedAt: { type: "string" },
-          decisionAt: { type: "string" },
+          round: { type: "string" },
+          deadline: { type: "string" },
           notes: { type: "string" },
         },
-        required: ["slug", "status"],
+        required: ["school", "status"],
         additionalProperties: false,
       },
     },
@@ -625,22 +627,23 @@ export function makeHubTools(
           return "Updated financial aid checklist.";
         }
         case "set_application_status": {
-          if (typeof a.slug !== "string" || typeof a.status !== "string") {
-            return "set_application_status requires slug and status.";
+          if (typeof a.school !== "string" || typeof a.status !== "string") {
+            return "set_application_status requires school and status.";
           }
-          await mutate((ws) => ({
-            ...ws,
-            applications: {
-              ...ws.applications,
-              [a.slug as string]: {
-                status: a.status as Workspace["applications"][string]["status"],
-                submittedAt: typeof a.submittedAt === "string" ? a.submittedAt : ws.applications[a.slug as string]?.submittedAt,
-                decisionAt: typeof a.decisionAt === "string" ? a.decisionAt : ws.applications[a.slug as string]?.decisionAt,
-                notes: typeof a.notes === "string" ? a.notes : ws.applications[a.slug as string]?.notes,
-              },
-            },
-          }));
-          return `Set ${a.slug} status to ${a.status}.`;
+          if (!isStatus(a.status)) return `Unknown status "${a.status}".`;
+          const ws = await getWorkspace(workspaceId);
+          const shortlisted = ws.colleges.find((c) => c.slug === a.school);
+          const edit = {
+            status: a.status,
+            ...(isRound(a.round) ? { round: a.round } : {}),
+            ...(typeof a.deadline === "string" && /^\d{4}-\d{2}-\d{2}$/.test(a.deadline) ? { deadline: a.deadline } : {}),
+            ...(typeof a.notes === "string" ? { notes: a.notes } : {}),
+          };
+          const existing = findApp(ws.tracker, shortlisted?.slug ?? a.school) ?? (shortlisted ? findApp(ws.tracker, shortlisted.name) : undefined);
+          const app = existing
+            ? await updateApp(workspaceId, existing.id, edit)
+            : await addApp(workspaceId, { name: shortlisted?.name ?? a.school, slug: shortlisted?.slug, ...edit });
+          return `${app.name}: ${app.statusLabel}.`;
         }
         default:
           console.error(`[hub-tools] ws=${wsTag} unknown tool ${name}`);

@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { newWorkspaceId } from "./store";
+import { SESSION_COOKIE, readSession, type Session } from "./session";
 
 const COOKIE = "cf_workspace";
 const MAX_AGE = 60 * 60 * 24 * 365; // 1 year
@@ -10,6 +11,9 @@ const MAX_AGE = 60 * 60 * 24 * 365; // 1 year
  * Keeps every hub visitor on their own private workspace with no login.
  */
 export function getWorkspaceId(req: NextRequest): { id: string; setCookie?: string } {
+  // Signed in: the account's workspace, whatever anonymous cookie the browser also has.
+  const session = getSession(req);
+  if (session) return { id: session.workspaceId };
   const existing = req.cookies.get(COOKIE)?.value;
   if (existing && /^[a-zA-Z0-9_-]{8,64}$/.test(existing)) {
     return { id: existing };
@@ -18,4 +22,15 @@ export function getWorkspaceId(req: NextRequest): { id: string; setCookie?: stri
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   const setCookie = `${COOKIE}=${id}; Path=/; Max-Age=${MAX_AGE}; HttpOnly; SameSite=Lax${secure}`;
   return { id, setCookie };
+}
+
+/** The signed-in Xanom account, if any. */
+export function getSession(req: NextRequest): Session | null {
+  return readSession(req.cookies.get(SESSION_COOKIE)?.value);
+}
+
+/** The anonymous workspace cookie, if the browser has one. */
+export function anonymousWorkspaceId(req: NextRequest): string | null {
+  const v = req.cookies.get(COOKIE)?.value;
+  return v && /^[a-zA-Z0-9_-]{8,64}$/.test(v) ? v : null;
 }

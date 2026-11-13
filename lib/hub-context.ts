@@ -46,9 +46,10 @@ function snapshot(ws: Workspace): string {
   lines.push(
     `Financial aid: FAFSA=${ws.financialAid?.fafsaStatus || "—"}, CSS=${ws.financialAid?.cssStatus || "—"}`
   );
-  const appStatuses = Object.entries(ws.applications || {});
-  if (appStatuses.length) {
-    lines.push(`App statuses: ${appStatuses.map(([s, e]) => `${s}:${e.status}`).join(", ")}`);
+  const tracked = ws.tracker?.apps || [];
+  if (tracked.length) {
+    // Statuses only: a decision a portal posted stays hidden until the student reveals it.
+    lines.push(`Applications (Applications tab): ${tracked.map((a) => `${a.name}: ${a.status}${a.round ? ` ${a.round}` : ""}${a.deadline ? ` due ${a.deadline}` : ""}`).join("; ")}`);
   }
   lines.push(`Advisor notes: ${(ws.advisorNotes || []).length}`);
   const prefs = ws.onboarding?.listPrefs;

@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
 import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
+import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type Tracker } from "./tracker";
 
 // ── Workspace data model ──────────────────────────────────────────────────
 // Mirrors the shape the hub UI renders (window.CF_DATA). Everything starts
@@ -161,8 +162,10 @@ export type Workspace = {
   essayDrafts: Record<string, string>;
   /** Planner checkbox state keyed by task id. */
   plannerDone: Record<string, boolean>;
-  /** Per-school application pipeline status. */
+  /** Old per-school status, kept only so older workspaces migrate into `tracker`. */
   applications: Record<string, ApplicationEntry>;
+  /** Applications tracker: every school applied to, its status, dates and last portal check. */
+  tracker: Tracker;
   recommendations: Recommendation[];
   scholarships: Scholarship[];
   financialAid: FinancialAid;
@@ -201,6 +204,7 @@ export function emptyWorkspace(): Workspace {
     essayDrafts: {},
     plannerDone: {},
     applications: {},
+    tracker: emptyTracker(),
     recommendations: [],
     scholarships: [],
     financialAid: {
@@ -366,6 +370,9 @@ function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
     essayDrafts: parsed.essayDrafts ?? empty.essayDrafts,
     plannerDone: parsed.plannerDone ?? empty.plannerDone,
     applications: parsed.applications ?? empty.applications,
+    tracker: parsed.tracker
+      ? normalizeTracker(parsed.tracker)
+      : migrateOldStatuses(emptyTracker(), parsed.colleges ?? [], parsed.applications ?? {}),
     recommendations: parsed.recommendations ?? empty.recommendations,
     scholarships: parsed.scholarships ?? empty.scholarships,
     financialAid: { ...empty.financialAid, ...(parsed.financialAid || {}) },
@@ -394,7 +401,8 @@ function decodeWorkspace(raw: string | null): { workspace: Workspace; needsWrite
     throw new Error("Stored workspace must be a JSON object; existing data was not changed.");
   }
   const workspace = normalizeWorkspace(parsed);
-  return { workspace, needsWrite: parsed.draftStorageKey !== workspace.draftStorageKey };
+  // A workspace from before the tracker gets its migrated tracker saved once, so ids stay stable.
+  return { workspace, needsWrite: parsed.draftStorageKey !== workspace.draftStorageKey || !parsed.tracker };
 }
 
 async function withWorkspaceLock<T>(key: string, operation: () => Promise<T>): Promise<T> {
@@ -536,9 +544,14 @@ export async function readUpload(id: string, name: string): Promise<string | nul
 export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" | "shares" | "uploads"> & {
   uploads: { name: string; chars: number }[];
 } {
-  const { recoveryCode: _r, shares: _s, uploads, ...rest } = ws;
+  const { recoveryCode: _r, shares: _s, uploads, tracker, ...rest } = ws;
   return {
     ...rest,
+    // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
+    tracker: {
+      autocheck: tracker.autocheck,
+      apps: tracker.apps.map(({ login: _l, decisionSeen: _d, ...app }) => ({ ...app, portal: shownPortal({ ...app, decisionSeen: _d }) })),
+    },
     uploads: uploads.map((u) => ({ name: u.name, chars: u.chars })),
   };
 }

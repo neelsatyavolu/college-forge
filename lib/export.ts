@@ -1,3 +1,4 @@
+import { statusInfo } from "./tracker";
 import { createHash } from "node:crypto";
 import type { Workspace } from "./store";
 
@@ -44,7 +45,7 @@ export function exportPlainText(ws: Workspace, commonAppEssayId?: string): strin
   out.push("SCHOOL LIST");
   out.push("-".repeat(40));
   for (const c of ws.colleges) {
-    const st = ws.applications?.[c.slug]?.status || "researching";
+    const st = trackedStatus(ws, c.slug);
     out.push(
       `• ${c.name} (${c.tier === "safety" ? "likely" : c.tier || "not assessed"}) · ${c.deadline || "deadline TBD"} · status: ${st}` +
         (c.admit ? ` · overall admit ${c.admit}` : "")
@@ -135,7 +136,7 @@ export function exportCounselorBrief(ws: Workspace): string {
     if (!group.length) continue;
     lines.push(`### ${{ reach: "Reaches", target: "Targets", safety: "Likely" }[tier]}`);
     for (const c of group) {
-      const st = ws.applications?.[c.slug]?.status || "researching";
+      const st = trackedStatus(ws, c.slug);
       lines.push(`- **${c.short || c.name}** — ${c.deadline || "TBD"} · ${st}${c.admit ? ` · ${c.admit} admit` : ""}`);
     }
   }
@@ -236,4 +237,10 @@ export function exportCalendar(ws: Workspace): { text: string; included: number;
 
 export function exportIcs(ws: Workspace): string {
   return exportCalendar(ws).text;
+}
+
+/** The Applications tab's status for a shortlist school, or "considering" when it isn't tracked. */
+function trackedStatus(ws: Workspace, slug: string): string {
+  const app = ws.tracker?.apps?.find((a) => a.slug === slug);
+  return app ? statusInfo(app.status).label.toLowerCase() : "considering";
 }
