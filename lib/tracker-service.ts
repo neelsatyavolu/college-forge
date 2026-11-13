@@ -230,7 +230,8 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
     for (const { app } of incoming) {
       const existing = next.apps.find((a) => same(a, app));
       if (existing) {
-        const login = logins[existing.id];
+        // A login saved by an earlier attempt that failed before this write counts too.
+        const login = logins[existing.id] ?? saved[existing.id];
         if (login && !existing.login?.hasPassword) {
           next = replaceApp(next, { ...existing, login: { username: login.username, hasPassword: true }, updatedAt: Date.now() });
           linked++;

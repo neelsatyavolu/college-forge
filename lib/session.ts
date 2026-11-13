@@ -1,7 +1,7 @@
 import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { deleteDoc, readDoc, updateDoc, writeDoc } from "./doc-store";
 import { getShare, putShare } from "./share-store";
-import { adoptWorkspace, getWorkspace } from "./store";
+import { copyWorkspace, getWorkspace, retireWorkspace } from "./store";
 
 /**
  * Forge accounts are Xanom accounts. Each Xanom `sub` owns exactly one workspace; the signed `forge_session`
@@ -74,19 +74,35 @@ export async function signInAccount(
   now = Date.now(),
 ): Promise<Account> {
   const existing = await getAccount(user.sub);
-  let workspaceId = existing?.workspaceId;
-  if (!workspaceId) {
-    const adopted = anonymousWorkspaceId && /^[a-zA-Z0-9_-]{8,64}$/.test(anonymousWorkspaceId) ? await adoptWorkspace(anonymousWorkspaceId) : null;
-    if (adopted) await moveShareLinks(adopted);
-    workspaceId = adopted ?? randomUUID();
+  if (existing?.workspaceId) return touchAccount(user, existing.workspaceId, now);
+  const anon = anonymousWorkspaceId && /^[a-zA-Z0-9_-]{8,64}$/.test(anonymousWorkspaceId) ? anonymousWorkspaceId : null;
+  if (anon) {
+    // Claim the anonymous id first. If any account already owns it, it isn't anonymous: don't touch it.
+    // A retry after a failure part way finds this claim (with the destination id) and resumes.
+    const claim = await updateDoc<{ sub: string; movedTo?: string }>(ownerKey(anon), (cur) => cur ?? { sub: user.sub, movedTo: randomUUID() });
+    if (claim.sub === user.sub && claim.movedTo) {
+      const copied = await copyWorkspace(anon, claim.movedTo);
+      if (copied) {
+        await updateDoc<{ sub: string }>(ownerKey(claim.movedTo), (cur) => cur ?? { sub: user.sub });
+        const account = await touchAccount(user, claim.movedTo, now);
+        await moveShareLinks(claim.movedTo);
+        await retireWorkspace(anon);
+        return account;
+      }
+    }
   }
-  const ws = workspaceId;
-  await updateDoc<{ sub: string }>(ownerKey(ws), (cur) => cur ?? { sub: user.sub });
+  const fresh = randomUUID();
+  await updateDoc<{ sub: string }>(ownerKey(fresh), (cur) => cur ?? { sub: user.sub });
+  return touchAccount(user, fresh, now);
+}
+
+/** Saves the account; an existing account keeps its workspace whatever is passed. */
+function touchAccount(user: { sub: string; email: string; name: string }, workspaceId: string, now: number): Promise<Account> {
   return updateDoc<Account>(accountKey(user.sub), (cur) => ({
     sub: user.sub,
     email: user.email,
     name: user.name,
-    workspaceId: cur?.workspaceId ?? ws,
+    workspaceId: cur?.workspaceId ?? workspaceId,
     createdAt: cur?.createdAt ?? now,
     lastSignIn: now,
   }));

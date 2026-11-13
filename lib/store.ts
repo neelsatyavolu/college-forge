@@ -498,25 +498,28 @@ async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<
 }
 
 /**
- * Moves an anonymous workspace to a fresh id when someone signs in, and retires the old id, so the old
- * cookie (or anyone who saw it) opens an empty workspace from then on. Returns the new id, or null when
- * there was nothing stored under the old one.
+ * Copies an anonymous workspace (and its uploads) to `newId` when someone signs in. Nothing is deleted
+ * here: the caller records the new id on the account first, then calls retireWorkspace. Returns false
+ * when nothing was stored under the old id.
  */
-export async function adoptWorkspace(anonymousId: string): Promise<string | null> {
+export async function copyWorkspace(anonymousId: string, newId: string): Promise<boolean> {
   const raw = await readText(workspaceKey(anonymousId));
-  if (raw === null) return null;
-  const newId = newWorkspaceId();
+  if (raw === null) return false;
   const oldUploads = `uploads/${safeId(anonymousId)}/`;
-  const uploads = await listDocs(oldUploads);
-  for (const key of uploads) {
+  for (const key of await listDocs(oldUploads)) {
     const text = await readText(key);
-    if (text !== null) await writeText(`uploads/${newId}/${key.slice(oldUploads.length)}`, text, "text/plain");
+    if (text !== null) await writeText(`uploads/${safeId(newId)}/${key.slice(oldUploads.length)}`, text, "text/plain");
   }
-  await writeText(workspaceKey(newId), raw, "application/json");
+  if ((await readText(workspaceKey(newId))) === null) await writeText(workspaceKey(newId), raw, "application/json");
+  return true;
+}
+
+/** Deletes an anonymous workspace after it moved to an account, so the old id opens an empty one. */
+export async function retireWorkspace(anonymousId: string): Promise<void> {
+  const oldUploads = `uploads/${safeId(anonymousId)}/`;
+  for (const key of await listDocs(oldUploads)) await deleteText(key);
   await deleteText(workspaceKey(anonymousId));
-  for (const key of uploads) await deleteText(key);
   await deleteText(scattergramKey(anonymousId)).catch(() => undefined);
-  return newId;
 }
 
 /** Read without writing unless initialization or a persisted namespace migration is needed. */

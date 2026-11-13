@@ -393,3 +393,29 @@ test('record_decision resolves the school like every other tool and appends to i
   assert.equal(r.structuredContent.school, 'University of Michigan');
   assert.equal(r.structuredContent.notes, 'UM notes\nHonors');
 }));
+
+test('a workspace another account owns is never adopted', () => isolated(async () => {
+  await store.updateWorkspace('anon-owned-01', (w) => ({ ...w, applicant: { ...w.applicant, name: 'Victim' } }));
+  const victim = await session.signInAccount({ sub: 'xa_VICTIM', email: 'v@x.co', name: 'V' }, 'anon-owned-01');
+  const attacker = await session.signInAccount({ sub: 'xa_ATTACK', email: 'a@x.co', name: 'A' }, victim.workspaceId);
+  assert.notEqual(attacker.workspaceId, victim.workspaceId);
+  assert.equal((await store.getWorkspace(attacker.workspaceId)).applicant.name, '');
+  assert.equal((await store.getWorkspace(victim.workspaceId)).applicant.name, 'Victim');
+}));
+
+test('an older good check after a newer failure keeps the failure', () => {
+  const good = tracker.withResult(app(), result({ checkedAt: 2000, statusText: 'Submitted' }));
+  const failed = tracker.withResult(good, result({ checkedAt: 4000, ok: false, error: 'down' }));
+  const slow = tracker.withResult(failed, result({ checkedAt: 3000, statusText: 'Complete' }));
+  assert.equal(slow.portal.statusText, 'Complete');
+  assert.equal(slow.lastFailure.at, 4000);
+  const olderFail = tracker.withResult(failed, result({ checkedAt: 3500, ok: false, error: 'older' }));
+  assert.equal(olderFail.lastFailure.error, 'down');
+});
+
+test('tracking a shortlist school keeps its calendar deadline until the application has one', () => {
+  const { exportCalendar } = require('../lib/export.ts');
+  const base = { applicant: {}, profile: { gradYear: 2027 }, criticalDates: [], scholarships: [], recommendations: [], colleges: [{ slug: 'p', name: 'Purdue University', deadline: '2026-11-01' }] };
+  const tracked = { ...base, tracker: { autocheck: true, apps: [{ ...app({ slug: 'p' }) }] } };
+  assert.match(exportCalendar(tracked).text, /Purdue/);
+});

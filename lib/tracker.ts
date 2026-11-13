@@ -201,12 +201,17 @@ function followsPortal(mine: string, before: string | undefined, now: string | u
  */
 export function withResult(app: TrackedApp, result: PortalResult): TrackedApp {
   const prev = app.portal;
-  if (prev && result.checkedAt < prev.checkedAt) return app;
+  const lastAttempt = Math.max(prev?.checkedAt ?? 0, app.lastFailure?.at ?? 0);
   if (!result.ok) {
+    if (result.checkedAt < lastAttempt) return app;
     if (prev?.ok) return { ...app, lastFailure: { at: result.checkedAt, error: result.error }, updatedAt: Math.max(result.checkedAt, app.updatedAt + 1) };
     return { ...app, portal: result, updatedAt: Math.max(result.checkedAt, app.updatedAt + 1) };
   }
-  const { lastFailure: _f, ...rest } = app;
+  if (prev && result.checkedAt < prev.checkedAt) return app;
+  // A good result older than a later failure still replaces the older snapshot, but the failure stays news.
+  const keepFailure = app.lastFailure && app.lastFailure.at > result.checkedAt;
+  const { lastFailure: _f, ...base } = app;
+  const rest = keepFailure ? { ...base, lastFailure: app.lastFailure } : base;
   return {
     ...rest,
     portal: result,

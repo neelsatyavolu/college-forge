@@ -213,8 +213,9 @@ export function exportCalendar(ws: Workspace): { text: string; included: number;
     if (app.deadline && stage === "working") events.push({ date: app.deadline, title: `${app.name} — application due${app.round ? ` (${app.round})` : ""}`, detail: app.name });
     if (app.decisionDate && (stage === "working" || stage === "waiting")) events.push({ date: app.decisionDate, title: `${app.name} — decision`, detail: app.name });
   }
-  // Shortlist dates only for schools the Applications tab doesn't already cover.
-  for (const college of (ws.colleges || []).filter((c) => !tracked.some((a) => a.slug === c.slug))) {
+  // Shortlist dates only where the Applications tab doesn't already give one (or the application is done).
+  const covered = (slug: string) => tracked.some((a) => a.slug === slug && (a.deadline || statusInfo(a.status).stage !== "working"));
+  for (const college of (ws.colleges || []).filter((c) => !covered(c.slug))) {
     for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name });
     if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name });
   }
