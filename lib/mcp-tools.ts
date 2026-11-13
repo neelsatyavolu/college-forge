@@ -237,20 +237,26 @@ export const TOOLS: Tool[] = [
   tool({
     name: "list_share_links",
     title: "List share links",
-    description: "The student's active share links. \"progress\" links show parents or counselors the applications page (statuses, dates, follow-ups, flags, opened decisions); \"full\" links also show the profile and essay drafts to an advisor.",
+    description: "The student's active share links. Progress links (for parents or counselors) show the progress page: statuses, dates, follow-ups, flags and opened decisions. Full advisor links exist too, but their addresses are only shown in Forge, since they include essays.",
     input: z.object({}),
     readOnly: true,
-    run: async (ws) => ({ links: (await activeShareLinks(ws)).map((l) => ({ id: l.token.slice(0, 10), label: l.label, scope: l.scope ?? "full", url: shareUrl(ORIGIN, l.token), created: new Date(l.createdAt).toISOString() })) }),
+    run: async (ws) => ({
+      links: (await activeShareLinks(ws)).map((l) => ({
+        id: l.token.slice(0, 10), label: l.label, scope: l.scope ?? "full",
+        url: l.scope === "progress" ? shareUrl(ORIGIN, l.token) : null,
+        created: new Date(l.createdAt).toISOString(),
+      })),
+    }),
   }),
   tool({
     name: "create_share_link",
-    title: "Create a share link",
-    description: "Makes a read-only link for a parent or counselor (scope \"progress\", the default) or an advisor who should also see essays and profile (scope \"full\"). Ask the student first and say who it's for in `label`. Anyone with the link can see it until it's turned off.",
-    input: z.object({ label: z.string().min(1).max(60), scope: z.enum(["progress", "full"]).optional() }),
+    title: "Create a progress link",
+    description: "Makes a read-only progress link for a parent or counselor: the student's applications, statuses, dates, follow-ups, flags and opened decisions, never essays, logins or unopened decisions. Ask the student first and say who it's for in `label`. Anyone with the link can see it until it's turned off. Full advisor links can only be made in Forge.",
+    input: z.object({ label: z.string().min(1).max(60) }),
     readOnly: false,
-    run: async (ws, { label, scope }) => {
-      const { token } = await createShareLink(ws, scope ?? "progress", label);
-      return { label, scope: scope ?? "progress", url: shareUrl(ORIGIN, token) };
+    run: async (ws, { label }) => {
+      const { token } = await createShareLink(ws, "progress", label);
+      return { label, scope: "progress", url: shareUrl(ORIGIN, token) };
     },
   }),
   tool({
@@ -260,7 +266,7 @@ export const TOOLS: Tool[] = [
     input: z.object({ link: z.string().min(6) }),
     readOnly: false,
     run: async (ws, { link }) => {
-      const match = (await activeShareLinks(ws)).find((l) => link.includes(l.token) || l.token.startsWith(link));
+      const match = (await activeShareLinks(ws)).find((l) => link.includes(l.token) || (link.length >= 10 && l.token.startsWith(link)));
       if (!match) throw new TrackerError("No active share link matches that. Use list_share_links.");
       await revokeShareLink(ws, match.token);
       return { turned_off: match.label };
@@ -269,12 +275,12 @@ export const TOOLS: Tool[] = [
   tool({
     name: "get_notes",
     title: "Read notes from parents and counselors",
-    description: "Notes people left through the student's share links, newest first.",
+    description: "Notes parents, counselors and advisors left through the student's share links, newest first. Notes about essays are left out.",
     input: z.object({ limit: z.number().int().min(1).max(100).optional() }),
     readOnly: true,
     run: async (ws, { limit }) => ({
-      notes: [...(await getWorkspace(ws)).advisorNotes].sort((a, b) => b.createdAt - a.createdAt).slice(0, limit ?? 20)
-        .map((n) => ({ from: n.author, at: new Date(n.createdAt).toISOString(), text: n.body, about_essay: n.essayId ?? null })),
+      notes: [...(await getWorkspace(ws)).advisorNotes].filter((n) => !n.essayId).sort((a, b) => b.createdAt - a.createdAt).slice(0, limit ?? 20)
+        .map((n) => ({ from: n.author, at: new Date(n.createdAt).toISOString(), text: n.body })),
     }),
   }),
   tool({

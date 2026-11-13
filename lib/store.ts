@@ -128,6 +128,8 @@ export type AdvisorNote = {
   author: string;
   createdAt: number;
   essayId?: string;
+  /** Which kind of share link it came through. Progress links only ever show notes left through progress links. */
+  via?: "progress" | "full";
 };
 
 export type ShareMeta = {

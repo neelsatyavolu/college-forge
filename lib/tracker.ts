@@ -416,7 +416,11 @@ const cleanText = (text: string, max: number) => {
 export function addFollowUp(app: TrackedApp, text: string, due = "", now = Date.now()): TrackedApp {
   if (!isDate(due)) throw new Error("Due date must be yyyy-mm-dd or empty.");
   const item: FollowUp = { id: randomUUID().slice(0, 8), text: cleanText(text, 300), due, done: false, createdAt: now };
-  return { ...app, followUps: [...(app.followUps ?? []), item].slice(-30), updatedAt: now };
+  // Keep every open follow-up; finished ones make room (the newest 10 are kept for history).
+  const open = (app.followUps ?? []).filter((f) => !f.done);
+  if (open.length >= 30) throw new Error("Already 30 open follow-ups for this school. Finish some first.");
+  const done = (app.followUps ?? []).filter((f) => f.done).slice(-10);
+  return { ...app, followUps: [...done, ...open, item], updatedAt: now };
 }
 
 export function setFollowUp(app: TrackedApp, id: string, change: { done?: boolean; remove?: boolean }, now = Date.now()): TrackedApp {

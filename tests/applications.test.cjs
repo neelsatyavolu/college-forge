@@ -476,3 +476,32 @@ test('progress links show applications and decisions, never notes, logins, essay
   const gone = await route.GET(new NextRequest('http://localhost/api/share/' + token), { params: Promise.resolve({ token }) });
   assert.equal(gone.status, 404);
 }));
+
+test('MCP cannot reach essays through share links, and progress links only show progress-link notes', () => isolated(async () => {
+  const ws = 'share-ws-2';
+  await service.addApp(ws, { name: 'Purdue University' });
+  const sharing = require('../lib/sharing.ts');
+  const full = await sharing.createShareLink(ws, 'full', 'Advisor');
+  const { callTool } = require('../lib/mcp-tools.ts');
+  const links = (await callTool(ws, 'list_share_links', {})).structuredContent.links;
+  assert.equal(links.find((l) => l.scope === 'full').url, null);
+  assert.ok(!JSON.stringify(links).includes(full.token));
+  const created = (await callTool(ws, 'create_share_link', { label: 'Mom', scope: 'full' })).structuredContent;
+  assert.equal(created.scope, 'progress');
+  const route = require('../app/api/share/[token]/route.ts');
+  const post = (token, body) => route.POST(new NextRequest('http://localhost/api/share/' + token, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }), { params: Promise.resolve({ token }) });
+  await post(full.token, { body: 'Your essay line about grandma is great', author: 'Advisor', essayId: 'ps' });
+  const progressToken = new URL(created.url).searchParams.get('t');
+  await post(progressToken, { body: 'Proud of you', author: 'Mom' });
+  const view = await (await route.GET(new NextRequest('http://localhost/api/share/' + progressToken), { params: Promise.resolve({ token: progressToken }) })).json();
+  assert.deepEqual(view.data.advisorNotes.map((n) => n.body), ['Proud of you']);
+}));
+
+test('follow-ups never drop open items', () => {
+  let a = app();
+  for (let i = 0; i < 30; i++) a = tracker.addFollowUp(a, `task ${i}`);
+  assert.throws(() => tracker.addFollowUp(a, 'one more'), /30 open/);
+  a = tracker.setFollowUp(a, a.followUps[0].id, { done: true });
+  a = tracker.addFollowUp(a, 'one more');
+  assert.equal(a.followUps.filter((f) => !f.done).length, 30);
+});

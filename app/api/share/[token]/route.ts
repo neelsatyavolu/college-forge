@@ -22,7 +22,8 @@ function viewFor(ws: Workspace, scope: "progress" | "full" | undefined) {
       scope: "progress" as const,
       applicant: { name: (ws.applicant.name || "").trim().split(/\s+/)[0] || "", cycle: ws.applicant.cycle },
       progress,
-      advisorNotes: ws.advisorNotes,
+      // Only notes left through progress links: notes from a full advisor link can quote essays.
+      advisorNotes: ws.advisorNotes.filter((n) => n.via === "progress").map(({ essayId: _e, ...n }) => n),
     };
   }
   return { ...publicShareView(ws), scope: "full" as const, progress };
@@ -87,7 +88,8 @@ export async function POST(req: NextRequest, ctx: Ctx) {
         advisorNote: {
           body: noteBody,
           author: typeof body.author === "string" ? body.author.slice(0, 80) : "Advisor",
-          essayId: typeof body.essayId === "string" ? body.essayId : undefined,
+          essayId: share.scope === "progress" ? undefined : typeof body.essayId === "string" ? body.essayId : undefined,
+          via: share.scope === "progress" ? "progress" : "full",
         },
       });
     });

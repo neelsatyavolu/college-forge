@@ -60,7 +60,7 @@ export type WorkspacePatch = {
   removeRecommendationId?: string;
   scholarship?: Partial<Scholarship> & { name?: string };
   removeScholarshipId?: string;
-  advisorNote?: { body: string; author?: string; essayId?: string };
+  advisorNote?: { body: string; author?: string; essayId?: string; via?: "progress" | "full" };
   removeAdvisorNoteId?: string;
   /** Patch a single college by slug */
   collegePatch?: { slug: string } & Partial<Workspace["colleges"][number]>;
@@ -233,6 +233,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       author: (patch.advisorNote.author || "Advisor").slice(0, 80),
       createdAt: Date.now(),
       essayId: patch.advisorNote.essayId,
+      ...(patch.advisorNote.via ? { via: patch.advisorNote.via } : {}),
     };
     next = { ...next, advisorNotes: [...next.advisorNotes, note] };
   }
