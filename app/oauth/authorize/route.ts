@@ -22,7 +22,8 @@ function page(title: string, body: string, status = 200): Response {
       "cache-control": "no-store",
       "x-frame-options": "DENY",
       "content-security-policy": "frame-ancestors 'none'",
-      "referrer-policy": "no-referrer",
+      // Not no-referrer: with it, browsers send "Origin: null" on the Allow form and the check below fails.
+      "referrer-policy": "same-origin",
     },
   });
 }
@@ -73,8 +74,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = getSession(req);
   if (!session) return errorPage("Your Forge session ended. Start connecting again from your assistant.");
+  // The signed consent token (bound to this session) is the real cross-site guard; this is a second check.
   const origin = req.headers.get("origin");
-  if (origin && origin !== req.nextUrl.origin && origin !== appOrigin(req)) return errorPage("That request didn't come from Forge.");
+  const fetchSite = req.headers.get("sec-fetch-site");
+  const sameSite = fetchSite === "same-origin" || (!!origin && origin !== "null" && (origin === req.nextUrl.origin || origin === appOrigin(req)));
+  if ((origin || fetchSite) && !sameSite) return errorPage("That request didn't come from Forge. Start connecting again from your assistant.");
   const form = new URLSearchParams(await req.text());
   const consent = readConsent(form.get("consent") ?? "", session.sub);
   if (!consent) return errorPage("This page expired. Start connecting again from your assistant.");

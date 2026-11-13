@@ -505,3 +505,18 @@ test('follow-ups never drop open items', () => {
   a = tracker.addFollowUp(a, 'one more');
   assert.equal(a.followUps.filter((f) => !f.done).length, 30);
 });
+
+test('the consent form works with what browsers really send (Origin: null, Sec-Fetch-Site) and refuses cross-site posts', () => isolated(async () => {
+  const authz = require('../app/oauth/authorize/route.ts');
+  const client = await oauth.registerClient({ client_name: 'Grok', redirect_uris: ['https://grok.com/cb'] });
+  const cookie = `forge_session=${session.signSession({ sub: 'xa_CONSENT', workspaceId: 'consent-ws', email: 'c@x.co', name: 'C' })}`;
+  const q = new URLSearchParams({ response_type: 'code', client_id: client.client_id, redirect_uri: 'https://grok.com/cb', code_challenge: 'a'.repeat(43), code_challenge_method: 'S256', state: 's' });
+  const page = await (await authz.GET(new NextRequest('http://localhost/oauth/authorize?' + q, { headers: { cookie } }))).text();
+  const consent = page.match(/name="consent" value="([^"]+)"/)[1];
+  const post = (headers) => authz.POST(new NextRequest('http://localhost/oauth/authorize', { method: 'POST', headers: { cookie, 'content-type': 'application/x-www-form-urlencoded', ...headers }, body: new URLSearchParams({ consent, decision: 'allow' }) }));
+  const ok = await post({ origin: 'null', 'sec-fetch-site': 'same-origin' });
+  assert.equal(ok.status, 302);
+  assert.match(ok.headers.get('location'), /^https:\/\/grok\.com\/cb\?code=/);
+  const evil = await post({ origin: 'https://evil.example', 'sec-fetch-site': 'cross-site' });
+  assert.equal(evil.status, 400);
+}));
