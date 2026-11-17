@@ -39,6 +39,8 @@ export interface PortalResult {
   checkedAt: number;
   ok: boolean;
   error: string;
+  /** Why a failed check failed, as the portal engine reports it ("mfa", "signin", ...). */
+  code?: string;
   statusText: string;
   checklist: PortalItem[];
   /** Words or link text saying a decision or update was posted; empty if none. */
@@ -102,10 +104,12 @@ export interface Tracker {
   apps: TrackedApp[];
   /** Automatic portal checks every 12 hours. */
   autocheck: boolean;
+  /** Email the student when an automatic check finds something new. */
+  emails: boolean;
   flags: Flag[];
 }
 
-export const emptyTracker = (): Tracker => ({ apps: [], autocheck: true, flags: [] });
+export const emptyTracker = (): Tracker => ({ apps: [], autocheck: true, emails: true, flags: [] });
 
 export const statusInfo = (id: string) => STATUSES.find((s) => s.id === id) ?? STATUSES[0];
 export const isStatus = (v: unknown): v is StatusId => typeof v === "string" && STATUS_IDS.includes(v as StatusId);
@@ -434,7 +438,7 @@ export function normalizeTracker(raw: unknown): Tracker {
     ? t.apps.filter((a): a is TrackedApp => !!a && typeof a.id === "string" && typeof a.name === "string" && isStatus(a.status)).map(relink)
     : [];
   const flags = Array.isArray(t.flags) ? t.flags.filter((f): f is Flag => !!f && typeof f.id === "string" && typeof f.text === "string") : [];
-  return { apps, autocheck: t.autocheck !== false, flags };
+  return { apps, autocheck: t.autocheck !== false, emails: t.emails !== false, flags };
 }
 
 // ── Follow-ups and flags ──────────────────────────────────────────────────

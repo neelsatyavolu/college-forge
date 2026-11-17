@@ -13,6 +13,7 @@ import {
   removeApp,
   reveal,
   setAutocheck,
+  setEmails,
   setLogin,
   updateApp,
   viewApp,
@@ -50,6 +51,7 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("login"), id: ref, username: z.string().max(254), password: z.string().max(256) }),
   z.object({ action: z.literal("forget-login"), id: ref }),
   z.object({ action: z.literal("autocheck"), on: z.boolean() }),
+  z.object({ action: z.literal("emails"), on: z.boolean() }),
   z.object({ action: z.literal("check"), ids: z.array(ref).max(100).optional() }),
   z.object({ action: z.literal("import-collegeapps"), email: z.string().max(254), password: z.string().max(256) }),
   z.object({ action: z.literal("followup-add"), id: ref, text: z.string().min(1).max(300), due: date.optional() }),
@@ -98,6 +100,8 @@ export async function POST(req: NextRequest) {
         return json({ success: true, data: await listApps(ws) });
       case "autocheck":
         return json({ success: true, data: await setAutocheck(ws, b.on) });
+      case "emails":
+        return json({ success: true, data: await setEmails(ws, b.on) });
       case "check": {
         if (!(await allow(`check:${session.sub}`, 120, 60 * 60 * 1000))) {
           return json({ success: false, error: "That's a lot of checks this hour. Forge keeps checking on its own every 12 hours." }, 429);

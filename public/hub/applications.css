@@ -4,6 +4,7 @@
 .cf-apps-summary strong { font: 500 24px/1 var(--font-display); color: var(--ink); margin-right: 6px; font-variant-numeric: lining-nums tabular-nums; }
 .cf-apps-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
 .cf-apps-toolbar__views { display: flex; gap: 4px; }
+.cf-apps-toolbar__auto { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; }
 .cf-apps-auto { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); cursor: pointer; min-height: 36px; }
 .cf-apps-auto input { accent-color: var(--coral); width: 16px; height: 16px; }
 .cf-apps-progress { font-size: 13px; color: var(--muted); margin: -4px 0 14px; }

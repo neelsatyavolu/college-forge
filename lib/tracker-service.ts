@@ -78,6 +78,7 @@ export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0) 
   return {
     revision,
     autocheck: tracker.autocheck,
+    emails: tracker.emails,
     flags: tracker.flags.filter((f) => !f.resolvedAt),
     apps: tracker.apps.map((a) => viewApp(a, today)),
   };
@@ -224,6 +225,11 @@ export async function setLogin(workspaceId: string, ref: string, login: PortalLo
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
   return viewApp(ws.tracker.apps.find((a) => a.id === current.id)!);
+}
+
+export async function setEmails(workspaceId: string, on: boolean) {
+  const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, emails: on }));
+  return viewTracker(ws.tracker, todayIso(), ws.revision);
 }
 
 export async function setAutocheck(workspaceId: string, on: boolean) {

@@ -599,6 +599,7 @@ export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" |
     // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
     tracker: {
       autocheck: tracker.autocheck,
+      emails: tracker.emails,
       flags: tracker.flags.filter((f) => !f.resolvedAt),
       apps: redactTracker(tracker).apps.map(({ login: _l, ...app }) => app),
     },

@@ -2,6 +2,8 @@ import { collegeById } from "./catalog";
 import { readLogins, type PortalLogin } from "./portal-logins";
 import { getWorkspace, updateWorkspace } from "./store";
 import { replaceApp, withResult, type PortalResult, type TrackedApp } from "./tracker";
+import type { CheckErrorCode, CheckOutcome } from "./notify/changes";
+import { notifyChanges } from "./notify/send";
 
 /**
  * Portal checks. College Apps' Worker owns the sign-in engine for 330 school portals; Forge calls its
@@ -54,7 +56,16 @@ export function planCheck(app: TrackedApp, login: PortalLogin | undefined): Chec
   return { ok: true, url: `https://${host}/apply/status` };
 }
 
-type Snapshot = Omit<PortalResult, "checkedAt" | "ok" | "error">;
+type Snapshot = Omit<PortalResult, "checkedAt" | "ok" | "error" | "code">;
+
+const CODES: CheckErrorCode[] = ["signin", "mfa", "sso", "not_slate", "unreachable"];
+
+/** A check that failed, with the portal engine's reason. */
+class CheckFailure extends Error {
+  constructor(message: string, readonly code: CheckErrorCode) {
+    super(message);
+  }
+}
 
 async function callService(app: TrackedApp, url: string, login: PortalLogin): Promise<Snapshot> {
   const key = process.env.FORGE_SERVICE_KEY;
@@ -65,14 +76,17 @@ async function callService(app: TrackedApp, url: string, login: PortalLogin): Pr
     body: JSON.stringify({ collegeId: app.collegeId, url, username: login.username, password: login.password }),
     signal: AbortSignal.timeout(55_000),
   });
-  const body = (await res.json().catch(() => ({}))) as { snapshot?: Snapshot; error?: string };
+  const body = (await res.json().catch(() => ({}))) as { snapshot?: Snapshot; error?: string; code?: string };
   if (res.ok && body.snapshot) return body.snapshot;
   // 422 carries a message written for students ("This portal asks for a Duo push…"); anything else is ours.
-  throw new Error(res.status === 422 && body.error ? body.error : "Checking that portal failed. Try again in a few minutes.");
+  if (res.status === 422 && body.error) {
+    throw new CheckFailure(body.error, CODES.includes(body.code as CheckErrorCode) ? (body.code as CheckErrorCode) : "other");
+  }
+  throw new CheckFailure("Checking that portal failed. Try again in a few minutes.", "unreachable");
 }
 
 export async function checkApp(app: TrackedApp, login: PortalLogin | undefined, now = Date.now()): Promise<PortalResult> {
-  const failed = (error: string): PortalResult => ({ checkedAt: now, ok: false, error, statusText: "", checklist: [], update: "" });
+  const failed = (error: string, code: CheckErrorCode = "other"): PortalResult => ({ checkedAt: now, ok: false, error, code, statusText: "", checklist: [], update: "" });
   const plan = planCheck(app, login);
   if (!plan.ok) return failed(plan.reason);
   try {
@@ -88,7 +102,8 @@ export async function checkApp(app: TrackedApp, login: PortalLogin | undefined, 
       ...(snap.round ? { round: snap.round } : {}),
     };
   } catch (err) {
-    return failed(err instanceof Error ? err.message : "Couldn't check this portal.");
+    if (err instanceof CheckFailure) return failed(err.message, err.code);
+    return failed(err instanceof Error && err.name === "TimeoutError" ? "Checking that portal timed out. Try again in a few minutes." : "Couldn't check this portal.", "unreachable");
   }
 }
 
@@ -104,7 +119,7 @@ export const isDue = (app: TrackedApp, now = Date.now()) => {
  */
 export async function runChecks(
   workspaceId: string,
-  opts: { appIds?: string[]; onlyDue?: boolean; concurrency?: number } = {},
+  opts: { appIds?: string[]; onlyDue?: boolean; concurrency?: number; notify?: boolean } = {},
 ): Promise<TrackedApp[]> {
   const ws = await getWorkspace(workspaceId);
   // The workspace's own switch is the authority for automatic checks, whatever the sweep's index says.
@@ -129,5 +144,20 @@ export async function runChecks(
     }
     return { ...current, tracker };
   });
+  const outcomes = new Map<string, { app: TrackedApp; outcome: CheckOutcome }>();
+  for (const [id, result] of results) {
+    const app = saved.tracker.apps.find((a) => a.id === id);
+    if (!app) continue;
+    const outcome: CheckOutcome = result.ok
+      ? { ok: true, result }
+      : { ok: false, code: (result.code as CheckErrorCode | undefined) ?? "other", message: result.error };
+    outcomes.set(id, { app, outcome });
+  }
+  try {
+    await notifyChanges(workspaceId, outcomes, { send: !!opts.notify && saved.tracker.emails });
+  } catch (err) {
+    // The check results are saved; a problem with emails mustn't fail the check.
+    console.error("portal change emails failed", err instanceof Error ? err.name : "unknown");
+  }
   return saved.tracker.apps.filter((a) => results.has(a.id));
 }

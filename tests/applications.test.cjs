@@ -530,3 +530,14 @@ test('UC campuses match by their full names, and older saved schools relink to t
   assert.equal(t.apps[0].collegeId, 'ucdavis');
   assert.match(t.apps[0].portalUrl, /^https:/);
 });
+
+test('applications action emails toggles tracker.emails', () => isolated(async () => {
+  const cookie = `forge_session=${session.signSession({ sub: 'xa_EM', workspaceId: 'emails-ws-1', email: 'a@b.co', name: 'A' })}`;
+  const post = (body) => appsRoute.POST(new NextRequest('http://localhost/api/applications', { method: 'POST', headers: { cookie, 'content-type': 'application/json' }, body: JSON.stringify(body) }));
+  await post({ action: 'add', name: 'Purdue University' });
+  assert.equal((await store.getWorkspace('emails-ws-1')).tracker.emails, true);
+  const off = await (await post({ action: 'emails', on: false })).json();
+  assert.equal(off.success, true);
+  assert.equal(off.data.emails, false);
+  assert.equal((await store.getWorkspace('emails-ws-1')).tracker.emails, false);
+}));

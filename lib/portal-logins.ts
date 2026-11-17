@@ -9,7 +9,7 @@ import { deleteDoc, readDoc, updateDoc } from "./doc-store";
 
 /** `host` is the portal host the login was saved for; checks refuse to send it anywhere else. */
 export type PortalLogin = { username: string; password: string; host?: string };
-type Sealed = { v: 1; iv: string; ct: string; tag: string };
+export type Sealed = { v: 1; iv: string; ct: string; tag: string };
 
 function key(): Buffer {
   const raw = process.env.PORTAL_LOGINS_KEY;
@@ -21,23 +21,29 @@ function key(): Buffer {
 
 const docKey = (workspaceId: string) => `logins/${workspaceId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64)}.json`;
 
-/** The workspace id is bound into the ciphertext, so a sealed document can't be moved to another workspace. */
-function seal(workspaceId: string, value: Record<string, PortalLogin>): Sealed {
+/**
+ * Encrypts a JSON value with PORTAL_LOGINS_KEY. `aad` (such as "forge-logins:<workspace id>") is bound into
+ * the ciphertext, so a sealed document can't be moved to another workspace or purpose.
+ */
+export function sealJson(aad: string, value: unknown): Sealed {
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key(), iv);
-  cipher.setAAD(Buffer.from(`forge-logins:${workspaceId}`));
+  cipher.setAAD(Buffer.from(aad));
   const ct = Buffer.concat([cipher.update(JSON.stringify(value), "utf8"), cipher.final()]);
   return { v: 1, iv: iv.toString("base64"), ct: ct.toString("base64"), tag: cipher.getAuthTag().toString("base64") };
 }
 
-function open(workspaceId: string, sealed: Sealed | null): Record<string, PortalLogin> {
-  if (!sealed) return {};
+export function openJson<T>(aad: string, sealed: Sealed): T {
   const decipher = createDecipheriv("aes-256-gcm", key(), Buffer.from(sealed.iv, "base64"));
-  decipher.setAAD(Buffer.from(`forge-logins:${workspaceId}`));
+  decipher.setAAD(Buffer.from(aad));
   decipher.setAuthTag(Buffer.from(sealed.tag, "base64"));
   const plain = Buffer.concat([decipher.update(Buffer.from(sealed.ct, "base64")), decipher.final()]);
-  return JSON.parse(plain.toString("utf8")) as Record<string, PortalLogin>;
+  return JSON.parse(plain.toString("utf8")) as T;
 }
+
+const seal = (workspaceId: string, value: Record<string, PortalLogin>): Sealed => sealJson(`forge-logins:${workspaceId}`, value);
+const open = (workspaceId: string, sealed: Sealed | null): Record<string, PortalLogin> =>
+  sealed ? openJson<Record<string, PortalLogin>>(`forge-logins:${workspaceId}`, sealed) : {};
 
 export async function readLogins(workspaceId: string): Promise<Record<string, PortalLogin>> {
   return open(workspaceId, await readDoc<Sealed>(docKey(workspaceId)));

@@ -36,7 +36,7 @@ async function sweep(req: Request) {
         await deleteDoc(key); // stale index entry: checks were turned off or every login was removed
         continue;
       }
-      const done = await runChecks(entry.workspaceId, { onlyDue: true, concurrency: 4 });
+      const done = await runChecks(entry.workspaceId, { onlyDue: true, concurrency: 4, notify: true });
       workspaces++;
       checked += done.length;
     } catch (err) {

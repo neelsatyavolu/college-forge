@@ -297,10 +297,16 @@ function Applications({ data, tracker, onTrackerChange }) {
             <div className="cf-apps-toolbar__views" role="group" aria-label="View">
               {[["status", "By status"], ["dates", "By date"]].map(([id, label]) => <button key={id} type="button" className={"cf-filter-pill cf-press" + (view === id ? " is-active" : "")} aria-pressed={view === id} onClick={() => setView(id)}>{label}</button>)}
             </div>
+            <div className="cf-apps-toolbar__auto">
             <label className="cf-apps-auto">
               <input type="checkbox" checked={tracker.autocheck} disabled={busy} onChange={(e) => act({ action: "autocheck", on: e.target.checked }, e.target.checked ? "Automatic checks are on." : "Automatic checks are off.")} />
               Check portals every 12 hours
             </label>
+            <label className="cf-apps-auto">
+              <input type="checkbox" checked={tracker.emails !== false} disabled={busy || !tracker.autocheck} onChange={(e) => act({ action: "emails", on: e.target.checked }, e.target.checked ? "Forge will email you when a portal changes." : "Portal emails are off.")} />
+              Email me when a portal changes
+            </label>
+            </div>
           </div>
           {view === "dates" ? <DatesView apps={apps} criticalDates={data.criticalDates} /> : APP_STAGES.map((stage) => {
             const list = apps.filter((a) => a.stage === stage.id).sort((a, b) => ((a.nextDate && a.nextDate.date) || "9999").localeCompare((b.nextDate && b.nextDate.date) || "9999") || a.name.localeCompare(b.name));
