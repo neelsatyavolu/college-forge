@@ -8,13 +8,15 @@ import { deleteDoc, listDocs, readDoc, updateDoc, writeDoc } from "./doc-store";
  */
 
 export const SCOPE = "applications";
+/** Reading saved portal passwords: only for the collegeforge CLI, which signs in through a loopback redirect. */
+export const LOGINS_SCOPE = "logins";
 const ACCESS_TTL_S = 60 * 60;
 const REFRESH_TTL_S = 60 * 60 * 24 * 90;
 const CODE_TTL_S = 120;
 
 export type Client = { client_id: string; client_name: string; redirect_uris: string[]; created_at: number };
-type Code = { client_id: string; redirect_uri: string; code_challenge: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean };
-type Token = { kind: "access" | "refresh"; client_id: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean };
+type Code = { client_id: string; redirect_uri: string; code_challenge: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean; logins?: boolean };
+type Token = { kind: "access" | "refresh"; client_id: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean; logins?: boolean };
 export type Grant = { grantId: string; client_id: string; client_name: string; redirect_host: string; created_at: number };
 
 export class OAuthError extends Error {
@@ -64,7 +66,16 @@ export async function getClient(id: string | null | undefined): Promise<Client |
   return readDoc<Client>(clientKey(id));
 }
 
-export type AuthorizeRequest = { client: Client; redirect_uri: string; state: string; code_challenge: string };
+export type AuthorizeRequest = { client: Client; redirect_uri: string; state: string; code_challenge: string; logins: boolean };
+
+const isLoopback = (uri: string) => {
+  try {
+    const u = new URL(uri);
+    return u.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(u.hostname);
+  } catch {
+    return false;
+  }
+};
 
 /** Validates /oauth/authorize parameters. Errors that can't be sent back to a verified redirect URI are shown. */
 export async function checkAuthorize(q: URLSearchParams): Promise<AuthorizeRequest> {
@@ -77,28 +88,39 @@ export async function checkAuthorize(q: URLSearchParams): Promise<AuthorizeReque
   if (q.get("code_challenge_method") !== "S256" || !/^[A-Za-z0-9_-]{43,128}$/.test(code_challenge)) {
     throw new OAuthError("invalid_request", "PKCE with S256 is required.");
   }
-  return { client, redirect_uri, state: (q.get("state") ?? "").slice(0, 500), code_challenge };
+  const logins = (q.get("scope") ?? "").split(/\s+/).includes(LOGINS_SCOPE);
+  // A remote assistant returns to an https address; only a program on the student's own computer gets passwords.
+  if (logins && !isLoopback(redirect_uri)) throw new OAuthError("invalid_scope", "Only the collegeforge command-line tool can read saved passwords.");
+  return { client, redirect_uri, state: (q.get("state") ?? "").slice(0, 500), code_challenge, logins };
 }
 
 /** Signed consent form token, bound to the signed-in account and the exact request, valid 10 minutes. */
 export function consentToken(sub: string, req: AuthorizeRequest): string {
-  const body = Buffer.from(JSON.stringify({ sub, c: req.client.client_id, r: req.redirect_uri, s: req.state, p: req.code_challenge, e: now() + 600 })).toString("base64url");
+  const body = Buffer.from(JSON.stringify({ sub, c: req.client.client_id, r: req.redirect_uri, s: req.state, p: req.code_challenge, l: req.logins, e: now() + 600 })).toString("base64url");
   const sig = createHmac("sha256", process.env.SESSION_SECRET ?? "").update(`forge-consent.${body}`).digest("base64url");
   return `${body}.${sig}`;
 }
 
-export function readConsent(t: string, sub: string): { client_id: string; redirect_uri: string; state: string; code_challenge: string } | null {
+export function readConsent(t: string, sub: string): { client_id: string; redirect_uri: string; state: string; code_challenge: string; logins: boolean } | null {
   const [body, sig] = t.split(".");
   if (!body || !sig || !process.env.SESSION_SECRET) return null;
   const expected = createHmac("sha256", process.env.SESSION_SECRET).update(`forge-consent.${body}`).digest();
   const given = Buffer.from(sig, "base64url");
   if (given.length !== expected.length || !timingSafeEqual(given, expected)) return null;
-  const p = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as { sub: string; c: string; r: string; s: string; p: string; e: number };
+  const p = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as { sub: string; c: string; r: string; s: string; p: string; l?: boolean; e: number };
   if (p.sub !== sub || p.e < now()) return null;
-  return { client_id: p.c, redirect_uri: p.r, state: p.s, code_challenge: p.p };
+  return { client_id: p.c, redirect_uri: p.r, state: p.s, code_challenge: p.p, logins: p.l === true && isLoopback(p.r) };
 }
 
-export async function issueCode(client: Client, redirect_uri: string, code_challenge: string, sub: string, workspaceId: string): Promise<string> {
+export async function issueCode(
+  client: Client,
+  redirect_uri: string,
+  code_challenge: string,
+  sub: string,
+  workspaceId: string,
+  opts: { logins?: boolean } = {},
+): Promise<string> {
+  const logins = !!opts.logins && isLoopback(redirect_uri);
   const grantId = token(12);
   const host = (() => {
     try {
@@ -111,7 +133,7 @@ export async function issueCode(client: Client, redirect_uri: string, code_chall
     grantId, client_id: client.client_id, client_name: client.client_name, redirect_host: host, created_at: now(),
   } satisfies Grant);
   const code = token();
-  await writeDoc(codeKey(code), { client_id: client.client_id, redirect_uri, code_challenge, sub, workspaceId, grantId, exp: now() + CODE_TTL_S } satisfies Code);
+  await writeDoc(codeKey(code), { client_id: client.client_id, redirect_uri, code_challenge, sub, workspaceId, grantId, exp: now() + CODE_TTL_S, ...(logins ? { logins } : {}) } satisfies Code);
   return code;
 }
 
@@ -120,7 +142,7 @@ async function issueTokens(base: Omit<Token, "kind" | "exp">) {
   const refresh = token();
   await writeDoc(tokenKey(access), { ...base, kind: "access", exp: now() + ACCESS_TTL_S } satisfies Token);
   await writeDoc(tokenKey(refresh), { ...base, kind: "refresh", exp: now() + REFRESH_TTL_S } satisfies Token);
-  return { access_token: access, token_type: "Bearer", expires_in: ACCESS_TTL_S, refresh_token: refresh, scope: SCOPE };
+  return { access_token: access, token_type: "Bearer", expires_in: ACCESS_TTL_S, refresh_token: refresh, scope: base.logins ? `${SCOPE} ${LOGINS_SCOPE}` : SCOPE };
 }
 
 const pkceOk = (verifier: string, challenge: string) =>
@@ -163,7 +185,7 @@ export async function exchange(form: URLSearchParams) {
       throw new OAuthError("invalid_grant", "The code was issued to a different client or redirect URI.");
     }
     if (!pkceOk(form.get("code_verifier") ?? "", rec.code_challenge)) throw new OAuthError("invalid_grant", "PKCE verification failed.");
-    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId });
+    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, ...(rec.logins ? { logins: true } : {}) });
   }
   if (grant === "refresh_token") {
     const rt = form.get("refresh_token") ?? "";
@@ -177,20 +199,20 @@ export async function exchange(form: URLSearchParams) {
       throw new OAuthError("invalid_grant", "The refresh token is invalid or expired.");
     }
     if (!(await readDoc<Grant>(grantKey(rec.sub, rec.grantId)))) throw new OAuthError("invalid_grant", "Access was removed in Forge settings.");
-    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId });
+    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, ...(rec.logins ? { logins: true } : {}) });
   }
   throw new OAuthError("unsupported_grant_type", "Use authorization_code or refresh_token.");
 }
 
 /** Resolves a bearer token to the account it acts for; null if it's missing, expired or its grant was removed. */
-export async function verifyAccess(authorization: string | null): Promise<{ sub: string; workspaceId: string; grantId: string } | null> {
+export async function verifyAccess(authorization: string | null): Promise<{ sub: string; workspaceId: string; grantId: string; logins: boolean } | null> {
   const t = authorization?.match(/^Bearer\s+([A-Za-z0-9_-]{20,200})$/)?.[1];
   if (!t) return null;
   const rec = await readDoc<Token>(tokenKey(t));
   if (!rec || rec.kind !== "access" || rec.exp < now()) return null;
   // Read only: writing here could recreate a grant that Disconnect deleted a moment ago.
   if (!(await readDoc<Grant>(grantKey(rec.sub, rec.grantId)))) return null;
-  return { sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId };
+  return { sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, logins: rec.logins === true };
 }
 
 export async function listGrants(sub: string): Promise<Grant[]> {

@@ -1,0 +1,35 @@
+import type { NextRequest } from "next/server";
+import { verifyAccess } from "@/lib/oauth";
+import { readLogins } from "@/lib/portal-logins";
+import { allow } from "@/lib/rate-limit";
+import { getWorkspace } from "@/lib/store";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "cache-control": "no-store" } });
+
+/**
+ * Saved portal logins for the collegeforge command-line tool (`creds`, `1password`). Only a token whose
+ * grant has the "logins" scope gets them, and that scope is only granted to loopback redirects.
+ */
+export async function GET(req: NextRequest) {
+  const auth = await verifyAccess(req.headers.get("authorization"));
+  if (!auth) return json({ error: "Sign in with collegeforge login first." }, 401);
+  if (!auth.logins) return json({ error: "This sign-in can't read saved passwords. Run collegeforge login again." }, 403);
+  if (!(await allow(`cli-logins:${auth.grantId}`, 30, 60 * 1000))) return json({ error: "Too many requests. Wait a minute." }, 429);
+  try {
+    const ids = (req.nextUrl.searchParams.get("ids") ?? "").split(",").map((s) => s.trim()).filter(Boolean).slice(0, 200);
+    const [ws, logins] = await Promise.all([getWorkspace(auth.workspaceId), readLogins(auth.workspaceId)]);
+    const out: Record<string, { username: string; password: string; portalUrl: string }> = {};
+    for (const app of ws.tracker.apps) {
+      const login = logins[app.id];
+      if (!login || (ids.length && !ids.includes(app.id))) continue;
+      out[app.id] = { username: login.username, password: login.password, portalUrl: app.portalUrl };
+    }
+    return json({ logins: out });
+  } catch (err) {
+    console.error("cli logins failed", err instanceof Error ? err.name : "unknown");
+    return json({ error: "Something went wrong on Forge's side." }, 500);
+  }
+}

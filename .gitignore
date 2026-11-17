@@ -32,3 +32,4 @@ data
 
 # Generated local React runtime and compiled hub JSX
 /public/hub/compiled/
+public/cli/
