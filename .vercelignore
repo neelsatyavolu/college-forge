@@ -9,6 +9,7 @@ ranking/.venv
 scripts/*
 !scripts/build-hub.mjs
 !scripts/hub-version.mjs
+!scripts/build-cli.mjs
 *.tsbuildinfo
 .DS_Store
 
