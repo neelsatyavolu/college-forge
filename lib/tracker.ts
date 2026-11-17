@@ -9,6 +9,7 @@ import { COLLEGES, collegeById, expectedDecision, logoUrl, type College } from "
 export const STATUSES = [
   { id: "planning", label: "Not started", stage: "working" },
   { id: "in_progress", label: "Writing", stage: "working" },
+  { id: "final_checks", label: "Final checks", stage: "working" },
   { id: "submitted", label: "Submitted", stage: "waiting" },
   { id: "complete", label: "Under review", stage: "waiting" },
   { id: "deferred", label: "Deferred", stage: "waiting" },
@@ -205,7 +206,7 @@ export function todayIso(now = new Date()): string {
 
 // ── Applying a portal check ───────────────────────────────────────────────
 
-const ADJUSTABLE: StatusId[] = ["planning", "in_progress", "submitted", "complete"];
+const ADJUSTABLE: StatusId[] = ["planning", "in_progress", "final_checks", "submitted", "complete"];
 
 /** Statuses a check may set: never a decision, deferral or waitlist, which are the student's to record. */
 export function suggestedStatus(app: TrackedApp, result: PortalResult): StatusId {
