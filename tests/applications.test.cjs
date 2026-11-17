@@ -541,3 +541,14 @@ test('applications action emails toggles tracker.emails', () => isolated(async (
   assert.equal(off.data.emails, false);
   assert.equal((await store.getWorkspace('emails-ws-1')).tracker.emails, false);
 }));
+
+test('applications action inbox reads, turns on and off the forwarding address', () => isolated(async () => {
+  const cookie = `forge_session=${session.signSession({ sub: 'xa_IN', workspaceId: 'inbox-ws-1', email: 'a@b.co', name: 'A' })}`;
+  const post = (body) => appsRoute.POST(new NextRequest('http://localhost/api/applications', { method: 'POST', headers: { cookie, 'content-type': 'application/json' }, body: JSON.stringify(body) }));
+  assert.deepEqual((await (await post({ action: 'inbox' })).json()).inbox, { address: null, birthdate: false });
+  const on = (await (await post({ action: 'inbox', on: true, birthdate: '2008-01-02' })).json()).inbox;
+  assert.match(on.address, /@collegeapps\.n3el\.dev$/);
+  assert.equal(on.birthdate, true);
+  assert.equal((await post({ action: 'inbox', on: true, birthdate: '01/02/2008' })).status, 400);
+  assert.equal((await (await post({ action: 'inbox', on: false })).json()).inbox.address, null);
+}));

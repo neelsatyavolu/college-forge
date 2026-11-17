@@ -282,13 +282,15 @@ function Applications({ data, tracker, onTrackerChange }) {
         setPanel(null);
         setNotice(j.added || j.linked ? `Brought over ${j.added} school${j.added === 1 ? "" : "s"}${j.linked ? ` and ${j.linked} login${j.linked === 1 ? "" : "s"} for schools already here` : ""}.` : "Everything from College Apps is already here.");
       }} /> : null}
+      {panel === "forward" ? <ForwardEmails onClose={() => setPanel(null)} /> : null}
       {panel === "add" ? <AddSchool tracked={apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setPanel(null)} /> : null}
 
       {apps.length === 0 ? (
         panel !== "import" ? (
           <div className="cf-empty">
             No portals yet. Once you submit, add the school here and save its portal login.{" "}
-            <button type="button" className="cf-link-btn" onClick={() => setPanel("import")}>Coming from College Apps? Bring your schools over.</button>
+            <button type="button" className="cf-link-btn" onClick={() => setPanel("import")}>Coming from College Apps? Bring your schools over.</button>{" "}
+            <button type="button" className="cf-link-btn" onClick={() => setPanel("forward")}>Or forward a school’s portal setup email.</button>
           </div>
         ) : null
       ) : (
@@ -321,6 +323,7 @@ function Applications({ data, tracker, onTrackerChange }) {
             );
           })}
           {panel !== "import" ? <p className="cf-help">Coming from College Apps? <button type="button" className="cf-link-btn" onClick={() => setPanel("import")}>Bring your schools over</button>.</p> : null}
+          {panel !== "forward" ? <p className="cf-help">Got an email from a school about setting up your portal? <button type="button" className="cf-link-btn" onClick={() => setPanel("forward")}>Forward it to Forge</button>.</p> : null}
         </React.Fragment>
       )}
     </div>

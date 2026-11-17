@@ -110,5 +110,62 @@ function ImportCollegeApps({ onImported, onClose }) {
   );
 }
 
+function ForwardEmails({ onClose }) {
+  const [inbox, setInbox] = React.useState(null);
+  const [birthdate, setBirthdate] = React.useState("");
+  const [busy, setBusy] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const run = async (body) => {
+    setBusy(true);
+    setError("");
+    try {
+      const j = await window.cfApi.applications({ action: "inbox", ...body });
+      setInbox(j.inbox);
+      return j.inbox;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally { setBusy(false); }
+  };
+  React.useEffect(() => { run({}); }, []);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(inbox.address); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch (e) { /* the address is on screen to copy by hand */ }
+  };
+  return (
+    <section className="cf-panel cf-panel--soft" aria-labelledby="forward-title">
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
+        <h2 id="forward-title">Forward portal emails</h2>
+        <button type="button" className="cf-link-btn" onClick={onClose}>Close</button>
+      </div>
+      <p className="cf-help">After you apply, schools email you a link or PIN to set up your applicant portal. Forward that email to your private address and Forge sets up the portal with a strong password, saves the login and starts checking it.</p>
+      {inbox === null ? <p className="cf-help">{busy ? "Loading…" : null}</p> : inbox.address ? (
+        <React.Fragment>
+          <div className="cf-fields" style={{ alignItems: "end" }}>
+            <label className="cf-field">Your forwarding address
+              <input type="text" readOnly value={inbox.address} onFocus={(e) => e.target.select()} />
+            </label>
+            <div className="cf-row-actions">
+              <Button size="sm" variant="secondary" onClick={copy}>{copied ? "Copied" : "Copy"}</Button>
+              <Button size="sm" variant="secondary" disabled={busy} onClick={() => run({ on: true, newAddress: true })}>New address</Button>
+              <Button size="sm" variant="secondary" disabled={busy} onClick={() => run({ on: false })}>Turn off</Button>
+            </div>
+          </div>
+          <form className="cf-fields" style={{ alignItems: "end" }} onSubmit={(e) => { e.preventDefault(); run({ on: true, birthdate }).then((r) => { if (r) setBirthdate(""); }); }}>
+            <label className="cf-field">Birthdate, for portals that ask for it{inbox.birthdate ? " (saved)" : ""}
+              <input type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)} />
+            </label>
+            <div><Button type="submit" size="sm" variant="secondary" disabled={busy || !birthdate}>Save birthdate</Button></div>
+          </form>
+        </React.Fragment>
+      ) : (
+        <div><Button size="sm" disabled={busy} onClick={() => run({ on: true })}>Get my forwarding address</Button></div>
+      )}
+      {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>{error}</p> : null}
+    </section>
+  );
+}
+
 window.AddSchool = AddSchool;
 window.ImportCollegeApps = ImportCollegeApps;
+window.ForwardEmails = ForwardEmails;
