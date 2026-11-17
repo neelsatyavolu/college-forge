@@ -144,14 +144,14 @@ export async function runChecks(
     }
     return { ...current, tracker };
   });
-  const outcomes = new Map<string, { app: TrackedApp; outcome: CheckOutcome }>();
+  const outcomes = new Map<string, { app: TrackedApp; outcome: CheckOutcome; before?: PortalResult }>();
   for (const [id, result] of results) {
     const app = saved.tracker.apps.find((a) => a.id === id);
     if (!app) continue;
     const outcome: CheckOutcome = result.ok
       ? { ok: true, result }
       : { ok: false, code: (result.code as CheckErrorCode | undefined) ?? "other", message: result.error };
-    outcomes.set(id, { app, outcome });
+    outcomes.set(id, { app, outcome, before: targets.find((t) => t.id === id)?.portal });
   }
   try {
     await notifyChanges(workspaceId, outcomes, { send: !!opts.notify && saved.tracker.emails });

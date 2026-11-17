@@ -229,7 +229,8 @@ export const TOOLS: Tool[] = [
       if (!(await allow(`check-ws:${ws}`, 120, 60 * 60 * 1000))) {
         throw new TrackerError("That's a lot of portal checks this hour. Forge also checks every 12 hours on its own.");
       }
-      const checked = await runChecks(ws, { appIds: ids, concurrency: 4 });
+      // The assistant may not tell the student what it found, so news from this check is emailed as usual.
+      const checked = await runChecks(ws, { appIds: ids, concurrency: 4, notify: true });
       if (!checked.length) return { checked: 0, note: "No portal logins are saved in Forge yet. The student can add them on the Portals tab." };
       return { checked: checked.length, applications: checked.map((a) => brief(viewApp(a))) };
     },

@@ -4,7 +4,7 @@ import { readDoc, updateDoc } from "../doc-store";
 import { sendEmail } from "../email";
 import { openJson, sealJson, type Sealed } from "../portal-logins";
 import { getAccount, ownerOf } from "../session";
-import type { TrackedApp } from "../tracker";
+import type { PortalResult, TrackedApp } from "../tracker";
 import { changesBetween, composeEmail, stateAfter, type Change, type CheckOutcome, type CheckState } from "./changes";
 
 /**
@@ -67,15 +67,17 @@ type Pending = { app: TrackedApp; changes: Change[]; next: CheckState };
  */
 export async function notifyChanges(
   workspaceId: string,
-  outcomes: Map<string, { app: TrackedApp; outcome: CheckOutcome }>,
+  outcomes: Map<string, { app: TrackedApp; outcome: CheckOutcome; before?: PortalResult }>,
   opts: { send: boolean; now?: number },
 ): Promise<number> {
   const now = opts.now ?? Date.now();
   const day = new Date(now).toISOString().slice(0, 10);
   const before = openState(workspaceId, await readDoc<Sealed>(stateKey(workspaceId)));
   const pending: Pending[] = [];
-  for (const [id, { app, outcome }] of outcomes) {
-    const prev = before.apps[id] ?? null;
+  for (const [id, { app, outcome, before: shown }] of outcomes) {
+    // No summary yet (the first sweep after this shipped, a school brought over from College Apps, or a
+    // new key): what the portal showed before this check is the baseline, so old news isn't emailed again.
+    const prev = before.apps[id] ?? (shown?.ok ? stateAfter(null, { ok: true, result: shown }) : null);
     const next = stateAfter(prev, outcome);
     pending.push({ app, next, changes: changesBetween(prev, next, outcome.ok ? "" : outcome.message) });
   }

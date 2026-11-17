@@ -133,3 +133,37 @@ test('a new address retires the old one', () => isolated(async () => {
   assert.equal((await call({ op: 'lookup', token })).status, 404);
   assert.equal(fresh.birthdate, true, 'the birthdate is kept');
 }));
+
+test('a forward that ends in todo never replaces a saved login with an unset password', () => isolated(async () => {
+  const service = require('../lib/tracker-service.ts');
+  const { ws, token } = await withAddress();
+  const existing = await service.addApp(ws, { name: 'Purdue University' });
+  await service.setLogin(ws, existing.id, { username: 'stu', password: 'Working-Pass-1' });
+  const id = crypto.randomUUID();
+  await call({ op: 'arrival', token, arrivalId: id, final: false, arrival: arrival({ state: 'set', reason: 'interrupted' }) });
+  assert.equal((await logins.readLogins(ws))[existing.id].password, 'Working-Pass-1', 'the placeholder leaves a saved login alone');
+  await call({ op: 'arrival', token, arrivalId: id, final: true, arrival: arrival({ state: 'todo', reason: 'PIN expired' }) });
+  assert.equal((await logins.readLogins(ws))[existing.id].password, 'Working-Pass-1');
+}));
+
+test('a new school whose forward ends in todo is left without a login', () => isolated(async () => {
+  const { ws, token } = await withAddress();
+  const id = crypto.randomUUID();
+  await call({ op: 'arrival', token, arrivalId: id, final: false, arrival: arrival({ state: 'set', reason: 'interrupted' }) });
+  await call({ op: 'arrival', token, arrivalId: id, final: true, arrival: arrival({ state: 'todo', reason: 'PIN expired' }) });
+  const w = await store.getWorkspace(ws);
+  const app = w.tracker.apps.find((a) => a.collegeId === 'purdue');
+  assert.equal(app.login, undefined);
+  assert.equal((await logins.readLogins(ws))[app.id], undefined);
+}));
+
+test('a forward that sets a new password replaces the saved login', () => isolated(async () => {
+  const service = require('../lib/tracker-service.ts');
+  const { ws, token } = await withAddress();
+  const existing = await service.addApp(ws, { name: 'Purdue University' });
+  await service.setLogin(ws, existing.id, { username: 'stu', password: 'Old-Pass-1' });
+  const id = crypto.randomUUID();
+  await call({ op: 'arrival', token, arrivalId: id, final: false, arrival: arrival({ state: 'set', reason: 'interrupted' }) });
+  await call({ op: 'arrival', token, arrivalId: id, final: true, arrival: arrival() });
+  assert.equal((await logins.readLogins(ws))[existing.id].password, 'Generated-Pass-123');
+}));

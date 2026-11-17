@@ -34,8 +34,8 @@ export function arrivalEmail(arrival: Arrival, appUrl: string): Email {
     ], appUrl, { title: "Signing in didn't work yet", body: arrival.reason, tone: "hold" });
   }
   return compose(`${arrival.name}: finish setting up your portal`, `${arrival.name}: finish setting up your portal`, [
-    `We read the email from ${arrival.name} but couldn't set up the portal for you, so we added the school to Forge without a login.`,
-    `Use the link in the school's email${arrival.pin ? " and its PIN" : ""} to choose a password, then save the username and password on ${arrival.name} in Forge so it can check the portal for you.`,
+    `We read the email from ${arrival.name} but couldn't set up the portal for you, so Forge didn't save a new password. The school is on your Portals page.`,
+    `Use the link in the school's email${arrival.pin ? " and its PIN" : ""} to choose a password, then save that username and password on ${arrival.name} in Forge so it can check the portal for you.`,
   ], appUrl, { title: "Why it stopped", body: arrival.reason, tone: "hold" });
 }
 

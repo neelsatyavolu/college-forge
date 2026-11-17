@@ -242,3 +242,23 @@ test('bad unsubscribe token changes nothing and returns 200', () => isolated(asy
   assert.equal(res.status, 200);
   assert.equal((await store.getWorkspace(ws)).tracker.emails, true);
 }));
+
+test('the first sweep after deploy does not re-email a decision already showing', () => isolated(async () => {
+  const net = stubNetwork();
+  const { ws, id } = await ownedWorkspace();
+  // A portal result from before Forge kept notify state (an earlier check, or one imported from College Apps).
+  await store.updateWorkspace(ws, (w) => ({ ...w, tracker: { ...w.tracker, apps: w.tracker.apps.map((a) => (a.id === id ? { ...a, portal: { checkedAt: 1, ok: true, error: '', statusText: '', checklist: [], update: 'Reply to Offer of Admission' } } : a)) } }));
+  net.portal.snapshot = { statusText: '', update: 'Reply to Offer of Admission', checklist: [] };
+  await runChecks(ws, { appIds: [id], notify: true });
+  assert.equal(net.sent.length, 0);
+}));
+
+test('a check an assistant runs still emails what it finds', () => isolated(async () => {
+  const net = stubNetwork();
+  const { ws, id } = await ownedWorkspace();
+  await runChecks(ws, { appIds: [id], notify: true });
+  net.portal.snapshot = { statusText: '', update: 'View Update', checklist: [] };
+  const { callTool } = require('../lib/mcp-tools.ts');
+  await callTool(ws, 'check_portals', {});
+  assert.equal(net.sent.length, 1);
+}));

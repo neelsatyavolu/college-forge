@@ -3,7 +3,7 @@ import { deleteDoc, readDoc, updateDoc, writeDoc } from "./doc-store";
 import { sendEmail } from "./email";
 import { arrivalEmail, notPortalEmail } from "./notify/inbox-mail";
 import { recipientOf } from "./notify/send";
-import { openJson, sealJson, type Sealed } from "./portal-logins";
+import { openJson, readLogins, sealJson, type Sealed } from "./portal-logins";
 import { addApp, setLogin, updateApp } from "./tracker-service";
 import type { PortalResult } from "./tracker";
 
@@ -34,7 +34,12 @@ export interface Arrival {
 }
 
 type Profile = { token: string; birthdate: string; day: string; count: number };
-type ArrivalRecord = { workspaceId: string; appId: string; emailed: boolean };
+/**
+ * One forwarded email's progress. `placeholder` says the first call saved the new password as the school's
+ * login (it had none); otherwise a password the portal may not have yet waits sealed in `pending`, so an
+ * existing working login is never replaced before the outcome is known.
+ */
+type ArrivalRecord = { workspaceId: string; appId: string; emailed: boolean; placeholder?: boolean; pending?: Sealed };
 
 const safe = (id: string) => id.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64);
 const profileKey = (workspaceId: string) => `inbox-profile/${safe(workspaceId)}.json`;
@@ -121,12 +126,30 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
   const app = prior
     ? { id: prior.appId }
     : await addApp(workspaceId, { ...(arrival.collegeId ? { collegeId: arrival.collegeId } : {}), name: arrival.name, portalUrl: arrival.portalUrl });
-  if (!prior) await writeDoc(arrivalKey(arrivalId), { workspaceId, appId: app.id, emailed: false } satisfies ArrivalRecord);
+  const login = arrival.username && arrival.password ? { username: arrival.username, password: arrival.password } : null;
+  const saved = (await readLogins(workspaceId))[app.id];
 
-  // A "todo" password was never set on the portal, and Forge can't show it, so it isn't saved.
-  if (arrival.state !== "todo" && arrival.username && arrival.password) {
-    await setLogin(workspaceId, app.id, { username: arrival.username, password: arrival.password });
+  if (!final) {
+    // Before anything is typed into the portal: keep the password, but never over a login that works.
+    const record: ArrivalRecord = { workspaceId, appId: app.id, emailed: prior?.emailed ?? false };
+    if (login && (!saved || prior?.placeholder)) {
+      await setLogin(workspaceId, app.id, login);
+      record.placeholder = true;
+    } else if (login) {
+      record.pending = sealJson(aad(workspaceId), login);
+    }
+    await writeDoc(arrivalKey(arrivalId), record);
+    return true;
   }
+
+  if (!prior) await writeDoc(arrivalKey(arrivalId), { workspaceId, appId: app.id, emailed: false } satisfies ArrivalRecord);
+  if (arrival.state !== "todo" && login) {
+    await setLogin(workspaceId, app.id, login);
+  } else if (arrival.state === "todo" && prior?.placeholder && saved && login && saved.password === login.password) {
+    // The portal never got this password: take the placeholder back off.
+    await setLogin(workspaceId, app.id, null);
+  }
+  if (prior?.pending) await updateDoc<ArrivalRecord>(arrivalKey(arrivalId), (cur) => ({ ...(cur ?? prior), pending: undefined }));
   if (!final || prior?.emailed) return true;
 
   const note = arrival.state === "verified" ? "Set up from a forwarded email." : `Set up from a forwarded email: ${arrival.reason}`;
