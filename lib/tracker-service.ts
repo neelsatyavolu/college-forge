@@ -67,6 +67,7 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
     followUps: (app.followUps ?? []).filter((f) => !f.done).sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999")),
     lastFailure: app.lastFailure ?? null,
     notes: app.notes,
+    decisionNote: app.decisionNote ?? "",
     login: app.login ?? null,
     lastChecked: app.lastChecked,
     updatedAt: app.updatedAt,
@@ -88,6 +89,7 @@ export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0) 
 /**
  * What a parent or counselor sees through a progress link: statuses, rounds, dates, follow-ups and flags.
  * No logins, notes, portal links or check errors, and a decision the student hasn't opened shows only as posted.
+ * A decision note is shown, since the student writes it for this page, but only once the decision is opened.
  */
 export function shareTracker(tracker: Tracker, today = todayIso()) {
   const v = viewTracker(tracker, today);
@@ -97,6 +99,7 @@ export function shareTracker(tracker: Tracker, today = todayIso()) {
       id: a.id, name: a.name, logo: a.logo, status: a.status, statusLabel: a.statusLabel, stage: a.stage,
       round: a.round, deadline: a.deadline, submittedAt: a.submittedAt, decisionDate: a.decisionDate, nextDate: a.nextDate,
       decision: a.decision.state === "hidden" ? { state: "hidden" as const, portalText: "" } : a.decision,
+      decisionNote: a.decision.state === "hidden" ? "" : a.decisionNote,
       portal: a.portal && a.portal.ok ? { checkedAt: a.portal.checkedAt, statusText: a.portal.statusText, update: a.portal.update } : null,
       missing: a.missing, followUps: a.followUps.map(({ id, text, due }) => ({ id, text, due })),
     })),

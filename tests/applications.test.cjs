@@ -301,7 +301,9 @@ test('MCP: initialize, list tools, add and update an application, record a decis
   assert.equal(bad.isError, true);
   const decided = await call('record_decision', { school: 'Purdue', decision: 'admitted', note: 'Honors college too' });
   assert.equal(decided.structuredContent.status, 'admitted');
-  assert.match(decided.structuredContent.notes, /Honors college/);
+  assert.equal(decided.structuredContent.decision_note, 'Honors college too');
+  const renoted = await call('update_application', { school: 'Purdue', decision_note: 'Scholarship letter coming' });
+  assert.equal(renoted.structuredContent.decision_note, 'Scholarship letter coming');
   const listed = await call('list_applications', {});
   assert.equal(listed.structuredContent.count, 1);
   const missing = await call('get_application', { school: 'Nowhere' });
@@ -387,7 +389,24 @@ test('workspace responses never carry an unopened decision', () => {
   assert.doesNotMatch(JSON.stringify(open), /decisionSeen/);
 });
 
-test('record_decision resolves the school like every other tool and appends to its own notes', () => isolated(async () => {
+test('an agent can set an expected decision date over MCP, replacing the estimate, and clear it again', () => isolated(async () => {
+  const ws = 'mcp-decision-date-1';
+  await service.addApp(ws, { name: 'Purdue University', status: 'submitted', round: 'EA' });
+  const { callTool } = require('../lib/mcp-tools.ts');
+  const before = (await callTool(ws, 'get_application', { school: 'Purdue' })).structuredContent;
+  assert.match(before.decision_date, /estimated from last year/);
+  const set = await callTool(ws, 'update_application', { school: 'Purdue', decision_date: '2027-01-10' });
+  assert.equal(set.isError, undefined, JSON.stringify(set));
+  assert.equal(set.structuredContent.decision_date, '2027-01-10');
+  const upcoming = JSON.stringify((await callTool(ws, 'upcoming_dates', { days: 400 })).structuredContent);
+  assert.match(upcoming, /2027-01-10/);
+  const bad = await callTool(ws, 'update_application', { school: 'Purdue', decision_date: 'Jan 10' });
+  assert.equal(bad.isError, true);
+  const cleared = await callTool(ws, 'update_application', { school: 'Purdue', decision_date: '' });
+  assert.match(cleared.structuredContent.decision_date, /estimated from last year/);
+}));
+
+test('record_decision resolves the school like every other tool and sets its own decision note', () => isolated(async () => {
   const ws = 'mcp-resolve-1';
   await service.addApp(ws, { name: 'Michigan State University', notes: 'MSU notes' });
   await service.addApp(ws, { name: 'University of Michigan', notes: 'UM notes' });
@@ -395,7 +414,10 @@ test('record_decision resolves the school like every other tool and appends to i
   const r = await callTool(ws, 'record_decision', { school: 'umich', decision: 'admitted', note: 'Honors' });
   assert.equal(r.isError, undefined, JSON.stringify(r));
   assert.equal(r.structuredContent.school, 'University of Michigan');
-  assert.equal(r.structuredContent.notes, 'UM notes\nHonors');
+  assert.equal(r.structuredContent.notes, 'UM notes');
+  assert.equal(r.structuredContent.decision_note, 'Honors');
+  const msu = (await callTool(ws, 'get_application', { school: 'Michigan State' })).structuredContent;
+  assert.equal(msu.decision_note, null);
 }));
 
 test('a workspace another account owns is never adopted', () => isolated(async () => {
@@ -458,7 +480,8 @@ test('progress links show applications and decisions, never notes, logins, essay
   await service.setLogin(ws, a.id, { username: 'stu', password: 'secretpw' });
   await service.addApp(ws, { name: 'University of Michigan', status: 'admitted' });
   await store.updateWorkspace(ws, (w) => ({ ...w, applicant: { ...w.applicant, name: 'Mira Patel' }, essayDrafts: { ps: 'my essay text' },
-    tracker: tracker.replaceApp(w.tracker, tracker.withResult(w.tracker.apps[0], result({ checkedAt: Date.now(), statusText: 'Admitted', update: 'Decision posted' }))) }));
+    tracker: tracker.replaceApp(w.tracker, { ...tracker.withResult(w.tracker.apps[0], result({ checkedAt: Date.now(), statusText: 'Admitted', update: 'Decision posted' })), decisionNote: 'unopened decision note' }) }));
+  await service.updateApp(ws, 'University of Michigan', { decisionNote: 'Honors college too' });
   const { callTool } = require('../lib/mcp-tools.ts');
   const created = (await callTool(ws, 'create_share_link', { label: 'Mom and Dad' })).structuredContent;
   assert.equal(created.scope, 'progress');
@@ -469,11 +492,12 @@ test('progress links show applications and decisions, never notes, logins, essay
   assert.equal(body.data.scope, 'progress');
   assert.equal(body.data.applicant.name, 'Mira');
   const text = JSON.stringify(body);
-  for (const leak of ['secretpw', 'stu"', 'private note', 'my essay text', 'Patel']) assert.ok(!text.includes(leak), leak);
+  for (const leak of ['secretpw', 'stu"', 'private note', 'my essay text', 'Patel', 'unopened decision note']) assert.ok(!text.includes(leak), leak);
   const purdue = body.data.progress.apps.find((x) => x.name === 'Purdue University');
   assert.equal(purdue.decision.state, 'hidden');
   assert.equal(purdue.portal.statusText, '');
   assert.equal(body.data.progress.apps.find((x) => x.name === 'University of Michigan').statusLabel, 'Admitted');
+  assert.equal(body.data.progress.apps.find((x) => x.name === 'University of Michigan').decisionNote, 'Honors college too');
   const links = (await callTool(ws, 'list_share_links', {})).structuredContent.links;
   assert.equal(links.length, 1);
   await callTool(ws, 'revoke_share_link', { link: created.url });

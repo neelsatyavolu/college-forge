@@ -65,6 +65,7 @@ function brief(a: AppView) {
     portal_link: a.portalUrl || null,
     portal_login_saved: !!a.login?.hasPassword,
     notes: a.notes || null,
+    decision_note: a.decisionNote || null,
   };
 }
 
@@ -76,14 +77,16 @@ const fields = {
   decision_date: date.optional(),
   submitted_date: date.optional(),
   notes: z.string().max(4000).optional(),
+  decision_note: z.string().max(1000).optional(),
 };
-const toEdit = (f: { status?: string; round?: string; deadline?: string; decision_date?: string; submitted_date?: string; notes?: string }) => ({
+const toEdit = (f: { status?: string; round?: string; deadline?: string; decision_date?: string; submitted_date?: string; notes?: string; decision_note?: string }) => ({
   ...(f.submitted_date !== undefined ? { submittedAt: f.submitted_date } : {}),
   ...(f.status !== undefined ? { status: f.status as (typeof STATUS_IDS)[number] } : {}),
   ...(f.round !== undefined ? { round: f.round as "" } : {}),
   ...(f.deadline !== undefined ? { deadline: f.deadline } : {}),
   ...(f.decision_date !== undefined ? { decisionDate: f.decision_date } : {}),
   ...(f.notes !== undefined ? { notes: f.notes } : {}),
+  ...(f.decision_note !== undefined ? { decisionNote: f.decision_note } : {}),
 });
 
 type Tool = {
@@ -133,7 +136,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "add_application",
     title: "Add an application",
-    description: `Adds a college to the student's applications (matched to Forge's catalog of 330 schools when possible, which fills in the portal link). Optional fields: status (${STATUS_HELP}), round (${ROUNDS.join(", ")}), deadline and decision_date as yyyy-mm-dd, notes.`,
+    description: `Adds a college to the student's applications (matched to Forge's catalog of 330 schools when possible, which fills in the portal link). Optional fields: status (${STATUS_HELP}), round (${ROUNDS.join(", ")}), deadline and decision_date (when the decision is expected; replaces Forge's estimate from last year) as yyyy-mm-dd, notes.`,
     input: z.object({ school: z.string().min(1).max(120), ...fields }),
     readOnly: false,
     run: async (ws, { school, ...f }) => brief(await addApp(ws, { name: school, ...toEdit(f) })),
@@ -141,7 +144,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "update_application",
     title: "Update an application",
-    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date, submitted_date (yyyy-mm-dd or "" to clear) or notes (replaces the notes). Moving an application to submitted records today as its submitted date unless you pass one. Only the fields you pass change. Portal links and logins can only be changed in Forge itself.`,
+    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date (when the decision is expected, e.g. from a school email or website; replaces Forge's estimate from last year, "" goes back to the estimate), submitted_date (yyyy-mm-dd or "" to clear), notes (replaces the notes) or decision_note (the note shown with the decision on the Progress tab and progress links; "" to clear). Moving an application to submitted records today as its submitted date unless you pass one. Only the fields you pass change. Portal links and logins can only be changed in Forge itself.`,
     input: z.object({ school: z.string().min(1), ...fields }),
     readOnly: false,
     run: async (ws, { school, ...f }) => brief(await updateApp(ws, school, toEdit(f))),
@@ -149,11 +152,10 @@ export const TOOLS: Tool[] = [
   tool({
     name: "record_decision",
     title: "Record a decision",
-    description: "Records the decision the student got from a college: admitted, denied, waitlisted, deferred, committed (they're going there) or withdrawn. Optionally appends a note.",
+    description: "Records the decision the student got from a college: admitted, denied, waitlisted, deferred, committed (they're going there) or withdrawn. Optionally sets a decision note (shown with the decision on the Progress tab and progress links, so parents and counselors see it; replaces any earlier decision note).",
     input: z.object({ school: z.string().min(1), decision: z.enum(DECISIONS), note: z.string().max(1000).optional() }),
     readOnly: false,
-    run: async (ws, { school, decision, note }) =>
-      brief(await updateApp(ws, school, (app) => ({ status: decision, ...(note ? { notes: [app.notes, note].filter(Boolean).join("\n") } : {}) }))),
+    run: async (ws, { school, decision, note }) => brief(await updateApp(ws, school, { status: decision, ...(note !== undefined ? { decisionNote: note } : {}) })),
   }),
   tool({
     name: "reveal_decision",

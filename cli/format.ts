@@ -17,6 +17,7 @@ export interface School {
   portal_link: string | null;
   portal_login_saved: boolean;
   notes: string | null;
+  decision_note?: string | null;
 }
 
 export type Login = { username: string; password: string; portalUrl: string };
@@ -64,6 +65,7 @@ export function detailText(s: School): string {
     s.portal_link && `  Portal:        ${s.portal_link}`,
     `  Last checked:  ${p?.checked_at ?? "never"}`,
     unopened(s) ? "  Update:        Decision received" : s.decision !== "none yet" ? `  Decision:      ${s.decision}` : "",
+    !unopened(s) && s.decision_note && `  Decision note: ${s.decision_note}`,
     p && !p.ok && `  Last check failed: ${p.error ?? ""}`,
     p?.last_check_failed && `  Last check failed: ${p.last_check_failed}`,
     p?.ok && !unopened(s) && p.says && `  Portal says:   ${p.says}`,

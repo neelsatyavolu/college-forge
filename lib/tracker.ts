@@ -65,6 +65,8 @@ export interface TrackedApp {
   deadline: string;
   decisionDate: string;
   notes: string;
+  /** A short note about the decision ("Honors college too"), shown with it on the Progress tab and progress links. */
+  decisionNote?: string;
   lastChecked: number | null;
   portal?: PortalResult;
   /** Which posted decision the student revealed on the Decisions tab. */
@@ -344,6 +346,7 @@ export interface AppEdit {
   deadline?: string;
   decisionDate?: string;
   notes?: string;
+  decisionNote?: string;
   portalUrl?: string;
   name?: string;
 }
@@ -370,6 +373,7 @@ export function editApp(app: TrackedApp, edit: AppEdit, now = Date.now()): Track
   if (edit.deadline !== undefined) clean.deadline = edit.deadline;
   if (edit.decisionDate !== undefined) clean.decisionDate = edit.decisionDate;
   if (edit.notes !== undefined) clean.notes = String(edit.notes).slice(0, 4000);
+  if (edit.decisionNote !== undefined) clean.decisionNote = String(edit.decisionNote).trim().slice(0, 1000);
   if (edit.portalUrl !== undefined) clean.portalUrl = edit.portalUrl.slice(0, 500);
   if (edit.name !== undefined && edit.name.trim()) clean.name = edit.name.trim().slice(0, 120);
   return { ...app, ...clean, updatedAt: now };

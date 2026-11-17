@@ -38,6 +38,7 @@ const edit = z.object({
   deadline: date.optional(),
   decisionDate: date.optional(),
   notes: z.string().max(4000).optional(),
+  decisionNote: z.string().max(1000).optional(),
   portalUrl: z.union([z.literal(""), z.string().max(500).regex(/^https:\/\//)]).optional(),
   name: z.string().max(120).optional(),
   submittedAt: date.optional(),

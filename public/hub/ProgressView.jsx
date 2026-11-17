@@ -75,6 +75,33 @@ function FollowUpLines({ app, editable, act, busy }) {
   );
 }
 
+/** The note beside a decision. Editable on the student's own Progress tab; read-only on progress links. */
+function DecisionNote({ app, editable, act, busy }) {
+  const [draft, setDraft] = React.useState(null);
+  const note = app.decisionNote || "";
+  if (!editable) return note ? <div className="cf-prow__note">{note}</div> : null;
+  if (draft === null) {
+    return (
+      <div className="cf-prow__note">
+        {note ? <span>{note} </span> : null}
+        <button type="button" className="cf-link-btn" disabled={busy} onClick={() => setDraft(note)}>{note ? "Edit note" : "Add a note"}</button>
+      </div>
+    );
+  }
+  const save = (e) => {
+    e.preventDefault();
+    act({ action: "update", id: app.id, edit: { decisionNote: draft.trim() } }, `${app.name}: note saved.`).then((ok) => ok && setDraft(null));
+  };
+  return (
+    <form className="cf-flag-form cf-prow__note" onSubmit={save}>
+      <label className="cf-sr-only" htmlFor={`dnote-${app.id}`}>Note about the {app.name} decision</label>
+      <input id={`dnote-${app.id}`} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Honors college too, scholarship letter coming" maxLength={1000} autoFocus />
+      <button type="submit" className="cf-link-btn" disabled={busy || draft.trim() === note}>Save</button>
+      <button type="button" className="cf-link-btn" onClick={() => setDraft(null)}>Cancel</button>
+    </form>
+  );
+}
+
 function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, checking }) {
   const { SchoolMark, Chevron } = window.cfApp;
   const when = whenText(app);
@@ -202,7 +229,9 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
                     </span>
                     <span className="cf-prow__status">{recorded ? <span className="cf-badge cf-badge--solid" style={{ "--tone": meta.tone }}>{meta.label}</span> : <span className="cf-badge" style={{ "--tone": "var(--coral)" }}>Posted</span>}</span>
                   </div>
-                  {a.decision.state === "hidden" && editable ? <div className="cf-prow__sub"><a className="cf-prow__note is-decision" href="#decisions">Open it on Decisions →</a></div> : null}
+                  {a.decision.state === "hidden" ? (editable ? <div className="cf-prow__sub"><a className="cf-prow__note is-decision" href="#decisions">Open it on Decisions →</a></div> : null) : (
+                    <div className="cf-prow__sub"><DecisionNote app={a} editable={editable} act={act} busy={busy} /></div>
+                  )}
                 </li>
               );
             })}
