@@ -106,7 +106,7 @@ export const TOOLS: Tool[] = [
     name: "list_applications",
     title: "List applications",
     description:
-      "Every college the student is applying to, with status, round, deadline, decision date, what the portal last said, missing items and notes. Optionally filter by stage: working (not submitted yet), waiting (submitted, under review, deferred, waitlisted), admitted, denied, closed.",
+      "Every college the student is applying to, with status, round, deadline, decision date, what the portal last said, missing items and notes. Optionally filter by stage: working (not started, writing, final checks), waiting (submitted, under review, deferred, waitlisted), admitted, denied, closed.",
     input: z.object({ stage: z.enum(["working", "waiting", "admitted", "denied", "closed"]).optional() }),
     readOnly: true,
     run: async (ws, { stage }) => {
