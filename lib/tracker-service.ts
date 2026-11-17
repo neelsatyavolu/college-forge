@@ -1,3 +1,4 @@
+import { emailHash } from "./service-auth";
 import { logoUrl } from "./catalog";
 import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
@@ -281,6 +282,8 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
     return next;
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
+  // Remembered so the one-time "College Apps is now Forge" email skips this account.
+  await writeDoc(`collegeapps-moved/${emailHash(email)}.json`, { at: Date.now() });
   return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision) };
 }
 

@@ -1,18 +1,9 @@
-import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { applyArrival, lookupInbox, notPortal } from "@/lib/inbox";
+import { fromCollegeAppsWorker } from "@/lib/service-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const digest = (s: string) => createHash("sha256").update(s).digest();
-
-/** Only the College Apps Worker calls this, with the same shared secret Forge uses to call it. */
-function authorized(req: Request): boolean {
-  const secret = process.env.FORGE_SERVICE_KEY;
-  const given = req.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
-  return !!secret && !!given && timingSafeEqual(digest(given), digest(secret));
-}
 
 const token = z.string().regex(/^[a-z0-9]{20}$/);
 const text = (max: number) => z.string().max(max);
@@ -38,7 +29,8 @@ const input = z.discriminatedUnion("op", [
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "cache-control": "no-store" } });
 
 export async function POST(req: Request) {
-  if (!authorized(req)) return json({ error: "Missing or wrong service key." }, 401);
+  // Only the College Apps Worker calls this, with the same shared secret Forge uses to call it.
+  if (!fromCollegeAppsWorker(req)) return json({ error: "Missing or wrong service key." }, 401);
   const parsed = input.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return json({ error: "Bad request." }, 400);
   const b = parsed.data;

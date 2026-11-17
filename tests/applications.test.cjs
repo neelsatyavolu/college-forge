@@ -177,7 +177,7 @@ test('share view hides unrevealed decisions and logins', () => isolated(async ()
 
 // ── College Apps import ─────────────────────────────────────────────────────
 
-test('imports a College Apps vault: derives the same keys, decrypts, maps schools and logins', () => isolated(async () => {
+test('imports a College Apps vault: derives the same keys, decrypts, maps schools and logins', () => isolated(async (dir) => {
   const email = 'student@example.com', password = 'correct horse';
   const salt = crypto.createHash('sha256').update('collegeapps.n3el.dev/v1/' + email).digest();
   const master = crypto.pbkdf2Sync(password, salt, 600000, 32, 'sha256');
@@ -218,6 +218,10 @@ test('imports a College Apps vault: derives the same keys, decrypts, maps school
     assert.ok(calls.some((u) => u.endsWith('/api/auth/logout')));
     const again = await service.importFromCollegeApps('imp-ws', email, password);
     assert.equal(again.added, 0);
+    // The move is remembered by a hash of the email, never the email itself.
+    const hash = crypto.createHash('sha256').update(email).digest('hex');
+    const moved = fs.readFileSync(path.join(dir, 'collegeapps-moved', `${hash}.json`), 'utf8');
+    assert.doesNotMatch(moved, /student@example\.com/);
   } finally {
     global.fetch = realFetch;
   }
@@ -551,4 +555,22 @@ test('applications action inbox reads, turns on and off the forwarding address',
   assert.equal(on.birthdate, true);
   assert.equal((await post({ action: 'inbox', on: true, birthdate: '01/02/2008' })).status, 400);
   assert.equal((await (await post({ action: 'inbox', on: false })).json()).inbox.address, null);
+}));
+
+test('moved endpoint needs the service key and returns hashes only', () => isolated(async () => {
+  process.env.FORGE_SERVICE_KEY = 'svc-test-key';
+  const movedRoute = require('../app/api/service/moved/route.ts');
+  const docs = require('../lib/doc-store.ts');
+  await docs.writeDoc(`collegeapps-moved/${'a'.repeat(64)}.json`, { at: 1 });
+  await session.signInAccount({ sub: 'xa_MOVED', email: 'Forge.User@Example.com', name: 'F' }, null);
+  const call = (key) => movedRoute.GET(new NextRequest('https://forge.test/api/service/moved', { headers: key ? { authorization: `Bearer ${key}` } : {} }));
+  assert.equal((await call(null)).status, 401);
+  assert.equal((await call('wrong')).status, 401);
+  const res = await call('svc-test-key');
+  assert.equal(res.status, 200);
+  const text = await res.text();
+  assert.doesNotMatch(text, /example\.com/i);
+  const { hashes } = JSON.parse(text);
+  assert.ok(hashes.includes('a'.repeat(64)));
+  assert.ok(hashes.includes(crypto.createHash('sha256').update('forge.user@example.com').digest('hex')));
 }));
