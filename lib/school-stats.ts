@@ -18,6 +18,13 @@ const FIELDS = [
 ].join(",");
 const TIMEOUT_MS = 10_000;
 
+/** Catalog schools whose short name Scorecard can't find, mapped to the flagship campus's Scorecard (IPEDS) id. */
+export const SCORECARD_IDS: Record<string, number> = {
+  psu: 214777, // Pennsylvania State University-Main Campus
+  rutgers: 186380, // Rutgers University-New Brunswick
+  unc: 199120, // University of North Carolina at Chapel Hill
+};
+
 type Row = Record<string, unknown>;
 const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
 // "Indiana University-Bloomington" and "Washington University in St Louis" match the catalog's spelling.
@@ -53,7 +60,9 @@ export async function lookupStats(app: TrackedApp, now: string): Promise<SchoolS
   const name = catalog?.name || app.name;
   const url = new URL(ENDPOINT);
   url.searchParams.set("api_key", key);
-  url.searchParams.set("school.name", name);
+  const knownId = app.collegeId ? SCORECARD_IDS[app.collegeId] : undefined;
+  if (knownId) url.searchParams.set("id", String(knownId));
+  else url.searchParams.set("school.name", name);
   url.searchParams.set("fields", FIELDS);
   url.searchParams.set("per_page", "20");
   const controller = new AbortController();
@@ -62,7 +71,8 @@ export async function lookupStats(app: TrackedApp, now: string): Promise<SchoolS
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) return null;
     const body = (await res.json()) as { results?: Row[] };
-    const row = pickRow(body.results ?? [], name, catalog?.website || "");
+    const rows = body.results ?? [];
+    const row = knownId ? rows.find((r) => r.id === knownId) ?? null : pickRow(rows, name, catalog?.website || "");
     return row ? statsFromRow(row, now) : { checkedAt: now };
   } catch {
     return null;
