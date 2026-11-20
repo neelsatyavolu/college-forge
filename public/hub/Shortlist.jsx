@@ -19,7 +19,140 @@ function SuppPill({ load }) {
   );
 }
 
-function SchoolRow({ s, last, tracked, onTier, onTrack, onRemove, busy, error }) {
+const EFFECT_MARK = { up: "+", down: "−", neutral: "·" };
+
+// The saved chance estimate for one school, with its reasons behind a toggle.
+function OddsLine({ odds }) {
+  const [open, setOpen] = React.useState(false);
+  if (!odds) return null;
+  return (
+    <div style={{ marginTop: 10 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+        <span className="cf-nums" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{odds.percent}% chance</span>
+        <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>likely range {odds.low}–{odds.high}% · from {odds.baselineSource}</span>
+        <button type="button" onClick={() => setOpen(!open)} aria-expanded={open}
+          style={{ fontSize: 12, color: "var(--workspace-accent)", background: "none", border: 0, padding: 0, cursor: "pointer" }}>{open ? "Hide why" : "Why"}</button>
+      </div>
+      {open ? (
+        <div style={{ marginTop: 8, paddingLeft: 12, borderLeft: "2px solid var(--hairline)", fontSize: 13, color: "var(--body)" }}>
+          <p style={{ margin: "0 0 8px" }}>{odds.summary}</p>
+          {odds.factors && odds.factors.length ? (
+            <ul style={{ margin: "0 0 8px", padding: 0, listStyle: "none" }}>
+              {odds.factors.map((f, i) => (
+                <li key={i} style={{ marginBottom: 4 }}>
+                  <span className="cf-nums" aria-label={f.effect} style={{ display: "inline-block", width: 14, color: f.effect === "up" ? "var(--success)" : f.effect === "down" ? "var(--error)" : "var(--muted)" }}>{EFFECT_MARK[f.effect] || "·"}</span>
+                  <strong style={{ fontWeight: 600 }}>{f.label}</strong>{f.detail ? `: ${f.detail}` : ""}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {odds.sources && odds.sources.length ? (
+            <div style={{ fontSize: 12, color: "var(--muted)", display: "flex", gap: 10, flexWrap: "wrap" }}>
+              Sources:
+              {odds.sources.filter((u) => /^https:\/\//.test(u)).map((u) => {
+                let host = u;
+                try { host = new URL(u).hostname.replace(/^www\./, ""); } catch (e) {}
+                return <a key={u} href={u} target="_blank" rel="noopener noreferrer" style={{ color: "var(--workspace-accent)" }}>{host}</a>;
+              })}
+            </div>
+          ) : null}
+          <div className="cf-nums" style={{ fontSize: 12, color: "var(--muted-soft)", marginTop: 6 }}>Estimated {String(odds.estimatedAt).slice(0, 10)}</div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// Runs the read step, then a few schools at a time, the same way the hub build does.
+const ODDS_CONCURRENCY = 3;
+async function loadWorkspace() {
+  const j = await fetch("/api/workspace", { credentials: "same-origin", cache: "no-store" }).then((r) => r.json());
+  return j.data || j;
+}
+
+// Counts only what this run saved, so a provider without hub tools (or a refused write) never reads as success.
+async function runOddsSteps(onProgress) {
+  const before = await loadWorkspace();
+  const scope = before.draftStorageKey;
+  const readBefore = before.applicationRead ? before.applicationRead.readAt : "";
+  const stamp = (ws, key) => (ws.admissionOdds && ws.admissionOdds[key] ? ws.admissionOdds[key].estimatedAt : "");
+  const sameWorkspace = () => !window.CF_DATA || !window.CF_DATA.draftStorageKey || window.CF_DATA.draftStorageKey === scope;
+  onProgress("Looking up admission rates…");
+  const res = await fetch("/api/ai/odds-plan", { credentials: "same-origin", cache: "no-store" });
+  const plan = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(plan.error || "Could not start the estimate.");
+  if (!(plan.schools || []).length) return { ws: before, total: 0, missed: [] };
+  await window.cfStreamBuildChat(plan.read.prompt, (m) => onProgress(`Reading your application: ${m}`));
+  const afterRead = await loadWorkspace();
+  if (!sameWorkspace() || afterRead.draftStorageKey !== scope) throw new Error("Your workspace changed, so the estimate stopped.");
+  if (!afterRead.applicationRead || afterRead.applicationRead.readAt === readBefore) {
+    throw new Error("The AI didn't save its read of your application. Estimates need ChatGPT or Grok connected in Settings.");
+  }
+  const steps = plan.schools || [];
+  let next = 0;
+  let finished = 0;
+  const worker = async () => {
+    while (next < steps.length) {
+      if (!sameWorkspace()) return;
+      const step = steps[next++];
+      try {
+        await window.cfStreamBuildChat(step.prompt, (m) => onProgress(`Schools ${finished} of ${steps.length} done · ${step.label}: ${m}`));
+      } catch (e) { /* counted below from what was saved */ }
+      finished++;
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(ODDS_CONCURRENCY, steps.length) }, worker));
+  const ws = await loadWorkspace();
+  if (ws.draftStorageKey !== scope) throw new Error("Your workspace changed, so the estimate stopped.");
+  const nameOf = (k) => {
+    const hit = k.indexOf("app:") === 0
+      ? ((ws.tracker && ws.tracker.apps) || []).find((a) => "app:" + a.id === k)
+      : (ws.colleges || []).find((c) => c.slug === k);
+    return hit ? hit.short || hit.name : k;
+  };
+  const missed = steps.flatMap((s) => (s.keys || []).filter((k) => !stamp(ws, k) || stamp(ws, k) === stamp(before, k)).map(nameOf));
+  const wanted = steps.flatMap((s) => s.keys || []);
+  return { ws, total: wanted.length, missed };
+}
+
+function ChancesPanel({ data, onWorkspaceChange }) {
+  const [running, setRunning] = React.useState(false);
+  const [progress, setProgress] = React.useState("");
+  const [result, setResult] = React.useState(null);
+  const estimated = Object.keys(data.admissionOdds || {});
+  const run = async () => {
+    setRunning(true); setResult(null); setProgress("Starting…");
+    try {
+      const { ws, total, missed } = await runOddsSteps(setProgress);
+      if (onWorkspaceChange) onWorkspaceChange(ws);
+      setResult(!total
+        ? { tone: "ok", text: "Every school on your list already has a decision." }
+        : missed.length
+          ? { tone: "error", text: `Estimated ${total - missed.length} of ${total} schools. Not saved for: ${missed.join(", ")}. Run it again to retry.` }
+          : { tone: "ok", text: `Estimated all ${total} schools.` });
+    } catch (e) {
+      setResult({ tone: "error", text: e.message || "The estimate stopped. Try again." });
+    } finally { setRunning(false); setProgress(""); }
+  };
+  return (
+    <section style={{ marginBottom: 28, padding: "16px 20px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ minWidth: 0, flex: "1 1 320px" }}>
+          <h2 className="cf-display" style={{ margin: "0 0 4px", fontSize: 20, color: "var(--ink)" }}>Your chances</h2>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--body)" }}>
+            The AI reads your profile, essays and uploads, looks at each school's published admission rates and what it weighs, and counts any decisions you already have. Each estimate starts from the school's published rate for your round and can move at most threefold from it. Treat it as a rough guide.
+          </p>
+        </div>
+        <Button size="sm" disabled={running} onClick={run}>{running ? "Estimating…" : estimated.length ? "Estimate again" : "Estimate my chances"}</Button>
+      </div>
+      <div role="status" aria-live="polite" style={{ fontSize: 13, marginTop: progress || result ? 10 : 0, color: result && result.tone === "error" ? "var(--error)" : "var(--muted)" }}>
+        {running ? progress : result ? result.text : ""}
+      </div>
+    </section>
+  );
+}
+
+function SchoolRow({ s, odds, last, tracked, onTier, onTrack, onRemove, busy, error }) {
   const [confirmRemove, setConfirmRemove] = React.useState(false);
   return (
     <div style={{ display: "block", background: s.priority ? "color-mix(in srgb, var(--coral) 5%, transparent)" : "transparent", borderBottom: last ? "none" : "1px solid var(--hairline)" }}>
@@ -41,6 +174,7 @@ function SchoolRow({ s, last, tracked, onTier, onTrack, onRemove, busy, error })
             ) : null}
             {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Overall admission rate: {s.admit}</span> : null}
           </div>
+          <OddsLine odds={odds} />
           <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
             <label style={{ fontSize: 11, color: "var(--muted)", display: "flex", alignItems: "center", gap: 6 }}>
               Tier
@@ -147,7 +281,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
         <div>
           <h1 className="cf-page-title">Your shortlist</h1>
           <p className="cf-page-lede">
-            Schools you’re considering. When you decide to apply, choose Track application and it moves to your Progress tab. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds.
+            Schools you’re considering. When you decide to apply, choose Track application and it moves to your Progress tab. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds; Your chances below estimates those for you.
             {ucCount > 0
               ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
               : ""}
@@ -173,6 +307,8 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
           ))}
         </div>
       ) : null}
+
+      {data.colleges.length > 0 ? <ChancesPanel data={data} onWorkspaceChange={onWorkspaceChange} /> : null}
 
       {data.colleges.length === 0 ? (
         <div className="cf-empty">No schools on your list yet. Tell the copilot which colleges to add, or search from Explore.</div>
@@ -203,7 +339,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
                 </div>
                 <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                   {list.map((s, i) => (
-                    <SchoolRow key={s.slug} s={s} last={i === list.length - 1}
+                    <SchoolRow key={s.slug} s={s} odds={(data.admissionOdds || {})[s.slug]} last={i === list.length - 1}
                       tracked={trackedFor(s)}
                       onTier={onTier} onTrack={onTrack} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                   ))}
@@ -219,7 +355,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
               <h2 className="cf-display" style={{ margin: "0 0 16px", fontSize: 22, color: "var(--ink)" }}>Not assessed yet</h2>
               <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                 {untiered.map((s, i) => (
-                  <SchoolRow key={s.slug} s={s} last={i === untiered.length - 1}
+                  <SchoolRow key={s.slug} s={s} odds={(data.admissionOdds || {})[s.slug]} last={i === untiered.length - 1}
                     tracked={trackedFor(s)}
                     onTier={onTier} onTrack={onTrack} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                 ))}
@@ -232,3 +368,4 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
   );
 }
 window.Shortlist = Shortlist;
+window.cfOdds = { OddsLine, ChancesPanel };

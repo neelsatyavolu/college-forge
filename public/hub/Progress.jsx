@@ -68,6 +68,13 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
     } catch (e) { setError(e.message); return null; } finally { setBusy(false); }
   };
   const links = (data.shares || []).filter((s) => !s.revokedAt && s.scope === "progress").length;
+  // Estimates are keyed by shortlist slug, or "app:<id>" for schools only on Progress (lib/admission-odds.ts).
+  const oddsMap = data.admissionOdds || {};
+  const oddsFor = (app) => {
+    const listed = (data.colleges || []).find((c) => c.slug === app.slug || String(c.name || "").toLowerCase() === app.name.toLowerCase());
+    return oddsMap["app:" + app.id] || (listed ? oddsMap[listed.slug] : null) || null;
+  };
+  const Chances = window.cfOdds && window.cfOdds.ChancesPanel;
   return (
     <div className="cf-page">
       <header className="cf-page-header">
@@ -84,9 +91,10 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
       {error ? <div role="alert" className="cf-notice">{error}</div> : null}
       {addOpen ? <AddSchool tracked={tracker.apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setAddOpen(false)} /> : null}
       {sharing ? <SharePanel data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setSharing(false)} /> : null}
+      {tracker.apps.length && Chances ? <Chances data={data} onWorkspaceChange={onWorkspaceChange} /> : null}
       {tracker.apps.length ? (
         <React.Fragment>
-          <ProgressView tracker={tracker} editable act={act} busy={busy} openId={open} onToggle={(id) => setOpen(open === id ? null : id)}
+          <ProgressView tracker={tracker} editable act={act} busy={busy} openId={open} oddsFor={oddsFor} onToggle={(id) => setOpen(open === id ? null : id)}
             renderDetails={(app) => <AppDetails key={app.id} app={app} act={act} busy={busy} checking={false} onCheck={() => act({ action: "check", ids: [app.id] }, "Checked.")} />} />
           <div className="cf-apps-footer">
             <form className="cf-flag-form" onSubmit={(e) => { e.preventDefault(); act({ action: "flag-add", text: flagText }, "Flag added.").then((ok) => ok && setFlagText("")); }}>

@@ -59,6 +59,12 @@
         return "Updating scholarships…";
       case "set_financial_aid":
         return "Updating financial aid…";
+      case "read_application":
+        return "Reading your profile and essays…";
+      case "set_application_read":
+        return "Saving what stood out in your application…";
+      case "set_admission_odds":
+        return "Saving a chance estimate…";
       case "set_application_status":
         return "Updating application status…";
       default:

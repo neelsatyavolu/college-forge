@@ -1,6 +1,7 @@
 import type { Workspace } from "./store";
 import { recommendColleges } from "./college-recommendations";
 import { planReadiness } from "./plan-readiness";
+import { oddsTargets } from "./admission-odds";
 
 // A compact, readable snapshot of the current workspace so the model knows
 // what's already populated and what's still empty.
@@ -50,6 +51,17 @@ function snapshot(ws: Workspace): string {
   if (tracked.length) {
     // Statuses only: a decision a portal posted stays hidden until the student reveals it.
     lines.push(`Applications (Applications tab): ${tracked.map((a) => `${a.name}: ${a.status}${a.round ? ` ${a.round}` : ""}${a.deadline ? ` due ${a.deadline}` : ""}`).join("; ")}`);
+  }
+  const read = ws.applicationRead;
+  if (read) {
+    lines.push(
+      `Application read (${read.readAt.slice(0, 10)}): ${read.summary} Academics: ${read.academics || "—"} Activities: ${read.activities || "—"} ` +
+        `Essays: ${read.essays || "—"} Context: ${read.context || "—"} Strengths: ${read.strengths.join("; ") || "—"}. Concerns: ${read.concerns.join("; ") || "—"}.`
+    );
+  }
+  const estimated = oddsTargets(ws).flatMap((t) => (ws.admissionOdds?.[t.key] ? [{ name: t.college.short || t.college.name, o: ws.admissionOdds[t.key] }] : []));
+  if (estimated.length) {
+    lines.push(`Admission chance estimates: ${estimated.map(({ name, o }) => `${name} ${o.percent}% (${o.low}–${o.high}%, ${o.estimatedAt.slice(0, 10)})`).join("; ")}`);
   }
   lines.push(`Advisor notes: ${(ws.advisorNotes || []).length}`);
   const prefs = ws.onboarding?.listPrefs;

@@ -1536,3 +1536,4 @@ function Onboarding({ data, onComplete, onCancel }) {
 
 window.Onboarding = Onboarding;
 window.cfRebuildHub = rebuildHub;
+window.cfStreamBuildChat = streamBuildChat;

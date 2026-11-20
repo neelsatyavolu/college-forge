@@ -13,6 +13,8 @@ import { recommendColleges } from "./college-recommendations";
 import { mergeSupplements } from "./essay-supplements";
 import { applyRounds, workloadSummary, type RoundChoice } from "./application-rounds";
 import { editApp, findApp, isRound, isStatus, newApp, replaceApp, statusInfo } from "./tracker";
+import { oddsFromArgs, oddsTargets, readFromArgs } from "./admission-odds";
+import { applicationMaterial } from "./odds-plan";
 
 // Only copy keys the caller actually provided, so partial updates never wipe
 // existing fields with undefined.
@@ -416,6 +418,54 @@ export function makeHubTools(
       },
     },
     {
+      name: "read_application",
+      description: "Read the student's profile, essay drafts and list of uploads in one go. Used by the 'Estimate my chances' read step.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+    {
+      name: "set_application_read",
+      description: "Save what you took from the student's whole application (profile, activities, essays) for chance estimates. Only for the 'Estimate my chances' read step. No names, contact details, ID numbers, race or ethnicity.",
+      parameters: {
+        type: "object",
+        properties: {
+          summary: { type: "string", description: "Two or three sentences a reader would say about this applicant." },
+          academics: { type: "string" }, activities: { type: "string" }, essays: { type: "string" },
+          context: { type: "string", description: "Circumstances a reader weighs (first-gen, residency, family duties, hooks)." },
+          strengths: { type: "array", items: { type: "string" } },
+          concerns: { type: "array", items: { type: "string" } },
+        },
+        required: ["summary"],
+        additionalProperties: false,
+      },
+    },
+    {
+      name: "set_admission_odds",
+      description: "Save an admission chance estimate for one school. The server holds the percent within a fixed range of the school's published admission rate (shown as the starting point in the request). Cite https sources.",
+      parameters: {
+        type: "object",
+        properties: {
+          key: { type: "string", description: "The school's key from the request, in brackets." },
+          percent: { type: "number", description: "Estimated chance, 1-95." },
+          low: { type: "number" }, high: { type: "number" },
+          summary: { type: "string", description: "One or two plain sentences on why." },
+          factors: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: { label: { type: "string" }, effect: { type: "string", enum: ["up", "down", "neutral"] }, detail: { type: "string" } },
+              required: ["label", "effect"],
+              additionalProperties: false,
+            },
+          },
+          sources: { type: "array", items: { type: "string" }, description: "https pages used." },
+          published_rate: { type: "number", description: "A newer or round-specific published admission rate you found, as a percent. 0 or omitted if none." },
+          published_rate_label: { type: "string", description: "e.g. 'ED admission rate, Class of 2029 (CDS)'" },
+        },
+        required: ["key", "percent", "summary"],
+        additionalProperties: false,
+      },
+    },
+    {
       name: "set_application_status",
       description:
         "Track an application (Progress and Portals tabs) (adds the school if it isn't tracked yet). school: a shortlist slug or the college's name. status ∈ planning (not started) | in_progress | final_checks | submitted | complete (under review) | deferred | waitlisted | admitted | committed | denied | withdrawn. Optional round (ED, ED2, EA, REA, RD, Rolling), deadline (yyyy-mm-dd), notes.",
@@ -624,6 +674,29 @@ export function makeHubTools(
             },
           }));
           return "Updated financial aid checklist.";
+        }
+        case "read_application": {
+          return applicationMaterial(await scopedWorkspace());
+        }
+        case "set_application_read": {
+          const read = readFromArgs(a, new Date().toISOString());
+          if (!read) return "set_application_read requires a summary.";
+          await mutate((ws) => ({ ...ws, applicationRead: read }));
+          return "Saved the application read.";
+        }
+        case "set_admission_odds": {
+          const key = typeof a.key === "string" ? a.key : typeof a.slug === "string" ? a.slug : "";
+          if (!key) return "set_admission_odds requires the school's key.";
+          let reply = "";
+          await mutate((ws) => {
+            const target = oddsTargets(ws).find((t) => t.key === key);
+            if (!target) throw new Error(`No school with key "${key}" is being estimated.`);
+            const r = oddsFromArgs(target.college, ws, a, new Date().toISOString(), target.app);
+            if (!r.ok) throw new Error(r.error);
+            reply = `Saved ${target.college.short || target.college.name}: ${r.odds.percent}% (${r.odds.low}–${r.odds.high}%).${r.note}`;
+            return { ...ws, admissionOdds: { ...(ws.admissionOdds || {}), [key]: r.odds } };
+          });
+          return reply;
         }
         case "set_application_status": {
           if (typeof a.school !== "string" || typeof a.status !== "string") {

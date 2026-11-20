@@ -12,6 +12,8 @@
  *   WEB_SEARCH_API_KEY=...   # optional alias for EXA_API_KEY
  */
 
+import { firecrawlBase, firecrawlScrape, firecrawlSearch, isPublicPageUrl } from "./firecrawl";
+
 const EXA_ENDPOINT = "https://api.exa.ai/search";
 const TINYFISH_SEARCH = "https://api.search.tinyfish.ai";
 const TINYFISH_FETCH = "https://api.fetch.tinyfish.ai";
@@ -37,13 +39,13 @@ export function getTinyFishKey(): string | null {
   return trimKey(process.env.TINYFISH_API_KEY);
 }
 
-/** True when at least one of Exa or TinyFish is configured. */
+/** True when at least one of Exa, TinyFish or a self-hosted Firecrawl is configured. */
 export function isWebSearchAvailable(): boolean {
-  return Boolean(getExaKey() || getTinyFishKey());
+  return Boolean(getExaKey() || getTinyFishKey() || firecrawlBase());
 }
 
 export function isWebFetchAvailable(): boolean {
-  return Boolean(getTinyFishKey());
+  return Boolean(getTinyFishKey() || firecrawlBase());
 }
 
 export type WebSearchProviderLabel = "exa+tinyfish" | "exa" | "tinyfish" | "none";
@@ -109,7 +111,7 @@ type Hit = {
   url: string;
   snippet: string;
   date?: string;
-  source: "exa" | "tinyfish";
+  source: "exa" | "tinyfish" | "firecrawl";
 };
 
 function normalizeUrl(u: string): string {
@@ -341,8 +343,9 @@ export async function runWebSearch(query: string): Promise<WebSearchResult> {
 
   const exaKey = getExaKey();
   const tfKey = getTinyFishKey();
+  const firecrawl = Boolean(firecrawlBase());
 
-  if (!exaKey && !tfKey) {
+  if (!exaKey && !tfKey && !firecrawl) {
     console.warn("[web-search] neither EXA_API_KEY nor TINYFISH_API_KEY set");
     return {
       ok: false,
@@ -355,6 +358,7 @@ export async function runWebSearch(query: string): Promise<WebSearchResult> {
   const errors: string[] = [];
   let exaHits: Hit[] = [];
   let tfHits: Hit[] = [];
+  let fcHits: Hit[] = [];
 
   // Run both searches in parallel when both keys exist
   const jobs: Promise<void>[] = [];
@@ -374,10 +378,18 @@ export async function runWebSearch(query: string): Promise<WebSearchResult> {
       })
     );
   }
+  if (firecrawl) {
+    jobs.push(
+      firecrawlSearch(trimmed, NUM_RESULTS).then((r) => {
+        if (Array.isArray(r)) fcHits = r.map((h) => ({ ...h, source: "firecrawl" as const }));
+        else errors.push(r.error);
+      })
+    );
+  }
   await Promise.all(jobs);
 
-  // Prefer Exa order; fill gaps with TinyFish
-  const merged = mergeHits(exaHits, tfHits);
+  // Prefer Exa order; fill gaps with TinyFish, then Firecrawl
+  const merged = mergeHits(mergeHits(exaHits, tfHits), fcHits);
   if (!merged.length) {
     return {
       ok: false,
@@ -391,6 +403,7 @@ export async function runWebSearch(query: string): Promise<WebSearchResult> {
   const viaParts = [
     exaHits.length ? "Exa" : null,
     tfHits.length ? "TinyFish Search" : null,
+    fcHits.length ? "Firecrawl" : null,
   ].filter(Boolean);
   let content = formatHits(trimmed, merged, viaParts.join(" + ") || "search");
 
@@ -422,6 +435,14 @@ export async function runWebSearch(query: string): Promise<WebSearchResult> {
         console.warn(`[web-search] deep fetch skipped: ${deep.error}`);
       }
     }
+  } else if (firecrawl) {
+    const pages = (await Promise.all(merged.slice(0, DEEP_FETCH_TOP).map((h) => firecrawlScrape(h.url))))
+      .filter((p): p is { url: string; title: string; text: string } => !("error" in p));
+    if (pages.length) {
+      const deepBlocks = pages.map((p, i) => `### Full page ${i + 1}: ${p.title}\n${p.url}\n${p.text.replace(/\s+/g, " ").slice(0, FETCH_TEXT_CHARS)}`);
+      content = `${content}\n\n---\nDeep-read pages (Firecrawl):\n\n${deepBlocks.join("\n\n")}`.slice(0, MAX_OUTPUT_CHARS);
+    }
+    console.log(`[web-search] ok hits=${merged.length} deep=${pages.length} (Firecrawl)`);
   } else {
     console.log(`[web-search] ok query="${trimmed.slice(0, 60)}" hits=${merged.length} (no TinyFish fetch)`);
   }
@@ -441,14 +462,23 @@ export async function runWebFetch(
   if (!/^https?:\/\//i.test(u)) {
     return { ok: false, error: "web_fetch requires a full http(s) URL." };
   }
+  if (!isPublicPageUrl(u)) return { ok: false, error: "Only public web pages can be fetched." };
 
   const tfKey = getTinyFishKey();
+  let firecrawlError = "";
+  if (firecrawlBase()) {
+    const page = await firecrawlScrape(u);
+    if (!("error" in page)) {
+      return { ok: true, content: `Fetched page (via Firecrawl):\n# ${page.title}\n${page.url}\n\n${page.text.slice(0, MAX_OUTPUT_CHARS - 200)}` };
+    }
+    firecrawlError = page.error;
+  }
   if (!tfKey) {
     return {
       ok: false,
-      error:
-        "Page fetch is not configured. Set TINYFISH_API_KEY for TinyFish Fetch " +
-        "(https://agent.tinyfish.ai/api-keys).",
+      error: firecrawlError ||
+        "Page fetch is not configured. Set FIRECRAWL_API_URL for a self-hosted Firecrawl, or " +
+        "TINYFISH_API_KEY for TinyFish Fetch (https://agent.tinyfish.ai/api-keys).",
     };
   }
 

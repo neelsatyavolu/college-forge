@@ -102,7 +102,9 @@ function DecisionNote({ app, editable, act, busy }) {
   );
 }
 
-function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, checking }) {
+function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, checking, oddsFor }) {
+  const odds = oddsFor ? oddsFor(app) : null;
+  const OddsLine = window.cfOdds && window.cfOdds.OddsLine;
   const { SchoolMark, Chevron } = window.cfApp;
   const when = whenText(app);
   return (
@@ -123,6 +125,7 @@ function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, 
       <div className="cf-prow__sub">
         {app.decision.state === "hidden" ? <div className="cf-prow__note is-decision">{editable ? <a href="#decisions">A decision is posted. Open it on Decisions →</a> : "A decision is posted in the portal."}</div> : null}
         {app.missing && app.missing.length ? <div className="cf-prow__note">Portal still needs: {app.missing.slice(0, 4).join(", ")}{app.missing.length > 4 ? `, +${app.missing.length - 4} more` : ""}</div> : null}
+        {odds && OddsLine ? <OddsLine odds={odds} /> : null}
         <FollowUpLines app={app} editable={editable} act={act} busy={busy} />
         {open && renderDetails ? <div id={`app-${app.id}`}>{renderDetails(app)}</div> : null}
       </div>
@@ -139,7 +142,7 @@ const byDeadline = (a, b) => (a.deadline || "9999").localeCompare(b.deadline || 
 const STAGE_ORDER = { working: 0, waiting: 1, admitted: 2, denied: 3, closed: 4 };
 const byProgress = (a, b) => STAGE_ORDER[a.stage] - STAGE_ORDER[b.stage] || byDeadline(a, b);
 
-function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDetails, checking, initialTab }) {
+function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDetails, checking, initialTab, oddsFor }) {
   const { fmtDate, statusMeta, SchoolMark } = window.cfApp;
   const apps = tracker.apps;
   const flags = tracker.flags || [];
@@ -164,7 +167,7 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
   const working = apps.filter((a) => a.stage === "working").sort(byDeadline);
   const nextDue = working.find((a) => a.deadline && a.deadline >= window.cfApp.todayIso());
   const dueThatDay = nextDue ? working.filter((a) => a.deadline === nextDue.deadline).length : 0;
-  const rowProps = { editable, act, busy, openId, onToggle, renderDetails, checking };
+  const rowProps = { editable, act, busy, openId, onToggle, renderDetails, checking, oddsFor };
 
   return (
     <div className="cf-progress">

@@ -5,6 +5,8 @@ import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
 import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
 import { listDocs } from "./doc-store";
 import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type Tracker } from "./tracker";
+import type { AdmissionOdds, ApplicationRead } from "./admission-odds";
+import type { SchoolStats } from "./school-stats";
 
 // ── Workspace data model ──────────────────────────────────────────────────
 // Mirrors the shape the hub UI renders (window.CF_DATA). Everything starts
@@ -182,6 +184,12 @@ export type Workspace = {
   recoveryCode?: string;
   uploads: UploadMeta[];
   onboarding: OnboardingState;
+  /** What the AI took from the whole application on the last chance estimate. */
+  applicationRead?: ApplicationRead;
+  /** Chance estimates by target key: a shortlist slug, or "app:<tracker id>" (lib/admission-odds.ts). */
+  admissionOdds?: Record<string, AdmissionOdds>;
+  /** Scorecard admission numbers for tracked schools, by tracker id (lib/school-stats.ts). */
+  schoolStats?: Record<string, SchoolStats>;
 };
 
 export function emptyWorkspace(): Workspace {
@@ -593,7 +601,8 @@ export function redactWorkspaceBody<T>(body: T): T {
 export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" | "shares" | "uploads"> & {
   uploads: { name: string; chars: number }[];
 } {
-  const { recoveryCode: _r, shares: _s, uploads, tracker, ...rest } = ws;
+  // applicationRead and admissionOdds hold AI assessments drawn from uploads (family context, concerns): the student's alone.
+  const { recoveryCode: _r, shares: _s, uploads, tracker, applicationRead: _a, admissionOdds: _o, ...rest } = ws;
   return {
     ...rest,
     // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
