@@ -102,32 +102,45 @@ function DecisionNote({ app, editable, act, busy }) {
   );
 }
 
-function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, checking, oddsFor }) {
+/** The short signal column: what needs attention first, otherwise the chance estimate. Full wording is in the expanded row. */
+function Signal({ app, odds }) {
+  const first = window.cfApp.attentionOf(app)[0];
+  if (first) return <span className="cf-prow__signal is-alert">{first.text}</span>;
+  if (odds) return <span className="cf-prow__signal" title={`Likely range ${odds.low}–${odds.high}%`}>{odds.percent}% chance</span>;
+  return <span className="cf-prow__signal" />;
+}
+
+function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, checking, oddsFor, full }) {
   const odds = oddsFor ? oddsFor(app) : null;
   const OddsLine = window.cfOdds && window.cfOdds.OddsLine;
   const { SchoolMark, Chevron } = window.cfApp;
   const when = whenText(app);
+  const missing = app.missing && app.missing.length ? app.missing : null;
+  const expandable = (editable && renderDetails) || (missing && !full) || odds;
+  const showMore = open || full;
   return (
     <li className="cf-prow">
       <div className="cf-prow__main">
         <SchoolMark name={app.name} logo={app.logo} />
-        {editable && renderDetails ? (
+        {expandable ? (
           <button type="button" className="cf-prow__name" aria-expanded={open} aria-controls={`app-${app.id}`} onClick={onToggle}>
-            {app.name}<Chevron />
+            <span>{app.name}</span><Chevron />
           </button>
-        ) : <span className="cf-prow__name">{app.name}</span>}
+        ) : <span className="cf-prow__name"><span>{app.name}</span></span>}
         <span className="cf-prow__meta">
           <span className="cf-prow__round">{app.round || "—"}</span>
           <span className={"cf-prow__when" + (when.soon ? " is-soon" : "") + (when.late ? " is-late" : "")}>{checking ? "checking portal…" : when.text}</span>
+          <Signal app={app} odds={odds} />
         </span>
         <span className="cf-prow__status">{editable ? <StatusBadgeSelect app={app} disabled={busy} onChange={(status) => act({ action: "update", id: app.id, edit: { status } }, `${app.name}: status updated.`)} /> : <StatusBadge app={app} />}</span>
       </div>
-      <div className="cf-prow__sub">
-        {app.decision.state === "hidden" ? <div className="cf-prow__note is-decision">{editable ? <a href="#decisions">A decision is posted. Open it on Decisions →</a> : "A decision is posted in the portal."}</div> : null}
-        {app.missing && app.missing.length ? <div className="cf-prow__note">Portal still needs: {app.missing.slice(0, 4).join(", ")}{app.missing.length > 4 ? `, +${app.missing.length - 4} more` : ""}</div> : null}
-        {odds && OddsLine ? <OddsLine odds={odds} /> : null}
+      <div className="cf-prow__sub" id={`app-${app.id}`}>
+        {app.decision.state === "hidden" && showMore ? <div className="cf-prow__note is-decision">{editable ? <a href="#decisions">A decision is posted. Open it on Decisions →</a> : "A decision is posted in the portal."}</div> : null}
+        {missing && showMore ? <div className="cf-prow__note">Portal still needs: {missing.join(", ")}</div> : null}
+        {showMore && editable && ((app.portal && !app.portal.ok) || app.lastFailure) ? <div className="cf-prow__note">Latest portal check didn’t finish: {app.lastFailure ? app.lastFailure.error : app.portal.error}. <a href="#applications">Fix it on Portals →</a></div> : null}
+        {odds && OddsLine && open ? <OddsLine odds={odds} /> : null}
         <FollowUpLines app={app} editable={editable} act={act} busy={busy} />
-        {open && renderDetails ? <div id={`app-${app.id}`}>{renderDetails(app)}</div> : null}
+        {open && editable && renderDetails ? renderDetails(app) : null}
       </div>
     </li>
   );
@@ -135,7 +148,7 @@ function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, 
 
 function Rows({ apps, ...rest }) {
   if (!apps.length) return <div className="cf-empty">Nothing here yet.</div>;
-  return <ul className="cf-plist">{apps.map((a) => <ProgressRow key={a.id} {...rest} app={a} open={rest.openId === a.id} onToggle={() => rest.onToggle && rest.onToggle(a.id)} checking={!!(rest.checking && rest.checking[a.id])} />)}</ul>;
+  return <ul className="cf-plist">{apps.map((a) => <ProgressRow key={a.id} {...rest} app={a} open={rest.openId === a.id} onToggle={() => rest.onToggle(a.id)} checking={!!(rest.checking && rest.checking[a.id])} />)}</ul>;
 }
 
 const byDeadline = (a, b) => (a.deadline || "9999").localeCompare(b.deadline || "9999") || a.name.localeCompare(b.name);
@@ -162,12 +175,22 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
   ].filter((t) => t.id === "overview" || t.count > 0);
   const [tab, setTab] = React.useState(initialTab && tabs.some((t) => t.id === initialTab) ? initialTab : "overview");
   const current = tabs.some((t) => t.id === tab) ? tab : "overview";
+  // Share links don't pass open state, so rows open here: parents can still read what a school is missing.
+  const [ownOpen, setOwnOpen] = React.useState(null);
+  const [showWaiting, setShowWaiting] = React.useState(false);
 
   const submitted = apps.filter((a) => a.stage !== "working" && a.status !== "withdrawn").length;
   const working = apps.filter((a) => a.stage === "working").sort(byDeadline);
   const nextDue = working.find((a) => a.deadline && a.deadline >= window.cfApp.todayIso());
   const dueThatDay = nextDue ? working.filter((a) => a.deadline === nextDue.deadline).length : 0;
-  const rowProps = { editable, act, busy, openId, onToggle, renderDetails, checking, oddsFor };
+  // Submitted schools that need something (an unopened decision, missing documents, a failed check) get their own section.
+  // Open follow-ups count too, so a counselor task never hides in the folded list.
+  const attention = apps.filter((a) => a.stage !== "working" && (window.cfApp.attentionOf(a).length || (a.followUps && a.followUps.length)))
+    .sort((a, b) => (a.decision.state === "hidden" ? 0 : 1) - (b.decision.state === "hidden" ? 0 : 1) || byDeadline(a, b));
+  const waiting = apps.filter((a) => a.stage === "waiting" && !attention.includes(a)).sort(byDeadline);
+  const rowProps = onToggle
+    ? { editable, act, busy, openId, onToggle, renderDetails, checking, oddsFor }
+    : { editable, act, busy, openId: ownOpen, onToggle: (id) => setOwnOpen(ownOpen === id ? null : id), renderDetails, checking, oddsFor };
 
   return (
     <div className="cf-progress">
@@ -202,14 +225,23 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
               </ul>
             </section>
           ) : null}
+          {attention.length ? (
+            <section className="cf-psection" aria-labelledby="p-attn">
+              <h2 id="p-attn" className="cf-psection__title">Needs attention <span className="cf-ptab__n">{attention.length}</span></h2>
+              <Rows apps={attention} full {...rowProps} />
+            </section>
+          ) : null}
           <section className="cf-psection" aria-labelledby="p-next">
-            <h2 id="p-next" className="cf-psection__title">Next up</h2>
+            <h2 id="p-next" className="cf-psection__title">Next up <span className="cf-ptab__n">{working.length || ""}</span></h2>
             {working.length ? <Rows apps={working} {...rowProps} /> : <div className="cf-empty">Every application is in. Decisions and follow-ups show up here as they come.</div>}
           </section>
-          {apps.some((a) => a.stage === "waiting") ? (
+          {waiting.length ? (
             <section className="cf-psection" aria-labelledby="p-wait">
-              <h2 id="p-wait" className="cf-psection__title">Waiting to hear</h2>
-              <Rows apps={apps.filter((a) => a.stage === "waiting").sort(byDeadline)} {...rowProps} />
+              <h2 id="p-wait" className="cf-psection__title">Waiting to hear <span className="cf-ptab__n">{waiting.length}</span></h2>
+              {showWaiting ? <Rows apps={waiting} {...rowProps} /> : null}
+              <button type="button" className="cf-link-btn" aria-expanded={showWaiting} onClick={() => setShowWaiting(!showWaiting)}>
+                {showWaiting ? "Hide these schools" : `Show all ${waiting.length} schools`}
+              </button>
             </section>
           ) : null}
         </div>
@@ -229,6 +261,7 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
                     <span className="cf-prow__meta">
                       <span className="cf-prow__round">{a.round || "—"}</span>
                       <span className="cf-prow__when">{a.decision.state === "hidden" ? "posted, not opened yet" : a.decision.portalText ? `portal: ${a.decision.portalText}` : ""}</span>
+                      <span className="cf-prow__signal" />
                     </span>
                     <span className="cf-prow__status">{recorded ? <span className="cf-badge cf-badge--solid" style={{ "--tone": meta.tone }}>{meta.label}</span> : <span className="cf-badge" style={{ "--tone": "var(--coral)" }}>Posted</span>}</span>
                   </div>

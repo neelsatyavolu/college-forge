@@ -93,8 +93,21 @@ function StatusSelect({ app, disabled, onChange, label }) {
   );
 }
 
+/**
+ * What needs the student's eyes on one school, beyond its date: an unopened decision, documents the portal
+ * still lists as missing, or a portal check that failed. Empty when the school is quiet.
+ */
+function attentionOf(app) {
+  const out = [];
+  if (app.decision && app.decision.state === "hidden") out.push({ id: "decision", text: "Decision posted" });
+  if (app.missing && app.missing.length) out.push({ id: "missing", text: `${app.missing.length} missing` });
+  // Share links drop `ok` from good checks, so only an explicit false counts as a failure.
+  if ((app.portal && app.portal.ok === false) || app.lastFailure) out.push({ id: "check", text: "Check failed" });
+  return out;
+}
+
 function Chevron() {
   return <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m2 4 4 4 4-4" /></svg>;
 }
 
-window.cfApp = { APP_STATUSES, APP_STAGES, APP_ROUNDS, statusMeta, todayIso, fmtDate, daysUntil, relDays, ago, SchoolMark, StatusSelect, Chevron };
+window.cfApp = { APP_STATUSES, APP_STAGES, APP_ROUNDS, statusMeta, todayIso, fmtDate, daysUntil, relDays, ago, attentionOf, SchoolMark, StatusSelect, Chevron };

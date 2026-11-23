@@ -4,24 +4,27 @@ const { Button } = window.CollegeForgeDesignSystem_e95e63;
 function PortalLine({ app }) {
   const { ago } = window.cfApp;
   const p = app.portal;
-  if (app.decision.state === "hidden") {
-    return <div className="cf-app-row__portal"><a href="#decisions" className="is-decision">A decision is posted. Open it on Decisions →</a></div>;
-  }
+  const hidden = app.decision.state === "hidden";
   if (!p) {
+    if (hidden) return <div className="cf-app-row__portal"><a href="#decisions" className="is-decision">A decision is posted. Open it on Decisions →</a></div>;
     if (!app.login) return null;
     return <div className="cf-app-row__portal"><span className="is-error">Login saved. The next check fills this in.</span></div>;
   }
   if (!p.ok) return <div className="cf-app-row__portal"><span className="is-error">{p.error} · tried {ago(p.checkedAt)}</span></div>;
   const failed = app.lastFailure ? <div className="is-error">Latest check didn’t finish: {app.lastFailure.error} ({ago(app.lastFailure.at)}). Showing the last good check.</div> : null;
+  // An unopened decision replaces the portal's own words (they could give it away), but missing items and failures still show.
   return (
     <div className="cf-app-row__portal">
-      <span>{p.statusText ? <React.Fragment>Portal says <b style={{ fontWeight: 500, color: "var(--ink)" }}>“{p.statusText}”</b></React.Fragment> : "Portal checked"}</span>
-      <span style={{ color: "var(--muted)" }}> · {ago(p.checkedAt)}</span>
+      {hidden ? <a href="#decisions" className="is-decision">A decision is posted. Open it on Decisions →</a> : (
+        <React.Fragment>
+          <span>{p.statusText ? <React.Fragment>Portal says <b style={{ fontWeight: 500, color: "var(--ink)" }}>“{p.statusText}”</b></React.Fragment> : "Portal checked"}</span>
+          <span style={{ color: "var(--muted)" }}> · {ago(p.checkedAt)}</span>
+        </React.Fragment>
+      )}
       {failed}
       {app.missing.length ? (
         <div className="cf-app-row__missing" aria-label="Still missing">
-          {app.missing.slice(0, 6).map((m) => <span key={m}>Missing: {m}</span>)}
-          {app.missing.length > 6 ? <span>+{app.missing.length - 6} more</span> : null}
+          {app.missing.map((m) => <span key={m}>Missing: {m}</span>)}
         </div>
       ) : null}
     </div>
@@ -125,19 +128,22 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
   );
 }
 
-function AppRow({ app, open, onToggle, act, busy, checking, onCheck }) {
-  const { SchoolMark, StatusSelect, fmtDate, daysUntil, relDays, Chevron } = window.cfApp;
+/** One school. Compact rows fit on one line and keep the portal's full message for the expanded view. */
+function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact }) {
+  const { SchoolMark, StatusSelect, fmtDate, daysUntil, relDays, ago, Chevron } = window.cfApp;
   const next = app.nextDate;
   const soon = next && daysUntil(next.date) <= 7;
+  const said = app.portal && app.portal.ok ? (app.portal.statusText ? `“${app.portal.statusText}” · ${ago(app.portal.checkedAt)}` : `Checked ${ago(app.portal.checkedAt)}`) : app.login ? "Not checked yet" : "";
   return (
-    <li className="cf-app-row">
+    <li className={"cf-app-row" + (compact ? " cf-app-row--compact" : "")}>
       <SchoolMark name={app.name} logo={app.logo} />
-      <div style={{ minWidth: 0 }}>
+      <div className="cf-app-row__head">
         <h3 className="cf-app-row__name">{app.name}</h3>
         <div className="cf-app-row__meta">
-          {app.round ? <span>{app.round}{app.roundFromPortal ? " (portal)" : ""}</span> : null}
-          {next ? <span className={soon ? "is-soon" : ""}>{next.kind} <b>{fmtDate(next.date)}</b> {next.estimated ? "· estimated from last year" : `· ${relDays(next.date)}`}</span> : null}
+          {app.round ? <span>{app.round}{app.roundFromPortal && !compact ? " (portal)" : ""}</span> : null}
+          {next ? <span className={soon ? "is-soon" : ""}>{compact ? "" : `${next.kind} `}<b>{fmtDate(next.date)}</b> {compact ? (next.kind === "Decision" ? "decision" : "due") + (next.estimated ? " (est.)" : "") :next.estimated ? "· estimated from last year" : `· ${relDays(next.date)}`}</span> : null}
           {!next && app.deadline && app.stage === "working" ? <span>Deadline <b>{fmtDate(app.deadline)}</b> · passed</span> : null}
+          {compact && said && !checking ? <span className="cf-app-row__said">{said}</span> : null}
           {checking ? <span>Checking portal…</span> : null}
         </div>
       </div>
@@ -147,7 +153,7 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck }) {
           <span className="cf-sr-only">{open ? "Hide" : "Show"} details for {app.name}</span><Chevron />
         </button>
       </div>
-      <PortalLine app={app} />
+      {!compact || open ? <PortalLine app={app} /> : null}
       {open ? <div id={`app-${app.id}`} className="cf-app-row__more"><AppDetails app={app} act={act} busy={busy} checking={checking} onCheck={onCheck} /></div> : null}
     </li>
   );
@@ -250,13 +256,23 @@ function Applications({ data, tracker, onTrackerChange }) {
   const withLogin = apps.filter((a) => a.login && a.login.hasPassword);
   const checkingAny = Object.keys(checking).length > 0;
   const counts = APP_STAGES.map((s) => [s, apps.filter((a) => a.stage === s.id).length]).filter(([, n]) => n);
+  // Schools with something to act on lead the page in full; the rest are one line each, by stage.
+  // The open school stays in the section it was opened in, so a check that changes it can't remount the editor mid-edit.
+  const inAttention = (a) => (open && open.id === a.id ? open.attention : window.cfApp.attentionOf(a).length > 0);
+  const attention = apps.filter(inAttention);
+  const quiet = apps.filter((a) => !inAttention(a));
+  const bySoonest = (a, b) => ((a.nextDate && a.nextDate.date) || "9999").localeCompare((b.nextDate && b.nextDate.date) || "9999") || a.name.localeCompare(b.name);
+  // Unopened decisions first, then failed checks, then missing documents.
+  const RANK = { decision: 0, check: 1, missing: 2 };
+  const rankOf = (a) => Math.min(3, ...window.cfApp.attentionOf(a).map((r) => RANK[r.id]));
+  const byUrgency = (a, b) => rankOf(a) - rankOf(b) || bySoonest(a, b);
 
   const onAdd = async (input) => {
     // A portal exists once you've applied, so a school added here starts as submitted.
     const j = await window.cfApi.applications({ action: "add", status: "submitted", ...input });
     onTrackerChange(j.data);
     setNotice(`${j.app.name} added. Set its round and deadline, and save the portal login so Forge can check it.`);
-    setOpen(j.app.id);
+    setOpen({ id: j.app.id, attention: window.cfApp.attentionOf(j.app).length > 0 });
   };
 
   return (
@@ -310,14 +326,14 @@ function Applications({ data, tracker, onTrackerChange }) {
             </label>
             </div>
           </div>
-          {view === "dates" ? <DatesView apps={apps} criticalDates={data.criticalDates} /> : APP_STAGES.map((stage) => {
-            const list = apps.filter((a) => a.stage === stage.id).sort((a, b) => ((a.nextDate && a.nextDate.date) || "9999").localeCompare((b.nextDate && b.nextDate.date) || "9999") || a.name.localeCompare(b.name));
-            if (!list.length) return null;
+          {view === "dates" ? <DatesView apps={apps} criticalDates={data.criticalDates} /> : [{ id: "attention", label: "Needs attention", list: attention }].concat(APP_STAGES.map((s) => ({ id: s.id, label: s.label, list: quiet.filter((a) => a.stage === s.id), compact: true }))).map((group) => {
+            if (!group.list.length) return null;
+            const list = group.list.slice().sort(group.compact ? bySoonest : byUrgency);
             return (
-              <section key={stage.id} className="cf-apps-group" aria-labelledby={`stage-${stage.id}`}>
-                <div className="cf-apps-group__head"><h2 id={`stage-${stage.id}`}>{stage.label}</h2><span>{list.length}</span></div>
+              <section key={group.id} className="cf-apps-group" aria-labelledby={`stage-${group.id}`}>
+                <div className="cf-apps-group__head"><h2 id={`stage-${group.id}`}>{group.label}</h2><span>{list.length}</span></div>
                 <ul className="cf-apps-list">
-                  {list.map((a) => <AppRow key={a.id} app={a} open={open === a.id} onToggle={() => setOpen(open === a.id ? null : a.id)} act={act} busy={busy} checking={!!checking[a.id]} onCheck={() => checkSome([a])} />)}
+                  {list.map((a) => <AppRow key={a.id} app={a} compact={group.compact} open={!!open && open.id === a.id} onToggle={() => setOpen(open && open.id === a.id ? null : { id: a.id, attention: !group.compact })} act={act} busy={busy} checking={!!checking[a.id]} onCheck={() => checkSome([a])} />)}
                 </ul>
               </section>
             );
