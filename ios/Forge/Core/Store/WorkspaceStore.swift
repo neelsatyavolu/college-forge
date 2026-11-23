@@ -28,6 +28,12 @@ final class WorkspaceStore {
     /// Bumped by `reset()`. A reply to a request started before then belongs to the previous account and is dropped.
     @ObservationIgnored private var generation = 0
 
+    /// Workspaces (by `draftStorageKey`) whose first-run setup the student skipped on this phone.
+    /// A hub reset gets a new key, so setup comes back then.
+    var skippedSetupKeys = Set(UserDefaults.standard.stringArray(forKey: "ForgeSkippedSetup") ?? []) {
+        didSet { UserDefaults.standard.set(Array(skippedSetupKeys), forKey: "ForgeSkippedSetup") }
+    }
+
     /// Called when a request finds the session has ended.
     @ObservationIgnored var onSignedOut: (() -> Void)?
 

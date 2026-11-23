@@ -5,7 +5,21 @@ import SwiftUI
 enum OnboardingGate {
     @MainActor
     static func shouldPresent(_ store: WorkspaceStore) -> Bool {
-        store.hasLoaded && store.workspace.needsOnboarding
+        store.hasLoaded && store.workspace.needsOnboarding && !isSkipped(store)
+    }
+
+    @MainActor
+    static func isSkipped(_ store: WorkspaceStore) -> Bool {
+        let key = store.workspace.draftStorageKey
+        return !key.isEmpty && store.skippedSetupKeys.contains(key)
+    }
+
+    /// Stops covering the app for this workspace. Setup stays available from Profile.
+    @MainActor
+    static func skip(_ store: WorkspaceStore) {
+        let key = store.workspace.draftStorageKey
+        guard !key.isEmpty else { return }
+        store.skippedSetupKeys.insert(key)
     }
 }
 
@@ -72,9 +86,17 @@ struct OnboardingFlow: View {
     }
 
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
-        if canCancel && !building {
+        if !building {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Close") { dismiss() }
+                if canCancel {
+                    Button("Close") { dismiss() }
+                } else {
+                    Button("Skip for now") {
+                        Haptics.selection()
+                        OnboardingGate.skip(store)
+                    }
+                    .accessibilityHint("You can run setup later from Profile.")
+                }
             }
         }
     }
