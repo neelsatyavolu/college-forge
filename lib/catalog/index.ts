@@ -47,8 +47,8 @@ const MORE_LOGOS = [
  */
 const LOGO_FILES: Record<string, string> = {
   ...Object.fromEntries([...CHECKED.map((c) => c.id), ...FAMOUS, ...MORE_LOGOS].map((id) => [id, `${id}.png`])),
-  emory: "emory.svg",
-  berkeley: "berkeley.svg",
+  emory: "emory.png",
+  berkeley: "berkeley.png",
 };
 
 /** The best-known schools, shown on the landing page. */

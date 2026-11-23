@@ -9,14 +9,23 @@ struct SchoolLogo: View {
     /// Brand color for the monogram, if known (catalog `colors.first`).
     var tint: Color?
 
+    @State private var loaded: UIImage?
+
     var body: some View {
-        AsyncImage(url: url, transaction: Transaction(animation: .easeOut(duration: 0.2))) { phase in
-            if case .success(let image) = phase {
-                image.resizable().scaledToFit().padding(size * 0.12)
+        Group {
+            if let image = loaded ?? url.flatMap({ LogoCache.shared.cached($0) }) {
+                Image(uiImage: image).resizable().scaledToFit().padding(size * 0.12)
                     .background(Color.white)
             } else {
                 monogram
             }
+        }
+        .task(id: url) {
+            loaded = nil
+            guard let url else { return }
+            let image = await LogoCache.shared.image(for: url)
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.2)) { loaded = image }
         }
         .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: size * 0.22, style: .continuous))
