@@ -137,7 +137,7 @@ function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, 
       <div className="cf-prow__sub" id={`app-${app.id}`}>
         {app.decision.state === "hidden" && showMore ? <div className="cf-prow__note is-decision">{editable ? <a href="#decisions">A decision is posted. Open it on Decisions →</a> : "A decision is posted in the portal."}</div> : null}
         {missing && showMore ? <div className="cf-prow__note">Portal still needs: {missing.join(", ")}</div> : null}
-        {showMore && editable && ((app.portal && !app.portal.ok) || app.lastFailure) ? <div className="cf-prow__note">Latest portal check didn’t finish: {app.lastFailure ? app.lastFailure.error : app.portal.error}. <a href="#applications">Fix it on Portals →</a></div> : null}
+        {showMore && editable && ((app.portal && !app.portal.ok) || app.lastFailure) ? <div className="cf-prow__note">Latest portal check didn’t finish: {String(app.lastFailure ? app.lastFailure.error : app.portal.error).replace(/\.\s*$/, "")}. <a href="#applications">Fix it on Portals →</a></div> : null}
         {odds && OddsLine && open ? <OddsLine odds={odds} /> : null}
         <FollowUpLines app={app} editable={editable} act={act} busy={busy} />
         {open && editable && renderDetails ? renderDetails(app) : null}
