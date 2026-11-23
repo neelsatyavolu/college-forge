@@ -14,7 +14,7 @@ Module._resolveFilename = function (request, ...args) {
   }
   return resolve.call(this, request, ...args);
 };
-process.env.SESSION_SECRET = 'test-secret-for-career-ai-routes-0123456789';
+process.env.SESSION_SECRET = 'test-'.repeat(8); // made up, only signs test cookies
 const { NextRequest } = require('next/server');
 const { parseCareerAi } = require('../lib/career-ai.ts');
 const { signSession } = require('../lib/session.ts');
