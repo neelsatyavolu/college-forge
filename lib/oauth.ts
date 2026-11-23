@@ -10,13 +10,17 @@ import { deleteDoc, listDocs, readDoc, updateDoc, writeDoc } from "./doc-store";
 export const SCOPE = "applications";
 /** Reading saved portal passwords: only for the collegeforge CLI, which signs in through a loopback redirect. */
 export const LOGINS_SCOPE = "logins";
+/** The iPhone app's redirect. A grant issued to it is a full session (see proxy.ts); no other client gets one. */
+export const APP_REDIRECT_URI = "collegeforge://oauth/callback";
+/** Set only by proxy.ts on app requests (any client-sent copy is removed): the grant behind the session. */
+export const APP_GRANT_HEADER = "x-forge-app-grant";
 const ACCESS_TTL_S = 60 * 60;
 const REFRESH_TTL_S = 60 * 60 * 24 * 90;
 const CODE_TTL_S = 120;
 
 export type Client = { client_id: string; client_name: string; redirect_uris: string[]; created_at: number };
-type Code = { client_id: string; redirect_uri: string; code_challenge: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean; logins?: boolean };
-type Token = { kind: "access" | "refresh"; client_id: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean; logins?: boolean };
+type Code = { client_id: string; redirect_uri: string; code_challenge: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean; logins?: boolean; app?: boolean };
+type Token = { kind: "access" | "refresh"; client_id: string; sub: string; workspaceId: string; grantId: string; exp: number; used?: boolean; logins?: boolean; app?: boolean };
 export type Grant = { grantId: string; client_id: string; client_name: string; redirect_host: string; created_at: number };
 
 export class OAuthError extends Error {
@@ -121,6 +125,7 @@ export async function issueCode(
   opts: { logins?: boolean } = {},
 ): Promise<string> {
   const logins = !!opts.logins && isLoopback(redirect_uri);
+  const app = redirect_uri === APP_REDIRECT_URI;
   const grantId = token(12);
   const host = (() => {
     try {
@@ -133,7 +138,7 @@ export async function issueCode(
     grantId, client_id: client.client_id, client_name: client.client_name, redirect_host: host, created_at: now(),
   } satisfies Grant);
   const code = token();
-  await writeDoc(codeKey(code), { client_id: client.client_id, redirect_uri, code_challenge, sub, workspaceId, grantId, exp: now() + CODE_TTL_S, ...(logins ? { logins } : {}) } satisfies Code);
+  await writeDoc(codeKey(code), { client_id: client.client_id, redirect_uri, code_challenge, sub, workspaceId, grantId, exp: now() + CODE_TTL_S, ...(logins ? { logins } : {}), ...(app ? { app } : {}) } satisfies Code);
   return code;
 }
 
@@ -185,7 +190,7 @@ export async function exchange(form: URLSearchParams) {
       throw new OAuthError("invalid_grant", "The code was issued to a different client or redirect URI.");
     }
     if (!pkceOk(form.get("code_verifier") ?? "", rec.code_challenge)) throw new OAuthError("invalid_grant", "PKCE verification failed.");
-    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, ...(rec.logins ? { logins: true } : {}) });
+    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, ...(rec.logins ? { logins: true } : {}), ...(rec.app ? { app: true } : {}) });
   }
   if (grant === "refresh_token") {
     const rt = form.get("refresh_token") ?? "";
@@ -199,20 +204,26 @@ export async function exchange(form: URLSearchParams) {
       throw new OAuthError("invalid_grant", "The refresh token is invalid or expired.");
     }
     if (!(await readDoc<Grant>(grantKey(rec.sub, rec.grantId)))) throw new OAuthError("invalid_grant", "Access was removed in Forge settings.");
-    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, ...(rec.logins ? { logins: true } : {}) });
+    return issueTokens({ client_id: rec.client_id, sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, ...(rec.logins ? { logins: true } : {}), ...(rec.app ? { app: true } : {}) });
   }
   throw new OAuthError("unsupported_grant_type", "Use authorization_code or refresh_token.");
 }
 
 /** Resolves a bearer token to the account it acts for; null if it's missing, expired or its grant was removed. */
-export async function verifyAccess(authorization: string | null): Promise<{ sub: string; workspaceId: string; grantId: string; logins: boolean } | null> {
+export async function verifyAccess(authorization: string | null): Promise<{ sub: string; workspaceId: string; grantId: string; logins: boolean; app: boolean } | null> {
   const t = authorization?.match(/^Bearer\s+([A-Za-z0-9_-]{20,200})$/)?.[1];
   if (!t) return null;
   const rec = await readDoc<Token>(tokenKey(t));
   if (!rec || rec.kind !== "access" || rec.exp < now()) return null;
   // Read only: writing here could recreate a grant that Disconnect deleted a moment ago.
   if (!(await readDoc<Grant>(grantKey(rec.sub, rec.grantId)))) return null;
-  return { sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, logins: rec.logins === true };
+  return { sub: rec.sub, workspaceId: rec.workspaceId, grantId: rec.grantId, logins: rec.logins === true, app: rec.app === true };
+}
+
+/** Whether a grant still exists (it is deleted on Disconnect or when a leaked token is replayed). */
+export async function grantExists(sub: string, grantId: string): Promise<boolean> {
+  if (!safe(sub) || !safe(grantId)) return false;
+  return !!(await readDoc<Grant>(grantKey(sub, grantId)));
 }
 
 export async function listGrants(sub: string): Promise<Grant[]> {

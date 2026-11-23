@@ -68,6 +68,22 @@ The hub JSX remains in `public/hub/`. `npm run dev` compiles it and watches for 
 - **Accounts** (`lib/session.ts`, `app/api/xanom/*`): "Continue with Xanom" (OIDC). Each Xanom `sub` owns one workspace; a first sign-in keeps the browser's existing anonymous workspace. `forge.n3el.dev` redirects to `forge.xanom.co` (`proxy.ts`) and carries that workspace over with a one-time link. Signing in moves the anonymous workspace to a new id that only the account can open.
 - **MCP** (`app/mcp/route.ts`, `lib/mcp-tools.ts`): Streamable HTTP at `/mcp`, stateless JSON responses. Forge is its own OAuth 2.1 server (`lib/oauth.ts`): protected-resource and authorization-server metadata under `/.well-known/`, dynamic client registration at `/oauth/register`, PKCE S256 only, one-hour access tokens and rotating 90-day refresh tokens. People approve on `/oauth/authorize` and disconnect in Settings.
 
+## iOS app
+
+The native SwiftUI app lives in `ios/` (XcodeGen, bundle id `co.xanom.forge`). It talks to the same `/api` routes as the hub:
+
+- **Sign-in**: dynamic client registration and PKCE through Forge's OAuth server (redirect `collegeforge://oauth/callback`). Each request sends `Authorization: Bearer <access token>` and `x-forge-app: ios`; `proxy.ts` checks the token and forwards the request with a signed `forge_session` cookie, so no route needs its own token handling. A bad or expired token gets `401 {success:false,error:"Please sign in again."}`.
+- **Push** (`lib/notify/apns.ts`, `lib/notify/devices.ts`): when an automatic portal check finds news, each registered iPhone gets one notification per school (`{"type":"portal_update","appId":"<tracked app id>"}`). The text says no more than the email subject. Pushes ignore the email daily cap and the email switch, and a failed push never holds up the email.
+- **`/api/devices`** (signed in only, JSON `{success,data,error}`): `GET` → `{pushEnabled,count}`; `POST {token,environment:"sandbox"|"production"}` registers (hex token, up to 10 per account); `DELETE {token}` removes; `PATCH {pushEnabled}` turns pushes on or off.
+- **Local testing**: start the server against local storage, then mint a token for a synthetic student (ten applications, a posted decision, profile, essays, shortlist):
+
+  ```bash
+  BLOB_READ_WRITE_TOKEN= SESSION_SECRET=<32+ random characters> npm run dev
+  CF_DATA_DIR=data node scripts/dev-ios-token.cjs   # prints an access token (1 hour)
+  ```
+
+  Run the simulator build with `-ForgeBaseURL http://localhost:3000 -ForgeDevToken <token>`. The script refuses to run when `BLOB_READ_WRITE_TOKEN` is set.
+
 ## Environment
 
 See `.env.example`. Required in production: `BLOB_READ_WRITE_TOKEN`, `XANOM_CLIENT_ID`, `XANOM_CLIENT_SECRET`, `SESSION_SECRET`, `FORGE_ORIGIN`, `PORTAL_LOGINS_KEY`, `FORGE_SERVICE_KEY`, `CRON_SECRET`. Optional:
@@ -76,6 +92,7 @@ See `.env.example`. Required in production: `BLOB_READ_WRITE_TOKEN`, `XANOM_CLIE
 - `EXA_API_KEY` and/or `TINYFISH_API_KEY` — web search for live admit/deadline research
 - `COLLEGE_SCORECARD_API_KEY` — College Scorecard API key (light use often works without one)
 - `CF_DATA_DIR` — move the local data store
+- `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_PRIVATE_KEY` (the .p8 key; `\n`-escaped is fine), `APNS_BUNDLE_ID` (default `co.xanom.forge`) — push notifications for the iOS app; without them pushes are skipped
 
 For local development, run with `BLOB_READ_WRITE_TOKEN=` (empty) so a pulled `.env.local` can't point local runs at production storage.
 

@@ -5,18 +5,21 @@ import { sendEmail } from "../email";
 import { openJson, sealJson, type Sealed } from "../portal-logins";
 import { getAccount, ownerOf } from "../session";
 import type { PortalResult, TrackedApp } from "../tracker";
-import { changesBetween, composeEmail, stateAfter, type Change, type CheckOutcome, type CheckState } from "./changes";
+import { pushToWorkspace } from "./apns";
+import { changesBetween, composeEmail, pushBody, stateAfter, type Change, type CheckOutcome, type CheckState } from "./changes";
 
 /**
  * Emails a workspace's owner when an automatic check finds something new. The last check's summary per
  * school is kept encrypted beside the workspace (it can hold a decision's wording), and only moves on once
- * the student has been told, so a failed send is retried on the next sweep.
+ * the student has been told, so a failed send is retried on the next sweep. Registered iPhones also get a
+ * push per school; that skips the email cap and the email switch, and never holds the state back.
  */
 
 /** Emails per workspace per UTC day, as College Apps had. */
 export const MAX_EMAILS_PER_DAY = 20;
 
-type NotifyState = { apps: Record<string, CheckState>; day: string; count: number };
+/** `pushed` remembers which pending news already reached the phone, so an email retry doesn't push it again. */
+type NotifyState = { apps: Record<string, CheckState>; day: string; count: number; pushed?: Record<string, string> };
 
 const stateKey = (workspaceId: string) => `notify-state/${workspaceId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64)}.json`;
 const aad = (workspaceId: string) => `forge-notify:${workspaceId}`;
@@ -62,14 +65,16 @@ export function readUnsubscribeToken(token: string): string | null {
 type Pending = { app: TrackedApp; changes: Change[]; next: CheckState };
 
 /**
- * Compares each check with the last one and, when `send` is on, emails the owner one message per school
- * with news. Returns how many emails went out.
+ * Compares each check with the last one and, when `send` is on (an automatic sweep), pushes and emails the
+ * owner one message per school with news. `email: false` (the student turned emails off) keeps the push.
+ * Returns how many emails went out.
  */
 export async function notifyChanges(
   workspaceId: string,
   outcomes: Map<string, { app: TrackedApp; outcome: CheckOutcome; before?: PortalResult }>,
-  opts: { send: boolean; now?: number },
+  opts: { send: boolean; email?: boolean; now?: number },
 ): Promise<number> {
+  const emailOn = opts.email !== false;
   const now = opts.now ?? Date.now();
   const day = new Date(now).toISOString().slice(0, 10);
   const before = openState(workspaceId, await readDoc<Sealed>(stateKey(workspaceId)));
@@ -84,7 +89,9 @@ export async function notifyChanges(
 
   const told = new Set<string>();
   let used = before.day === day ? before.count : 0;
-  const to = opts.send && pending.some((p) => p.changes.length) ? await recipientOf(workspaceId) : null;
+  // The push runs beside the emails (it has its own deadline and never throws), so a slow APNs can't delay them.
+  const pushing = opts.send ? push(workspaceId, pending, before.pushed ?? {}) : Promise.resolve(new Set<string>());
+  const to = opts.send && emailOn && pending.some((p) => p.changes.length) ? await recipientOf(workspaceId) : null;
   for (const p of pending) {
     if (!p.changes.length || !to || used >= MAX_EMAILS_PER_DAY) continue;
     try {
@@ -96,17 +103,40 @@ export async function notifyChanges(
     }
   }
 
+  const pushed = await pushing;
+
   // Without sending (a check the student ran by hand), the student saw the result: it becomes the baseline.
   // When sending, a school whose news didn't go out keeps its old summary so the next sweep tries again.
-  const moves = (p: Pending) => !opts.send || !p.changes.length || told.has(p.app.id);
+  // With emails off, the push (or nothing) is all the student gets, so the state moves on as before.
+  const moves = (p: Pending) => !opts.send || !emailOn || !p.changes.length || told.has(p.app.id);
   await updateDoc<Sealed>(stateKey(workspaceId), (cur) => {
     const latest = openState(workspaceId, cur);
     const apps = { ...latest.apps };
-    for (const p of pending) if (moves(p)) apps[p.app.id] = p.next;
+    const sentPush = { ...(latest.pushed ?? {}) };
+    for (const p of pending) {
+      if (moves(p)) {
+        apps[p.app.id] = p.next;
+        delete sentPush[p.app.id];
+      } else if (pushed.has(p.app.id)) {
+        sentPush[p.app.id] = newsKey(p);
+      }
+    }
     const base = latest.day === day ? latest.count : 0;
-    return sealJson(aad(workspaceId), { apps, day, count: base + told.size });
+    return sealJson(aad(workspaceId), { apps, day, count: base + told.size, pushed: sentPush });
   });
   return told.size;
+}
+
+const newsKey = (p: Pending) => JSON.stringify(p.next);
+
+/** Pushes the schools with news that hasn't reached the phone yet. Returns the app ids it reached. */
+async function push(workspaceId: string, pending: Pending[], alreadyPushed: Record<string, string>): Promise<Set<string>> {
+  const fresh = pending.filter((p) => p.changes.length && alreadyPushed[p.app.id] !== newsKey(p));
+  if (!fresh.length) return new Set();
+  return pushToWorkspace(
+    workspaceId,
+    fresh.map((p) => ({ appId: p.app.id, title: p.app.name, body: pushBody(p.changes) })),
+  );
 }
 
 const ORIGIN = () => (process.env.FORGE_ORIGIN || "https://forge.xanom.co").replace(/\/$/, "");

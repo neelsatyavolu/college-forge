@@ -154,7 +154,7 @@ export async function runChecks(
     outcomes.set(id, { app, outcome, before: targets.find((t) => t.id === id)?.portal });
   }
   try {
-    await notifyChanges(workspaceId, outcomes, { send: !!opts.notify && saved.tracker.emails });
+    await notifyChanges(workspaceId, outcomes, { send: !!opts.notify, email: saved.tracker.emails });
   } catch (err) {
     // The check results are saved; a problem with emails mustn't fail the check.
     console.error("portal change emails failed", err instanceof Error ? err.name : "unknown");

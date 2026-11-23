@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { OAuthError, checkAuthorize, consentToken, getClient, issueCode, readConsent } from "@/lib/oauth";
+import { APP_REDIRECT_URI, OAuthError, checkAuthorize, consentToken, getClient, issueCode, readConsent } from "@/lib/oauth";
 import { getSession } from "@/lib/workspace-cookie";
 import { appOrigin } from "@/lib/origin";
 
@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
   }
   const host = new URL(ar.redirect_uri).host || new URL(ar.redirect_uri).protocol;
   const token = consentToken(session.sub, ar);
+  if (ar.redirect_uri === APP_REDIRECT_URI) return appConsent(session.email, token);
   return page(
     "Allow access",
     `<p class="oa__brand">Forge</p>
@@ -63,6 +64,25 @@ export async function GET(req: NextRequest) {
 ${ar.logins ? `  <div><dt>Passwords</dt><dd>It can also read your saved portal usernames and passwords, for the collegeforge command-line tool on your computer. Only allow this if you just ran <code>collegeforge login</code>.</dd></div>
   <div><dt>It can't</dt><dd>See your essays, change portal links or logins, or change your Forge account.</dd></div>` : `  <div><dt>It can't</dt><dd>See your portal passwords or essays, change portal links or logins, or change your Forge account.</dd></div>`}
   <div><dt>Returns to</dt><dd><code>${esc(host)}</code></dd></div>
+</dl>
+<form method="post" class="oa__actions">
+  <input type="hidden" name="consent" value="${esc(token)}">
+  <button class="oa__btn oa__btn--primary" name="decision" value="allow" type="submit">Allow</button>
+  <button class="oa__btn" name="decision" value="deny" type="submit">Cancel</button>
+</form>`,
+  );
+}
+
+/** The iPhone app gets a full session, so its consent says so plainly. */
+function appConsent(email: string, token: string): Response {
+  return page(
+    "Allow access",
+    `<p class="oa__brand">Forge</p>
+<h1>Sign in to Forge on your iPhone?</h1>
+<p class="oa__lede">The Forge app will have full access to <!--email_off--><strong>${esc(email)}</strong><!--/email_off--> until you sign out or disconnect it in Forge settings.</p>
+<dl class="oa__list">
+  <div><dt>It can</dt><dd>Do anything you can do in Forge: see and change your profile, colleges, essays and applications, portal links and logins, sharing, connected assistants and settings, and send notifications to your iPhone.</dd></div>
+  <div><dt>Only allow</dt><dd>if you just tapped Sign in in the Forge app. No other app or assistant should ask for this.</dd></div>
 </dl>
 <form method="post" class="oa__actions">
   <input type="hidden" name="consent" value="${esc(token)}">

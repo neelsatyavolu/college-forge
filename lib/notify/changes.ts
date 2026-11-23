@@ -144,6 +144,18 @@ function line(change: Change): string {
   }
 }
 
+/**
+ * One short line for a lock-screen notification. It says no more than the email subject does: no status
+ * wording, checklist items or dates, which a phone shows to anyone nearby.
+ */
+export function pushBody(changes: Change[]): string {
+  if (changes.some((c) => c.kind === "decision")) return `${DECISION_RECEIVED}. Open your portal to see it.`;
+  if (changes.length && changes.every((c) => c.kind === "problem")) return "We couldn't check this portal. Update the saved login in Forge.";
+  if (changes.some((c) => c.kind === "status")) return "Your application status changed.";
+  if (changes.some((c) => c.kind === "missing")) return "Something new is listed as missing.";
+  return "New update in your portal.";
+}
+
 export interface Email {
   subject: string;
   text: string;
