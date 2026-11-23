@@ -1,0 +1,253 @@
+# Forge iOS: shared contract for screen agents
+
+The foundation (Core, DesignSystem, App, SignIn) is done and tested. Build your feature on top of it.
+This repo is public: synthetic data only in previews, fixtures and tests. Do not commit or push.
+
+## Build and test
+
+```sh
+cd /Users/neel/Documents/GitHub/forge/ios && xcodegen generate && xcodebuild -project Forge.xcodeproj -scheme Forge -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/forge-dd-<yourname> CODE_SIGNING_ALLOWED=NO build
+```
+
+Use `test` in place of `build` to run the unit tests (Swift Testing, `ForgeTests/`). Sources are folder-based: a new `.swift` file in your folder is picked up after `xcodegen generate`. The build has zero warnings; keep it that way.
+
+Swift 6 strict concurrency. Views are `@MainActor`. Models are `Sendable` value types.
+
+## Ownership rules
+
+| Agent | Folder you own | Root view (keep the name) |
+|---|---|---|
+| Applications (+ Decisions) | `Forge/Features/Applications/` | `ApplicationsView` |
+| Essays | `Forge/Features/Essays/` | `EssaysView` |
+| Colleges (Explore, Shortlist, Recommendations) | `Forge/Features/Colleges/` | `CollegesView` |
+| Profile (Profile, Progress, Onboarding) | `Forge/Features/Profile/` | `ProfileView` |
+| More (Settings, Share/Export, AI chat, notifications, connections, sign out) | `Forge/Features/More/` | `MoreView` |
+
+- Edit only files inside your own folder. Do not edit `Core/`, `DesignSystem/`, `App/`, `Features/SignIn/`, `project.yml` or another agent's folder.
+- Need a model field, an endpoint or a helper Core lacks? Add it in a **new file in your folder** as an extension, e.g. `Features/Colleges/APIClient+Colleges.swift` with `extension APIClient { func searchColleges(...) }`. Prefix private types with your area to avoid name clashes (`CollegesSearchResult`, not `SearchResult`).
+- Never name a type `Testing`, `Test`, `Tag`... that shadows a framework. (`Tag` and `TestScores` already exist in Core.)
+- Your root view replaces the placeholder file in your folder. Keep the `NavigationStack(path: $router.<yourPath>)` (see Router), wrap content in `WorkspaceGate`, apply `.forgeScreenBackground()`.
+- Previews: `.previewEnvironment()` injects services seeded with `PreviewData` (synthetic).
+
+## Environment objects
+
+All injected at the root; read them with `@Environment(Type.self)`:
+
+| Type | What |
+|---|---|
+| `WorkspaceStore` | workspace + tracker data, all reads and writes |
+| `Router` | selected tab, per-tab `NavigationPath`, deep links |
+| `SessionModel` | `phase`, `user` (name, email), `signOut()` |
+| `PushManager` | notification permission state, `requestAuthorization()` |
+
+`AppConfig` is at `store.config` (`baseURL`, `resolve(_:)`, `shareURL(token:)`, `pushEnvironment`). The raw client is `store.api`.
+
+## WorkspaceStore (`Core/Store/WorkspaceStore.swift`, `+Actions.swift`)
+
+```swift
+@MainActor @Observable final class WorkspaceStore {
+    let api: APIClient
+    var config: AppConfig
+    var phase: Phase                     // .idle / .loading / .loaded / .failed(APIError) (first load only)
+    var isRefreshing: Bool
+    var refreshError: APIError?          // last background refresh failure; show an ErrorBanner
+    var workspace: Workspace             // always non-nil (.empty before load)
+    var tracker: TrackerView
+    var applications: [TrackedApplication]
+    var hasLoaded: Bool
+    func application(id: String) -> TrackedApplication?
+
+    func loadIfNeeded() async            // WorkspaceGate calls this
+    func refresh() async                 // pull-to-refresh: .refreshable { await store.refresh() }
+    func refreshApplications() async     // tracker only
+
+    // Writes. Throw APIError (show error.message). Optimistic changes roll back on failure.
+    func patch(_ patch: WorkspacePatch, optimistic: ((inout Workspace) -> Void)? = nil) async throws
+    func postAction(_ action: String, fields: [String: JSONValue] = [:]) async throws -> WorkspaceActionResponse
+    func perform(_ action: ApplicationAction, optimistic: ((inout TrackerView) -> Void)? = nil) async throws -> ApplicationsResponse
+
+    // Ready-made optimistic helpers
+    func updateApplication(id: String, _ edit: ApplicationEdit) async throws
+    func setStatus(_ status: AppStatus, forApplication id: String) async throws
+    func removeApplication(id: String) async throws
+    func revealDecision(forApplication id: String) async throws
+    func setFollowUp(_ followUpID: String, done: Bool, inApplication id: String) async throws
+    func resolveFlag(_ flagID: String) async throws
+    func saveEssayDraft(id: String, text: String) async throws   // debounce ~1s while typing
+    func updateCollege(_ college: College) async throws          // collegePatch by slug
+    func setColleges(_ colleges: [College]) async throws         // add/remove/reorder shortlist
+    func togglePlannerTask(_ key: String, done: Bool) async throws
+}
+```
+
+How writes reconcile: optimistic edits show immediately; when no request is in flight the screen snaps to the newest server copy (by `revision`). Overlapping writes don't flicker, failed ones roll back. A `.signedOut` error anywhere sends the app to the sign-in screen by itself; don't handle it.
+
+Examples:
+
+```swift
+// Status change with haptic + error alert
+@State private var error: APIError?
+Button("Mark admitted") {
+    Task {
+        do { try await store.setStatus(.admitted, forApplication: app.id); Haptics.success() }
+        catch { self.error = APIError.wrap(error); Haptics.error() }
+    }
+}
+.errorAlert($error)
+
+// Add a school from the catalog
+try await store.perform(.add(collegeId: school.id))
+
+// Custom optimistic workspace patch
+try await store.patch(.with { $0.removeScholarshipId = s.id }) { $0.scholarships.removeAll { $0.id == s.id } }
+
+// Share link
+let r = try await store.postAction("create-share", fields: ["label": "Parents", "scope": "progress"])
+let url = r.token.map { store.config.shareURL(token: $0) }
+```
+
+## Models (`Core/Models/`)
+
+All decode leniently: missing fields get defaults, numbers-as-strings are accepted, a bad array element is skipped, unknown enum values are kept (never crash). All are `Codable, Hashable, Sendable`, with memberwise inits.
+
+**Workspace** (`GET /api/workspace`, lib/store.ts): `revision, draftStorageKey, applicant: Applicant, profile: Profile, ed: EarlyDecision?, criticalDates: [CriticalDate], colleges: [College], essays: EssaySet, essayDrafts: [String: String], plannerDone: [String: Bool], recommendations: [Recommendation], scholarships: [Scholarship], financialAid: FinancialAid, advisorNotes: [AdvisorNote], shares: [ShareMeta], recoveryCode: String?, uploads: [UploadMeta], onboarding: OnboardingState, applicationRead: ApplicationRead?, admissionOdds: [String: AdmissionOdds], schoolStats: [String: JSONValue]`, plus `needsOnboarding: Bool`.
+
+- `Applicant`: name, cycle, year, gpaWeighted, gpaUnweighted, sat, satNote (stats are "—" when unset; use `string.isPresentStat`), awards: Int.
+- `Profile`: intended, hs, gradYear (String), location, counselor, residency, `testing: TestScores {sat, satNote, aps: [APScore{course, score}]}`, `coursework: Coursework {honors, aps, senior: [String]}`, `activities: [Activity{rank, name, type, org?, years?, role?, hpw?, wpy?, college?, desc?, bullets?}]`, `honors: [Honor{title, level, year?, top?}]`.
+- `College` (shortlist, `id == slug`): slug, name, short, location?, setting?, rank: Int?, admit?, satRange?, gpa?, photo?, tier: CollegeTier? (.reach/.target/.safety), verdict: Verdict{tone,label}?, priority?, major?, deadline?, supp?, tags: [Tag{label,tone}]?, size?, act?, netPrice?, grad6?, earnings?, plans: [PlanRate{plan,rate}]?, deadlines: [PlanDeadline{plan,date}]?, fee?, transfer?, scorecardId?, coa?, tuitionIn?, tuitionOut?, grad4?, retention?, ownership?, testPolicy?, pellRate?, url?, priceCalcUrl?.
+- `EssaySet {commonApp: [Essay], supplements: [String: [Essay]]}` (+ `all`). `Essay {id, group?, label, prompt, limit: Int, unit ("words"/"characters"), starter?}`, `length(of:)`, `countsCharacters`.
+- `EarlyDecision {school, deadline, daysLeft, reason}`; `CriticalDate {date, label, detail, source?}`.
+- `Recommendation {id, name, type: RecommenderType, subject?, status: RecommendationStatus, deadline?, notes?}`; `Scholarship {id, name, amount?, deadline?, status: ScholarshipStatus, url?, notes?}`; `FinancialAid {fafsaStatus, cssStatus: AidFormStatus, fafsaOpenDate?, notes?}`. Each status type has `.all` and `.label`.
+- `AdvisorNote {id, body, author, createdAt (ms), essayId?, via?}`; `ShareMeta {token, label, scope?, createdAt, revokedAt?, isActive}`; `UploadMeta`.
+- `OnboardingState {completed, completedAt?, storyNotes: StoryNotes?, listPrefs: ListPrefs?}`; `ListPrefs {ambition, appCount: Int?, settings, size, regions, notes}` (allowed values in the doc comment).
+- `AdmissionOdds {percent, low, high, baseline, baselineSource, summary, factors: [OddsFactor{label, effect, detail}], sources, estimatedAt}`, keyed by shortlist slug or `"app:<tracked id>"`. `ApplicationRead`.
+
+**Tracker** (`GET /api/applications` → `TrackerView`, lib/tracker-service.ts `viewTracker`): `revision, autocheck, emails, flags: [TrackerFlag{id, text, scope, createdAt}], apps: [TrackedApplication]`.
+
+`TrackedApplication`: `id, collegeId?, slug?, name, logo? (site-relative path), portalName, portalUrl, status: AppStatus, statusLabel, stage: AppStage, round: ApplicationRound, roundFromPortal, deadline ("yyyy-mm-dd" or ""), decisionDate: KeyDate?, nextDate: KeyDate?, decision: DecisionView{state, portalText}, portal: PortalSnapshot?{checkedAt, ok, error, statusText, update, checklist: [PortalItem{item, status, date, done, optional}]}, missing: [String], submittedAt, followUps: [FollowUp{id, text, due, done, createdAt}], lastFailure: PortalFailure?{at, error}, notes, decisionNote, login: PortalLogin?{username, hasPassword}, lastChecked (ms)?, updatedAt`.
+
+- `AppStatus` (`.planning .inProgress .finalChecks .submitted .complete .deferred .waitlisted .admitted .committed .denied .withdrawn`, `.all`, `.label`, `.stage`, `.isOutcome`; DesignSystem adds `.tone`, `.systemImage`).
+- `AppStage` (`.working .waiting .admitted .denied .closed`, `.all`, `.label`, `.tone`).
+- `ApplicationRound` (`.none ("") .ed .ed2 .ea .rea .rd .rolling`, `.all`, `.label`, `.short`).
+- `DecisionState`: `.none`, `.hidden` (posted, not opened: show "Decision posted" and a reveal action; never show outcome text), `.revealed`, `.recorded`.
+- `KeyDate {date, kind ("Deadline"/"Decision"), estimated}`.
+
+**Actions** (`ApplicationAction`, POST /api/applications): `.add(name:collegeId:slug:portalUrl:edit:)`, `.update(id:edit:)`, `.remove(id:)`, `.reveal(id:)`, `.login(id:username:password:)`, `.forgetLogin(id:)`, `.autocheck(on:)`, `.emails(on:)`, `.inbox(on:newAddress:birthdate:)` (on nil = read status), `.check(ids:)` (slow, up to 2 min, rate limited), `.importCollegeApps(email:password:)`, `.followUpAdd(id:text:due:)`, `.followUpSet(id:followUpId:done:remove:)`, `.flagAdd(text:scope:)`, `.flagResolve(flagId:)`. `ApplicationEdit {status, round, deadline, decisionDate, notes, decisionNote, portalUrl (https:// or ""), name, submittedAt}`; nil = unchanged. Reply: `ApplicationsResponse {data: TrackerView?, app?, checked?, inbox: InboxStatus?, added?, linked?, total?}`.
+
+**WorkspacePatch** (PATCH /api/workspace, lib/workspace-patch.ts). Set only what changes: `listPrefs, applicant: ApplicantPatch, profile: ProfilePatch, ed (EarlyDecision??; .some(nil) clears), criticalDates, colleges, essays: EssaysPatch, essayDrafts, plannerDone, recommendations, scholarships, financialAid, essayDraft {id,text}, plannerToggle {key,done}, recommendation (upsert; id "" creates), removeRecommendationId, scholarship (upsert), removeScholarshipId, removeAdvisorNoteId, collegePatch (pass the full current college with changes)`. Array fields replace the server's array: build them from `store.workspace`. Build inline with `WorkspacePatch.with { $0.x = ... }`.
+
+**Other**: `MeResponse {signedIn, user {email, name}}`, `CatalogSchool {id, name, state, monogram, colors, portalName, loginUrl, howToLogIn, logo?}`, `Connection {id, name, host, createdAt}` (the app's own grant shows as "Forge for iPhone"), `InboxStatus {address?, birthdate}`, `JSONValue` (any JSON; literal-expressible; `decode(_:)`).
+
+**Dates** (`Core/Util/ForgeDates.swift`): `day("yyyy-mm-dd") -> Date?`, `iso(Date)`, `today()`, `short(_)` ("Nov 1" / "Jan 8, 2027"), `daysUntil(_) -> Int?`, `relative(_)` ("tomorrow", "in 5 days"), `ago(milliseconds:)`. `Date(milliseconds:)` for server timestamps.
+
+## APIClient (`Core/Networking/`)
+
+Adds `Authorization: Bearer`, `x-forge-app: ios`; refreshes once on 401 (one shared refresh for concurrent requests); maps failures to `APIError`.
+
+```swift
+func get<T: Decodable>(_ path: String, query: [URLQueryItem] = [], as: T.Type = T.self) async throws -> T
+func post<T: Decodable>(_ path: String, body: some Encodable, timeout: TimeInterval = 30, as: T.Type = T.self) async throws -> T
+func patch<T: Decodable>(_ path: String, body: some Encodable, as: T.Type = T.self) async throws -> T
+func decode<T: Decodable>(_ type: T.Type, from: APIRequest) async throws -> T
+func send(_ request: APIRequest) async throws -> (Data, HTTPURLResponse)        // raw 2xx body
+func stream(_ request: APIRequest) async throws -> (URLSession.AsyncBytes, HTTPURLResponse) // AI chat streaming
+// APIRequest("GET", "/api/x", query:, body:, timeout:), or try .json("POST", "/api/x", encodable)
+// DataEnvelope<T> unwraps {success, data}. A {success:false, error} reply throws .server(message).
+
+// Typed endpoints
+me(), workspace(), patchWorkspace(_:), workspaceAction(_:fields:), applications(), applications(_ action:),
+catalog(), connections(), revokeConnection(id:), registerDevice(token:environment:), unregisterDevice(token:),
+export(format:) -> (data, filename?)   // "txt" | "brief" | "ics" | "json"
+```
+
+Prefer the store for anything it holds. Use `store.api` directly for data the store doesn't keep (catalog, college search, connections, AI chat, exports), from your own extension file.
+
+`APIError`: `.offline`, `.signedOut`, `.server(status:message:)` (server's own words, safe to show), `.rateLimited(message:)`, `.unavailable`, `.decoding`, `.cancelled`. Always show `error.message`; `isRetryable` tells you whether to offer retry. `APIError.wrap(anyError)`.
+
+Logos and photos are site-relative (`/logos/x.png`): `store.config.resolve(path)` or `SchoolLogo(name:path:config:)`.
+
+## Router (`Core/Navigation/Router.swift`)
+
+```swift
+enum AppTab { case applications, essays, colleges, profile, more }   // .title, .systemImage
+struct ApplicationRoute: Hashable { let id: String }
+@MainActor @Observable final class Router {
+    var selectedTab: AppTab
+    var applicationsPath, essaysPath, collegesPath, profilePath, morePath: NavigationPath
+    func openApplication(id: String)     // switch tab + push ApplicationRoute
+    func popToRoot(_ tab: AppTab)
+    func handle(_ url: URL) -> Bool      // collegeforge://application/<id>, collegeforge://tab/<name>
+}
+```
+
+Root view pattern (required so deep links and tab re-tap work):
+
+```swift
+struct EssaysView: View {
+    @Environment(Router.self) private var router
+    var body: some View {
+        @Bindable var router = router
+        NavigationStack(path: $router.essaysPath) {
+            WorkspaceGate { EssaysList() }
+                .navigationTitle("Essays")
+                .forgeScreenBackground()
+                .navigationDestination(for: EssayRoute.self) { EssayEditor(id: $0.id) }
+        }
+    }
+}
+```
+
+**Applications agent**: register `.navigationDestination(for: ApplicationRoute.self)` on your stack; push taps and other tabs (e.g. Profile > Progress) open an application with `router.openApplication(id:)`. Decisions live in your tab (e.g. a segmented control or a "Decisions" section/route).
+
+## Push (`Core/Push/`)
+
+Handled by the foundation: permission primer sheet (shown once after the first tracked application), APNs registration, `POST /api/devices` on every launch, `DELETE` on sign-out, tap → `router.openApplication(id:)` + tracker refresh, foreground arrival → banner + tracker refresh. Payload: `{"aps":{...},"type":"portal_update","appId":"<tracked app id>"}`.
+
+**More agent**: `push.authorizationStatus`, `push.isAuthorized`, `push.requestAuthorization()`, `push.lastError`; when `.denied`, link to `UIApplication.openNotificationSettingsURLString`. Keep sign-out (`await session.signOut()`, with a confirmation) and the `#if DEBUG` `DeveloperSection` (server override via `AppConfig.setDebugBaseURL(_:)`, relaunch to apply) from the placeholder.
+
+## Design system (`Forge/DesignSystem/`)
+
+Colors (`Theme.*`, all light/dark): `canvas` (page), `surface`, `card`, `fill`, `hairline`, `ink` (primary text), `body`, `muted`, `mutedSoft`, `accent` (actions; also the app tint), `accentSoft`, `coral` (brand, urgent), `teal`, `amber`, `success`, `danger`. `ToneName.color("good"|"top"|"ok"|"error"|...)` for web tone strings; `AppStatus.tone`, `AppStage.tone`, `CollegeTier.tone`.
+
+Spacing `Theme.Spacing.xxs 4 / xs 8 / sm 12 / md 16 / lg 24 / xl 32`; radius `Theme.Radius.small 6 / medium 10 / large 14`.
+
+Type: system text styles (Dynamic Type). `Font.forgeDisplay(.title2)` = serif (New York) for titles/hero numbers; nav bar titles are already serif. `Font.forgeEyebrow`, `Font.forgeNumber(.title)` (monospaced digits).
+
+Components:
+
+```swift
+StatusBadge(status: app.status)
+Badge(text: "Reach", tone: CollegeTier.reach.tone, showsDot: true)
+SectionHeader(title: "Waiting to hear", detail: "4 schools", actionTitle: "See all") { ... }
+Eyebrow(text: "Due this week")
+EmptyStateView(systemImage: "tray", title: "No applications yet", message: "…", actionTitle: "Add a school") { ... }
+LoadingView(label: "Checking portals…")
+ErrorStateView(error: apiError) { await retry() }
+ErrorBanner(message: store.refreshError!.message, retry: { ... }, dismiss: { store.refreshError = nil })
+.errorAlert($error)                       // Binding<APIError?>
+SchoolLogo(name: app.name, path: app.logo, config: store.config, size: 40, tint: nil)
+PrimaryButton(title: "Save", systemImage: nil, isLoading: saving) { ... }   // full width
+Button("…").buttonStyle(.forgePrimary) / .buttonStyle(.forgeSecondary)
+ProgressRing(progress: 0.4, lineWidth: 6, tint: Theme.accent, label: "3/8", size: 56)
+Card { ... }  /  view.forgeCard()
+ForgeRow(title:, subtitle:) { leading } trailing: { trailing }
+LabeledValueRow(label: "Deadline", value: "Jan 4", systemImage: "calendar")
+WorkspaceGate { content }                 // first-load spinner / retry
+view.forgeScreenBackground()             // canvas behind lists
+ForgeMark(size: 44)
+Haptics.success() / .warning() / .error() / .selection() / .tap()   // or .sensoryFeedback
+```
+
+## Quality bar
+
+Native first: `List` with sections, `NavigationLink`, `.sheet` with detents for add/edit forms, `.swipeActions` (status, done, remove), `.contextMenu`, `.refreshable`, `.searchable`, `Menu`/`Picker` for statuses and rounds, `ShareLink` for share links and exports, `.confirmationDialog` for destructive actions. Every list has empty, loading and error states. Dynamic Type at accessibility sizes must not clip (no fixed heights on text). Check dark mode. Copy: plain and short, the web's wording where it exists. Files under ~400 lines; split views into small structs.
+
+## Testing against a server
+
+- Production: run the app, "Continue with Xanom".
+- Local dev server: launch args `-ForgeBaseURL http://localhost:3000 -ForgeDevToken <bearer>` (DEBUG builds). The token skips OAuth. Settings > Developer also stores a server override.
+- `xcrun simctl launch <udid> co.xanom.forge -ForgeBaseURL ... -ForgeDevToken ...`
+
+## Server-side expectations (not in this folder)
+
+The app depends on: the proxy accepting `Authorization: Bearer <oauth access token>` + `x-forge-app: ios` as a session for every `/api` route, **and answering 401 (not an anonymous workspace) when that bearer is invalid**; `POST/DELETE /api/devices`; the portal-check cron sending APNs with the payload above; the same device token re-registered by a different account moving to that account.

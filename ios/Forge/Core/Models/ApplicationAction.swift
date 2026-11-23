@@ -1,0 +1,132 @@
+import Foundation
+
+/// Fields that `.add` and `.update` can set on an application. Nil fields are left alone.
+/// Dates are yyyy-mm-dd or "" to clear; `portalUrl` must start with https:// or be "".
+struct ApplicationEdit: Encodable, Hashable, Sendable {
+    var status: AppStatus?
+    var round: ApplicationRound?
+    var deadline: String?
+    var decisionDate: String?
+    var notes: String?
+    var decisionNote: String?
+    var portalUrl: String?
+    var name: String?
+    var submittedAt: String?
+}
+
+/// One POST /api/applications action (app/api/applications/route.ts). The server replies with the whole
+/// tracker in `data`, which `WorkspaceStore` applies for you.
+enum ApplicationAction: Encodable, Hashable, Sendable {
+    /// Add by catalog id or by name. `slug` links it to a shortlist school.
+    case add(name: String? = nil, collegeId: String? = nil, slug: String? = nil, portalUrl: String? = nil, edit: ApplicationEdit = .init())
+    case update(id: String, edit: ApplicationEdit)
+    case remove(id: String)
+    /// Open a posted decision (`decision.state == .hidden`).
+    case reveal(id: String)
+    /// Save a portal login (stored encrypted on the server).
+    case login(id: String, username: String, password: String)
+    case forgetLogin(id: String)
+    case autocheck(on: Bool)
+    case emails(on: Bool)
+    /// `on == nil` reads the inbox status without changing it.
+    case inbox(on: Bool? = nil, newAddress: Bool? = nil, birthdate: String? = nil)
+    /// Check portals now; nil checks every app with a saved login. Can take up to two minutes.
+    case check(ids: [String]? = nil)
+    case importCollegeApps(email: String, password: String)
+    case followUpAdd(id: String, text: String, due: String? = nil)
+    case followUpSet(id: String, followUpId: String, done: Bool? = nil, remove: Bool? = nil)
+    case flagAdd(text: String, scope: String? = nil)
+    case flagResolve(flagId: String)
+
+    var name: String {
+        switch self {
+        case .add: "add"
+        case .update: "update"
+        case .remove: "remove"
+        case .reveal: "reveal"
+        case .login: "login"
+        case .forgetLogin: "forget-login"
+        case .autocheck: "autocheck"
+        case .emails: "emails"
+        case .inbox: "inbox"
+        case .check: "check"
+        case .importCollegeApps: "import-collegeapps"
+        case .followUpAdd: "followup-add"
+        case .followUpSet: "followup-set"
+        case .flagAdd: "flag-add"
+        case .flagResolve: "flag-resolve"
+        }
+    }
+
+    private struct Key: CodingKey {
+        var stringValue: String
+        var intValue: Int? { nil }
+        init(_ s: String) { stringValue = s }
+        init?(stringValue: String) { self.stringValue = stringValue }
+        init?(intValue: Int) { nil }
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var c = encoder.container(keyedBy: Key.self)
+        try c.encode(name, forKey: Key("action"))
+        func put<T: Encodable>(_ key: String, _ value: T?) throws {
+            if let value { try c.encode(value, forKey: Key(key)) }
+        }
+        switch self {
+        case let .add(name, collegeId, slug, portalUrl, edit):
+            try put("name", name); try put("collegeId", collegeId); try put("slug", slug); try put("portalUrl", portalUrl)
+            try put("status", edit.status); try put("round", edit.round); try put("deadline", edit.deadline)
+            try put("decisionDate", edit.decisionDate); try put("notes", edit.notes)
+            try put("decisionNote", edit.decisionNote); try put("submittedAt", edit.submittedAt)
+        case let .update(id, edit):
+            try put("id", id); try put("edit", edit)
+        case let .remove(id), let .reveal(id), let .forgetLogin(id):
+            try put("id", id)
+        case let .login(id, username, password):
+            try put("id", id); try put("username", username); try put("password", password)
+        case let .autocheck(on), let .emails(on):
+            try put("on", on)
+        case let .inbox(on, newAddress, birthdate):
+            try put("on", on); try put("newAddress", newAddress); try put("birthdate", birthdate)
+        case let .check(ids):
+            try put("ids", ids)
+        case let .importCollegeApps(email, password):
+            try put("email", email); try put("password", password)
+        case let .followUpAdd(id, text, due):
+            try put("id", id); try put("text", text); try put("due", due)
+        case let .followUpSet(id, followUpId, done, remove):
+            try put("id", id); try put("followUpId", followUpId); try put("done", done); try put("remove", remove)
+        case let .flagAdd(text, scope):
+            try put("text", text); try put("scope", scope)
+        case let .flagResolve(flagId):
+            try put("flagId", flagId)
+        }
+    }
+}
+
+/// Reply to POST /api/applications. `data` is the whole tracker after the action.
+struct ApplicationsResponse: Decodable, Sendable {
+    var data: TrackerView?
+    /// The application that was added or changed.
+    var app: TrackedApplication?
+    /// Results of a `.check`.
+    var checked: [TrackedApplication]?
+    var inbox: InboxStatus?
+    /// `.importCollegeApps` counts.
+    var added: Int?
+    var linked: Int?
+    var total: Int?
+
+    private enum CodingKeys: String, CodingKey { case data, app, checked, inbox, added, linked, total }
+
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        data = c.optional(TrackerView.self, .data)
+        app = c.optional(TrackedApplication.self, .app)
+        checked = c.optional([Lossy<TrackedApplication>].self, .checked)?.compactMap(\.value)
+        inbox = c.optional(InboxStatus.self, .inbox)
+        added = c.optionalInt(.added)
+        linked = c.optionalInt(.linked)
+        total = c.optionalInt(.total)
+    }
+}

@@ -1,0 +1,43 @@
+{
+  "revision": 42,
+  "draftStorageKey": "8a6f1c1e-0000-4000-8000-000000000001",
+  "applicant": { "name": "Sam Rivera", "cycle": "Fall 2027", "year": "Class of 2027", "gpaWeighted": "4.31", "gpaUnweighted": "3.92", "sat": "1510", "satNote": "Superscore", "awards": 3 },
+  "profile": {
+    "intended": "Computer Science", "hs": "Example High School", "gradYear": 2027, "location": "Springfield, OR",
+    "counselor": "Ms. Example", "residency": "OR",
+    "testing": { "sat": "1510", "satNote": "", "aps": [ { "course": "AP Calculus BC", "score": 5 }, { "course": "AP Physics 1", "score": "4" } ] },
+    "coursework": { "honors": ["Honors Chemistry"], "aps": ["AP Calculus BC"], "senior": ["AP Statistics", "Multivariable"] },
+    "activities": [
+      { "rank": 1, "name": "Robotics Team", "type": "Robotics", "role": "Captain", "years": "9-12", "hpw": 10, "wpy": "30", "college": true, "bullets": ["Led a team of 20"] },
+      { "rank": "2", "name": "Tutoring", "type": "Community Service" },
+      "not an object"
+    ],
+    "honors": [ { "title": "National Merit Commended", "level": "National", "year": "2026", "top": true } ]
+  },
+  "ed": { "school": "Rice University", "deadline": "2026-11-01", "daysLeft": 9, "reason": "Best fit" },
+  "criticalDates": [ { "date": "2026-11-01", "label": "Rice ED", "detail": "Submit by 11:59pm", "source": "student" } ],
+  "colleges": [
+    { "slug": "rice", "name": "Rice University", "short": "Rice", "location": "Houston, TX", "rank": 18, "admit": "7.9%", "tier": "reach",
+      "verdict": { "tone": "top", "label": "Reach" }, "priority": true, "tags": [ { "label": "Need-blind", "tone": "good" } ],
+      "plans": [ { "plan": "ED", "rate": "15%" } ], "deadlines": [ { "plan": "ED", "date": "Nov 1" } ], "scorecardId": 227757, "photo": null },
+    { "slug": "pomona", "name": "Pomona College", "rank": "4", "tier": "dream-school" }
+  ],
+  "essays": {
+    "commonApp": [ { "id": "ca-1", "group": "Common App", "label": "Prompt 1", "prompt": "Some students have a background...", "limit": 650, "unit": "words" } ],
+    "supplements": { "rice": [ { "id": "rice-why", "label": "Why Rice?", "prompt": "Why are you interested in Rice?", "limit": 150, "unit": "words" } ], "uc": [] }
+  },
+  "essayDrafts": { "ca-1": "When I was nine...", "bad": 12 },
+  "plannerDone": { "task-1": true },
+  "applications": { "rice": { "status": "preparing" } },
+  "tracker": { "apps": [], "autocheck": true, "emails": true, "flags": [] },
+  "recommendations": [ { "id": "r1", "name": "Mr. Teacher", "type": "teacher", "subject": "Physics", "status": "asked" }, { "id": "r2", "name": "Coach", "type": "coach", "status": "pondering" } ],
+  "scholarships": [ { "id": "s1", "name": "Local Rotary", "amount": "$1,000", "status": "in_progress" } ],
+  "financialAid": { "fafsaStatus": "submitted", "cssStatus": "n_a" },
+  "advisorNotes": [ { "id": "n1", "body": "Tighten paragraph 2.", "author": "Counselor", "createdAt": 1790000000000, "essayId": "ca-1", "via": "full" } ],
+  "shares": [ { "token": "tok_example", "label": "Parents", "scope": "progress", "createdAt": 1790000000000 } ],
+  "uploads": [ { "name": "transcript.pdf", "chars": 5400, "uploadedAt": 1790000000000 } ],
+  "onboarding": { "completed": true, "completedAt": 1790000000000, "listPrefs": { "ambition": "balanced", "appCount": null, "settings": ["urban"], "size": "any", "regions": ["west"], "notes": "" } },
+  "admissionOdds": { "rice": { "percent": 14, "low": 9, "high": 20, "baseline": 8, "baselineSource": "Common Data Set", "summary": "A reach.", "factors": [ { "label": "Rigor", "effect": "up", "detail": "Strong" } ], "sources": [], "estimatedAt": "2026-10-01T00:00:00Z" } },
+  "schoolStats": { "a1": { "admitRate": 0.08 } },
+  "someFutureField": { "nested": true }
+}

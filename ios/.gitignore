@@ -1,0 +1,4 @@
+Forge.xcodeproj/
+build/
+DerivedData/
+*.xcuserstate

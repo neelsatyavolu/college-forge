@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "data": {
+    "revision": 42,
+    "autocheck": true,
+    "emails": false,
+    "flags": [ { "id": "f1", "text": "Counselor letter shows Not Started", "scope": "All Common App schools", "createdAt": 1790000000000 } ],
+    "apps": [
+      {
+        "id": "app-1", "collegeId": "rice", "slug": "rice", "name": "Rice University", "logo": "/logos/rice.png",
+        "portalName": "Rice Applicant Portal", "portalUrl": "https://example.edu/apply/status",
+        "status": "submitted", "statusLabel": "Submitted", "stage": "waiting", "round": "ED", "roundFromPortal": false,
+        "deadline": "2026-11-01", "decisionDate": { "date": "2026-12-15", "kind": "Decision", "estimated": true },
+        "nextDate": { "date": "2026-12-15", "kind": "Decision", "estimated": true },
+        "decision": { "state": "none", "portalText": "" },
+        "portal": { "checkedAt": 1790000000000, "ok": true, "error": "", "statusText": "Awaiting materials", "update": "",
+          "checklist": [ { "item": "Counselor Recommendation", "status": "Not received", "date": "", "done": false, "optional": false } ] },
+        "missing": ["Counselor Recommendation"], "submittedAt": "2026-10-28",
+        "followUps": [ { "id": "fu1", "text": "Send mid-year report", "due": "2027-02-01", "done": false, "createdAt": 1790000000000 } ],
+        "lastFailure": null, "notes": "", "decisionNote": "", "login": { "username": "sam@example.com", "hasPassword": true },
+        "lastChecked": 1790000000000, "updatedAt": 1790000000000
+      },
+      {
+        "id": "app-2", "collegeId": null, "slug": null, "name": "Example State University", "logo": null,
+        "portalName": "Applicant portal", "portalUrl": "", "status": "teleported", "stage": "somewhere", "round": "EA2",
+        "deadline": "", "decisionDate": null, "nextDate": null, "decision": { "state": "hidden", "portalText": "" },
+        "portal": null, "missing": [], "followUps": [], "notes": "Call admissions", "login": null, "lastChecked": null, "updatedAt": 1790000000001
+      },
+      { "id": 3, "name": "Broken but readable" },
+      42
+    ]
+  }
+}
