@@ -354,6 +354,8 @@ const workspaceKey = (id: string) => `workspaces/${safeId(id)}.json`;
 const uploadKey = (id: string, name: string) => `uploads/${safeId(id)}/${safeName(name)}`;
 // Kept outside the workspace document so share links, exports and AI context never include it.
 const scattergramKey = (id: string) => `scattergrams/${safeId(id)}.json`;
+// Same reason: a student's own judged ranking stays out of share links, exports and AI context.
+const careerAiKey = (id: string) => `career-ai/${safeId(id)}.json`;
 
 export function newWorkspaceId(): string {
   return randomUUID();
@@ -553,12 +555,26 @@ export async function updateWorkspace(id: string, mutate: WorkspaceMutation): Pr
 
 export async function resetWorkspace(id: string): Promise<Workspace> {
   await deleteScattergramText(id);
+  await deleteCareerAiText(id).catch(() => undefined);
   return updateWorkspace(id, () => emptyWorkspace());
 }
 
 /** Scattergram imports were removed; a reset still clears any a workspace saved before. */
 async function deleteScattergramText(id: string): Promise<void> {
   await deleteText(scattergramKey(id));
+}
+
+/** The student's judged ranking file (lib/career-ai.ts), stored as given after validation. */
+export async function readCareerAiText(id: string): Promise<string | null> {
+  return readText(careerAiKey(id));
+}
+
+export async function saveCareerAiText(id: string, text: string): Promise<void> {
+  await writeText(careerAiKey(id), text, "application/json");
+}
+
+export async function deleteCareerAiText(id: string): Promise<void> {
+  await deleteText(careerAiKey(id));
 }
 
 export async function saveUpload(id: string, name: string, text: string): Promise<UploadMeta> {

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { CAREER, DEFAULT_WEIGHTS, PILLARS, PILLAR_LABELS, type MajorInfo, type Weights } from "@/lib/career-ranking";
 
 export type Flags = { col: boolean; va: boolean; stretch: boolean };
@@ -18,9 +19,10 @@ type Props = {
   flags: Flags;
   onFlags: (f: Flags) => void;
   showTargets: boolean;
+  children?: ReactNode;
 };
 
-export default function CareerSettings({ majors, targets, onTargets, weights, onWeights, flags, onFlags, showTargets }: Props) {
+export default function CareerSettings({ majors, targets, onTargets, weights, onWeights, flags, onFlags, showTargets, children }: Props) {
   const tot = PILLARS.reduce((a, k) => a + weights[k], 0) || 1;
   const career = Math.round((100 * CAREER.reduce((a, k) => a + weights[k], 0)) / tot);
   const toggle = (k: string) => {
@@ -69,6 +71,7 @@ export default function CareerSettings({ majors, targets, onTargets, weights, on
           </button>
         </div>
       </div>
+      {children}
     </details>
   );
 }

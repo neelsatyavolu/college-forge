@@ -48,6 +48,7 @@ export default function Methodology({ count, generated }: { count: number; gener
             <li><strong>Small numbers under a rank</strong> show where the school lands if any one career measure is dropped.</li>
             <li><strong>My path</strong> uses the majors you pick. A major you applied to counts directly. Any other counts if switching in after you enroll is open, has a published grade bar of about 3.3 or lower, or admits most applicants.</li>
             <li><strong>Admitted</strong> ranks the schools you marked as admitted in Forge, on the same scale as My path.</li>
+            <li><strong>AI My Path</strong> appears if you load your own judged list under Adjust the ranking. It shows your order and reasons next to the formula's rank. It is private to your account.</li>
             <li><strong>U.S. News, Niche and Forbes</strong> ranks are shown for comparison. Niche and Forbes are not scored, because both count cost or debt.</li>
           </ul>
         </div>

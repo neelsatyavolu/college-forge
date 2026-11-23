@@ -3,7 +3,8 @@ import data from "@/public/data/career-ranking.json";
 import { majorKeysOf, matchSchoolId, type CareerData } from "@/lib/career-ranking";
 import { expandAlias } from "@/lib/college-aliases";
 import { ownerOf } from "@/lib/session";
-import { peekWorkspace } from "@/lib/store";
+import { parseCareerAi, type CareerAi } from "@/lib/career-ai";
+import { peekWorkspace, readCareerAiText } from "@/lib/store";
 import { statusInfo } from "@/lib/tracker";
 import { anonymousWorkspaceId, getSession } from "@/lib/workspace-cookie";
 
@@ -11,13 +12,14 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SCHOOLS = (data as unknown as CareerData).schools;
-const NONE = { workspace: false, intended: [] as string[], schools: [] as Mine[] };
+const NONE = { workspace: false, account: false, intended: [] as string[], schools: [] as Mine[], ai: null as CareerAi | null };
 type Mine = { id: number; major: string[]; admitted: boolean };
 
 /**
  * What the career rankings page needs from the visitor's own workspace: the majors they intend, the major on each
  * application, and which ranked schools admitted them. Only schools the ranking covers come back, as ids.
  * Read only: never creates or writes a workspace. A visitor without a stored one gets an empty answer.
+ * A signed-in student also gets their own judged ranking, if they loaded one (lib/career-ai.ts).
  */
 export async function GET(req: NextRequest) {
   const headers = { "cache-control": "no-store" };
@@ -25,9 +27,10 @@ export async function GET(req: NextRequest) {
   const anon = session ? null : anonymousWorkspaceId(req);
   const id = session?.workspaceId ?? (anon && !(await ownerOf(anon)) ? anon : null);
   if (!id) return Response.json(NONE, { headers });
+  const account = !!session;
   try {
     const ws = await peekWorkspace(id);
-    if (!ws) return Response.json(NONE, { headers });
+    if (!ws) return Response.json({ ...NONE, account }, { headers });
     const bySlug = new Map(ws.colleges.map((c) => [c.slug, c]));
     const out = new Map<number, Mine>();
     const add = (sid: number | null, major: string | undefined, admitted: boolean) => {
@@ -41,7 +44,8 @@ export async function GET(req: NextRequest) {
       const c = app.slug ? bySlug.get(app.slug) : undefined;
       add(idOf(c?.name ?? app.name, c?.scorecardId), c?.major, statusInfo(app.status).stage === "admitted");
     }
-    return Response.json({ workspace: true, intended: majorKeysOf(ws.profile?.intended), schools: [...out.values()] }, { headers });
+    const ai = account ? parseCareerAi(await readCareerAiText(id).catch(() => null)) : null;
+    return Response.json({ workspace: true, account, intended: majorKeysOf(ws.profile?.intended), schools: [...out.values()], ai }, { headers });
   } catch {
     return Response.json(NONE, { headers });
   }

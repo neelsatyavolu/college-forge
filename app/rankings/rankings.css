@@ -222,3 +222,19 @@ button.rk-row:hover { background: var(--surface-soft); }
   .rk-toolbar { align-items: stretch; }
   .rk-pricetoggle { padding-bottom: 10px; }
 }
+
+/* AI My Path: the student's own judged list */
+.rk-list--ai .rk-row { grid-template-columns: 60px minmax(0, 1fr) 84px; align-items: start; }
+.rk-list--ai .rk-rank, .rk-list--ai .rk-cell { padding-top: 2px; }
+.rk-ai__why { display: block; margin-top: 6px; max-width: 760px; font-size: 13px; line-height: 1.55; color: var(--body); }
+.rk-ai__about { margin: 0 0 14px; }
+.rk-ai__about p { max-width: 760px; font-size: 13px; line-height: 1.6; color: var(--body); }
+.rk-ai__error { color: var(--coral); font-size: 13px; }
+@media (max-width: 1180px) {
+  .rk-list--ai .rk-row { grid-template-columns: 44px minmax(0, 1fr) 64px; gap: 8px; }
+}
+@media (max-width: 700px) {
+  .rk-list--ai .rk-row { grid-template-columns: 44px minmax(0, 1fr); }
+  .rk-list--ai .rk-row > .rk-rank { grid-row: span 2; }
+  .rk-list--ai .rk-row > .rk-school, .rk-list--ai .rk-row > .rk-cell { grid-column: 2; }
+}

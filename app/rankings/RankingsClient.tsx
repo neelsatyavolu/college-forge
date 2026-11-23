@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { CareerAi } from "@/lib/career-ai";
 import { DEFAULT_WEIGHTS, PILLARS, createRanker, type CareerData, type Student, type Weights } from "@/lib/career-ranking";
+import AiImport from "./AiImport";
+import AiList from "./AiList";
 import CareerList from "./CareerList";
 import CareerSettings, { DEFAULT_FLAGS, type Flags } from "./CareerSettings";
 import { useJson, useStored, useTheme } from "./hooks";
@@ -9,8 +12,8 @@ import Methodology from "./Methodology";
 import WorkspaceShell from "./WorkspaceShell";
 import "./rankings.css";
 
-type Me = { workspace: boolean; intended: string[]; schools: { id: number; major: string[]; admitted: boolean }[] };
-const EMPTY_ME: Me = { workspace: false, intended: [], schools: [] };
+type Me = { workspace: boolean; account?: boolean; intended: string[]; schools: { id: number; major: string[]; admitted: boolean }[]; ai?: CareerAi | null };
+const EMPTY_ME: Me = { workspace: false, account: false, intended: [], schools: [], ai: null };
 
 const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
 const isWeights = (v: unknown): v is Weights =>
@@ -70,23 +73,29 @@ export default function RankingsClient() {
   const tabs = useMemo(() => [
     { id: "path", label: "My path" },
     ...(admitted.size ? [{ id: "admitted", label: "Admitted" }] : []),
+    ...(me.ai ? [{ id: "ai", label: "AI My Path" }] : []),
     { id: "overall", label: "All majors" },
     ...majors.map((m) => ({ id: m.key, label: m.tab || m.label })),
-  ], [majors, admitted.size]);
+  ], [majors, admitted.size, me.ai]);
   const active = tabs.some((t) => t.id === view) ? view : "path";
-  const isAdmitted = active === "admitted", isPath = active === "path" || isAdmitted;
+  const isAi = active === "ai", isAdmitted = active === "admitted", isPath = active === "path" || isAdmitted;
 
   const result = useMemo(() => {
     if (!ranker) return null;
+    if (isAi) {
+      // The formula's My path rank at default settings, to set beside the judged order.
+      const st = { track: "path", ...DEFAULT_FLAGS, w: { ...DEFAULT_WEIGHTS } };
+      return { rows: [], pathRanks: null, formula: new Map(ranker.rank(st, student).map((r) => [r.s.id, r.rk])) };
+    }
     const st = { track: isPath ? "path" : active, ...flags, w: weights };
     const rows = ranker.rank(st, student, isAdmitted ? admitted : undefined);
     const pathRanks = isAdmitted ? new Map(ranker.rank(st, student).map((r) => [r.s.id, r.rk])) : null;
-    return { rows, pathRanks };
-  }, [ranker, active, isPath, isAdmitted, flags, weights, student, admitted]);
+    return { rows, pathRanks, formula: null };
+  }, [ranker, active, isPath, isAdmitted, isAi, flags, weights, student, admitted]);
 
   const total = data.data?.schools.length ?? 0;
-  const title = isAdmitted ? "Schools you got into" : isPath ? "Ranked by the majors you can reach" : active === "overall" ? "Ranked on all majors" : `Ranked on ${majors.find((m) => m.key === active)?.label.toLowerCase()}`;
-  const missing = !isPath && data.data && ranker ? data.data.schools.filter((s) => !ranker.has(s, active)).map((s) => s.name) : [];
+  const title = isAi ? "Your judged list" : isAdmitted ? "Schools you got into" : isPath ? "Ranked by the majors you can reach" : active === "overall" ? "Ranked on all majors" : `Ranked on ${majors.find((m) => m.key === active)?.label.toLowerCase()}`;
+  const missing = !isPath && !isAi && data.data && ranker ? data.data.schools.filter((s) => !ranker.has(s, active)).map((s) => s.name) : [];
 
   return (
     <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={`${total || "…"} colleges · cost never counts`}>
@@ -121,10 +130,26 @@ export default function RankingsClient() {
             flags={flags}
             onFlags={setFlags}
             showTargets={isPath}
-          />
+          >
+            {me.account && <AiImport ai={me.ai ?? null} onChange={(ai) => { setMe((m) => ({ ...m, ai })); if (!ai && isAi) setView("path"); }} />}
+          </CareerSettings>
         )}
 
         <h2 className="rk-listtitle">{title}</h2>
+        {isAi && me.ai && data.data && result?.formula ? (
+          <>
+            <p className="rk-resultline">
+              <strong>{me.ai.list.length}</strong> schools, ranked by hand{me.ai.made ? ` (${me.ai.made})` : ""}. Formula is your My path rank at default settings. Only you can see this list.
+            </p>
+            {me.ai.about && (
+              <details className="rk-details rk-ai__about">
+                <summary>About this list</summary>
+                <p>{me.ai.about}</p>
+              </details>
+            )}
+            <AiList ai={me.ai} schools={data.data.schools} formula={result.formula} admitted={admitted} />
+          </>
+        ) : (<>
         <p className="rk-resultline">
           {!result ? "Loading the ranking…" : (
             <>
@@ -147,6 +172,7 @@ export default function RankingsClient() {
             col={flags.col}
           />
         )}
+        </>)}
         {missing.length > 0 && (
           <p className="rk-resultline rk-missing">
             Not ranked here: {missing.join(", ")}. These schools don’t offer it as a bachelor’s major, or have too few federally aided graduates for pay to be published.
