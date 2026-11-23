@@ -27,6 +27,9 @@
   function ranksOf(s) {
     return {
       usn: (s.usn && s.usn.rank) || null,
+      // U.S. News ranks liberal arts colleges on their own list, so that number
+      // isn't on the same scale as a university's. Niche and Forbes rank both together.
+      lac: !!(s.usn && s.usn.lac),
       niche: (s.niche && s.niche.rank) || null,
       forbes: s.forbes || null,
     };
@@ -36,8 +39,8 @@
   function rankList(apps, schools) {
     var rows = apps.map(function (app) {
       var school = matchSchool(app.name, schools);
-      var ranks = school ? ranksOf(school) : { usn: null, niche: null, forbes: null };
-      var have = [ranks.usn, ranks.niche, ranks.forbes].filter(function (r) { return r != null; });
+      var ranks = school ? ranksOf(school) : { usn: null, lac: false, niche: null, forbes: null };
+      var have = [ranks.lac ? null : ranks.usn, ranks.niche, ranks.forbes].filter(function (r) { return r != null; });
       var avg = have.length ? have.reduce(function (a, b) { return a + b; }, 0) / have.length : null;
       return { app: app, ranks: ranks, avg: avg };
     });

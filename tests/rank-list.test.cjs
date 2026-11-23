@@ -38,6 +38,14 @@ test('the list runs best average rank first, unranked schools last', () => {
   assert.equal(list[3].avg, null);
 });
 
+test('a liberal arts college’s separate U.S. News rank stays out of its average', () => {
+  const [row] = rankList([{ id: 'a', name: 'Amherst College' }], schools);
+  const amherst = schools.find((s) => s.name === 'Amherst');
+  assert.equal(row.ranks.lac, true);
+  assert.equal(row.ranks.usn, amherst.usn.rank);
+  assert.equal(row.avg, (amherst.niche.rank + amherst.forbes) / 2);
+});
+
 test('the average uses only the ranks a school has', () => {
   const one = [{ name: 'Testing College', full: 'Testing College', usn: { rank: 10 }, niche: { rank: 20 }, forbes: null }];
   const [row] = rankList([{ id: 't', name: 'Testing College' }], one);

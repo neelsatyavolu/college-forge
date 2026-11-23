@@ -24,7 +24,7 @@ function RankList({ tracker }) {
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">List</h1>
-          <p className="cf-page-lede">Your schools, ordered by the average of their U.S. News, Niche and Forbes ranks.</p>
+          <p className="cf-page-lede">Your schools, ordered by the average of their U.S. News, Niche and Forbes ranks. U.S. News ranks liberal arts colleges on a separate list, so those average Niche and Forbes only.</p>
         </div>
       </header>
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>Couldn’t load the rankings. Reload the page to try again.</p> : null}
@@ -36,7 +36,7 @@ function RankList({ tracker }) {
               <span className="cf-rank-row__pos">{r.avg == null ? "" : i + 1}</span>
               <SchoolMark name={r.app.name} logo={r.app.logo} />
               <span className="cf-rank-row__name">{r.app.name}</span>
-              <span className="cf-rank-row__src" title="U.S. News · Niche · Forbes">{r.avg == null ? "Not ranked" : `${rankText(r.ranks.usn)} · ${rankText(r.ranks.niche)} · ${rankText(r.ranks.forbes)}`}</span>
+              <span className="cf-rank-row__src" title={r.ranks.lac ? "U.S. News (liberal arts list, not averaged) · Niche · Forbes" : "U.S. News · Niche · Forbes"}>{r.avg == null ? "Not ranked" : `${rankText(r.ranks.usn)}${r.ranks.lac ? " LAC" : ""} · ${rankText(r.ranks.niche)} · ${rankText(r.ranks.forbes)}`}</span>
               <span className="cf-rank-row__avg" title="Average rank">{r.avg == null ? "—" : r.avg.toFixed(1)}</span>
             </li>
           ))}
