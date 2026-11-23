@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Credential, Filters, PriceMode, View } from "./types";
 
 const cache = new Map<string, Promise<unknown>>();
 
@@ -63,60 +62,27 @@ export function useTheme(): [string, () => void] {
   return [theme, toggle];
 }
 
-export type RankingsQuery = Filters & { view: View; credential: Credential; major: string; prices: PriceMode };
-
-const DEFAULTS: RankingsQuery = { view: "overall", credential: "bachelors", major: "", q: "", state: "", control: "", prices: "partial" };
-const VIEWS: View[] = ["overall", "majors", "beats"];
-
-/** ?prices=none|full (older links: nominal|adjusted); anything else is the half-adjusted default. */
-function readPrices(v: string | null): PriceMode {
-  if (v === "none" || v === "nominal") return "nominal";
-  if (v === "full" || v === "adjusted") return "adjusted";
-  return "partial";
-}
-
-function readQuery(): RankingsQuery {
-  if (typeof window === "undefined") return DEFAULTS;
-  const p = new URLSearchParams(window.location.search);
-  const view = p.get("view") as View;
-  const control = p.get("control");
-  return {
-    view: VIEWS.includes(view) ? view : "overall",
-    credential: p.get("level") === "masters" ? "masters" : "bachelors",
-    major: (p.get("major") || "").replace(/\D/g, "").slice(0, 4),
-    q: p.get("q") || "",
-    state: (p.get("state") || "").toUpperCase().slice(0, 2),
-    control: control === "public" || control === "private" ? control : "",
-    prices: readPrices(p.get("prices")),
-  };
-}
-
-/** Query-string-backed view state, so every table is linkable. */
-export function useRankingsQuery(): [RankingsQuery, (patch: Partial<RankingsQuery>) => void] {
-  const [query, setQuery] = useState<RankingsQuery>(DEFAULTS);
+/** A value kept in this browser only (localStorage), never sent to the server. */
+export function useStored<T>(key: string, initial: T, valid: (v: unknown) => v is T): [T, (v: T) => void, boolean] {
+  const [value, setValue] = useState<T>(initial);
+  const [stored, setStored] = useState(false);
   useEffect(() => {
-    setQuery(readQuery());
-    const onPop = () => setQuery(readQuery());
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
-  const update = useCallback((patch: Partial<RankingsQuery>) => {
-    setQuery((prev) => {
-      const next = { ...prev, ...patch };
-      const p = new URLSearchParams();
-      if (next.view !== "overall") p.set("view", next.view);
-      if (next.view === "majors") {
-        if (next.credential === "masters") p.set("level", "masters");
-        if (next.major) p.set("major", next.major);
-      }
-      if (next.q) p.set("q", next.q);
-      if (next.state) p.set("state", next.state);
-      if (next.control) p.set("control", next.control);
-      if (next.prices !== "partial" && next.view !== "beats") p.set("prices", next.prices === "nominal" ? "none" : "full");
-      const s = p.toString();
-      window.history.replaceState(null, "", s ? `?${s}` : window.location.pathname);
-      return next;
-    });
-  }, []);
-  return [query, update];
+    try {
+      const raw = localStorage.getItem(key);
+      const v: unknown = raw == null ? null : JSON.parse(raw);
+      if (valid(v)) { setValue(v); setStored(true); }
+    } catch {
+      /* storage unavailable or corrupt: keep the default */
+    }
+  }, [key, valid]);
+  const set = useCallback((v: T) => {
+    setValue(v);
+    setStored(true);
+    try {
+      localStorage.setItem(key, JSON.stringify(v));
+    } catch {
+      /* storage unavailable: the choice still applies for this visit */
+    }
+  }, [key]);
+  return [value, set, stored];
 }

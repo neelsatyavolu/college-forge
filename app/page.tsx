@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import rankings from "@/public/data/rankings/top250.json";
+import careerData from "@/public/data/career-ranking.json";
+import { DEFAULT_WEIGHTS, createRanker, type CareerData } from "@/lib/career-ranking";
 import { THEME_BOOTSTRAP } from "@/lib/theme-bootstrap";
 import "./landing.css";
 
@@ -77,8 +79,11 @@ const TRUST = [
 ];
 
 const money = (n: number) => `$${Math.round(n / 100) / 10}k`;
-const rate = (n: number) => `${Math.round(n * 100)}%`;
-const TOP = [...rankings.schools].sort((a, b) => a.rank_partial - b.rank_partial).slice(0, 5);
+const CAREER = careerData as unknown as CareerData;
+// The career ranking's top five on all majors, at default settings.
+const TOP = createRanker(CAREER)
+  .rank({ track: "overall", col: true, va: false, stretch: false, w: { ...DEFAULT_WEIGHTS } }, { targets: [], direct: {} })
+  .slice(0, 5);
 
 export default function LandingPage() {
   return (
@@ -177,13 +182,13 @@ export default function LandingPage() {
 
           <section className="lp-rank" aria-labelledby="lp-rank-title">
             <div className="lp-rank__copy">
-              <h2 id="lp-rank-title">A ranking built on what happened to graduates</h2>
+              <h2 id="lp-rank-title">A ranking built on the majors you can reach</h2>
               <p>
-                Colleges are ranked on early-career earnings compared with graduates of the same major elsewhere, plus
-                graduation and employment rates. Admit rate, test scores and reputation get no weight.
+                Colleges are ranked on what graduates of the majors you could study there go on to earn, how far the name
+                carries with employers, how many land work, and campus life. Cost, aid and debt never count.
               </p>
               <p className="lp-rank__links">
-                <a href="/rankings">See all {rankings.n_ranked.toLocaleString("en-US")} colleges</a>
+                <a href="/rankings?view=overall">See all {CAREER.schools.length} colleges</a>
                 <a href="/rankings#methodology">How the ranking works</a>
               </p>
             </div>
@@ -193,24 +198,24 @@ export default function LandingPage() {
                   <tr>
                     <th scope="col">Rank</th>
                     <th scope="col">College</th>
-                    <th scope="col" className="lp-num">Early earnings</th>
-                    <th scope="col" className="lp-num">Graduation</th>
+                    <th scope="col" className="lp-num">Pay, year 4</th>
+                    <th scope="col" className="lp-num">Score</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {TOP.map((s) => (
-                    <tr key={s.unitid}>
-                      <td className="lp-rank__n">{s.rank_partial}</td>
-                      <th scope="row">{s.institution}<span>{s.city}, {s.state}</span></th>
-                      <td className="lp-num">{money(s.typical_earnings)}</td>
-                      <td className="lp-num">{rate(s.graduation_rate)}</td>
+                  {TOP.map((r) => (
+                    <tr key={r.s.id}>
+                      <td className="lp-rank__n">{r.rk}</td>
+                      <th scope="row">{r.s.name}<span>{r.s.city}, {r.s.state}</span></th>
+                      <td className="lp-num">{r.pay4 == null ? "—" : money(r.pay4)}</td>
+                      <td className="lp-num">{r.score}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <figcaption>
-                Typical earnings about four years after graduating, in 2024 dollars. From the U.S. Department of
-                Education’s College Scorecard.
+                All majors, default weights. Pay is the median four years after graduating, adjusted for cost of living,
+                from the U.S. Department of Education’s College Scorecard.
               </figcaption>
             </figure>
           </section>

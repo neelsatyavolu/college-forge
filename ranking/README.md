@@ -1,6 +1,6 @@
 # Forge Career Outcomes Ranking
 
-Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v3.2). Published at `/rankings`.
+Executable pipeline for [`METHODOLOGY.md`](METHODOLOGY.md) (v3.2). Its outputs feed Colleges for you, college search and the starter list. The `/rankings` page now shows the career ranking in `lib/career-ranking.ts` instead.
 
 A comparison of past graduates' outcomes whose as-reported program earnings estimates are checked against the next graduating class in an exploratory retrospective backtest (METHODOLOGY §10). The cost-of-living adjustment (half weight by default) is not validated. Not a causal estimate.
 

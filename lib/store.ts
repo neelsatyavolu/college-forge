@@ -534,6 +534,12 @@ export async function retireWorkspace(anonymousId: string): Promise<void> {
   await deleteText(scattergramKey(anonymousId)).catch(() => undefined);
 }
 
+/** Read only: null when no workspace is stored under this id. Migrations apply in memory and are never written. */
+export async function peekWorkspace(id: string): Promise<Workspace | null> {
+  const raw = await readText(workspaceKey(id));
+  return raw === null ? null : decodeWorkspace(raw).workspace;
+}
+
 /** Read without writing unless initialization or a persisted namespace migration is needed. */
 export async function getWorkspace(id: string): Promise<Workspace> {
   const { workspace, needsWrite } = decodeWorkspace(await readText(workspaceKey(id)));

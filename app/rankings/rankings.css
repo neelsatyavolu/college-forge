@@ -149,10 +149,44 @@ button.rk-row:hover { background: var(--surface-soft); }
 .rk-details ul { margin-top: 12px; }
 .rk-details p { font-size: 12px; color: var(--muted); margin: 14px 0 0; }
 
+/* Career ranking */
+.rk-list--career .rk-row { grid-template-columns: 60px minmax(0, 1fr) 136px 80px 64px 64px 52px 56px 20px; }
+.rk-list--career .rk-row--head > span { white-space: nowrap; }
+.rk-list--career .rk-cell sup { font-size: 9px; color: var(--muted); margin-left: 2px; }
+.rk-tab { white-space: nowrap; }
+.rk-badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: var(--radius-pill); background: color-mix(in srgb, var(--coral) 14%, transparent); color: var(--coral); font-size: 11px; font-weight: 600; vertical-align: 2px; }
+.rk-item.is-admitted > .rk-row { box-shadow: inset 3px 0 0 var(--coral); background: color-mix(in srgb, var(--coral) 6%, transparent); }
+.rk-item.is-admitted > .rk-row:hover, .rk-item.is-admitted.is-open > .rk-row { background: color-mix(in srgb, var(--coral) 10%, transparent); }
+.rk-metrics--six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.rk-detail__note { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
+.rk-listtitle { margin: 26px 0 4px; font: 500 26px/1.2 var(--font-display); letter-spacing: -0.3px; }
+.rk-missing { margin-top: 14px; max-width: 760px; }
+.rk-settings { margin: 0 0 6px; }
+.rk-settings summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.rk-settings__sum { font-size: 12px; font-weight: 400; color: var(--muted); }
+.rk-settings__group { margin-top: 18px; }
+.rk-settings__group h4 { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--body); }
+.rk-settings__group p { max-width: 720px; }
+.rk-settings .rk-link-btn { margin-left: 6px; font-size: 13px; }
+.rk-sliders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 28px; }
+.rk-slider { display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-rows: auto auto; gap: 4px 10px; align-items: center; font-size: 13px; color: var(--ink); }
+.rk-slider > span { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 8px; }
+.rk-slider small { color: var(--muted); font-size: 11px; }
+.rk-slider input { width: 100%; accent-color: var(--workspace-accent); }
+.rk-slider output { text-align: right; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rk-sources { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 560px; }
+.rk-sources th, .rk-sources td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; color: var(--body); }
+.rk-sources th { font-size: 10px; letter-spacing: 1.1px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.rk-sources td:first-child { color: var(--ink); font-weight: 500; white-space: nowrap; }
+
 @media (max-width: 1180px) {
   .rk-row { grid-template-columns: 48px minmax(0, 1fr) 112px 88px 92px 72px 16px; gap: 10px; padding-inline: 14px; }
   .rk-list--major .rk-row { grid-template-columns: 48px minmax(0, 1fr) 88px 104px 112px 60px; }
   .rk-list--beats .rk-row { grid-template-columns: 48px minmax(0, 1fr) 104px 88px 88px 60px; }
+  .rk-list--career .rk-row { grid-template-columns: 44px minmax(0, 1fr) 96px 68px 56px 64px 44px 52px 14px; gap: 8px; }
+  .rk-tabs { flex: 1 1 100%; gap: 22px; overflow-x: auto; scrollbar-width: none; }
+  .rk-tabs::-webkit-scrollbar { display: none; }
+  .rk-metrics--six, .rk-sliders { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rk-scorebar__track { max-width: 52px; }
   .rk-metrics, .rk-context, .rk-weights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rk-detail { padding-left: 14px; padding-right: 14px; }
@@ -171,7 +205,7 @@ button.rk-row:hover { background: var(--surface-soft); }
   .rk-tabs::-webkit-scrollbar { display: none; }
   .rk-tab { white-space: nowrap; }
   .rk-row--head { display: none; }
-  .rk-row, .rk-list--major .rk-row, .rk-list--beats .rk-row { grid-template-columns: 44px repeat(3, minmax(0, 1fr)); row-gap: 10px; column-gap: 12px; padding: 14px; }
+  .rk-row, .rk-list--major .rk-row, .rk-list--beats .rk-row, .rk-list--career .rk-row { grid-template-columns: 44px repeat(3, minmax(0, 1fr)); row-gap: 10px; column-gap: 12px; padding: 14px; }
   .rk-row > .rk-rank { grid-column: 1; grid-row: span 3; align-self: start; }
   .rk-row > .rk-school, .rk-row > .rk-scorebar { grid-column: 2 / -1; }
   .rk-row > .rk-scorebar { justify-content: flex-start; }
@@ -179,7 +213,9 @@ button.rk-row:hover { background: var(--surface-soft); }
   .rk-row > .rk-cell::before { content: attr(data-label); display: block; font-size: 10px; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; font-weight: 400; }
   .rk-row > .rk-chevron { display: none; }
   .rk-detail { padding: 4px 14px 18px; }
-  .rk-metrics, .rk-context { grid-template-columns: 1fr; }
+  .rk-metrics, .rk-metrics--six, .rk-context, .rk-sliders { grid-template-columns: 1fr; }
+  .rk-list--career .rk-row > .rk-rank { grid-row: span 4; }
+  .rk-list--career .rk-context { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rk-weights, .rk-method__cols { grid-template-columns: 1fr; }
   .rk-majorhead h2 { font-size: 30px; }
   .rk-field--grow { flex-basis: 100%; }

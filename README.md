@@ -29,7 +29,7 @@ Open the app and choose **Set up my workspace**, or explore colleges first. AI s
 | **Profile** | Labeled editors for academics, AP scores, coursework, activities (10 × 150 chars), and honors (max 5) |
 | **Share & export** | Advisor read-only links + notes, exports (txt / brief / ics / json) |
 | **Assistants** | MCP server at `/mcp` with OAuth sign-in for Grok, ChatGPT, Claude and others |
-| **Rankings** | Public `/rankings` page for the fair ranking: overall, by major, and beats expectations |
+| **Rankings** | Public `/rankings` page: colleges ranked on the majors a student can reach (pay, top earners, employer pull, jobs, earnings floor, campus life; cost never counts), with My path and Admitted views built from the student's own workspace |
 
 ## How the AI populates the site
 
@@ -43,7 +43,7 @@ The copilot uses `get_college_recommendations`, the same evidence engine as the 
 
 ## Recommendation evidence
 
-`lib/college-recommendations.ts` joins the published fair-ranking snapshot (`public/data/rankings/top250.json`) to stored admissions records by federal institution ID and published major outcomes where available. Within provisional academic categories, selection weights the career-outcomes score (75%) and where the intended major ranks among colleges with published earnings (up to 25 points), using `public/data/rankings/majors/bachelors_by_school.json`. The ranking itself scores outcomes only; see `ranking/METHODOLOGY.md`. Region and setting preferences filter the pool; unsupported constraints are disclosed. Missing evidence stays unknown, UC comparisons ignore SAT, and weighted GPA is never converted to a guessed unweighted GPA.
+`lib/college-recommendations.ts` joins the published fair-ranking snapshot (`public/data/rankings/top250.json`) to stored admissions records by federal institution ID and published major outcomes where available. Within provisional academic categories, selection weights the career-outcomes score (75%) and where the intended major ranks among colleges with published earnings (up to 25 points), using `public/data/rankings/majors/bachelors_by_school.json`. The ranking itself scores outcomes only; see `ranking/METHODOLOGY.md`. The `/rankings` page uses a separate career ranking (`lib/career-ranking.ts`, data in `public/data/career-ranking.json`, school facts only); it covers 44 schools so far, so recommendations still use the fair ranking. Region and setting preferences filter the pool; unsupported constraints are disclosed. Missing evidence stays unknown, UC comparisons ignore SAT, and weighted GPA is never converted to a guessed unweighted GPA.
 
 Coverage is limited to the published 250-college snapshot. Sources, dates, methodology, and limitations are shown in the product. AI explanations require a connected provider; deterministic recommendations do not.
 

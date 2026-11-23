@@ -1,128 +1,79 @@
-import { useJson } from "./hooks";
-import type { Cohorts, SensitivityRow, Weights } from "./types";
-import Validation from "./Validation";
+import { DEFAULT_WEIGHTS, PILLAR_LABELS, type Pillar } from "@/lib/career-ranking";
 
-const COMPONENTS: { key: keyof Weights; title: string; body: string }[] = [
-  {
-    key: "early_premium",
-    title: "Early-career earnings",
-    body: "Median earnings four years after graduating (five where the four-year figure is withheld, shifted onto the four-year scale), compared with people who studied the same major at other colleges. A college isn’t rewarded just for offering high-paying majors.",
-  },
-  {
-    key: "graduation",
-    title: "Graduation",
-    body: "The share of first-time, full-time students who finish within six years. A degree only pays off if you complete it.",
-  },
-  {
-    key: "employment",
-    title: "Employment",
-    body: "The share of graduates working three years after finishing, among those not back in school. Working isn’t the same as a good job; job quality isn’t measured.",
-  },
-];
-
-const VARIANTS: Record<string, string> = {
-  equal_weights: "Equal weights",
-  early_earnings_only: "Early earnings only",
-  no_graduation: "Without graduation",
-  no_employment: "Without employment",
-  half_cost_of_living: "Half cost of living (the page default)",
-  with_cost_of_living: "Full cost of living",
-  completion_weighted_programs: "Weight programs by graduates instead of pooling",
-  coverage_at_least_50pct: "Require programs with earnings to cover 50% of graduates",
-  coverage_at_least_70pct: "Require programs with earnings to cover 70% of graduates",
-  four_year_earnings_only: "Use only 4-year earnings (drop older 5-year data)",
+const WHAT: Record<Pillar, string> = {
+  pay: "Median pay 1, 4, 5 and 7 years after graduating, from IRS records in the College Scorecard, in the major counted for each school. Each year is compared with the same year at the other schools. A year with few graduates measured is pulled toward what schools of similar selectivity show. A major with no published pay is estimated from the school's all-majors pay, and counts one typical estimating error lower.",
+  wealth: "Top-quarter pay 10 years after starting, and the share of students from middle- and upper-income families who reach the top 1% of earners (Opportunity Insights). That share follows students who started around 2000, so it is moved by half of what each school's change in average SAT since then predicts. On My path, the top quarter leaves out money majors the school keeps closed.",
+  rep: "How the name lands with employers: U.S. News rank, QS's employer survey, LinkedIn's career-outcomes list, whether the school is a top feeder to Wall Street or Big Tech for that major, and how many finance, tech and consulting jobs sit within about 50 km.",
+  jobs: "The share of graduates in the major who are neither working nor in school, and the graduation rate.",
+  floor: "Bottom-quarter pay 10 years after starting. A safety net for when things go less well.",
+  campus: "Niche's campus, dorm and food grades. Niche counts housing and meal cost in those grades, so that share is added back.",
 };
 
-export default function Methodology({ weights, cohorts }: { weights: Weights; cohorts: Cohorts }) {
-  const sens = useJson<SensitivityRow[]>("/data/rankings/sensitivity.json");
+const SOURCES: [string, string, string][] = [
+  ["College Scorecard", "Pay by major, share not working, pay quarters, graduation and admit rates, average SAT in 2001 and 2019", "latest release"],
+  ["BEA Regional Price Parities", "Price level by state, for the cost-of-living adjustment", "2024"],
+  ["Opportunity Insights", "Share reaching the top 1%, from tax records", "1980–82 births"],
+  ["U.S. News, QS, LinkedIn", "Rank, employer reputation, career-outcomes list", "2026–27"],
+  ["College Transitions", "Top feeders to Wall Street and Big Tech", "2025"],
+  ["Census County Business Patterns", "Finance, tech and consulting jobs near campus", "2022"],
+  ["School catalogs and advising pages", "How hard each major is to switch into after enrolling", "Nov 2026"],
+  ["Niche", "Campus, dorm and food grades; Best Colleges rank (shown, not scored)", "2027"],
+  ["Forbes", "America's Top Colleges rank (shown, not scored)", "2027"],
+];
+
+export default function Methodology({ count, generated }: { count: number; generated: string }) {
   return (
     <section className="rk-method" id="methodology" aria-labelledby="method-title">
-      <div className="cf-section-heading">
-        <h2 id="method-title">How the ranking works</h2>
-        <a href="/data/rankings/DISCLOSURE.md">Full disclosures ↗</a>
-      </div>
+      <h2 id="method-title" className="cf-page-title">How the ranking works</h2>
       <p className="rk-method__lede">
-        This ranking compares <strong>what happened to past graduates</strong> who received federal financial aid, using U.S.
-        Department of Education records. Where the data can decide a modeling choice, we chose whatever best predicted a
-        later graduating class. The weights below are value judgments, set before we looked at the results. It doesn’t
-        measure what a college causes, and it isn’t a forecast for any one student.
+        It asks one question: <strong>if you went here, how well set up would you be for a good career?</strong> Career counts
+        75% and campus life 25% by default. Cost, aid and debt never count. Each school is scored on the major you can
+        actually reach there where it does best, compared with the same major at the other {count - 1} schools. You can change every weight.
       </p>
-
       <div className="rk-weights rk-weights--three">
-        {COMPONENTS.map((c) => (
-          <article key={c.key} className="rk-weight">
-            <span className="rk-weight__pct">{Math.round(weights[c.key] * 100)}%</span>
-            <h3>{c.title}</h3>
-            <p>{c.body}</p>
-          </article>
+        {(Object.keys(WHAT) as Pillar[]).map((k) => (
+          <div className="rk-weight" key={k}>
+            <div className="rk-weight__pct">{DEFAULT_WEIGHTS[k]}%</div>
+            <h3>{PILLAR_LABELS[k][0]}</h3>
+            <p>{WHAT[k]}</p>
+          </div>
         ))}
       </div>
-      <p className="rk-method__note">
-        The score is a relative index: the top college is 100 and the lowest is 0. Later earnings (about six years after
-        graduating) are shown for each college but not scored, because that figure mixes graduates with students who didn’t
-        finish. Major tables rank only that major’s earnings.
-      </p>
-
       <div className="rk-method__cols">
         <div>
-          <h3>What’s left out on purpose</h3>
+          <h3>Reading the list</h3>
           <ul>
-            <li><strong>Selectivity and prestige get no direct weight.</strong> Admit rates, test scores, reputation, research and spending describe who gets in, not how graduates do. (Admissions data does help estimate where graduates live for the cost-of-living view, and it drives “Beats expectations.”)</li>
-            <li><strong>Cost of living counts half by default.</strong> A degree’s pay matters wherever you take it, and what that pay buys matters where you live, so the default gives the two equal weight: earnings are divided by the square root of the local price level. That split is a judgment call, like the score weights, not a measured optimum. Choose “None” to rank on earnings as published (the version our backtest checks) or “Full” for pure local buying power. Where graduates work is estimated for about three-quarters of colleges and hasn’t been checked against better data yet. Each row shows its rank in the other views.</li>
-            <li><strong>Price, job quality and fit.</strong> Net price is shown but never scored; medians say nothing about hours, satisfaction or the chance of an exceptional career.</li>
+            <li><strong>Score</strong> runs 0 to 100 on this list. 100 is the best school here, not a perfect school.</li>
+            <li><strong>Ties.</strong> Schools within 2.5 points share a rank, shown as T-6.</li>
+            <li><strong>Small numbers under a rank</strong> show where the school lands if any one career measure is dropped.</li>
+            <li><strong>My path</strong> uses the majors you pick. A major you applied to counts directly. Any other counts if switching in after you enroll is open, has a published grade bar of about 3.3 or lower, or admits most applicants.</li>
+            <li><strong>Admitted</strong> ranks the schools you marked as admitted in Forge, on the same scale as My path.</li>
+            <li><strong>U.S. News, Niche and Forbes</strong> ranks are shown for comparison. Niche and Forbes are not scored, because both count cost or debt.</li>
           </ul>
         </div>
         <div>
-          <h3>How to read a rank</h3>
+          <h3>Limits</h3>
           <ul>
-            <li><strong>Ranges show uncertainty within the model.</strong> The small numbers under each rank cover noise in the earnings data (and, in the cost-of-living view, estimated locations). They describe how uncertain each estimate is, not how much a future class could differ, and they aren’t separately calibrated. Wider prediction intervals, which add a future class’s own randomness, held the next class’s result 91–94% of the time in our backtest. Ranges don’t cover choices like the weights (see the table below).</li>
-            <li><strong>Small programs lean on their college.</strong> A program with few graduates is pulled toward its college’s results in other majors, in proportion to how noisy its own data are. We tested this against judging each program alone, and it predicted the next class better. What’s borrowed is measured outcomes, not reputation.</li>
-            <li><strong>“Beats expectations”</strong> compares a college with what a model predicts from its incoming students. It highlights colleges worth a closer look; it doesn’t prove the college caused the difference.</li>
+            <li>It covers {count} schools so far. More will be added.</li>
+            <li>Scorecard pay covers graduates who received federal aid, so it misses some students.</li>
+            <li>The top-1% data follows students born 1980–82, and the SAT update is an estimate.</li>
+            <li>No public dataset reports internships or co-op for every school, so only nearby jobs count.</li>
+            <li>How hard a switch is depends on where you start. The levels here assume you start in a different college at the same school.</li>
+            <li>This compares past graduates. It is not a promise about any one student.</li>
           </ul>
         </div>
       </div>
-
-      <Validation />
-
-      {sens.data && (
-        <div className="rk-sens">
-          <h3>How much the list moves under other reasonable choices</h3>
-          <table>
-            <thead>
-              <tr><th>Alternative</th><th>Similarity</th><th>Same top 25</th><th>Typical college moves</th></tr>
-            </thead>
+      <details className="rk-details">
+        <summary>Sources</summary>
+        <div className="rk-tablewrap">
+          <table className="rk-sources">
+            <thead><tr><th>Source</th><th>What it gives</th><th>Vintage</th></tr></thead>
             <tbody>
-              {sens.data.map((r) => (
-                <tr key={r.variant}>
-                  <td>{VARIANTS[r.variant] ?? r.variant}{r.variant.startsWith("coverage") ? ` (${r.n_schools.toLocaleString()} colleges)` : ""}</td>
-                  <td>{r.spearman_vs_headline.toFixed(2)}</td>
-                  <td>{r.top25_overlap} of 25</td>
-                  <td>{Math.round(r.median_rank_shift)} {Math.round(r.median_rank_shift) === 1 ? "place" : "places"}</td>
-                </tr>
-              ))}
+              {SOURCES.map(([a, b, c]) => <tr key={a}><td>{a}</td><td>{b}</td><td>{c}</td></tr>)}
             </tbody>
           </table>
-          <p>
-            Similarity is a rank correlation (1.00 = identical order) with the as-reported ordering, among the colleges in both lists. The coverage rows
-            only show that dropping colleges with thinner data barely reorders the rest.
-          </p>
         </div>
-      )}
-
-      <details className="rk-details">
-        <summary>Data sources, dates and limitations</summary>
-        <ul>
-          <li>Earnings: {cohorts["4yr"]} (4 years out); {cohorts["5yr"]} (5 years out); {cohorts["1yr"]} (1 year out); {cohorts["10yr_entry"]} (later earnings). All shown in 2024 dollars. “Rebuilt” on this page is when the ranking was recomputed, not when graduates were measured.</li>
-          <li>Earnings are annual wages and self-employment income, not base salary. They cover students who got federal grants or loans, which can be a minority at wealthy colleges; international students aren’t included.</li>
-          <li>Cost of living uses federal regional price data weighted toward housing. Where graduates work is observed in Census data for about a quarter of colleges and estimated for the rest. State taxes aren’t deducted.</li>
-          <li>Majors follow federal CIP codes, which may not match catalog names and can group specialties (nurse anesthesia sits inside nursing).</li>
-          <li>Still to validate: estimated graduate locations, and the “Beats expectations” model’s per-college uncertainty.</li>
-          <li>For-profit colleges, online-only colleges and colleges in U.S. territories aren’t ranked. The overall table needs a first-time-student graduation rate, so graduate-only and upper-division schools appear only in major tables.</li>
-        </ul>
-        <p>
-          Sources and coverage: <a href="/data/rankings/sources.md">sources.md</a>. The full method, backtest, code and tests
-          live in the repository under <code>ranking/</code>.
-        </p>
+        <p>Data rebuilt {new Date(generated).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}.</p>
       </details>
     </section>
   );

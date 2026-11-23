@@ -127,7 +127,7 @@ export default function WorkspaceShell({ theme, onToggleTheme, topline, children
         <main id="rankings-main" className="cf-hub-main" tabIndex={-1}>{children}</main>
         <footer className="cf-workspace-footer">
           <span>College Forge · Room to find your own path.</span>
-          <a href="/data/rankings/sources.md">Data sources ↗</a>
+          <a href="#methodology">Data sources</a>
         </footer>
       </div>
     </div>

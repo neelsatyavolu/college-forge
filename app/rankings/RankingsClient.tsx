@@ -1,143 +1,159 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import BeatsView from "./BeatsView";
-import { formatDate, matchesFilters, rankFor } from "./format";
-import { useJson, useRankingsQuery, useTheme, type RankingsQuery } from "./hooks";
-import MajorsView from "./MajorsView";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { DEFAULT_WEIGHTS, PILLARS, createRanker, type CareerData, type Student, type Weights } from "@/lib/career-ranking";
+import CareerList from "./CareerList";
+import CareerSettings, { DEFAULT_FLAGS, type Flags } from "./CareerSettings";
+import { useJson, useStored, useTheme } from "./hooks";
 import Methodology from "./Methodology";
-import OverallView from "./OverallView";
-import { EmptyState, FilterBar } from "./parts";
-import type { MajorIndexFile, OverallFile, PriceMode, View } from "./types";
 import WorkspaceShell from "./WorkspaceShell";
 import "./rankings.css";
 
-const TABS: { id: View; label: string }[] = [
-  { id: "overall", label: "Overall" },
-  { id: "majors", label: "By major" },
-  { id: "beats", label: "Beats expectations" },
-];
+type Me = { workspace: boolean; intended: string[]; schools: { id: number; major: string[]; admitted: boolean }[] };
+const EMPTY_ME: Me = { workspace: false, intended: [], schools: [] };
 
-const PRICE_OPTIONS: { id: PriceMode; label: string; help: string }[] = [
-  { id: "nominal", label: "None", help: "Earnings as published, with no location estimates. The version our backtest checks." },
-  {
-    id: "partial",
-    label: "Half",
-    help: "Default. Gives equal weight to what the degree earns and what that pay buys where graduates live (earnings divided by the square root of the local price level). A judgment call, not a measured optimum.",
-  },
-  {
-    id: "adjusted",
-    label: "Full",
-    help: "Earnings divided by the full local price level where graduates work. Locations are estimated for most colleges and not yet validated.",
-  },
-];
+const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
+const isWeights = (v: unknown): v is Weights =>
+  !!v && typeof v === "object" && PILLARS.every((k) => typeof (v as Record<string, unknown>)[k] === "number") && PILLARS.some((k) => (v as Record<string, number>)[k] > 0);
+const isFlags = (v: unknown): v is Flags =>
+  !!v && typeof v === "object" && (["col", "va", "stretch"] as const).every((k) => typeof (v as Record<string, unknown>)[k] === "boolean");
 
-const PRICE_NOTE: Record<PriceMode, string> = {
-  nominal: "earnings as reported",
-  partial: "half-adjusted for cost of living",
-  adjusted: "fully adjusted for cost of living",
-};
-
-function PriceToggle({ value, onChange }: { value: PriceMode; onChange: (v: PriceMode) => void }) {
-  return (
-    <div className="rk-pricetoggle" role="group" aria-label="Cost-of-living adjustment">
-      <span className="rk-pricetoggle__label">Cost of living</span>
-      {PRICE_OPTIONS.map((o) => (
-        <button key={o.id} type="button" className="rk-pill" title={o.help} aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
+function readView(): string {
+  if (typeof window === "undefined") return "path";
+  return new URLSearchParams(window.location.search).get("view") || "path";
 }
 
 export default function RankingsClient() {
   const [theme, toggleTheme] = useTheme();
-  const [query, setQuery] = useRankingsQuery();
-  const overall = useJson<OverallFile>("/data/rankings/overall.json");
-  const beats = useJson<OverallFile>(query.view === "beats" ? "/data/rankings/value_added.json" : null);
-  const index = useJson<MajorIndexFile>("/data/rankings/majors/index.json");
+  const data = useJson<CareerData>("/data/career-ranking.json");
+  const [me, setMe] = useState<Me>(EMPTY_ME);
+  const [view, setViewState] = useState("path");
+  const [weights, setWeights] = useStored<Weights>("cf.career.weights", DEFAULT_WEIGHTS, isWeights);
+  const [flags, setFlags] = useStored<Flags>("cf.career.flags", DEFAULT_FLAGS, isFlags);
+  const [picked, setPicked, pickedStored] = useStored<string[]>("cf.career.targets", [], isStrings);
 
-  const update = useCallback((patch: Partial<RankingsQuery>) => setQuery(patch), [setQuery]);
-  const clearFilters = () => update({ q: "", state: "", control: "" });
-  const openMajor = (cip: string) => {
-    update({ view: "majors", credential: "bachelors", major: cip, q: "", state: "", control: "" });
-    document.getElementById("rankings-top")?.scrollIntoView({ behavior: "smooth" });
-  };
+  useEffect(() => {
+    setViewState(readView());
+    let live = true;
+    fetch("/api/rankings/me", { credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : EMPTY_ME))
+      .then((m: Me) => live && setMe(m && Array.isArray(m.schools) ? m : EMPTY_ME))
+      .catch(() => undefined);
+    return () => { live = false; };
+  }, []);
 
-  const isBeats = query.view === "beats";
-  const list = useMemo(() => {
-    if (isBeats) return beats.data?.schools;
-    const schools = overall.data?.schools;
-    if (!schools) return undefined;
-    // overall.json holds the top 250 under either ordering; show the top 250 of the active one.
-    return schools
-      .filter((s) => rankFor(s, query.prices).rank <= 250)
-      .sort((a, b) => rankFor(a, query.prices).rank - rankFor(b, query.prices).rank);
-  }, [isBeats, beats.data, overall.data, query.prices]);
-  const states = useMemo(() => [...new Set((list ?? []).map((s) => s.state))].sort(), [list]);
-  const shown = useMemo(() => (list ?? []).filter((s) => matchesFilters(s, query)), [list, query]);
+  const setView = useCallback((v: string) => {
+    setViewState(v);
+    const p = new URLSearchParams(window.location.search);
+    if (v === "path") p.delete("view"); else p.set("view", v);
+    const s = p.toString();
+    window.history.replaceState(null, "", s ? `?${s}` : window.location.pathname);
+  }, []);
 
-  const meta = overall.data;
-  const error = overall.error || index.error || beats.error;
+  const ranker = useMemo(() => (data.data ? createRanker(data.data) : null), [data.data]);
+  const majors = useMemo(() => (data.data?.meta.majors ?? []).filter((m) => m.target), [data.data]);
+  const admitted = useMemo(() => new Set(me.schools.filter((s) => s.admitted).map((s) => s.id)), [me]);
+  // Targets: what this browser saved, else the intended major on the student's profile, else every major.
+  const targets = useMemo(() => {
+    const all = majors.map((m) => m.key);
+    const from = pickedStored && picked.length ? picked : me.intended.length ? me.intended : all;
+    const ok = from.filter((k) => all.includes(k));
+    return ok.length ? ok : all;
+  }, [majors, picked, pickedStored, me.intended]);
+  const student: Student = useMemo(() => ({
+    targets,
+    direct: Object.fromEntries(
+      me.schools.map((s) => [s.id, s.major.filter((k) => targets.includes(k))] as const).filter(([, k]) => k.length > 0),
+    ),
+  }), [targets, me.schools]);
+
+  const tabs = useMemo(() => [
+    { id: "path", label: "My path" },
+    ...(admitted.size ? [{ id: "admitted", label: "Admitted" }] : []),
+    { id: "overall", label: "All majors" },
+    ...majors.map((m) => ({ id: m.key, label: m.tab || m.label })),
+  ], [majors, admitted.size]);
+  const active = tabs.some((t) => t.id === view) ? view : "path";
+  const isAdmitted = active === "admitted", isPath = active === "path" || isAdmitted;
+
+  const result = useMemo(() => {
+    if (!ranker) return null;
+    const st = { track: isPath ? "path" : active, ...flags, w: weights };
+    const rows = ranker.rank(st, student, isAdmitted ? admitted : undefined);
+    const pathRanks = isAdmitted ? new Map(ranker.rank(st, student).map((r) => [r.s.id, r.rk])) : null;
+    return { rows, pathRanks };
+  }, [ranker, active, isPath, isAdmitted, flags, weights, student, admitted]);
+
+  const total = data.data?.schools.length ?? 0;
+  const title = isAdmitted ? "Schools you got into" : isPath ? "Ranked by the majors you can reach" : active === "overall" ? "Ranked on all majors" : `Ranked on ${majors.find((m) => m.key === active)?.label.toLowerCase()}`;
+  const missing = !isPath && data.data && ranker ? data.data.schools.filter((s) => !ranker.has(s, active)).map((s) => s.name) : [];
 
   return (
-    <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={meta ? `Ranking rebuilt ${formatDate(meta.generated)}` : "Outcomes, not prestige"}>
+    <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={`${total || "…"} colleges · cost never counts`}>
       <div className="cf-page rk-page" id="rankings-top">
         <header className="rk-header">
-          <h1 className="cf-page-title">Where graduates did best</h1>
+          <h1 className="cf-page-title">Where you’d be set up best</h1>
           <p className="rk-lede">
-            Earnings compared with the same major elsewhere, plus graduation and employment, from federal records.
-            No weight on prestige or selectivity. <a href="#methodology">How it works</a>
+            Pay in the majors you can reach, how far the name carries, landing work, and campus life, from federal
+            records and published grades. Cost, aid and debt never count. <a href="#methodology">How it works</a>
           </p>
         </header>
 
         <div className="rk-toolbar">
           <div className="rk-tabs" role="tablist" aria-label="Ranking view">
-            {TABS.map((t) => (
-              <button key={t.id} type="button" role="tab" aria-selected={query.view === t.id} className="rk-tab" onClick={() => update({ view: t.id })}>
+            {tabs.map((t) => (
+              <button key={t.id} type="button" role="tab" aria-selected={active === t.id} className="rk-tab" onClick={() => setView(t.id)}>
                 {t.label}
               </button>
             ))}
           </div>
-          {!isBeats && <PriceToggle value={query.prices} onChange={(prices) => update({ prices })} />}
         </div>
 
-        {error && <div className="cf-notice" role="alert">{error}</div>}
+        {data.error && <div className="cf-notice" role="alert">{data.error}</div>}
 
-        {query.view === "majors" ? (
-          index.data &&
-          meta && (
-            <MajorsView
-              index={index.data.majors}
-              cohorts={meta.cohorts}
-              credential={query.credential}
-              major={query.major}
-              prices={query.prices}
-              filters={query}
-              onChange={update}
-            />
-          )
-        ) : (
-          <>
-            <FilterBar filters={query} states={states} onChange={update} />
-            <p className="rk-resultline">
-              {!list
-                ? "Loading rankings…"
-                : isBeats
-                  ? <>Colleges furthest above what their incoming students predict (not proof the college caused it){beats.data?.fit ? `; a typical college lands within ±${Math.round(beats.data.fit.residual_sd_points)} points of prediction` : ""}. Showing <strong>{shown.length}</strong> of {list.length}.</>
-                  : <>
-                      {shown.length === list.length ? <>Top <strong>{list.length}</strong></> : <>Showing <strong>{shown.length}</strong> of the top {list.length}</>} of{" "}
-                      {meta?.n_ranked.toLocaleString()} colleges, {PRICE_NOTE[query.prices]}. Small
-                      numbers under a rank show its likely range.
-                    </>}
-            </p>
-            {list && shown.length === 0 && <EmptyState onClear={clearFilters} />}
-            {list && shown.length > 0 && (isBeats ? <BeatsView schools={shown} /> : <OverallView schools={shown} prices={query.prices} onOpenMajor={openMajor} />)}
-          </>
+        {data.data && (
+          <CareerSettings
+            majors={majors}
+            targets={targets}
+            onTargets={setPicked}
+            weights={weights}
+            onWeights={setWeights}
+            flags={flags}
+            onFlags={setFlags}
+            showTargets={isPath}
+          />
         )}
 
-        {meta && <Methodology weights={meta.weights} cohorts={meta.cohorts} />}
+        <h2 className="rk-listtitle">{title}</h2>
+        <p className="rk-resultline">
+          {!result ? "Loading the ranking…" : (
+            <>
+              <strong>{result.rows.length}</strong> {result.rows.length === 1 ? "school" : "schools"}
+              {isAdmitted ? ", ranked against each other on the same scale as My path." : isPath ? `. Each is scored on the major you picked that you can reach and where it does best against the same major elsewhere.` : "."}
+              {isPath && !me.workspace && " Sign in to count the majors on your applications."}
+              {" "}Tap a school for details.
+            </>
+          )}
+        </p>
+        {result && (
+          <CareerList
+            rows={result.rows}
+            weights={weights}
+            majors={majors}
+            path={isPath}
+            targets={targets}
+            admitted={admitted}
+            pathRanks={result.pathRanks}
+            col={flags.col}
+          />
+        )}
+        {missing.length > 0 && (
+          <p className="rk-resultline rk-missing">
+            Not ranked here: {missing.join(", ")}. These schools don’t offer it as a bachelor’s major, or have too few federally aided graduates for pay to be published.
+          </p>
+        )}
+
+        {data.data && <Methodology count={total} generated={data.data.meta.generated} />}
       </div>
     </WorkspaceShell>
   );

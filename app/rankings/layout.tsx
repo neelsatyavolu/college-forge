@@ -5,10 +5,10 @@ import { THEME_BOOTSTRAP } from "@/lib/theme-bootstrap";
 export const metadata: Metadata = {
   title: "Career rankings · College Forge",
   description:
-    "A historical comparison of U.S. colleges' graduate outcomes: earnings compared with the same major elsewhere, plus graduation and employment. No direct weight on selectivity.",
+    "Colleges ranked on how well set up you'd be for a career in the majors you can reach: pay, top earners, employer pull, jobs and campus life. Cost never counts.",
   openGraph: {
-    title: "Where graduates did best · College Forge",
-    description: "College and major rankings built on outcomes, not prestige.",
+    title: "Where you'd be set up best · College Forge",
+    description: "College rankings built on the majors you can reach. Cost never counts.",
   },
 };
 
