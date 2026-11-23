@@ -100,6 +100,8 @@ function StatusSelect({ app, disabled, onChange, label }) {
 function attentionOf(app) {
   const out = [];
   if (app.decision && app.decision.state === "hidden") out.push({ id: "decision", text: "Decision posted" });
+  // After a decision (admitted, denied, withdrawn) the portal's checklist is leftovers like the final transcript, not a to-do.
+  if (app.stage !== "working" && app.stage !== "waiting") return out;
   if (app.missing && app.missing.length) out.push({ id: "missing", text: `${app.missing.length} missing` });
   // Share links drop `ok` from good checks, so only an explicit false counts as a failure.
   if ((app.portal && app.portal.ok === false) || app.lastFailure) out.push({ id: "check", text: "Check failed" });
