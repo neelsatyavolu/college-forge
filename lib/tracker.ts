@@ -76,6 +76,8 @@ export interface TrackedApp {
   decisionSeen?: string;
   /** yyyy-mm-dd the application went in; set automatically the first time it moves past "working". */
   submittedAt?: string;
+  /** The student isn't applying for aid here, so aid forms (FAFSA, CSS Profile, tax returns) don't count as missing. */
+  ignoreAid?: boolean;
   /** Small to-dos for this school ("Counselor uploads the SUNY form by Nov 1"). */
   followUps?: FollowUp[];
   /** The latest check that failed after an earlier one worked; the earlier result stays in `portal`. */
@@ -168,9 +170,16 @@ export function shownPortal(app: TrackedApp): PortalResult | undefined {
   return { ...p, checklist: p.checklist.filter((c) => !revealsDecision(c.item) || app.decisionSeen === portalDecisionKey(app)) };
 }
 
+const AID_WORDS = /\b(fafsa|css profile|idoc|financial aid|student aid|tax returns?|w-?2s?|1040|non-?custodial|verification worksheet)\b/i;
+export const isAidItem = (text: string): boolean => AID_WORDS.test(text);
+
+/** Checklist items that count for this school: aid forms drop out when the student said to ignore them. */
+export const countedItems = (app: TrackedApp, checklist: PortalItem[]): PortalItem[] =>
+  app.ignoreAid ? checklist.filter((c) => !isAidItem(c.item)) : checklist;
+
 export function missingItems(app: TrackedApp): string[] {
   const p = app.portal;
-  return p?.ok ? p.checklist.filter((c) => !c.done && !c.optional && !revealsDecision(c.item)).map((c) => c.item) : [];
+  return p?.ok ? countedItems(app, p.checklist).filter((c) => !c.done && !c.optional && !revealsDecision(c.item)).map((c) => c.item) : [];
 }
 
 // ── Dates ─────────────────────────────────────────────────────────────────
@@ -214,7 +223,7 @@ const ADJUSTABLE: StatusId[] = ["planning", "in_progress", "final_checks", "subm
 /** Statuses a check may set: never a decision, deferral or waitlist, which are the student's to record. */
 export function suggestedStatus(app: TrackedApp, result: PortalResult): StatusId {
   if (!result.ok || !ADJUSTABLE.includes(app.status)) return app.status;
-  const required = result.checklist.filter((c) => !c.optional);
+  const required = countedItems(app, result.checklist).filter((c) => !c.optional);
   const allIn = required.length > 0 && required.every((c) => c.done);
   if (required.some((c) => !c.done)) return "submitted";
   if (/awaiting materials|incomplete/i.test(result.statusText)) return "submitted";
@@ -353,6 +362,7 @@ export interface AppEdit {
   decisionNote?: string;
   portalUrl?: string;
   name?: string;
+  ignoreAid?: boolean;
 }
 
 /** Validates and applies an edit; throws with a user-facing message on bad input. */
@@ -365,6 +375,7 @@ export function editApp(app: TrackedApp, edit: AppEdit, now = Date.now()): Track
   if (edit.portalUrl !== undefined && edit.portalUrl !== "" && !/^https:\/\/[^\s/]+/.test(edit.portalUrl)) {
     throw new Error("Portal links must start with https://.");
   }
+  if (edit.ignoreAid !== undefined && typeof edit.ignoreAid !== "boolean") throw new Error("Ignore financial aid must be true or false.");
   const clean: Partial<TrackedApp> = {};
   if (edit.status !== undefined) clean.status = edit.status;
   if (edit.submittedAt !== undefined) clean.submittedAt = edit.submittedAt;
@@ -379,6 +390,7 @@ export function editApp(app: TrackedApp, edit: AppEdit, now = Date.now()): Track
   if (edit.notes !== undefined) clean.notes = String(edit.notes).slice(0, 4000);
   if (edit.decisionNote !== undefined) clean.decisionNote = String(edit.decisionNote).trim().slice(0, 1000);
   if (edit.portalUrl !== undefined) clean.portalUrl = edit.portalUrl.slice(0, 500);
+  if (edit.ignoreAid !== undefined) clean.ignoreAid = edit.ignoreAid;
   if (edit.name !== undefined && edit.name.trim()) clean.name = edit.name.trim().slice(0, 120);
   return { ...app, ...clean, updatedAt: now };
 }

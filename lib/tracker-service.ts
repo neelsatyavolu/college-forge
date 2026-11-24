@@ -13,6 +13,8 @@ import {
   findApp,
   matchCatalog,
   missingItems,
+  countedItems,
+  isAidItem,
   newApp,
   nextDate,
   replaceApp,
@@ -60,9 +62,11 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
     nextDate: decision.state === "hidden" || decision.state === "revealed" ? null : nextDate(app, today),
     decision,
     portal: portal
-      ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: portal.checklist }
+      ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: countedItems(app, portal.checklist) }
       : null,
     missing: missingItems(app),
+    ignoreAid: !!app.ignoreAid,
+    hasAidItems: !!app.portal?.checklist.some((c) => isAidItem(c.item)),
     submittedAt: app.submittedAt ?? "",
     followUps: (app.followUps ?? []).filter((f) => !f.done).sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999")),
     lastFailure: app.lastFailure ?? null,

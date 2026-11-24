@@ -59,6 +59,19 @@ test('portal checks move status forward but never set a decision', () => {
   assert.equal(tracker.suggestedStatus(app({ status: 'submitted' }), result({ ok: false, error: 'x' })), 'submitted');
 });
 
+test('a school can ignore financial aid items', () => {
+  const item = (name, done = false) => ({ item: name, status: done ? 'Received' : 'Awaiting', date: '', done, optional: false });
+  const portal = result({ checklist: [item('Official High School Transcript', true), item('CSS Profile'), item('Free Application for Federal Student Aid (FAFSA)'), item('2025 Parent Federal Tax Return'), item('Mid-Year Grade Report')] });
+  assert.deepEqual(tracker.missingItems(app({ portal })), ['CSS Profile', 'Free Application for Federal Student Aid (FAFSA)', '2025 Parent Federal Tax Return', 'Mid-Year Grade Report']);
+  const noAid = tracker.editApp(app({ portal }), { ignoreAid: true });
+  assert.deepEqual(tracker.missingItems(noAid), ['Mid-Year Grade Report']);
+  assert.equal(service.viewApp(noAid, '2026-11-24').portal.checklist.length, 2);
+  const onlyAid = result({ checklist: [item('Transcript', true), item('IDOC financial aid documents')] });
+  assert.equal(tracker.suggestedStatus(app({ status: 'submitted', ignoreAid: true }), onlyAid), 'complete');
+  assert.equal(tracker.suggestedStatus(app({ status: 'submitted' }), onlyAid), 'submitted');
+  assert.throws(() => tracker.editApp(app(), { ignoreAid: 'yes' }), /true or false/);
+});
+
 test('a failed check keeps the last decision date and round', () => {
   const first = tracker.withResult(app(), result({ decisionDate: '2027-03-15', round: 'RD' }));
   const failed = tracker.withResult(first, result({ checkedAt: 3000, ok: false, error: 'down' }));

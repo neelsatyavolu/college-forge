@@ -42,6 +42,7 @@ const edit = z.object({
   portalUrl: z.union([z.literal(""), z.string().max(500).regex(/^https:\/\//)]).optional(),
   name: z.string().max(120).optional(),
   submittedAt: date.optional(),
+  ignoreAid: z.boolean().optional(),
 });
 const ref = z.string().min(1).max(200);
 

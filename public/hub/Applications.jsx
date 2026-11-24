@@ -1,6 +1,18 @@
 const { Button } = window.CollegeForgeDesignSystem_e95e63;
 
 /** What the portal last said, in one line. Decisions never show here, only that one is posted. */
+/** The portal's own status line, or, when it shows none, what its checklist says. */
+function portalSummary(app) {
+  const p = app.portal;
+  if (app.decision.state === "hidden") return { quoted: false, text: "Decision posted" };
+  if (p.statusText) return { quoted: true, text: p.statusText };
+  const required = (p.checklist || []).filter((c) => !c.optional);
+  const missing = app.missing.length;
+  if (missing) return { quoted: false, text: `${missing} item${missing === 1 ? "" : "s"} missing` };
+  if (required.length) return { quoted: false, text: `All ${required.length} item${required.length === 1 ? "" : "s"} received` };
+  return { quoted: false, text: "No status shown in the portal" };
+}
+
 function PortalLine({ app }) {
   const { ago } = window.cfApp;
   const p = app.portal;
@@ -17,7 +29,7 @@ function PortalLine({ app }) {
     <div className="cf-app-row__portal">
       {hidden ? <a href="#decisions" className="is-decision">A decision is posted. Open it on Decisions →</a> : (
         <React.Fragment>
-          <span>{p.statusText ? <React.Fragment>Portal says <b style={{ fontWeight: 500, color: "var(--ink)" }}>“{p.statusText}”</b></React.Fragment> : "Portal checked"}</span>
+          <span>{p.statusText ? <React.Fragment>Portal says <b style={{ fontWeight: 500, color: "var(--ink)" }}>“{p.statusText}”</b></React.Fragment> : portalSummary(app).text}</span>
           <span style={{ color: "var(--muted)" }}> · {ago(p.checkedAt)}</span>
         </React.Fragment>
       )}
@@ -63,6 +75,12 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
         <label className="cf-field" style={{ gridColumn: "1 / -1" }}>Portal link
           <input type="url" value={form.portalUrl} onChange={set("portalUrl")} placeholder="https://" />
         </label>
+        {app.hasAidItems || app.ignoreAid ? (
+          <label className="cf-check" style={{ gridColumn: "1 / -1", display: "flex", gap: 8, alignItems: "center" }}>
+            <input type="checkbox" checked={app.ignoreAid} disabled={busy} onChange={(e) => act({ action: "update", id, edit: { ignoreAid: e.target.checked } }, e.target.checked ? "Financial aid items hidden for this school." : "Financial aid items count again.")} />
+            <span>Not applying for aid here: ignore FAFSA, CSS Profile and tax forms</span>
+          </label>
+        ) : null}
         <label className="cf-field" style={{ gridColumn: "1 / -1" }}>Notes
           <textarea value={form.notes} onChange={set("notes")} maxLength={4000} />
         </label>
@@ -133,7 +151,8 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact }) 
   const { SchoolMark, StatusSelect, fmtDate, daysUntil, relDays, ago, Chevron } = window.cfApp;
   const next = app.nextDate;
   const soon = next && daysUntil(next.date) <= 7;
-  const said = app.portal && app.portal.ok ? (app.portal.statusText ? `“${app.portal.statusText}” · ${ago(app.portal.checkedAt)}` : `Checked ${ago(app.portal.checkedAt)}`) : app.login ? "Not checked yet" : "";
+  const summary = app.portal && app.portal.ok ? portalSummary(app) : null;
+  const said = summary ? `${summary.quoted ? `“${summary.text}”` : summary.text} · ${ago(app.portal.checkedAt)}` : app.login ? "Not checked yet" : "";
   return (
     <li className={"cf-app-row" + (compact ? " cf-app-row--compact" : "")}>
       <SchoolMark name={app.name} logo={app.logo} />
