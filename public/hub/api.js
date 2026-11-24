@@ -15,7 +15,8 @@ window.cfApi = {
     });
     const j = await res.json().catch(() => ({}));
     if (!res.ok || j.success === false) {
-      throw new Error((j && j.error) || "Save failed");
+      // A 409 carries the latest workspace so the editor can show it and keep the draft.
+      throw Object.assign(new Error((j && j.error) || "Save failed"), { status: res.status, data: j && j.data });
     }
     return j.data;
   },

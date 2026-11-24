@@ -1,6 +1,29 @@
 const { Badge, Button } = window.CollegeForgeDesignSystem_e95e63;
 
 const UC_APPLICATION_SLUG = "uc-application";
+const ESSAY_PLAN = window.cfEssayArchetypes;
+
+const todayIso = () => {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+};
+const daysUntil = (iso, today) => Math.round((Date.parse(iso) - Date.parse(today)) / 86400000);
+const shortDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const collegeName = (c) => (c && (c.short || c.name)) || "";
+const SOON_DAYS = 14;
+const URGENT_DAYS = 7;
+
+/** The chat message for one essay. The copilot reads the draft itself with get_essay. */
+function essayAsk(it, kind) {
+  const where = `My ${it.group || "Common App"} essay "${it.label}" (id ${it.id}, limit ${it.limit} ${it.unit}). Prompt: ${it.prompt}`;
+  const asks = {
+    help: "Read my draft with get_essay, then help me with it.",
+    outline: "Read my draft with get_essay and help me outline this essay. Ask me about my own experiences before suggesting content, and don't make any up.",
+    tighten: `Read my draft with get_essay and cut it to ${it.limit} ${it.unit} or fewer without changing my voice or story. Save the shorter version with suggest_essay_edit so I can compare.`,
+    check: "Read my draft with get_essay and tell me whether it answers every part of the prompt. Quote the sentences that do, and name anything it leaves out.",
+  };
+  return `${where} ${asks[kind]}`;
+}
 
 const wordCount = (s) => (s.trim() ? s.trim().split(/\s+/).length : 0);
 const essayCount = (it, text) => /character/i.test(it.unit) ? Array.from(text).length : wordCount(text);
@@ -118,6 +141,7 @@ function buildGroups(data) {
       subtitle: "Personal statement — pick one",
       kind: "common",
       items: (data.essays && data.essays.commonApp) || [],
+      colleges: colleges.filter((c) => !isUcCampus(c)),
     },
   ];
 
@@ -133,6 +157,7 @@ function buildGroups(data) {
       subtitle: ucs.map((c) => c.short || c.name).join(" · "),
       kind: "uc",
       items,
+      colleges: ucs,
       placeholder: items.length === 0,
     });
   }
@@ -147,6 +172,7 @@ function buildGroups(data) {
       subtitle: c.name && c.short && c.name !== c.short ? c.name : null,
       kind: "school",
       college: c,
+      colleges: [c],
       items,
       placeholder: items.length === 0,
     });
@@ -181,10 +207,86 @@ function buildGroups(data) {
     });
   });
 
-  return groups;
+  return sortByDeadline(groups, todayIso());
 }
 
-function SidebarItem({ it, active, count, onClick }) {
+/**
+ * Common App first, then schools by their next application deadline for the chosen
+ * round, then schools with no known deadline, then schools no longer on the list.
+ */
+function sortByDeadline(groups, today) {
+  const withDue = groups.map((g) => ({ ...g, due: g.kind === "orphan" ? null : ESSAY_PLAN.nextDeadline(g.colleges || [], today) }));
+  const order = (g) => (g.kind === "orphan" ? "~" : g.due ? g.due.date : "9999");
+  const [common, ...rest] = withDue;
+  const sorted = rest
+    .map((g, i) => ({ g, i }))
+    .sort((a, b) => (order(a.g) < order(b.g) ? -1 : order(a.g) > order(b.g) ? 1 : a.i - b.i))
+    .map((x) => x.g);
+  return [common, ...sorted];
+}
+
+function dueLabel(group) {
+  if (!group.due) return "";
+  const who = group.kind === "school" ? "" : ` · ${collegeName(group.due.college)}`;
+  return `Due ${shortDate(group.due.date)} · ${group.due.round}${who}`;
+}
+
+function DueChip({ days }) {
+  const urgent = days < URGENT_DAYS;
+  return (
+    <span
+      className="cf-nums"
+      style={{
+        flexShrink: 0,
+        fontSize: 10.5,
+        fontWeight: 600,
+        padding: "1px 6px",
+        borderRadius: "var(--radius-pill)",
+        background: urgent ? "var(--error)" : "var(--accent-amber)",
+        color: urgent ? "var(--on-primary)" : "var(--ink)",
+      }}
+    >
+      {days <= 0 ? "due today" : `${days}d left`}
+    </span>
+  );
+}
+
+/** Essays left, words left and the next deadline, above the editor. */
+function WritingSummary({ totals, next, today }) {
+  const cell = { display: "flex", flexDirection: "column", gap: 2, minWidth: 0 };
+  const label = { fontSize: 11, color: "var(--muted)" };
+  const value = { fontFamily: "var(--font-mono)", fontSize: 14, color: "var(--ink)", fontWeight: 500 };
+  const days = next ? daysUntil(next.date, today) : null;
+  return (
+    <section
+      aria-label="Writing progress"
+      className="cf-essay-summary"
+      style={{ display: "flex", flexWrap: "wrap", gap: "10px 28px", padding: "10px 0 12px", marginBottom: 14, borderBottom: "1px solid var(--hairline)" }}
+    >
+      <div style={cell}>
+        <span style={label}>Essays drafted</span>
+        <span className="cf-nums" style={value}>{totals.drafted} of {totals.required}</span>
+      </div>
+      <div style={cell}>
+        <span style={label}>Marked final</span>
+        <span className="cf-nums" style={value}>{totals.final} of {totals.required}</span>
+      </div>
+      <div style={cell}>
+        <span style={label}>Words written</span>
+        <span className="cf-nums" style={value}>{totals.wordsWritten.toLocaleString()} of {totals.wordsRequired.toLocaleString()}</span>
+      </div>
+      <div style={cell}>
+        <span style={label}>Next deadline</span>
+        <span className="cf-nums" style={value}>
+          {next ? `${shortDate(next.date)} · ${collegeName(next.college)} ${next.round}` : "None saved"}
+          {next ? <span style={{ fontSize: 12, color: days < SOON_DAYS ? "var(--error)" : "var(--muted)", fontWeight: 400 }}>{` (${days <= 0 ? "today" : days + (days === 1 ? " day" : " days")})`}</span> : null}
+        </span>
+      </div>
+    </section>
+  );
+}
+
+function SidebarItem({ it, active, count, onClick, label, final }) {
   const over = count > it.limit;
   const started = count > 0;
   return (
@@ -214,7 +316,7 @@ function SidebarItem({ it, active, count, onClick }) {
           width: 7,
           height: 7,
           borderRadius: "50%",
-          background: over ? "var(--error)" : started ? "var(--accent-teal)" : "var(--hairline)",
+          background: over ? "var(--error)" : final ? "var(--ink)" : started ? "var(--accent-teal)" : "var(--hairline)",
         }}
       />
       <span
@@ -229,7 +331,7 @@ function SidebarItem({ it, active, count, onClick }) {
           textOverflow: "ellipsis",
         }}
       >
-        {it.label}
+        {label || it.label}
       </span>
       <span
         className="cf-nums"
@@ -246,7 +348,8 @@ function SidebarItem({ it, active, count, onClick }) {
   );
 }
 
-function GroupHeader({ group, open, onToggle, startedCount, totalCount }) {
+function GroupHeader({ group, open, onToggle, startedCount, totalCount, unfinished, today }) {
+  const days = group.due ? daysUntil(group.due.date, today) : null;
   const chevron = open ? "▾" : "▸";
   return (
     <button
@@ -322,12 +425,38 @@ function GroupHeader({ group, open, onToggle, startedCount, totalCount }) {
             {group.subtitle}
           </span>
         ) : null}
+        {group.due ? (
+          <span style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+            <span className="cf-nums" style={{ fontSize: 11, color: "var(--body)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {dueLabel(group)}
+            </span>
+            {unfinished && days < SOON_DAYS ? <DueChip days={days} /> : null}
+          </span>
+        ) : null}
       </span>
     </button>
   );
 }
 
-function Editor({ it, value, onChange, saveState, schoolLabel }) {
+function SuggestionPanel({ suggestion, unit, onUse, onDismiss, busy }) {
+  const count = /character/i.test(unit) ? Array.from(suggestion.text).length : wordCount(suggestion.text);
+  return (
+    <div style={{ marginBottom: 16, padding: "12px 14px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)", background: "var(--surface-soft)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+        <strong style={{ fontSize: 13, color: "var(--ink)" }}>
+          Copilot suggestion <span className="cf-nums" style={{ fontWeight: 400, color: "var(--muted)" }}>· {count} {unit}</span>
+        </strong>
+        <div style={{ display: "flex", gap: 6 }}>
+          <Button size="sm" disabled={busy} onClick={onUse}>Replace my draft</Button>
+          <Button variant="secondary" size="sm" disabled={busy} onClick={onDismiss}>Dismiss</Button>
+        </div>
+      </div>
+      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "var(--body)", whiteSpace: "pre-wrap", maxHeight: 180, overflowY: "auto" }}>{suggestion.text}</p>
+    </div>
+  );
+}
+
+function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion }) {
   const count = essayCount(it, value);
   const over = count > it.limit;
   const underMin = /^ca-ps-/.test(it.id) && count > 0 && count < 250;
@@ -374,9 +503,36 @@ function Editor({ it, value, onChange, saveState, schoolLabel }) {
         >
           {it.prompt}
         </p>
+        {onAsk ? (
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12 }}>
+            <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "outline"))}>Outline</Button>
+            <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "tighten"))}>Tighten to limit</Button>
+            <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "check"))}>Check against prompt</Button>
+          </div>
+        ) : null}
       </div>
 
       <div className="cf-essay-writing-area" style={{ flex: 1, minHeight: 0, padding: "20px 28px", overflowY: "auto" }}>
+        {suggestion ? (
+          <SuggestionPanel suggestion={suggestion} unit={it.unit} busy={statusBusy} onUse={onUseSuggestion} onDismiss={onDismissSuggestion} />
+        ) : null}
+        {!value.trim() && startFrom && startFrom.length ? (
+          <label style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>
+            Start from
+            <select
+              aria-label="Start from another draft"
+              value=""
+              onChange={(e) => {
+                const source = startFrom.find((x) => x.id === e.target.value);
+                if (source) onChange(source.text);
+              }}
+              style={{ padding: "6px 8px", maxWidth: "100%", minWidth: 0, border: "1px solid var(--hairline)", borderRadius: "var(--radius-sm)", background: "var(--canvas)", color: "var(--ink)" }}
+            >
+              <option value="">a copy of another draft…</option>
+              {startFrom.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}
+            </select>
+          </label>
+        ) : null}
         <textarea
           className="cf-essay-textarea"
           aria-label={it.label + " draft"}
@@ -463,6 +619,19 @@ function Editor({ it, value, onChange, saveState, schoolLabel }) {
             flexShrink: 0,
           }}
         >
+          {onSetStatus ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, marginRight: 10 }}>
+              {statusError ? <span role="alert" style={{ color: "var(--error)" }}>{statusError}</span> : null}
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={statusBusy || (status !== "final" && !value.trim())}
+                onClick={() => onSetStatus(status === "final" ? "draft" : "final")}
+              >
+                {status === "final" ? "Final · Undo" : "Mark final"}
+              </Button>
+            </span>
+          ) : null}
           <span
             aria-hidden
             style={{
@@ -580,6 +749,51 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     };
   }, [queue, onWorkspaceChange]);
 
+  const status = data.essayStatus || {};
+  const suggestions = data.essaySuggestions || {};
+  const today = todayIso();
+  const [sideMode, setSideMode] = React.useState("school");
+  const [statusBusy, setStatusBusy] = React.useState(false);
+  const [statusError, setStatusError] = React.useState("");
+  React.useEffect(() => setStatusError(""), [activeId]);
+  const totals = React.useMemo(() => ESSAY_PLAN.writingTotals(groups, local, status), [groups, local, status]);
+  const unfinished = (g) => {
+    const t = ESSAY_PLAN.writingTotals([g], local, status);
+    return t.required > t.final;
+  };
+  const dueGroups = groups.filter((g) => g.due);
+  const nextGroup = dueGroups.filter(unfinished).sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0]
+    || dueGroups.slice().sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0];
+  const typeSections = React.useMemo(() => ESSAY_PLAN.byPromptType(allItems), [allItems]);
+  // Other drafts this one could start from: the same kind of prompt first.
+  const startFrom = React.useMemo(() => {
+    if (!active) return [];
+    const kind = ESSAY_PLAN.archetypeOf(active);
+    return allItems
+      .filter((it) => it.id !== active.id && (local[it.id] || "").trim())
+      .map((it) => ({ id: it.id, text: local[it.id], same: ESSAY_PLAN.archetypeOf(it) === kind, label: `${it.group} · ${it.label} (${essayCount(it, local[it.id])} ${it.unit})` }))
+      .sort((a, b) => (a.same === b.same ? 0 : a.same ? -1 : 1));
+  }, [active, allItems, local]);
+
+  const patchEssay = async (patch) => {
+    setStatusBusy(true);
+    setStatusError("");
+    try {
+      const ws = await window.cfApi.patch(patch);
+      if (onWorkspaceChange) onWorkspaceChange(ws);
+    } catch (e) {
+      setStatusError(e.message || "Couldn’t save. Try again.");
+    } finally {
+      setStatusBusy(false);
+    }
+  };
+  const setStatus = (id, next) => patchEssay({ essayStatus: { [id]: next } });
+  const dismissSuggestion = (id) => patchEssay({ essaySuggestions: { [id]: null } });
+  const acceptSuggestion = (id) => {
+    handleChange(id, suggestions[id].text);
+    dismissSuggestion(id);
+  };
+
   const notes = (data.advisorNotes || []).filter((n) => n.essayId === (active && active.id));
   const schoolCount = groups.filter((g) => g.kind === "school" || g.kind === "uc").length;
 
@@ -624,7 +838,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
           </p>
         </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to draft ✱</Button>
+          <Button variant="secondary" size="sm" onClick={() => onAsk(active ? essayAsk(active, "help") : undefined)}>Ask copilot ✱</Button>
           <Button size="sm" onClick={()=>{setPromptError("");setPromptForm({groupKey:active ? active._groupKey : "common",label:"",prompt:"",limit:250,unit:"words"});}}>Add prompt</Button>
           {active ? <Button variant="secondary" size="sm" onClick={()=>{setPromptError("");setPromptForm({...active,groupKey:active._groupKey});}}>Edit prompt</Button> : null}
         </div>
@@ -659,6 +873,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
         </div>
       ) : (
         <React.Fragment>
+        <WritingSummary totals={totals} next={nextGroup ? nextGroup.due : null} today={today} />
         <label className="cf-mobile-essay-picker">Choose an essay
           <select aria-label="Choose an essay" value={activeId || ""} onChange={(event) => {
             const item = allItems.find(essay => essay.id === event.target.value);
@@ -692,7 +907,41 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
               maxHeight: "none",
             }}
           >
-            {groups.map((g) => {
+            <div role="group" aria-label="Sort essays" style={{ display: "flex", gap: 2, padding: 2, margin: "0 2px 10px", borderRadius: "var(--radius-sm)", background: "var(--surface-cream-strong)" }}>
+              {[["school", "By school"], ["type", "By prompt type"]].map(([mode, text]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  aria-pressed={sideMode === mode}
+                  onClick={() => setSideMode(mode)}
+                  className="cf-press"
+                  style={{ flex: 1, border: "none", cursor: "pointer", padding: "5px 6px", fontSize: 12, borderRadius: "var(--radius-sm)", background: sideMode === mode ? "var(--canvas)" : "transparent", color: sideMode === mode ? "var(--ink)" : "var(--muted)", fontWeight: sideMode === mode ? 500 : 400 }}
+                >
+                  {text}
+                </button>
+              ))}
+            </div>
+            {sideMode === "type" ? typeSections.map((section) => (
+              <div key={section.id} style={{ marginBottom: 10 }}>
+                <div style={{ padding: "6px 8px", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--muted)", display: "flex", justifyContent: "space-between" }}>
+                  <span>{section.label}</span>
+                  <span className="cf-nums" style={{ fontSize: 10, color: "var(--muted-soft)", fontWeight: 400 }}>{section.items.length}</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "0 2px 0 8px" }}>
+                  {section.items.map((it) => (
+                    <SidebarItem
+                      key={it.id}
+                      it={it}
+                      label={`${it.group} · ${it.label}`}
+                      active={activeId === it.id}
+                      final={status[it.id] === "final"}
+                      count={essayCount(it, local[it.id] || "")}
+                      onClick={() => selectEssay(it, it._groupKey)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )) : groups.map((g) => {
               const open = openKeys.has(g.key);
               const items = g.items || [];
               const startedCount = items.filter((it) => wordCount(local[it.id] || "") > 0).length;
@@ -711,6 +960,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                     onToggle={() => toggleGroup(g.key)}
                     startedCount={startedCount}
                     totalCount={items.length}
+                    unfinished={unfinished(g)}
+                    today={today}
                   />
                   {open ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "0 2px 6px 8px" }}>
@@ -731,6 +982,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                             key={it.id}
                             it={it}
                             active={activeId === it.id}
+                            final={status[it.id] === "final"}
                             count={essayCount(it, local[it.id] || "")}
                             onClick={() => selectEssay(it, g.key)}
                           />
@@ -769,6 +1021,15 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                 onChange={(v) => handleChange(active.id, v)}
                 saveState={saveState}
                 schoolLabel={active.group}
+                onAsk={onAsk}
+                status={status[active.id]}
+                onSetStatus={(next) => setStatus(active.id, next)}
+                statusBusy={statusBusy}
+                statusError={statusError}
+                startFrom={startFrom}
+                suggestion={suggestions[active.id]}
+                onUseSuggestion={() => acceptSuggestion(active.id)}
+                onDismissSuggestion={() => dismissSuggestion(active.id)}
               />
             ) : (
               <div className="cf-empty" style={{ border: "none", margin: "auto" }}>

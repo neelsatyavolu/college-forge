@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 /**
- * Refresh supplemental essay prompts for every U.S. News top-250 school by
+ * Refresh supplemental essay prompts for every U.S. News top-250 national
+ * university and top-30 liberal arts college by
  * scraping public web pages (no AI, no search APIs). Run yearly after
  * schools publish prompts (Aug–Sep); .github/workflows/refresh-supplements.yml
  * runs it on a schedule and opens a PR for review.
  *
  * For each school, in order:
- *   1. sources.json "noSupplements" → recorded as having none
+ *   1. sources.json "noSupplements" → recorded as having none; sources.json
+ *      "prompts" copied by hand for the current cycle → used as is
  *   2. sources.json "url" (last known official prompt page) → extract
  *   3. crawl from sources.json "start" or the school's Common App-listed
  *      admissions site to find the official prompt page → extract
  *   4. CollegeVine's structured prompt page, matched by name via its
- *      sitemap (may lag a cycle; labeled). Its "does not require essays"
- *      notice for a past cycle records the school as having none.
+ *      sitemap or pinned with sources.json "collegevine" (may lag a cycle;
+ *      labeled). Its "does not require essays" notice for a past cycle
+ *      records the school as having none, but only from a name match.
  *   5. nothing found → keep last run's entry, if any, and report it
  *
  * UC campuses are skipped: they share the UC Personal Insight Questions
@@ -36,7 +39,12 @@ import {
   loadCommonAppIndex,
 } from "./supplements/discover.mjs";
 import { createRenderer } from "./supplements/render.mjs";
-import { collegeVineUrlFor, loadCollegeVineIndex, parseCollegeVine } from "./supplements/collegevine.mjs";
+import {
+  collegeVinePageMatches,
+  collegeVineUrlFor,
+  loadCollegeVineIndex,
+  parseCollegeVine,
+} from "./supplements/collegevine.mjs";
 
 const root = (p) => fileURLToPath(new URL(`../${p}`, import.meta.url));
 const RANKINGS = root("lib/us-news-rankings.ts");
@@ -54,12 +62,29 @@ export function currentCycle(date = new Date()) {
   return `${start}-${String((start + 1) % 100).padStart(2, "0")}`;
 }
 
+/** Liberal arts colleges covered by default; national universities are all covered. */
+export const LAC_TOP = 30;
+
+/** Rows of one exported array in lib/us-news-rankings.ts. */
+export function readRankingArray(src, name) {
+  const at = src.indexOf(`${name}: `);
+  const start = src.indexOf("= [", at);
+  const end = src.indexOf("\n];", start);
+  if (at < 0 || start < 0 || end < 0) throw new Error(`Could not find ${name} array in ${RANKINGS}`);
+  return JSON.parse(src.slice(start + 2, end + 2));
+}
+
+/** National universities, then the top LACs, deduped by slug. */
+export function collegesFromRankings(src) {
+  const pick = (list) => ({ slug, name, rank, scorecardId }) => ({ slug, name, rank, scorecardId, list });
+  const national = readRankingArray(src, "US_NEWS_TOP_250").map(pick("national"));
+  const lac = readRankingArray(src, "US_NEWS_LAC_TOP_N").filter((c) => c.rank <= LAC_TOP).map(pick("liberal-arts"));
+  const seen = new Set();
+  return [...national, ...lac].filter((c) => !seen.has(c.slug) && seen.add(c.slug));
+}
+
 async function loadColleges() {
-  const src = await readFile(RANKINGS, "utf8");
-  const start = src.indexOf("= [", src.indexOf("US_NEWS_TOP_250: "));
-  const end = src.indexOf("];", start);
-  if (start < 0 || end < 0) throw new Error(`Could not find US_NEWS_TOP_250 array in ${RANKINGS}`);
-  return JSON.parse(src.slice(start + 2, end + 1)).map(({ slug, name, rank }) => ({ slug, name, rank }));
+  return collegesFromRankings(await readFile(RANKINGS, "utf8"));
 }
 
 const promptKey = (text) => text.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, PROMPT_KEY_CHARS);
@@ -94,6 +119,13 @@ async function readJson(path, fallback) {
   }
 }
 
+/** Above this many prompts, all required usually means per-program prompts weren't detected. */
+const ALL_REQUIRED_SUSPECT = 4;
+
+export function allRequiredMany(prompts) {
+  return (prompts?.length || 0) > ALL_REQUIRED_SUSPECT && prompts.every((p) => p.required);
+}
+
 const sortedObject = (obj) => Object.fromEntries(Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)));
 
 async function tryOfficial(url, ctx) {
@@ -109,18 +141,35 @@ const cleaned = (found, keys) => {
   return prompts.length ? { ...found, result: { ...found.result, prompts } } : null;
 };
 
-async function fetchCollegeVine(college, { http, collegeVine, cycle }) {
-  const cvUrl = collegeVineUrlFor(collegeVine, college.name, college.slug);
+async function fetchCollegeVine(college, { http, collegeVine, cycle, registry }) {
+  // sources.json "collegevine" pins a page whose slug doesn't follow the school's name.
+  const pinned = registry[college.slug]?.collegevine;
+  const { url: cvUrl, exact } = pinned ? { url: pinned, exact: true } : collegeVineUrlFor(collegeVine, college.name, college.slug);
   const cv = await http.get(cvUrl);
   if (cv.status !== 200) return null;
   const parsed = parseCollegeVine(cv.text);
+  // A guessed or abbreviated URL can land on another campus; check the page's school name.
+  if (!collegeVinePageMatches(parsed.school, college.name)) return null;
   const url = cv.url || cvUrl;
   if (parsed.prompts.length) return { source: "collegevine", url, cycle: parsed.cycle, prompts: parsed.prompts };
-  // "Not available yet" can't apply to a cycle that has already ended.
-  if (parsed.noEssays && parsed.cycle && parsed.cycle < cycle) {
+  // "Not available yet" can't apply to a cycle that has already ended, and a
+  // fuzzy match is never enough to tell students a school has no essays.
+  if (exact && parsed.noEssays && parsed.cycle && parsed.cycle < cycle) {
     return { source: "none", url, cycle: parsed.cycle, note: `CollegeVine lists no essays (${parsed.cycle})` };
   }
   return null;
+}
+
+/**
+ * sources.json "prompts": this cycle's prompts copied from the school's own
+ * page by a person, for pages that block the scraper or that it misreads.
+ * They win over scraping for that cycle and are ignored once it has passed,
+ * so they can't go stale.
+ */
+export function copiedPrompts(reg, cycle) {
+  if (!reg.prompts?.length || reg.cycle !== cycle) return null;
+  const prompts = reg.prompts.map((p) => ({ unit: "words", required: true, options: [], ...p }));
+  return { source: "official", url: reg.url, cycle, prompts, note: "Copied by hand from the school's page" };
 }
 
 /**
@@ -132,6 +181,8 @@ async function resolveSchool(college, ctx) {
   const { http, renderer, registry, commonApp, psKeys } = ctx;
   const reg = registry[college.slug] || {};
   if (reg.noSupplements) return { entry: { source: "none", note: reg.note || "sources.json" } };
+  const copied = copiedPrompts(reg, ctx.cycle);
+  if (copied) return { entry: copied };
 
   const page = { http, renderer };
   // Re-crawl unless last year's page still looks complete, so a thin or
@@ -175,6 +226,7 @@ function buildReport({ cycle, rows, previous }) {
   const missing = by((r) => !r.entry);
   const oldCycle = by((r) => r.entry?.cycle && r.entry.cycle !== cycle);
   const noisy = by((r) => (r.entry?.prompts?.length || 0) > SUSPICIOUS_PROMPT_COUNT);
+  const allRequired = by((r) => allRequiredMany(r.entry?.prompts));
   const thin = by((r) => !r.kept && r.officialCount != null && r.collegeVineCount > r.officialCount);
   const changed = by(
     (r) => r.entry && !r.kept && JSON.stringify(r.entry.prompts || []) !== JSON.stringify(previous[r.slug]?.prompts || [])
@@ -202,6 +254,10 @@ function buildReport({ cycle, rows, previous }) {
     "",
     `## Unusually many prompts, likely mis-parsed (${noisy.length})`,
     list(noisy, (r) => `- ${r.name} — ${r.entry.prompts.length} prompts ${r.entry.url}`),
+    "",
+    `## Every prompt marked required, more than ${ALL_REQUIRED_SUSPECT} (${allRequired.length})`,
+    "Program-specific prompts may be missing their audience; check the page.",
+    list(allRequired, (r) => `- ${r.name} — ${r.entry.prompts.length} prompts ${r.entry.url || ""}`),
     "",
     `## Not found this run, previous entry kept (${kept.length})`,
     list(kept),
@@ -267,7 +323,8 @@ async function main() {
       // Label kept prompts with the cycle they were fetched in so the app flags them as outdated.
       return { ...college, entry: { ...prev, cycle: prev.cycle ?? previousFile.cycle ?? null }, kept: true };
     }
-    return { ...college, entry: entry && { name: college.name, ...entry }, kept: false, officialCount, collegeVineCount };
+    const fresh = entry && { name: college.name, ...(college.scorecardId ? { scorecardId: college.scorecardId } : {}), ...entry };
+    return { ...college, entry: fresh, kept: false, officialCount, collegeVineCount };
   });
 
   await renderer.close();

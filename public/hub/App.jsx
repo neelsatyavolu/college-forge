@@ -75,6 +75,10 @@ function App() {
   const [favorites, setFavorites] = React.useState(loadFavorites);
   const [theme, setTheme] = React.useState(() => document.documentElement.getAttribute("data-theme") || "light");
   const [runOnboarding, setRunOnboarding] = React.useState(false);
+  // Opens the wizard by itself once per page load, so "Return to workspace" is not undone by the next refresh.
+  const autoOnboardRef = React.useRef(false);
+  // Deadline and essay-prompt research after onboarding: { state: "running" | "done" | "error", message }.
+  const [planTask, setPlanTask] = React.useState(null);
   const mainRef = React.useRef(null);
 
   const toggleTheme = () => setTheme(t => {
@@ -105,6 +109,7 @@ function App() {
       const me = await window.cfApi.me();
       setAccount(me);
       if (!me.signedIn) { setLoading(false); return; }
+      if (me.needsOnboarding && !autoOnboardRef.current) { autoOnboardRef.current = true; setRunOnboarding(true); }
       const [ws, apps] = await Promise.all([window.cfApi.getWorkspace(), window.cfApi.applications()]);
       setTrackerState(apps.data);
       if (requestedScope && requestedScope !== window.CF_DATA?.draftStorageKey) return;
@@ -176,11 +181,24 @@ function App() {
     if (typeof prompt === "string") setChatPrompt({ text: prompt, id: Date.now() });
     setChatOpen(true);
   };
-  const completeOnboarding = async ws => {
+  const runPlanInBackground = () => {
+    if (typeof window.cfRunPlanSteps !== "function") return;
+    setPlanTask({ state: "running", message: "Looking up deadlines and essay prompts…" });
+    window.cfRunPlanSteps(message => setPlanTask({ state: "running", message }))
+      .then(({ ws, failed }) => {
+        applyWorkspace(ws);
+        setPlanTask({ state: "done", message: failed.length
+          ? `Deadlines and prompts added, except ${failed.join(", ")}. Rebuild from Settings to retry those.`
+          : "Deadlines and essay prompts added." });
+      })
+      .catch(e => setPlanTask({ state: "error", message: e.message || "Couldn't look up deadlines and prompts. Try Rebuild in Settings." }));
+  };
+  const completeOnboarding = async (ws, options) => {
     if (ws) applyWorkspace(ws); else await refresh();
     reloadTracker();
     setRunOnboarding(false);
     navigate("recommendations");
+    if (options && options.buildPlan) runPlanInBackground();
   };
   const hiddenDecisions = tracker.apps.filter(a => a.decision && a.decision.state === "hidden").length;
   const portalCount = tracker.apps.filter(a => a.stage !== "working" || (a.login && a.login.hasPassword)).length;
@@ -222,6 +240,10 @@ function App() {
       <div className="cf-workspace-body">
         <div className="cf-workspace-topline"><span>MY COLLEGE WORKSPACE</span><span>{account && account.user ? account.user.email : data.applicant.cycle || "Your next chapter starts here"}</span></div>
         <main id="workspace-main" className="cf-hub-main" ref={mainRef} tabIndex={-1}>
+          {!data.onboarding?.completed && <div className="cf-setup-banner" role="note" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", margin: "0 0 16px", padding: "12px 16px", borderRadius: 8, border: "1px solid var(--hairline)", background: "var(--surface-soft)", color: "var(--body)", fontSize: 14 }}>
+            <span>Setup isn't finished. Answer a few questions to get a starting college list.</span>
+            <Button size="sm" onClick={() => setRunOnboarding(true)}>Finish setup</Button>
+          </div>}
           {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTracker} />}
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={applyWorkspace} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} />}
@@ -241,6 +263,11 @@ function App() {
       <button type="button" className="cf-fab cf-chat-fab" hidden={chatOpen || menuOpen} aria-label="Open AI copilot chat" onClick={openChat}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z" /></svg>
       </button>
+      {planTask && <div className="cf-plan-pill" role="status" style={{ position: "fixed", left: 16, bottom: 16, zIndex: 55, maxWidth: "min(420px, calc(100vw - 96px))", display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 16, border: "1px solid var(--hairline)", background: "var(--canvas)", color: planTask.state === "error" ? "var(--error)" : "var(--body)", fontSize: 13, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
+        {planTask.state === "running" ? <span className="cf-onboard-spinner" aria-hidden="true" /> : <span aria-hidden="true">{planTask.state === "done" ? "✓" : "!"}</span>}
+        <span style={{ minWidth: 0, lineHeight: 1.4 }}>{planTask.message}</span>
+        {planTask.state !== "running" && <button type="button" className="cf-icon-btn" aria-label="Dismiss" onClick={() => setPlanTask(null)}>×</button>}
+      </div>}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 60 }}>
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
           <AiChat returnFocusRef={chatReturnFocusRef} key={data.draftStorageKey || "initial"} open={chatOpen} initialPrompt={chatPrompt} onClose={() => setChatOpen(false)} onWorkspaceChange={refresh} data={data} view={view} />

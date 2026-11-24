@@ -71,9 +71,13 @@ function ActivityRow({ a }) {
             {a.college ? <Badge variant="teal">Continue in college</Badge> : null}
             {over ? <Badge variant="coral" uppercase>Over 150 chars</Badge> : null}
           </span>
-          <span style={{ display: "block", fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{a.type} · {a.role} · {a.years}</span>
+          {[a.type, a.role, a.years].some(Boolean) ? (
+            <span style={{ display: "block", fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{[a.type, a.role, a.years].filter(Boolean).join(" · ")}</span>
+          ) : null}
         </span>
-        <span className="cf-nums" style={{ flexShrink: 0, fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--muted)", marginTop: 4 }}>{a.hpw} hr/wk · {a.wpy} wk/yr</span>
+        {a.hpw || a.wpy ? (
+          <span className="cf-nums" style={{ flexShrink: 0, fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--muted)", marginTop: 4 }}>{[a.hpw ? `${a.hpw} hr/wk` : "", a.wpy ? `${a.wpy} wk/yr` : ""].filter(Boolean).join(" · ")}</span>
+        ) : null}
         <span aria-hidden style={{ flexShrink: 0, color: "var(--muted-soft)", marginTop: 3, transform: open ? "rotate(90deg)" : "none", transition: "transform 140ms ease" }}>›</span>
       </button>
       {open ? (
@@ -102,23 +106,129 @@ function hsLabel(p) {
   return "";
 }
 
+const SECTION_GROUPS = {
+  all: ["gpa", "scores", "applicant", "aps", "activities", "honors", "coursework"],
+  academics: ["gpa", "scores"],
+  applicant: ["applicant"],
+  testing: ["scores", "aps"],
+  activities: ["activities"],
+  honors: ["honors"],
+  coursework: ["coursework"],
+};
+const SECTION_SAVED = {
+  all: "Saved your profile.", academics: "Saved your grades and scores.", applicant: "Saved your applicant details.",
+  testing: "Saved your testing.", activities: "Saved your activities.", honors: "Saved your honors.", coursework: "Saved your coursework.",
+};
+const TEST_OPTIONAL = /test[- ]optional|not (?:submitting|reporting)/i;
+const TEST_OPTIONAL_NOTE = "Test optional — not submitting";
+
+/** Adds or removes the test-optional wording in the SAT note, which is what the estimates read. */
+function withTestOptional(note, on) {
+  const text = String(note || "");
+  if (on) return TEST_OPTIONAL.test(text) ? text : text.trim() ? `Test optional · ${text.trim()}` : TEST_OPTIONAL_NOTE;
+  return text.replace(/test[- ]optional(?:\s*—\s*not (?:submitting|reporting)[^·]*)?|not (?:submitting|reporting)[^·]*/gi, "").replace(/^[\s·—,-]+|[\s·—,-]+$/g, "");
+}
+
+const blankStat = (v) => (v === "—" ? "" : v || "");
+const validNumber = (value, min, max) => /^\d+(?:\.\d+)?$/.test(value) && Number(value) >= min && Number(value) <= max;
+
+/** Checks only the groups being saved and throws the first problem as a readable message. */
+function checkDraft(draft, groups) {
+  const has = (g) => groups.includes(g);
+  const gpaWeighted = String(draft.gpaWeighted).trim();
+  const gpaUnweighted = String(draft.gpaUnweighted).trim();
+  const sat = String(draft.sat).trim();
+  const act = String(draft.act).trim();
+  const gradYear = String(draft.gradYear).trim();
+  if (has("gpa")) {
+    if (gpaUnweighted && !validNumber(gpaUnweighted, 0, 4)) throw new Error("Unweighted GPA must be a number from 0 to 4, or left blank.");
+    if (gpaWeighted && !validNumber(gpaWeighted, 0, 6)) throw new Error("Weighted GPA must be a number from 0 to 6, or left blank.");
+  }
+  if (has("scores")) {
+    if (sat && (!/^\d+$/.test(sat) || !validNumber(sat, 400, 1600))) throw new Error("SAT must be a whole number from 400 to 1600, or left blank.");
+    if (act && (!/^\d+$/.test(act) || !validNumber(act, 1, 36))) throw new Error("ACT must be a whole number from 1 to 36, or left blank.");
+  }
+  if (has("applicant") && gradYear && (!/^\d{4}$/.test(gradYear) || Number(gradYear) < 1900 || Number(gradYear) > 2100)) throw new Error("Graduation year must be a four-digit year from 1900 to 2100, or left blank.");
+  if ((has("activities") && draft.activities.length > MAX_ACT) || (has("honors") && draft.honors.length > MAX_HON)) throw new Error(`Keep up to ${MAX_ACT} activities and ${MAX_HON} honors.`);
+  if (has("activities")) {
+    for (const [index, activity] of draft.activities.entries()) {
+      if (!activity.name.trim()) throw new Error(`Give activity ${index + 1} a name, or remove it.`);
+      if ((activity.desc || "").length > DESC_LIMIT) throw new Error(`Shorten activity ${index + 1}'s description to ${DESC_LIMIT} characters.`);
+      for (const [key, label, max] of [["hpw", "Hours per week", 168], ["wpy", "Weeks per year", 52]]) {
+        const value = String(activity[key] ?? "").trim();
+        if (value && (!Number.isFinite(Number(value)) || Number(value) < 0 || Number(value) > max)) throw new Error(`Activity ${index + 1}: ${label} must be between 0 and ${max}.`);
+      }
+    }
+  }
+  if (has("honors")) draft.honors.forEach((honor, index) => {
+    if (!honor.title.trim()) throw new Error(`Give honor ${index + 1} a title, or remove it.`);
+  });
+  if (has("aps")) draft.aps.forEach((ap, index) => {
+    if (!ap.course.trim() || !/^[1-5]$/.test(String(ap.score))) throw new Error(`AP exam ${index + 1} needs a course name and a score from 1 to 5. Put planned exams in coursework.`);
+  });
+  return { gpaWeighted, gpaUnweighted, sat, act, gradYear };
+}
+
+/** The patch for just the groups being edited, so saving one section never resends the others. */
+function sectionPatch(draft, groups, checked, baseRevision) {
+  const has = (g) => groups.includes(g);
+  const { gpaWeighted, gpaUnweighted, sat, act, gradYear } = checked;
+  const applicant = {
+    ...(has("applicant") ? { name: draft.name, cycle: draft.cycle, year: draft.year } : {}),
+    ...(has("gpa") ? { gpaWeighted: gpaWeighted || "—", gpaUnweighted: gpaUnweighted || "—" } : {}),
+    ...(has("scores") ? { sat: sat || "—", satNote: draft.satNote } : {}),
+    ...(has("honors") ? { awards: draft.honors.length } : {}),
+  };
+  const testing = {
+    ...(has("scores") ? { sat: sat || "—", satNote: draft.satNote, act: act || "—" } : {}),
+    ...(has("aps") ? { aps: draft.aps.map((ap) => ({ ...ap, score: String(ap.score) })) } : {}),
+  };
+  const profile = {
+    ...(has("applicant") ? { intended: draft.intended, hs: draft.hs, gradYear, location: draft.location, counselor: draft.counselor, residency: draft.residency } : {}),
+    ...(Object.keys(testing).length ? { testing } : {}),
+    ...(has("coursework") ? { coursework: Object.fromEntries(Object.entries(draft.coursework).map(([key, value]) => [key, value.split("\n").map((course) => course.trim()).filter(Boolean)])) } : {}),
+    ...(has("activities") ? { activities: draft.activities.map((activity, index) => ({ ...activity, rank: index + 1 })) } : {}),
+    ...(has("honors") ? { honors: draft.honors } : {}),
+  };
+  return {
+    ...(Object.keys(applicant).length ? { applicant } : {}),
+    ...(Object.keys(profile).length ? { profile } : {}),
+    ...(typeof baseRevision === "number" ? { baseRevision } : {}),
+  };
+}
+
+function EditButton({ section, label, onEdit, disabled }) {
+  return <Button variant="secondary" size="sm" aria-label={`Edit ${label}`} disabled={disabled} onClick={() => onEdit(section)}>Edit</Button>;
+}
+
 function Profile({ data, onAsk, onWorkspaceChange }) {
   const p = data.profile;
   const a = data.applicant;
   const topHonors = p.honors.filter((h) => h.top).length;
-  const [editing, setEditing] = React.useState(false);
+  // null when reading; otherwise the section being edited ("all" for the whole profile).
+  const [editing, setEditing] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
   const [err, setErr] = React.useState("");
+  const [saved, setSaved] = React.useState("");
   const [draft, setDraft] = React.useState(null);
+  const [baseRevision, setBaseRevision] = React.useState(undefined);
+  const editorRef = React.useRef(null);
+  const groups = editing ? SECTION_GROUPS[editing] : [];
+  const shows = (g) => groups.includes(g);
 
-  const startEdit = () => {
+  React.useEffect(() => {
+    if (editing && editorRef.current && editorRef.current.scrollIntoView) editorRef.current.scrollIntoView({ block: "start" });
+  }, [editing]);
+
+  const startEdit = (section) => {
     setDraft({
       name: a.name || "",
       cycle: a.cycle || "",
       year: a.year || "",
-      gpaWeighted: a.gpaWeighted === "—" ? "" : a.gpaWeighted || "",
-      gpaUnweighted: a.gpaUnweighted === "—" ? "" : a.gpaUnweighted || "",
-      sat: (p.testing.sat === "—" ? "" : p.testing.sat) || "",
+      gpaWeighted: blankStat(a.gpaWeighted),
+      gpaUnweighted: blankStat(a.gpaUnweighted),
+      sat: blankStat(p.testing.sat),
+      act: blankStat(p.testing.act),
       satNote: p.testing.satNote || "",
       intended: p.intended || "",
       hs: p.hs || "",
@@ -131,68 +241,31 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
       aps: p.testing.aps.map((ap) => ({ ...ap })),
       coursework: Object.fromEntries(["honors", "aps", "senior"].map((key) => [key, (p.coursework[key] || []).join("\n")])),
     });
+    setBaseRevision(data.revision);
     setErr("");
-    setEditing(true);
+    setSaved("");
+    setEditing(section);
   };
 
   const save = async () => {
     setBusy(true);
     setErr("");
+    setSaved("");
     try {
-      const gpaWeighted = String(draft.gpaWeighted).trim();
-      const gpaUnweighted = String(draft.gpaUnweighted).trim();
-      const sat = String(draft.sat).trim();
-      const gradYear = String(draft.gradYear).trim();
-      const validNumber = (value, min, max) => /^\d+(?:\.\d+)?$/.test(value) && Number(value) >= min && Number(value) <= max;
-      if (gpaUnweighted && !validNumber(gpaUnweighted, 0, 4)) throw new Error("Unweighted GPA must be a number from 0 to 4, or left blank.");
-      if (gpaWeighted && !validNumber(gpaWeighted, 0, 6)) throw new Error("Weighted GPA must be a number from 0 to 6, or left blank.");
-      if (sat && (!/^\d+$/.test(sat) || !validNumber(sat, 400, 1600))) throw new Error("SAT must be a whole number from 400 to 1600, or left blank.");
-      if (gradYear && (!/^\d{4}$/.test(gradYear) || Number(gradYear) < 1900 || Number(gradYear) > 2100)) throw new Error("Graduation year must be a four-digit year from 1900 to 2100, or left blank.");
-      if (draft.activities.length > MAX_ACT || draft.honors.length > MAX_HON) throw new Error(`Keep up to ${MAX_ACT} activities and ${MAX_HON} honors.`);
-      for (const [index, activity] of draft.activities.entries()) {
-        if (!activity.name.trim()) throw new Error(`Give activity ${index + 1} a name, or remove it.`);
-        if ((activity.desc || "").length > DESC_LIMIT) throw new Error(`Shorten activity ${index + 1}'s description to ${DESC_LIMIT} characters.`);
-        for (const [key, label, max] of [["hpw", "Hours per week", 168], ["wpy", "Weeks per year", 52]]) {
-          const value = String(activity[key] ?? "").trim();
-          if (value && (!Number.isFinite(Number(value)) || Number(value) < 0 || Number(value) > max)) throw new Error(`Activity ${index + 1}: ${label} must be between 0 and ${max}.`);
-        }
-      }
-      draft.honors.forEach((honor, index) => {
-        if (!honor.title.trim()) throw new Error(`Give honor ${index + 1} a title, or remove it.`);
-      });
-      draft.aps.forEach((ap, index) => {
-        if (!ap.course.trim() || !/^[1-5]$/.test(String(ap.score))) throw new Error(`AP exam ${index + 1} needs a course name and a score from 1 to 5. Put planned exams in coursework.`);
-      });
-      const activities = draft.activities.map((activity, index) => ({ ...activity, rank: index + 1 }));
-      const honors = draft.honors;
-      const ws = await window.cfApi.patch({
-        applicant: {
-          name: draft.name,
-          cycle: draft.cycle,
-          year: draft.year,
-          gpaWeighted: gpaWeighted || "—",
-          gpaUnweighted: gpaUnweighted || "—",
-          sat: sat || "—",
-          satNote: draft.satNote,
-          awards: honors.length,
-        },
-        profile: {
-          intended: draft.intended,
-          hs: draft.hs,
-          gradYear,
-          location: draft.location,
-          counselor: draft.counselor,
-          residency: draft.residency,
-          testing: { sat: sat || "—", satNote: draft.satNote, aps: draft.aps.map((ap) => ({ ...ap, score: String(ap.score) })) },
-          coursework: Object.fromEntries(Object.entries(draft.coursework).map(([key, value]) => [key, value.split("\n").map((course) => course.trim()).filter(Boolean)])),
-          activities,
-          honors,
-        },
-      });
+      const checked = checkDraft(draft, groups);
+      const ws = await window.cfApi.patch(sectionPatch(draft, groups, checked, baseRevision));
       if (onWorkspaceChange) onWorkspaceChange(ws);
-      setEditing(false);
+      setSaved(SECTION_SAVED[editing] || "Saved.");
+      setEditing(null);
     } catch (e) {
-      setErr(e.message || "Save failed");
+      if (e && e.status === 409 && e.data) {
+        // Show the newer profile below and keep the student's edits in the form.
+        if (onWorkspaceChange) onWorkspaceChange(e.data);
+        setBaseRevision(e.data.revision);
+        setErr("Your profile changed while you were editing. The latest version is shown below and your edits are still here. Check them, then save again.");
+      } else {
+        setErr(e.message || "Save failed");
+      }
     }
     setBusy(false);
   };
@@ -204,6 +277,7 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
     [activities[index], activities[index + direction]] = [activities[index + direction], activities[index]];
     return { ...d, activities };
   });
+  const testOptional = draft ? TEST_OPTIONAL.test(draft.satNote) : false;
 
   return (
     <div className="cf-page">
@@ -217,10 +291,10 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {!editing ? (
-            <Button variant="secondary" size="sm" onClick={startEdit}>Edit profile</Button>
+            <Button variant="secondary" size="sm" onClick={() => startEdit("all")}>Edit profile</Button>
           ) : (
             <>
-              <Button variant="secondary" size="sm" onClick={() => setEditing(false)} disabled={busy}>Cancel</Button>
+              <Button variant="secondary" size="sm" onClick={() => setEditing(null)} disabled={busy}>Cancel</Button>
               <Button size="sm" onClick={save} disabled={busy}>{busy ? "Saving…" : "Save"}</Button>
             </>
           )}
@@ -229,27 +303,36 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
       </header>
 
       {err ? <div role="alert" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--error) 12%, transparent)", color: "var(--error)", fontSize: 13 }}>{err}</div> : null}
+      <div role="status" aria-live="polite" style={{ fontSize: 13, color: "var(--success)", marginBottom: saved ? 16 : 0 }}>{saved}</div>
 
       {editing && draft ? (
-        <div style={{ display: "grid", gap: 16, marginBottom: 28 }}>
-          <Panel title="Identity & academics">
+        <div ref={editorRef} style={{ display: "grid", gap: 16, marginBottom: 28, scrollMarginTop: 16 }}>
+          {shows("gpa") || shows("scores") ? <Panel title={shows("gpa") ? "Grades & test scores" : "Test scores"}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
+              {shows("gpa") ? <>
+                <Input label="GPA weighted" inputMode="decimal" placeholder="4.25" hint="Optional · 0–6 scale" value={draft.gpaWeighted} onChange={(v) => setDraft((d) => ({ ...d, gpaWeighted: v }))} />
+                <Input label="GPA unweighted" inputMode="decimal" placeholder="3.80" hint="Optional · 0–4 scale" value={draft.gpaUnweighted} onChange={(v) => setDraft((d) => ({ ...d, gpaUnweighted: v }))} />
+              </> : null}
+              <Input label="SAT" inputMode="numeric" placeholder="1400" hint="Optional · Whole number, 400–1600" value={draft.sat} onChange={(v) => setDraft((d) => ({ ...d, sat: v }))} />
+              <Input label="ACT" inputMode="numeric" placeholder="31" hint="Optional · Whole number, 1–36" value={draft.act} onChange={(v) => setDraft((d) => ({ ...d, act: v }))} />
+              <Input label="SAT note" value={draft.satNote} onChange={(v) => setDraft((d) => ({ ...d, satNote: v }))} />
+            </div>
+            <label style={{ display: "block", marginTop: 12, fontSize: 13, color: "var(--body)" }}><input type="checkbox" checked={testOptional} onChange={(e) => setDraft((d) => ({ ...d, satNote: withTestOptional(d.satNote, e.target.checked) }))} /> I'm applying test optional and not sending scores</label>
+          </Panel> : null}
+          {shows("applicant") ? <Panel title="Applicant">
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
               <Input label="Name" value={draft.name} onChange={(v) => setDraft((d) => ({ ...d, name: v }))} />
               <Input label="Cycle" value={draft.cycle} onChange={(v) => setDraft((d) => ({ ...d, cycle: v }))} placeholder="Fall 2027" />
               <Input label="Year label" value={draft.year} onChange={(v) => setDraft((d) => ({ ...d, year: v }))} />
-              <Input label="GPA weighted" inputMode="decimal" placeholder="4.25" hint="Optional · 0–6 scale" value={draft.gpaWeighted} onChange={(v) => setDraft((d) => ({ ...d, gpaWeighted: v }))} />
-              <Input label="GPA unweighted" inputMode="decimal" placeholder="3.80" hint="Optional · 0–4 scale" value={draft.gpaUnweighted} onChange={(v) => setDraft((d) => ({ ...d, gpaUnweighted: v }))} />
-              <Input label="SAT" inputMode="numeric" placeholder="1400" hint="Optional · Whole number, 400–1600" value={draft.sat} onChange={(v) => setDraft((d) => ({ ...d, sat: v }))} />
-              <Input label="SAT note" value={draft.satNote} onChange={(v) => setDraft((d) => ({ ...d, satNote: v }))} />
               <Input label="Intended major" value={draft.intended} onChange={(v) => setDraft((d) => ({ ...d, intended: v }))} />
               <Input label="High school" value={draft.hs} onChange={(v) => setDraft((d) => ({ ...d, hs: v }))} />
               <Input label="Grad year" inputMode="numeric" placeholder="2027" hint="Optional · Four digits, 1900–2100" value={String(draft.gradYear)} onChange={(v) => setDraft((d) => ({ ...d, gradYear: v }))} />
               <Input label="Location" value={draft.location} onChange={(v) => setDraft((d) => ({ ...d, location: v }))} />
               <Input label="Counselor" value={draft.counselor} onChange={(v) => setDraft((d) => ({ ...d, counselor: v }))} />
-              <Input label="Residency" value={draft.residency} onChange={(v) => setDraft((d) => ({ ...d, residency: v }))} />
+              <Input label="Residency" placeholder="CA" hint="Optional · Two-letter state code" value={draft.residency} onChange={(v) => setDraft((d) => ({ ...d, residency: v }))} />
             </div>
-          </Panel>
-          <Panel title={`Activities · ${draft.activities.length}/${MAX_ACT}`}>
+          </Panel> : null}
+          {shows("activities") ? <Panel title={`Activities · ${draft.activities.length}/${MAX_ACT}`}>
             <p style={{ margin: "0 0 16px", fontSize: 13, color: "var(--muted)" }}>Start with what matters most to you. Use the arrows to set your application order.</p>
             <div style={{ display: "grid", gap: 16 }}>
               {draft.activities.map((activity, index) => <EditorItem key={index} title={`Activity ${index + 1}`} onRemove={() => removeItem("activities", index)} actions={<>
@@ -267,8 +350,8 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
               </EditorItem>)}
               <div><Button size="sm" variant="secondary" disabled={draft.activities.length >= MAX_ACT} onClick={() => setDraft((d) => ({ ...d, activities: [...d.activities, { name: "", type: "", role: "", desc: "", bullets: [] }] }))}>+ Add activity</Button></div>
             </div>
-          </Panel>
-          <Panel title={`Honors & awards · ${draft.honors.length}/${MAX_HON}`}>
+          </Panel> : null}
+          {shows("honors") ? <Panel title={`Honors & awards · ${draft.honors.length}/${MAX_HON}`}>
             <div style={{ display: "grid", gap: 16 }}>
               {draft.honors.map((honor, index) => <EditorItem key={index} title={`Honor ${index + 1}`} onRemove={() => removeItem("honors", index)}>
                 <div style={editorGrid}>
@@ -280,8 +363,8 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
               </EditorItem>)}
               <div><Button size="sm" variant="secondary" disabled={draft.honors.length >= MAX_HON} onClick={() => setDraft((d) => ({ ...d, honors: [...d.honors, { title: "", level: "", year: "", top: false }] }))}>+ Add honor</Button></div>
             </div>
-          </Panel>
-          <Panel title="AP exam scores">
+          </Panel> : null}
+          {shows("aps") ? <Panel title="AP exam scores">
             <p style={{ margin: "0 0 16px", fontSize: 13, color: "var(--muted)" }}>Add completed exams here. Put planned AP classes in coursework below.</p>
             <div style={{ display: "grid", gap: 16 }}>
               {draft.aps.map((ap, index) => <EditorItem key={index} title={`AP exam ${index + 1}`} onRemove={() => removeItem("aps", index)}>
@@ -292,36 +375,41 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
               </EditorItem>)}
               <div><Button size="sm" variant="secondary" onClick={() => setDraft((d) => ({ ...d, aps: [...d.aps, { course: "", score: "" }] }))}>+ Add AP score</Button></div>
             </div>
-          </Panel>
-          <Panel title="Coursework">
+          </Panel> : null}
+          {shows("coursework") ? <Panel title="Coursework">
             <div style={editorGrid}>
               {[["honors", "Honors courses"], ["aps", "AP courses"], ["senior", "Senior year courses (planned)"]].map(([key, label]) => <TextInput key={key} label={label} value={draft.coursework[key]} hint="One course per line" onChange={(value) => setDraft((d) => ({ ...d, coursework: { ...d.coursework, [key]: value } }))} />)}
             </div>
-          </Panel>
+          </Panel> : null}
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <Button onClick={save} disabled={busy}>{busy ? "Saving…" : "Save profile"}</Button>
-            <Button variant="secondary" onClick={() => setEditing(false)} disabled={busy}>Cancel</Button>
-            {err ? <span role="alert" style={{ color: "var(--error)", fontSize: 13 }}>{err}</span> : <span style={{ color: "var(--muted)", fontSize: 13 }}>Changes are saved when you choose Save profile.</span>}
+            <Button onClick={save} disabled={busy}>{busy ? "Saving…" : editing === "all" ? "Save profile" : "Save section"}</Button>
+            <Button variant="secondary" onClick={() => setEditing(null)} disabled={busy}>Cancel</Button>
+            {err ? <span role="alert" style={{ color: "var(--error)", fontSize: 13 }}>{err}</span> : <span style={{ color: "var(--muted)", fontSize: 13 }}>Only the fields shown here are saved.</span>}
           </div>
         </div>
       ) : null}
 
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+        <EditButton section="academics" label="grades and test scores" onEdit={startEdit} disabled={busy || !!editing} />
+      </div>
       <section className="cf-grid-4 cf-profile-stats cf-nums" style={{ marginBottom: 24 }}>
-        <StatCard label="Weighted GPA" value={data.applicant.gpaWeighted || "—"} hint={`${data.applicant.gpaUnweighted || "—"} unweighted`} />
-        <StatCard label="SAT" value={p.testing.sat || "—"} hint={p.testing.satNote || "from testing"} variant="cream" />
+        {data.applicant.gpaWeighted || !data.applicant.gpaUnweighted
+          ? <StatCard label="Weighted GPA" value={data.applicant.gpaWeighted || "—"} hint={`${data.applicant.gpaUnweighted || "—"} unweighted`} />
+          : <StatCard label="Unweighted GPA" value={data.applicant.gpaUnweighted} hint="no weighted GPA on file" />}
+        <StatCard label="SAT" value={p.testing.sat || "—"} hint={[blankStat(p.testing.act) ? `ACT ${p.testing.act}` : "", p.testing.satNote || (blankStat(p.testing.act) ? "" : "from testing")].filter(Boolean).join(" · ")} variant="cream" />
         <StatCard label="AP exams" value={String(p.testing.aps.length)} hint={p.testing.aps.length ? p.testing.aps.map((x) => x.score).join(" · ") : "none yet"} />
         <StatCard label="Honors" value={String(p.honors.length)} hint={`${topHonors} top · max ${MAX_HON} on CA`} />
       </section>
 
       <div className="cf-grid-profile">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Panel title={`Activities (${p.activities.length}/${MAX_ACT})`} action={<Badge variant="cream" uppercase>Common App order</Badge>}>
+          <Panel title={`Activities (${p.activities.length}/${MAX_ACT})`} action={<div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}><Badge variant="cream" uppercase>Common App order</Badge><EditButton section="activities" label="activities" onEdit={startEdit} disabled={busy || !!editing} /></div>}>
             {p.activities.length === 0 ? (
               <div className="cf-empty-soft" style={{ border: "none", background: "transparent", padding: 0 }}>No activities yet — upload a resume or use Edit / copilot.</div>
             ) : p.activities.map((act) => <ActivityRow key={act.rank + act.name} a={act} />)}
           </Panel>
 
-          <Panel title={`Honors & awards (${p.honors.length}/${MAX_HON})`}>
+          <Panel title={`Honors & awards (${p.honors.length}/${MAX_HON})`} action={<EditButton section="honors" label="honors" onEdit={startEdit} disabled={busy || !!editing} />}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {p.honors.length === 0 ? (
                 <div className="cf-empty-soft" style={{ border: "none", background: "transparent", padding: 0 }}>No honors yet.</div>
@@ -342,7 +430,7 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Panel title="Applicant">
+          <Panel title="Applicant" action={<EditButton section="applicant" label="applicant details" onEdit={startEdit} disabled={busy || !!editing} />}>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <Field label="Intended major" value={p.intended} />
               <Field label="High school" value={hsLabel(p)} />
@@ -352,7 +440,13 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
             </div>
           </Panel>
 
-          <Panel title="Testing">
+          <Panel title="Testing" action={<EditButton section="testing" label="testing" onEdit={startEdit} disabled={busy || !!editing} />}>
+            {blankStat(p.testing.sat) || blankStat(p.testing.act) ? (
+              <div className="cf-nums" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+                {blankStat(p.testing.sat) ? <Tile label="SAT" value={p.testing.sat} /> : null}
+                {blankStat(p.testing.act) ? <Tile label="ACT" value={p.testing.act} /> : null}
+              </div>
+            ) : null}
             {p.testing.aps.length === 0 ? (
               <div className="cf-empty-soft" style={{ border: "none", background: "transparent", padding: 0 }}>No AP scores yet.</div>
             ) : (
@@ -362,7 +456,7 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
             )}
           </Panel>
 
-          <Panel title="Coursework">
+          <Panel title="Coursework" action={<EditButton section="coursework" label="coursework" onEdit={startEdit} disabled={busy || !!editing} />}>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[["Honors", p.coursework.honors], ["AP", p.coursework.aps], ["Senior (planned)", p.coursework.senior]].map(([label, list]) => (
                 <div key={label}>

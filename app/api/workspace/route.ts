@@ -11,12 +11,13 @@ import {
   type Activity,
   type Honor,
 } from "@/lib/store";
-import { seedRecommendedColleges } from "@/lib/college-recommendations";
+import { rebalanceWorkspace, seedRecommendedColleges, type Rebalance } from "@/lib/college-recommendations";
+import { splitStoryNotes } from "@/lib/story-notes";
 import { syncEssaySupplements } from "@/lib/essay-supplements";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { deleteAllLogins } from "@/lib/portal-logins";
 import { createShareLink, revokeShareLink } from "@/lib/sharing";
-import { applyWorkspacePatch, type WorkspacePatch } from "@/lib/workspace-patch";
+import { applyWorkspacePatch, checkWorkspacePatch, isStalePatch, type WorkspacePatch } from "@/lib/workspace-patch";
 import {
   getRecovery,
   newRecoveryCode,
@@ -61,7 +62,7 @@ type Body = {
     counselor: string;
     residency: string;
   }>;
-  testing?: Partial<{ sat: string; satNote: string }>;
+  testing?: Partial<{ sat: string; satNote: string; act: string }>;
   storyNotes?: { activities?: string; awards?: string; other?: string };
   listPrefs?: Partial<OnboardingListPrefs>;
   activities?: Activity[];
@@ -73,6 +74,26 @@ type Body = {
 };
 
 class OnboardingValidationError extends Error {}
+class StalePatchError extends Error {}
+
+const STALE_MESSAGE = "Your profile changed while you were editing. Review the latest version and save again.";
+
+/** One write path for PATCH and action "patch": validate, refuse stale whole-list saves, then apply. */
+async function runPatch(id: string, raw: unknown, setCookie?: string): Promise<Response> {
+  if (!isObject(raw)) return withCookie({ success: false, error: "A patch object is required." }, setCookie, 400);
+  const checked = checkWorkspacePatch(raw as WorkspacePatch);
+  if (!checked.ok) return withCookie({ success: false, error: checked.error }, setCookie, 400);
+  try {
+    const next = await updateWorkspace(id, (ws) => {
+      if (isStalePatch(ws, checked.value)) throw new StalePatchError(STALE_MESSAGE);
+      return applyWorkspacePatch(ws, checked.value);
+    });
+    return withCookie({ success: true, data: next }, setCookie);
+  } catch (error) {
+    if (!(error instanceof StalePatchError)) throw error;
+    return withCookie({ success: false, error: STALE_MESSAGE, data: await getWorkspace(id) }, setCookie, 409);
+  }
+}
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -103,10 +124,18 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "patch" || (!action && body.patch)) {
-    const patch = body.patch || (body as WorkspacePatch);
-    if (!isObject(patch)) return withCookie({ success: false, error: "A patch object is required." }, setCookie, 400);
-    const next = await updateWorkspace(id, (ws) => applyWorkspacePatch(ws, patch));
-    return withCookie({ success: true, data: next }, setCookie);
+    return runPatch(id, body.patch || body, setCookie);
+  }
+
+  if (action === "rebalance") {
+    // Refill the automatic picks for the current preferences; schools the student or an agent added, and priority schools, stay.
+    let result: Omit<Rebalance, "workspace"> = { added: [], removed: [], gaps: [] };
+    const next = await updateWorkspace(id, (ws) => {
+      const { workspace, ...changes } = rebalanceWorkspace(ws);
+      result = changes;
+      return syncEssaySupplements(workspace);
+    });
+    return withCookie({ success: true, data: next, ...result }, setCookie);
   }
 
   if (action === "create-recovery") {
@@ -156,6 +185,15 @@ export async function POST(req: NextRequest) {
         const t = body.testing || {};
         const sn = body.storyNotes || {};
         const lp = body.listPrefs || {};
+        // Same field rules as every other profile write; blanks mean "not given" here.
+        const checked = checkWorkspacePatch({
+          applicant: { gpaWeighted: a.gpaWeighted, gpaUnweighted: a.gpaUnweighted, sat: a.sat || t.sat },
+          profile: { gradYear: p.gradYear, residency: p.residency, testing: { act: t.act } },
+          listPrefs: lp,
+        }, "tool");
+        if (!checked.ok) throw new OnboardingValidationError(checked.error);
+        const residency = checked.value.profile?.residency ?? ws.profile.residency;
+        const act = checked.value.profile?.testing?.act;
 
         const name = str(a.name);
         const cycle = str(a.cycle);
@@ -195,6 +233,9 @@ export async function POST(req: NextRequest) {
             ? lp.regions.map((s) => str(s)).filter(Boolean).slice(0, 12)
             : [],
           notes: str(lp.notes).slice(0, 4000),
+          ...(checked.value.listPrefs?.budget ? { budget: checked.value.listPrefs.budget } : {}),
+          ...(typeof lp.needAid === "boolean" ? { needAid: lp.needAid } : {}),
+          ...(checked.value.listPrefs?.ed ? { ed: checked.value.listPrefs.ed } : {}),
         };
 
         const storyNotes = {
@@ -203,8 +244,12 @@ export async function POST(req: NextRequest) {
           other: str(sn.other).slice(0, 12_000),
         };
 
-        const activities = Array.isArray(body.activities) ? body.activities : ws.profile.activities;
-        const honors = Array.isArray(body.honors) ? body.honors : ws.profile.honors;
+        // With no saved activities, one story line becomes one activity or honor, so the profile is filled without AI.
+        const givenActivities = Array.isArray(body.activities) ? body.activities : ws.profile.activities;
+        const givenHonors = Array.isArray(body.honors) ? body.honors : ws.profile.honors;
+        const fromStory = givenActivities.length ? null : splitStoryNotes(storyNotes);
+        const activities = fromStory ? fromStory.activities : givenActivities;
+        const honors = fromStory && !givenHonors.length ? fromStory.honors : givenHonors;
         const awardsCount =
           typeof a.awards === "number" && Number.isFinite(a.awards)
             ? a.awards
@@ -229,10 +274,12 @@ export async function POST(req: NextRequest) {
             hs,
             gradYear: gradYear === "" ? "" : gradYear,
             location,
+            residency,
             testing: {
               ...ws.profile.testing,
               sat: sat || "—",
               satNote,
+              ...(act !== undefined ? { act } : {}),
             },
             activities,
             honors,
@@ -251,7 +298,8 @@ export async function POST(req: NextRequest) {
         }
 
         // Preserve every saved choice, then fill from the same evidence shown in Discover.
-        next.colleges = seedRecommendedColleges(next);
+        const seeded = seedRecommendedColleges(next);
+        next.colleges = seeded.colleges;
         // Open Essays-tab groups for every seeded school (UC PIQs / placeholders).
         next = syncEssaySupplements(next);
 
@@ -261,6 +309,7 @@ export async function POST(req: NextRequest) {
           completedAt: Date.now(),
           storyNotes,
           listPrefs,
+          listGaps: seeded.gaps,
         };
         return next;
       });
@@ -286,7 +335,5 @@ export async function PATCH(req: NextRequest) {
   } catch {
     return withCookie({ success: false, error: "Invalid JSON" }, setCookie, 400);
   }
-  if (!isObject(patch)) return withCookie({ success: false, error: "A patch object is required." }, setCookie, 400);
-  const next = await updateWorkspace(id, (ws) => applyWorkspacePatch(ws, patch));
-  return withCookie({ success: true, data: next }, setCookie);
+  return runPatch(id, patch, setCookie);
 }

@@ -110,3 +110,73 @@ test('a reset invalidates the old conversation tools without changing the new wo
   assert.deepEqual(await getWorkspace(id),reset);
   assert.equal(reset.profile.intended,'');assert.equal(reset.colleges.length,0);
 }));
+
+test('set_testing saves SAT to both copies, so recommendations use the new score', async()=>workspace(async(id)=>{
+  const {executeTool}=makeHubTools(id);
+  assert.equal(await executeTool('set_testing',JSON.stringify({sat:'1520',act:'',satNote:''})),'Updated testing.');
+  const ws=await getWorkspace(id);
+  assert.equal(ws.applicant.sat,'1520');assert.equal(ws.profile.testing.sat,'1520');
+  const {studentAcademics}=require('../lib/college-recommendations.ts');
+  assert.equal(studentAcademics(ws).sat,1520);
+  await executeTool('set_applicant_snapshot',JSON.stringify({sat:'1480'}));
+  const after=await getWorkspace(id);assert.equal(after.profile.testing.sat,'1480');assert.equal(after.applicant.sat,'1480');
+}));
+test('empty or zero tool arguments leave stored profile values alone', async()=>workspace(async(id,before)=>{
+  const {executeTool}=makeHubTools(id);
+  await executeTool('set_applicant_snapshot',JSON.stringify({name:'',sat:'',gpaWeighted:'',awards:0}));
+  await executeTool('set_profile_identity',JSON.stringify({gradYear:0,intended:''}));
+  const ws=await getWorkspace(id);
+  assert.equal(ws.applicant.sat,'1350');assert.equal(ws.applicant.gpaUnweighted,'3.4');assert.equal(ws.profile.intended,'Computer Science');
+  assert.equal(ws.applicant.awards,before.applicant.awards);
+}));
+test('invalid profile values are refused and nothing is written', async()=>workspace(async(id,before)=>{
+  const {executeTool}=makeHubTools(id);
+  assert.match(await executeTool('set_applicant_snapshot',JSON.stringify({gpaUnweighted:'4.7'})),/^Not saved: Unweighted GPA/);
+  assert.match(await executeTool('set_applicant_snapshot',JSON.stringify({gpaWeighted:'banana'})),/^Not saved/);
+  assert.match(await executeTool('set_testing',JSON.stringify({sat:'1610'})),/^Not saved: SAT/);
+  assert.match(await executeTool('set_profile_identity',JSON.stringify({residency:'Narnia'})),/^Not saved: Residency/);
+  assert.deepEqual(await getWorkspace(id),before);
+  assert.equal(await executeTool('set_profile_identity',JSON.stringify({residency:'california'})),'Updated profile identity.');
+  assert.equal((await getWorkspace(id)).profile.residency,'CA');
+}));
+test('activity and honor tools merge one entry at a time and keep the caps', async()=>workspace(async(id)=>{
+  const {executeTool}=makeHubTools(id);
+  await executeTool('set_activities',JSON.stringify({activities:[{rank:2,name:'Debate',type:'Academic'},{rank:1,name:'Robotics',type:'Academic',desc:'Build lead'}]}));
+  let ws=await getWorkspace(id);assert.deepEqual(ws.profile.activities.map(a=>[a.rank,a.name]),[[1,'Robotics'],[2,'Debate']]);
+  assert.match(await executeTool('upsert_activity',JSON.stringify({name:'Robotics',role:'Captain',desc:''})),/Updated the activity "Robotics" at #1/);
+  assert.match(await executeTool('upsert_activity',JSON.stringify({name:'Orchestra',type:'Arts',rank:1})),/Added the activity "Orchestra" at #1/);
+  ws=await getWorkspace(id);
+  assert.deepEqual(ws.profile.activities.map(a=>[a.rank,a.name]),[[1,'Orchestra'],[2,'Robotics'],[3,'Debate']]);
+  assert.equal(ws.profile.activities[1].role,'Captain');assert.equal(ws.profile.activities[1].desc,'Build lead');
+  assert.match(await executeTool('upsert_activity',JSON.stringify({name:'Long',desc:'x'.repeat(151)})),/^Not saved: Activity descriptions/);
+  assert.equal(await executeTool('remove_activity',JSON.stringify({name:'orchestra'})),'Removed the activity.');
+  assert.deepEqual((await getWorkspace(id)).profile.activities.map(a=>[a.rank,a.name]),[[1,'Robotics'],[2,'Debate']]);
+  assert.match(await executeTool('set_activities',JSON.stringify({activities:Array.from({length:11},(_,i)=>({rank:i+1,name:'A'+i,type:'Other'}))})),/^Not saved: Keep up to 10/);
+  for(const title of ['One','Two','Three','Four','Five']) await executeTool('upsert_honor',JSON.stringify({title,level:'School'}));
+  assert.match(await executeTool('upsert_honor',JSON.stringify({title:'Six',level:'School'})),/^Not saved/);
+  assert.equal(await executeTool('upsert_honor',JSON.stringify({match:'Two',level:'National',top:true})),'Updated the honor.');
+  await executeTool('remove_honor',JSON.stringify({title:'One'}));
+  ws=await getWorkspace(id);assert.equal(ws.profile.honors.length,4);assert.equal(ws.applicant.awards,4);
+  assert.deepEqual(ws.profile.honors[0],{title:'Two',level:'National',top:true});
+  // Models fill unused optional booleans with false; only "no" un-stars.
+  assert.equal(await executeTool('upsert_honor',JSON.stringify({match:'Two',year:'2026',top:false})),'Updated the honor.');
+  assert.equal((await getWorkspace(id)).profile.honors[0].top,true);
+  await executeTool('upsert_honor',JSON.stringify({match:'Two',top:'no'}));
+  assert.equal((await getWorkspace(id)).profile.honors[0].top,false);
+}));
+test('set_list_preferences validates and rebalance_list keeps the student\'s own schools', async()=>workspace(async(id,before)=>{
+  const {executeTool}=makeHubTools(id);
+  assert.match(await executeTool('set_list_preferences',JSON.stringify({budget:'cheap'})),/^Not saved: Budget/);
+  await executeTool('set_list_preferences',JSON.stringify({ambition:'conservative',appCount:0,regions:[],budget:'30-50',needAid:true,ed:'maybe',notes:''}));
+  const ws=await getWorkspace(id);const prefs=ws.onboarding.listPrefs;
+  assert.equal(prefs.ambition,'conservative');assert.equal(prefs.budget,'30-50');assert.equal(prefs.needAid,true);assert.equal(prefs.ed,'maybe');
+  assert.equal(prefs.appCount,undefined);assert.deepEqual(prefs.regions,[]);
+  assert.deepEqual(ws.colleges,before.colleges);
+  await executeTool('set_list_preferences',JSON.stringify({ambition:'conservative',needAid:false}));
+  assert.equal((await getWorkspace(id)).onboarding.listPrefs.needAid,true);
+  assert.match(await executeTool('rebalance_list','{}'),/^Rebalanced the list/);
+  assert.ok(Array.isArray((await getWorkspace(id)).onboarding.listGaps));
+  const after=await getWorkspace(id);
+  assert.ok(after.colleges.some(c=>c.slug==='princeton-university'));
+  assert.ok(after.colleges.filter(c=>c.slug!=='princeton-university').every(c=>c.origin==='seed'));
+}));

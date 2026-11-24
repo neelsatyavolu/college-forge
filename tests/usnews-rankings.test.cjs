@@ -74,3 +74,16 @@ test('the checked-in dataset is valid and matches its edition', () => {
     assert.ok(Number.isInteger(c.scorecardId) && c.scorecardId > 0, c.name);
   }
 });
+
+test('liberal arts rows use the Scorecard name for the slug and render as US_NEWS_LAC_TOP_N', async () => {
+  const { buildLacRow, parseItem, renderModule, searchPageUrl, LIBERAL_ARTS } = await load();
+  assert.match(searchPageUrl(2, LIBERAL_ARTS), /schoolType=national-liberal-arts-colleges/);
+  assert.match(searchPageUrl(1), /schoolType=national-universities/);
+  const usn = parseItem(item({ displayName: 'United States Military Academy at West Point', xwalkId: '197036', rankingSortRank: 9 }));
+  const row = buildLacRow(usn, { scorecardName: 'United States Military Academy' });
+  assert.deepEqual(row, { slug: 'united-states-military-academy', name: 'United States Military Academy at West Point', rank: 9, city: 'St. Paul', state: 'MN', scorecardId: 197036 });
+  assert.equal(buildLacRow(usn, { previous: { slug: 'kept' } }).slug, 'kept');
+  const src = renderModule([], { edition: '2027', fetchedOn: '2026-09-23', maxRank: 250, lacRows: [row], lacMaxRank: 50 });
+  assert.match(src, /export const US_NEWS_LAC_TOP_N: UsNewsLiberalArtsCollege\[\] = \[/);
+  assert.doesNotMatch(renderModule([], { edition: '2027', fetchedOn: '2026-09-23', maxRank: 250 }), /US_NEWS_LAC_TOP_N/);
+});

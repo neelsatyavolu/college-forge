@@ -11,20 +11,12 @@ import { slugify, upsertCollegeInto, removeCollegeFrom } from "./colleges";
 import { gateAiCollegeAdd } from "./seed-college-list";
 import { recommendColleges } from "./college-recommendations";
 import { mergeSupplements } from "./essay-supplements";
+import { essayView, withSuggestion } from "./essay-tools";
 import { applyRounds, workloadSummary, type RoundChoice } from "./application-rounds";
 import { editApp, findApp, isRound, isStatus, newApp, replaceApp, statusInfo } from "./tracker";
 import { oddsFromArgs, oddsTargets, readFromArgs } from "./admission-odds";
 import { applicationMaterial } from "./odds-plan";
-
-// Only copy keys the caller actually provided, so partial updates never wipe
-// existing fields with undefined.
-function assignDefined<T extends object>(base: T, patch: Record<string, unknown>): T {
-  const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
-  for (const [k, v] of Object.entries(patch)) {
-    if (v !== undefined && v !== null) out[k] = v;
-  }
-  return out as T;
-}
+import { PROFILE_TOOL_SPECS, runProfileTool } from "./hub-profile-tools";
 
 type Args = Record<string, unknown>;
 
@@ -83,116 +75,7 @@ export function makeHubTools(
         additionalProperties: false,
       },
     },
-    {
-      name: "set_applicant_snapshot",
-      description:
-        "Set the top-line applicant snapshot shown on the Overview and Profile pages. Provide only the fields you know. GPAs and SAT are strings (e.g. '4.28', '1540').",
-      parameters: {
-        type: "object",
-        properties: {
-          name: { type: "string" }, cycle: { type: "string", description: "e.g. 'Fall 2027'" },
-          year: { type: "string", description: "e.g. 'Junior — May 2027'" },
-          gpaWeighted: { type: "string" }, gpaUnweighted: { type: "string" },
-          sat: { type: "string" }, satNote: { type: "string" }, awards: { type: "number" },
-        },
-        additionalProperties: false,
-      },
-    },
-    {
-      name: "set_profile_identity",
-      description: "Set profile identity fields (Profile page 'Applicant' panel).",
-      parameters: {
-        type: "object",
-        properties: {
-          intended: { type: "string", description: "Intended major / academic path" },
-          hs: { type: "string", description: "High school name" },
-          gradYear: { type: "number" }, location: { type: "string" },
-          counselor: { type: "string" }, residency: { type: "string" },
-        },
-        additionalProperties: false,
-      },
-    },
-    {
-      name: "set_testing",
-      description: "Set testing details: SAT, a superscore/section note, and AP exams.",
-      parameters: {
-        type: "object",
-        properties: {
-          sat: { type: "string" }, satNote: { type: "string" },
-          aps: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: { course: { type: "string" }, score: { type: "string" } },
-              required: ["course", "score"],
-            },
-          },
-        },
-        additionalProperties: false,
-      },
-    },
-    {
-      name: "set_coursework",
-      description: "Set coursework lists shown on the Profile page.",
-      parameters: {
-        type: "object",
-        properties: {
-          honors: { type: "array", items: { type: "string" } },
-          aps: { type: "array", items: { type: "string" } },
-          senior: { type: "array", items: { type: "string" }, description: "Senior-year / planned courses" },
-        },
-        additionalProperties: false,
-      },
-    },
-    {
-      name: "set_activities",
-      description:
-        "Replace the full activities list (Common App order, most important first). Include rank starting at 1.",
-      parameters: {
-        type: "object",
-        properties: {
-          activities: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                rank: { type: "number" }, name: { type: "string" }, type: { type: "string" },
-                org: { type: "string" }, years: { type: "string" }, role: { type: "string" },
-                hpw: { type: "string", description: "hours per week" }, wpy: { type: "string", description: "weeks per year" },
-                college: { type: "boolean", description: "intends to continue in college" },
-                desc: { type: "string" }, bullets: { type: "array", items: { type: "string" } },
-              },
-              required: ["rank", "name", "type"],
-            },
-          },
-        },
-        required: ["activities"],
-        additionalProperties: false,
-      },
-    },
-    {
-      name: "set_honors",
-      description: "Replace the full honors & awards list. Mark the strongest ones with top:true.",
-      parameters: {
-        type: "object",
-        properties: {
-          honors: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                title: { type: "string" },
-                level: { type: "string", description: "National | International | State | School" },
-                year: { type: "string" }, top: { type: "boolean" },
-              },
-              required: ["title", "level"],
-            },
-          },
-        },
-        required: ["honors"],
-        additionalProperties: false,
-      },
-    },
+    ...PROFILE_TOOL_SPECS,
     {
       name: "upsert_college",
       description:
@@ -309,6 +192,31 @@ export function makeHubTools(
               "{ '<college-slug>': [essay, …], 'uc-application': [piq, …] }. Partial — only listed slugs are updated.",
           },
         },
+        additionalProperties: false,
+      },
+    },
+    {
+      name: "get_essay",
+      description:
+        "Read one essay: its prompt, limit, the student's current draft and word count, its status, and any suggestion of yours they haven't used yet. Call this before giving feedback on an essay; the id comes from the Essays tab request or the workspace snapshot.",
+      parameters: {
+        type: "object",
+        properties: { id: { type: "string", description: "Essay id, e.g. 'ca-ps-1', 'uc-piq-3' or 'duke-university-supp-1'." } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+    },
+    {
+      name: "suggest_essay_edit",
+      description:
+        "Offer a revised full text for one essay. It is saved beside the draft for the student to use or dismiss on the Essays tab; their draft is not changed. Keep it within the essay's limit and in the student's own voice. Don't invent experiences they haven't described.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          text: { type: "string", description: "The full suggested essay text." },
+        },
+        required: ["id", "text"],
         additionalProperties: false,
       },
     },
@@ -497,6 +405,8 @@ export function makeHubTools(
     }
 
     try {
+      const profileReply = await runProfileTool(name, a, mutate);
+      if (profileReply !== null) return profileReply;
       switch (name) {
         case "get_college_recommendations": {
           return JSON.stringify(recommendColleges(await scopedWorkspace()));
@@ -518,51 +428,12 @@ export function makeHubTools(
           const r = await runWebFetch(a.url, purpose);
           return r.ok ? r.content : r.error;
         }
-        case "set_applicant_snapshot": {
-          await mutate((ws) => ({ ...ws, applicant: assignDefined(ws.applicant, a) }));
-          return "Updated the applicant snapshot.";
-        }
-        case "set_profile_identity": {
-          await mutate((ws) => ({ ...ws, profile: assignDefined(ws.profile, a) }));
-          return "Updated profile identity.";
-        }
-        case "set_testing": {
-          await mutate((ws) => ({
-            ...ws,
-            profile: { ...ws.profile, testing: assignDefined(ws.profile.testing, a) },
-          }));
-          return "Updated testing.";
-        }
-        case "set_coursework": {
-          await mutate((ws) => ({
-            ...ws,
-            profile: { ...ws.profile, coursework: assignDefined(ws.profile.coursework, a) },
-          }));
-          return "Updated coursework.";
-        }
-        case "set_activities": {
-          if (!Array.isArray(a.activities)) return "set_activities requires an 'activities' array.";
-          await mutate((ws) => ({
-            ...ws,
-            profile: { ...ws.profile, activities: a.activities as Workspace["profile"]["activities"] },
-          }));
-          return `Saved ${(a.activities as unknown[]).length} activities.`;
-        }
-        case "set_honors": {
-          if (!Array.isArray(a.honors)) return "set_honors requires a 'honors' array.";
-          const honors = a.honors as Workspace["profile"]["honors"];
-          await mutate((ws) => ({
-            ...ws,
-            profile: { ...ws.profile, honors },
-            applicant: { ...ws.applicant, awards: honors.length },
-          }));
-          return `Saved ${honors.length} honors.`;
-        }
         case "upsert_college": {
           if (typeof a.name !== "string") return "upsert_college requires a 'name'.";
           const slug = typeof a.slug === "string" && a.slug ? a.slug : slugify(a.name);
           const short = typeof a.short === "string" && a.short ? a.short : a.name;
-          const incoming = { ...a, slug, short } as unknown as College;
+          // Agent-added schools are kept on a rebalance, even when the agent re-saves a seeded row.
+          const incoming = { ...a, slug, short, origin: "agent" } as unknown as College;
           await mutate((ws) => {
             // The gate must inspect the same latest version that is committed.
             const gate = gateAiCollegeAdd({ ws, incoming, userText });
@@ -642,6 +513,22 @@ export function makeHubTools(
             ? `Updated essay prompts for: ${slugs.join(", ")}.`
             : "Updated essays.";
         }
+        case "get_essay": {
+          if (typeof a.id !== "string" || !a.id) return "get_essay requires an essay 'id'.";
+          const view = essayView(await scopedWorkspace(), a.id);
+          return view ? JSON.stringify(view) : `No essay has the id "${a.id}".`;
+        }
+        case "suggest_essay_edit": {
+          if (typeof a.id !== "string" || !a.id) return "suggest_essay_edit requires an essay 'id'.";
+          if (typeof a.text !== "string" || !a.text.trim()) return "suggest_essay_edit requires the suggested 'text'.";
+          let problem = "";
+          await mutate((ws) => {
+            const r = withSuggestion(ws, a.id as string, a.text as string);
+            if (!r.ok) { problem = r.error; return ws; }
+            return r.value;
+          });
+          return problem || "Saved the suggestion. The student can use it or dismiss it on the Essays tab.";
+        }
         case "set_recommendations": {
           if (!Array.isArray(a.recommendations)) return "set_recommendations requires a recommendations array.";
           const recommendations = (a.recommendations as Workspace["recommendations"]).map((r, i) => ({
@@ -681,7 +568,7 @@ export function makeHubTools(
         case "set_application_read": {
           const read = readFromArgs(a, new Date().toISOString());
           if (!read) return "set_application_read requires a summary.";
-          await mutate((ws) => ({ ...ws, applicationRead: read }));
+          await mutate((ws) => ({ ...ws, applicationRead: readFromArgs(a, read.readAt, ws) || read }));
           return "Saved the application read.";
         }
         case "set_admission_odds": {

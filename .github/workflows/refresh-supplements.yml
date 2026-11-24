@@ -1,12 +1,13 @@
 name: Refresh supplemental essay prompts
 
 # Schools publish next-cycle supplements from late July through September.
-# Scrape twice each fall and open a PR so a person reviews parsed prompts
+# Scrape three times each fall and open a PR so a person reviews parsed prompts
 # before students see them.
 on:
   schedule:
     - cron: "0 14 10 8 *" # Aug 10
     - cron: "0 14 10 9 *" # Sep 10
+    - cron: "0 14 10 10 *" # Oct 10
   workflow_dispatch:
 
 permissions:

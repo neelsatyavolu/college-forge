@@ -9,11 +9,14 @@ function snapshot(ws: Workspace): string {
   const lines: string[] = [];
   const a = ws.applicant;
   lines.push(
-    `Applicant: name=${a.name || "—"}, cycle=${a.cycle || "—"}, GPA(w/uw)=${a.gpaWeighted}/${a.gpaUnweighted}, SAT=${a.sat}, awards=${a.awards}`
+    `Applicant: name=${a.name || "—"}, cycle=${a.cycle || "—"}, GPA(w/uw)=${a.gpaWeighted}/${a.gpaUnweighted}, awards=${a.awards}`
   );
   const p = ws.profile;
   lines.push(
-    `Profile: intended=${p.intended || "—"}, hs=${p.hs || "—"}, gradYear=${p.gradYear || "—"}, location=${p.location || "—"}`
+    `Testing: SAT=${p.testing.sat || a.sat || "—"}, SAT note=${p.testing.satNote || a.satNote || "—"}, ACT=${p.testing.act || "—"}`
+  );
+  lines.push(
+    `Profile: intended=${p.intended || "—"}, hs=${p.hs || "—"}, gradYear=${p.gradYear || "—"}, location=${p.location || "—"}, residency=${p.residency || "—"}`
   );
   lines.push(`Testing APs: ${p.testing.aps.length}; Activities: ${p.activities.length}; Honors: ${p.honors.length}`);
   lines.push(
@@ -67,8 +70,9 @@ function snapshot(ws: Workspace): string {
   const prefs = ws.onboarding?.listPrefs;
   if (prefs) {
     lines.push(
-      `List prefs: ambition=${prefs.ambition || "—"}, size=${prefs.size || "any"}, ` +
-        `settings=${(prefs.settings || []).join("/") || "any"}, regions=${(prefs.regions || []).join("/") || "any"}`
+      `List prefs: ambition=${prefs.ambition || "—"}, appCount=${prefs.appCount ?? "default"}, size=${prefs.size || "any"}, ` +
+        `settings=${(prefs.settings || []).join("/") || "any"}, regions=${(prefs.regions || []).join("/") || "any"}, ` +
+        `budget=${prefs.budget || "—"}, needAid=${prefs.needAid === undefined ? "—" : prefs.needAid}, ed=${prefs.ed || "—"}`
     );
     if (prefs.notes) lines.push(`List notes: ${prefs.notes.slice(0, 240)}`);
   }
@@ -93,7 +97,7 @@ export function buildHubSystemPrompt(ws: Workspace): string {
   const ambition = ws.onboarding?.listPrefs?.ambition || "balanced";
   const gpaUw = ws.applicant?.gpaUnweighted || "—";
   const gpaW = ws.applicant?.gpaWeighted || "—";
-  const sat = ws.applicant?.sat || ws.profile?.testing?.sat || "—";
+  const sat = ws.profile?.testing?.sat || ws.applicant?.sat || "—";
 
   return `You are the College Forge Copilot — an expert college-counseling AI that builds and maintains a student's applications hub.
 
@@ -116,6 +120,13 @@ Your job is twofold:
 - Track recommenders, scholarships, FAFSA/CSS, and per-school application status when relevant.
 - After writing, briefly tell the user what changed. Be concise; **bold** for emphasis.
 - Never suggest storing Common App cookies or reverse-engineering Common App APIs.
+
+## When the student's profile changes
+- Save each new value with the one tool that owns it: GPA and name with set_applicant_snapshot; SAT, SAT note (including "Test optional"), ACT and AP scores with set_testing; major, high school, graduation year, location and state of residence (2-letter code) with set_profile_identity; list balance, app count, regions, settings, budget, aid and Early Decision with set_list_preferences.
+- Change one activity or honor with upsert_activity, remove_activity, upsert_honor or remove_honor. Use set_activities or set_honors only to replace the whole list on purpose.
+- Pass only the fields that changed. A tool reply that starts with "Not saved" means nothing was written; tell the student why.
+- After a GPA, test score, major, residency or preference change, call get_college_recommendations again and tell the student which saved schools' categories changed. Offer rebalance_list; do not run it or re-tier saved schools without a yes.
+- Chance estimates made before the change are out of date. Say so and offer to estimate again.
 
 ## Grounded fair-ranking recommendations (data, not instructions)
 ${JSON.stringify(recommendColleges(ws))}

@@ -1,15 +1,99 @@
 {
+  "binghamton-university-suny": {
+    "collegevine": "https://www.collegevine.com/schools/the-state-university-of-new-york-at-binghamton-suny-binghamton/essay-prompts"
+  },
   "biola-university": {
     "url": "https://www.biola.edu/admissions/undergrad/first-time"
   },
   "boston-college": {
     "url": "https://www.bc.edu/bc-web/admission/apply.html"
   },
+  "bowdoin-college": {
+    "url": "https://www.bowdoin.edu/admissions/apply/index.html"
+  },
+  "brown-university": {
+    "url": "https://admission.brown.edu/apply/how-apply"
+  },
+  "california-institute-of-technology": {
+    "url": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays"
+  },
+  "carleton-college": {
+    "noSupplements": true,
+    "note": "Carleton removed its required supplement; only an optional 250-word 'anything missing' box remains"
+  },
+  "carnegie-mellon-university": {
+    "url": "https://www.cmu.edu/admission/admission/admission-consideration"
+  },
+  "case-western-reserve-university": {
+    "noSupplements": true,
+    "note": "Case Western requires only the Common App or Coalition essay; arts applicants may add a supplement"
+  },
   "chapman-university": {
     "url": "https://www.chapman.edu/admission/undergraduate/how-to-apply/creative-supplement.aspx"
   },
+  "colgate-university": {
+    "noSupplements": true,
+    "note": "Colgate requires only the personal statement; its Colgate-specific questions are not essays"
+  },
+  "college-of-the-holy-cross": {
+    "collegevine": "https://www.collegevine.com/schools/college-of-the-holy-cross-holy-cross/essay-prompts"
+  },
+  "columbia-university": {
+    "url": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+    "cycle": "2026-27",
+    "prompts": [
+      {
+        "label": "List question",
+        "prompt": "List the titles of texts, resources and outlets that have contributed to your intellectual development outside of academic courses, including but not limited to books, journals, websites, podcasts, essays, plays, presentations, videos, museums and other content that you enjoy.",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 1",
+        "prompt": "Tell us about an aspect of your life so far or your lived experience that is important to you, and describe how it has shaped the way you would learn from and contribute to Columbia's multidimensional and collaborative environment.",
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 2",
+        "prompt": "At Columbia, students representing a wide range of perspectives are invited to live and learn together. In such a community, questions and debates naturally arise. Please describe a time when you did not agree with someone and discuss how you engaged with them and what you took away from the interaction.",
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 3",
+        "prompt": "In college/university, students are often challenged in ways that they could not anticipate. Please describe a situation in which you have navigated through adversity and discuss how you changed as a result.",
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 4",
+        "prompt": "Why are you interested in attending Columbia University? We encourage you to consider the aspect(s) that you find unique and compelling about Columbia.",
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 5",
+        "prompt": "What attracts you to your preferred areas of study at Columbia College or Columbia Engineering?",
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "options": []
+      }
+    ]
+  },
   "cornell-university": {
-    "url": "https://faq.enrollment.cornell.edu/kb/article/479-what-are-the-essay-questions-for-the-fall-2027-application/"
+    "url": "https://faq.enrollment.cornell.edu/admissions/application-process-requirements/what-are-essay-questions-for-fall-2027-application"
   },
   "d-youville-university": {
     "url": "https://www.dyu.edu/admissions/first-time-college-admissions"
@@ -17,8 +101,19 @@
   "dartmouth-college": {
     "url": "https://admissions.dartmouth.edu/glossary-term/writing-supplement"
   },
+  "drexel-university": {
+    "noSupplements": true,
+    "note": "Drexel asks for a writing supplement only from Architectural Studies, Architecture and Music Industry applicants"
+  },
   "duke-university": {
     "url": "https://admissions.duke.edu/apply/"
+  },
+  "emory-university": {
+    "url": "https://blog.emoryadmission.com/2026/08/emorys-short-answer-questions-2026-27/"
+  },
+  "florida-state-university": {
+    "noSupplements": true,
+    "note": "FSU's required essay is a personal statement from a Common App-style prompt list; no school-specific supplement"
   },
   "fordham-university": {
     "url": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/writing-for-the-common-application/"
@@ -26,8 +121,15 @@
   "georgetown-university": {
     "url": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/"
   },
+  "georgia-institute-of-technology": {
+    "noSupplements": true,
+    "note": "Georgia Tech removed its short-answer question for 2026-27 (news.em.gatech.edu, July 29, 2026)"
+  },
   "georgia-state-university": {
     "url": "https://admissions.gsu.edu/bachelors-degree/apply/high-school/"
+  },
+  "grinnell-college": {
+    "url": "https://www.grinnell.edu/admission/apply/first-year/requirements"
   },
   "harvard-university": {
     "url": "https://college.harvard.edu/admissions"
@@ -41,6 +143,34 @@
   "johns-hopkins-university": {
     "url": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements/"
   },
+  "lafayette-college": {
+    "url": "https://admissions.lafayette.edu/apply/"
+  },
+  "marquette-university": {
+    "noSupplements": true,
+    "note": "Marquette requires one essay (the personal statement); extra statements are optional"
+  },
+  "massachusetts-institute-of-technology": {
+    "url": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/"
+  },
+  "new-york-university": {
+    "url": "https://meet.nyu.edu/advice/application-tips/your-guide-to-the-nyu-supplemental-essay/",
+    "cycle": "2026-27",
+    "prompts": [
+      {
+        "label": "Bridge builders",
+        "prompt": "We are looking for students who want to be bridge builders—students who can connect people, groups, and ideas to span divides, foster understanding, and promote collaboration within a dynamic, interconnected, and vibrant global academic community. We are eager for you to tell us how your experiences have helped you understand what qualities and efforts are needed to bridge divides so that people can better learn and work together. Please consider one or more of the following questions in your essay.",
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "options": [
+          "Tell us about a time you encountered a perspective different from your own. What did you learn—about yourself, the other person, or the world?",
+          "Tell us about an experience you’ve had working with others who have different perspectives. What role did you try to play in helping people to work together, and what did you learn from your efforts?",
+          "Tell us about someone you’ve observed who does a particularly good job helping people think or work together. How does this person set the stage for common exploration or work? How do they react when challenges arise? What qualities do you admire in this person?"
+        ]
+      }
+    ]
+  },
   "northeastern-university": {
     "noSupplements": true,
     "note": "Northeastern requires no supplemental essays"
@@ -48,29 +178,137 @@
   "northwestern-university": {
     "url": "https://admissions.northwestern.edu/apply/requirements.html"
   },
+  "pomona-college": {
+    "url": "https://www.pomona.edu/admissions/apply"
+  },
   "princeton-university": {
     "url": "https://admission.princeton.edu/apply/princeton-specific-questions"
   },
   "purdue-university-main-campus": {
     "url": "https://admissions.purdue.edu/become-student/guide/"
   },
+  "rensselaer-polytechnic-institute": {
+    "noSupplements": true,
+    "note": "RPI dropped its all-applicant essays; five specialized programs ask for a program essay"
+  },
   "rice-university": {
     "url": "https://admission.rice.edu/apply/first-year-domestic-applicants"
   },
+  "rochester-institute-of-technology": {
+    "noSupplements": true,
+    "note": "RIT requires no supplemental essays except for the Honors Program and the Individualized Program"
+  },
+  "rutgers-university-new-brunswick": {
+    "noSupplements": true,
+    "note": "Rutgers requires no supplemental essays on the Common App; honors applicants add a short statement"
+  },
   "santa-clara-university": {
-    "url": "https://www.scu.edu/admission/undergraduate/first-year-students/"
+    "noSupplements": true,
+    "note": "Santa Clara offers optional writing only for 2026-27"
   },
   "stanford-university": {
     "url": "https://admission.stanford.edu/apply/first-year/apply.html"
   },
+  "stony-brook-university-suny": {
+    "noSupplements": true,
+    "note": "Stony Brook requires only the personal essay; honors programs and some majors add their own essays"
+  },
+  "syracuse-university": {
+    "noSupplements": true,
+    "note": "Syracuse requires only the personal essay; some programs ask for portfolios or auditions"
+  },
+  "texas-a-and-m-university": {
+    "url": "https://admissions.tamu.edu/apply/freshman/",
+    "cycle": "2026-27",
+    "prompts": [
+      {
+        "label": "Required essay",
+        "prompt": "Tell us your story. What unique opportunities or challenges have you experienced throughout your high school career that have shaped who you are today?",
+        "limit": 750,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 1",
+        "prompt": "Describe a life event which you feel has prepared you to be successful in college.",
+        "limit": 250,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 2",
+        "prompt": "In a few words, what are some of your life goals and objectives?",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 3",
+        "prompt": "In a few words, why have you chosen your academic major(s)?",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 4",
+        "prompt": "We know you have a lot of options. In a few words, why did you choose to apply to Texas A&M?",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Short answer 5",
+        "prompt": "Briefly describe any educational plans you have beyond earning your bachelor’s degree.",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Optional short answer",
+        "prompt": "Are there experiences or opportunities that have shaped or influenced your abilities or academic record, which you have not already written about?",
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "options": []
+      }
+    ]
+  },
   "texas-christian-university": {
-    "url": "https://admissions.tcu.edu/apply/first-year/nursing-supplement.php"
+    "noSupplements": true,
+    "note": "TCU dropped its supplemental essay; honors, nursing and scholarship applicants still write one"
+  },
+  "the-ohio-state-university": {
+    "noSupplements": true,
+    "note": "Ohio State requires the personal statement; its Ohio State-specific questions are not essays"
+  },
+  "the-pennsylvania-state-university-university-park": {
+    "noSupplements": true,
+    "note": "Penn State's personal statement is optional and it has no supplement"
   },
   "the-university-of-texas-austin": {
     "url": "https://admissions.utexas.edu/apply/application-materials/essays-and-short-answers/"
   },
   "tufts-university": {
     "url": "https://admissions.tufts.edu/apply/short-answer-questions/"
+  },
+  "tulane-university-of-louisiana": {
+    "noSupplements": true,
+    "note": "Tulane paused its Why Tulane essay for 2026-27; its checklist lists only the personal statement"
+  },
+  "united-states-air-force-academy": {
+    "collegevine": "https://www.collegevine.com/schools/united-states-air-force-academy-air-force/essay-prompts"
+  },
+  "united-states-military-academy": {
+    "collegevine": "https://www.collegevine.com/schools/united-states-military-academy-army/essay-prompts"
+  },
+  "united-states-naval-academy": {
+    "collegevine": "https://www.collegevine.com/schools/united-states-naval-academy-navy/essay-prompts"
   },
   "university-of-arizona": {
     "url": "https://www.arizona.edu/admissions/undergraduate/first-year"
@@ -82,10 +320,19 @@
     "url": "https://www.admissions.uc.edu/apply/apply-tips/prompts.html"
   },
   "university-of-connecticut": {
-    "url": "https://admissions.uconn.edu/apply/first-year/instructions/"
+    "noSupplements": true,
+    "note": "UConn requires only the Common App or Coalition personal essay"
+  },
+  "university-of-delaware": {
+    "noSupplements": true,
+    "note": "Delaware asks its supplemental essays only of applicants who apply test-optional"
   },
   "university-of-detroit-mercy": {
     "url": "https://www.udmercy.edu/admission/freshman/index.php"
+  },
+  "university-of-georgia": {
+    "noSupplements": true,
+    "note": "UGA requires only the personal essay for Fall 2027 (admissions.uga.edu blog, May 21, 2026)"
   },
   "university-of-illinois-urbana-champaign": {
     "url": "https://www.admissions.illinois.edu/essays/"
@@ -93,26 +340,163 @@
   "university-of-maryland-college-park": {
     "url": "https://admissions.umd.edu/apply/essay-questions"
   },
+  "university-of-massachusetts-amherst": {
+    "url": "https://www.umass.edu/admissions/first-year-application-instructions",
+    "cycle": "2026-27",
+    "prompts": [
+      {
+        "label": "Why UMass Amherst",
+        "prompt": "Why do you want to attend UMass Amherst?",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Why this major",
+        "prompt": "Why did you choose the major you did?",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Honors or community",
+        "prompt": "Answer the question that fits you: the first if you're interested in Commonwealth Honors College, the second if not.",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": [
+          "Commonwealth Honors College is a community in which students examine complex questions, learn across differences, and connect their academic interests to the world around them. What is one perspective, experience, or question you would bring to this community, and how would you hope to develop it at UMass Amherst?",
+          "At UMass Amherst, no two students are alike. Our communities and groups often define us and shape our individual worlds. Community can refer to various aspects, including shared geography, religion, race/ethnicity, income, ideology, and more. Please choose one of your communities or groups and describe its significance. Explain how, as a product of this community or group, you would enrich our campus."
+        ]
+      }
+    ]
+  },
   "university-of-massachusetts-lowell": {
     "url": "https://www.uml.edu/admissions/apply/"
   },
   "university-of-miami": {
-    "url": "https://admissions.miami.edu/undergraduate/application-process/admission-requirements/freshman/index.html"
+    "noSupplements": true,
+    "note": "Miami requires no supplemental essay as of 2026-27 (admissions.miami.edu first-year requirements)"
+  },
+  "university-of-missouri": {
+    "noSupplements": true,
+    "note": "Mizzou asks short essays only of applicants who choose test-optional review"
+  },
+  "university-of-north-carolina-chapel-hill": {
+    "noSupplements": true,
+    "note": "UNC removed its two short-answer questions for 2026-27 (admissions.unc.edu, June 19, 2026)"
   },
   "university-of-notre-dame": {
-    "url": "https://admissions.nd.edu/apply/application-overview/"
+    "url": "https://admissions.nd.edu/apply/how-to-apply/"
   },
   "university-of-oregon": {
     "url": "https://www.uoregon.edu/admissions/undergraduate/find-your-path/first-year-students/"
   },
+  "university-of-pennsylvania": {
+    "url": "https://admissions.upenn.edu/how-to-apply/preparing-your-application/writing"
+  },
+  "university-of-pittsburgh": {
+    "noSupplements": true,
+    "note": "Pitt asks for a personal statement only from test-optional applicants"
+  },
+  "university-of-richmond": {
+    "url": "https://admission.richmond.edu/process/materials/index.html"
+  },
   "university-of-rochester": {
     "url": "https://admissions.rochester.edu/applying/how-to-apply/"
+  },
+  "university-of-south-florida": {
+    "noSupplements": true,
+    "note": "USF does not request an essay or personal statement (usf.edu academic requirements)"
+  },
+  "university-of-virginia": {
+    "noSupplements": true,
+    "note": "UVA dropped its general supplement in 2025-26; only School of Nursing applicants answer a short prompt"
+  },
+  "university-of-washington": {
+    "noSupplements": true,
+    "note": "UW requires only the Common App personal essay; its two other prompts are optional context questions"
+  },
+  "university-of-wisconsin-madison": {
+    "url": "https://admissions.wisc.edu/essays",
+    "cycle": "2026-27",
+    "prompts": [
+      {
+        "label": "Why UW–Madison",
+        "prompt": "Tell us why you would like to attend the University of Wisconsin–Madison. In addition, please include why you are interested in studying the major(s) you have selected. If you selected undecided, please describe your areas of possible academic interest.",
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "options": []
+      }
+    ]
+  },
+  "vanderbilt-university": {
+    "url": "https://admissions.vanderbilt.edu/apply/personal-essay-and-short-answer-prompts"
+  },
+  "villanova-university": {
+    "url": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/application-essays.html"
   },
   "virginia-tech": {
     "url": "https://www.vt.edu/admissions/undergraduate/apply/ut-prosim-short-answer-questions.html"
   },
   "wake-forest-university": {
-    "url": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/"
+    "url": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/",
+    "cycle": "2026-27",
+    "prompts": [
+      {
+        "label": "Why Wake?",
+        "prompt": "Why Wake?",
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "options": []
+      },
+      {
+        "label": "Written supplement",
+        "prompt": "Answer one of these four prompts. The written supplement is optional: you can send a written response, a video, or both.",
+        "limit": 300,
+        "unit": "words",
+        "required": false,
+        "options": [
+          "List five books you’ve read that have intrigued you. (150 character limit per book title)",
+          "Tell us what piques your intellectual curiosity or has helped you understand the world’s complexity. This can include a work you’ve read, a project you’ve completed for a class, and even co-curricular activities in which you have been involved. (150 word limit)",
+          "Dr. Maya Angelou, renowned author, poet, civil-rights activist, and former Wake Forest University Reynolds Professor of American Studies, inspired others to celebrate their identities and to honor each person’s dignity. Choose one of Dr. Angelou’s powerful quotes. How does this quote relate to your lived experience or reflect how you plan to contribute to the Wake Forest community? (300 word limit)",
+          "Give us your Top Ten List. (The choice of theme is yours.) (100 character limit per line)"
+        ]
+      }
+    ]
+  },
+  "washington-and-lee-university": {
+    "url": "https://www.wlu.edu/admissions/apply/supplemental-application-prompts"
+  },
+  "washington-university-in-st-louis": {
+    "url": "https://admissions.washu.edu/how-to-apply/first-year-us-applicants/",
+    "cycle": "2026-27",
+    "prompts": [
+      {
+        "label": "Academic interests",
+        "prompt": "Please tell us what you are interested in studying at college and why.",
+        "limit": 250,
+        "unit": "words",
+        "required": true,
+        "options": []
+      }
+    ]
+  },
+  "william-and-mary": {
+    "noSupplements": true,
+    "note": "No required supplement; up to two optional short answers appear only inside the Common App"
+  },
+  "williams-college": {
+    "noSupplements": true,
+    "note": "Williams does not require a writing supplement; an academic paper is optional"
+  },
+  "worcester-polytechnic-institute": {
+    "noSupplements": true,
+    "note": "WPI's Common App section has no writing supplement for 2026-27"
   },
   "yale-university": {
     "url": "https://admissions.yale.edu/essay-topics"

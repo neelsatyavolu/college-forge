@@ -12,6 +12,8 @@ import type {
   Essay,
 } from "./store";
 import { mergeSupplements, syncEssaySupplements } from "./essay-supplements";
+import { applyEssayStatus, checkEssayStatus, checkEssaySuggestionDismissals, dismissSuggestions } from "./essay-tools";
+import { parseApplicantFields, parseProfileFields, rankActivities, toAps, toHonors, type Parsed, type WriteMode } from "./profile-fields";
 
 function assignDefined<T extends object>(base: T, patch: Record<string, unknown>): T {
   const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
@@ -22,6 +24,8 @@ function assignDefined<T extends object>(base: T, patch: Record<string, unknown>
 }
 
 export type WorkspacePatch = {
+  /** The workspace revision the editor started from. A stale one refuses whole-list replacements (see isStalePatch). */
+  baseRevision?: number;
   listPrefs?: Partial<OnboardingListPrefs>;
   applicant?: Partial<Workspace["applicant"]>;
   profile?: Partial<{
@@ -51,6 +55,10 @@ export type WorkspacePatch = {
   financialAid?: Partial<FinancialAid>;
   /** Merge a single essay draft */
   essayDraft?: { id: string; text: string };
+  /** Mark essays draft or final by id; null clears the mark. */
+  essayStatus?: Record<string, "draft" | "final" | null>;
+  /** Dismiss copilot suggestions by id (null). Suggestions are only added by suggest_essay_edit. */
+  essaySuggestions?: Record<string, null>;
   /** Toggle one planner task */
   plannerToggle?: { key: string; done: boolean };
   /** Set one application status */
@@ -66,6 +74,89 @@ export type WorkspacePatch = {
   collegePatch?: { slug: string } & Partial<Workspace["colleges"][number]>;
 };
 
+const LIST_BUDGETS = ["lt15", "15-30", "30-50", "50plus", "unsure"] as const;
+const ED_CHOICES = ["yes", "no", "maybe"] as const;
+
+/** Writes SAT and its note to both stored copies (applicant and profile.testing), plus the ACT. Absent fields are kept. */
+export function setTestScores(ws: Workspace, scores: { sat?: string; satNote?: string; act?: string }): Workspace {
+  const sat = scores.sat !== undefined ? { sat: scores.sat } : {};
+  const satNote = scores.satNote !== undefined ? { satNote: scores.satNote } : {};
+  const act = scores.act !== undefined ? { act: scores.act } : {};
+  return {
+    ...ws,
+    applicant: { ...ws.applicant, ...sat, ...satNote },
+    profile: { ...ws.profile, testing: { ...ws.profile.testing, ...sat, ...satNote, ...act } },
+  };
+}
+
+/**
+ * Validates and normalizes the profile, applicant and list-preference parts of a patch. Other parts pass
+ * through unchanged. mode "tool" treats "" and 0 as not provided (see lib/profile-fields.ts).
+ */
+export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "form"): Parsed<WorkspacePatch> {
+  let next: WorkspacePatch = { ...patch };
+  if (patch.baseRevision !== undefined && !(Number.isSafeInteger(patch.baseRevision) && patch.baseRevision >= 0)) {
+    return { ok: false, error: "baseRevision must be a whole number." };
+  }
+  if (patch.applicant !== undefined) {
+    const parsed = parseApplicantFields(patch.applicant, mode);
+    if (!parsed.ok) return parsed;
+    next = { ...next, applicant: parsed.value };
+  }
+  if (patch.profile !== undefined) {
+    const parsed = parseProfileFields(patch.profile, mode);
+    if (!parsed.ok) return parsed;
+    const { activities, honors, testing, ...rest } = parsed.value;
+    next = {
+      ...next,
+      profile: {
+        ...rest,
+        ...(testing ? { testing: { ...testing, ...(testing.aps ? { aps: toAps(testing.aps) } : {}) } } : {}),
+        ...(activities ? { activities: rankActivities(activities) } : {}),
+        ...(honors ? { honors: toHonors(honors) } : {}),
+      },
+    };
+  }
+  const lp = patch.listPrefs as Record<string, unknown> | undefined;
+  if (lp !== undefined) {
+    if (!lp || typeof lp !== "object" || Array.isArray(lp)) return { ok: false, error: "listPrefs must be an object." };
+    const blank = (v: unknown) => v === undefined || v === null || (mode === "tool" && v === "");
+    if (!blank(lp.budget) && !(LIST_BUDGETS as readonly unknown[]).includes(lp.budget)) {
+      return { ok: false, error: `Budget must be one of ${LIST_BUDGETS.join(", ")}.` };
+    }
+    if (!blank(lp.ed) && !(ED_CHOICES as readonly unknown[]).includes(lp.ed)) {
+      return { ok: false, error: "Early Decision must be yes, no or maybe." };
+    }
+    if (lp.needAid !== undefined && lp.needAid !== null && typeof lp.needAid !== "boolean") {
+      return { ok: false, error: "needAid must be true or false." };
+    }
+    if (mode === "tool") {
+      const kept = Object.entries(lp).filter(([, v]) => !blank(v) && v !== 0 && !(Array.isArray(v) && v.length === 0));
+      next = { ...next, listPrefs: Object.fromEntries(kept) as Partial<OnboardingListPrefs> };
+    }
+  }
+  if (patch.essayStatus !== undefined) {
+    const parsed = checkEssayStatus(patch.essayStatus);
+    if (!parsed.ok) return parsed;
+  }
+  if (patch.essaySuggestions !== undefined) {
+    const parsed = checkEssaySuggestionDismissals(patch.essaySuggestions);
+    if (!parsed.ok) return parsed;
+  }
+  return { ok: true, value: next };
+}
+
+/** True when the patch replaces a whole profile list (activities, honors, AP scores or coursework). */
+export function replacesProfileLists(patch: WorkspacePatch): boolean {
+  const p = patch.profile;
+  return Boolean(p && (Array.isArray(p.activities) || Array.isArray(p.honors) || Array.isArray(p.testing?.aps) || p.coursework));
+}
+
+/** A whole-list replacement made from an older revision would silently undo edits saved since. */
+export function isStalePatch(ws: Workspace, patch: WorkspacePatch): boolean {
+  return typeof patch.baseRevision === "number" && patch.baseRevision !== ws.revision && replacesProfileLists(patch);
+}
+
 export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Workspace {
   let next: Workspace = { ...ws };
 
@@ -80,13 +171,17 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     if (Array.isArray(p.settings)) listPrefs.settings = [...new Set(p.settings.filter(s => ["urban", "suburban", "rural", "college-town"].includes(s)))];
     if (Array.isArray(p.regions)) listPrefs.regions = [...new Set(p.regions.filter(r => ["northeast", "mid-atlantic", "south", "midwest", "west", "any"].includes(r)))];
     if (typeof p.notes === "string") listPrefs.notes = p.notes.trim().slice(0, 4000);
+    if ((LIST_BUDGETS as readonly unknown[]).includes(p.budget)) listPrefs.budget = p.budget;
+    if ((ED_CHOICES as readonly unknown[]).includes(p.ed)) listPrefs.ed = p.ed;
+    if (typeof p.needAid === "boolean") listPrefs.needAid = p.needAid;
     if (p.appCount === null) listPrefs.appCount = null;
     else if (typeof p.appCount === "number" && Number.isFinite(p.appCount)) listPrefs.appCount = Math.max(8, Math.min(15, Math.round(p.appCount)));
     next = { ...next, onboarding: { ...next.onboarding, listPrefs } };
   }
 
   if (patch.applicant) {
-    next = { ...next, applicant: assignDefined(next.applicant, patch.applicant as Record<string, unknown>) };
+    const { sat: _sat, satNote: _note, ...rest } = patch.applicant;
+    next = { ...next, applicant: assignDefined(next.applicant, rest as Record<string, unknown>) };
   }
 
   if (patch.profile) {
@@ -101,7 +196,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
         ...(p.location !== undefined ? { location: p.location } : {}),
         ...(p.counselor !== undefined ? { counselor: p.counselor } : {}),
         ...(p.residency !== undefined ? { residency: p.residency } : {}),
-        testing: p.testing ? assignDefined(next.profile.testing, p.testing as Record<string, unknown>) : next.profile.testing,
+        testing: Array.isArray(p.testing?.aps) ? { ...next.profile.testing, aps: p.testing.aps } : next.profile.testing,
         coursework: p.coursework
           ? assignDefined(next.profile.coursework, p.coursework as Record<string, unknown>)
           : next.profile.coursework,
@@ -112,6 +207,18 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     if (Array.isArray(p.honors)) {
       next = { ...next, applicant: { ...next.applicant, awards: p.honors.length } };
     }
+  }
+
+  // SAT lives in two places; every write updates both so readers never disagree.
+  const t = patch.profile?.testing;
+  const a = patch.applicant;
+  const scores = {
+    sat: t?.sat ?? a?.sat ?? undefined,
+    satNote: t?.satNote ?? a?.satNote ?? undefined,
+    act: t?.act ?? undefined,
+  };
+  if (scores.sat !== undefined || scores.satNote !== undefined || scores.act !== undefined) {
+    next = setTestScores(next, scores);
   }
 
   if (patch.ed !== undefined) next = { ...next, ed: patch.ed };
@@ -141,6 +248,8 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       essayDrafts: { ...next.essayDrafts, [patch.essayDraft.id]: patch.essayDraft.text },
     };
   }
+  if (patch.essayStatus) next = applyEssayStatus(next, patch.essayStatus);
+  if (patch.essaySuggestions) next = dismissSuggestions(next, patch.essaySuggestions);
 
   if (patch.plannerDone) {
     next = { ...next, plannerDone: { ...next.plannerDone, ...patch.plannerDone } };

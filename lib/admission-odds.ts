@@ -24,6 +24,8 @@ export type AdmissionOdds = {
   sources: string[];
   /** ISO timestamp. */
   estimatedAt: string;
+  /** profileFingerprint() of the workspace this was estimated from. Older estimates have none. */
+  profileFingerprint?: string;
 };
 
 /** What the AI took from the student's whole application, read once per estimate run. */
@@ -37,7 +39,37 @@ export type ApplicationRead = {
   concerns: string[];
   /** ISO timestamp. */
   readAt: string;
+  /** profileFingerprint() of the workspace this was read from. */
+  profileFingerprint?: string;
 };
+
+const DASH = "—";
+const field = (v: unknown) => {
+  const s = String(v ?? "").trim();
+  return s === DASH ? "" : s;
+};
+
+/**
+ * A short hash of the profile fields an estimate depends on: GPAs, SAT, ACT, the SAT note (test-optional),
+ * intended major and residency. Public/hub/Shortlist.jsx computes the same hash to spot stale estimates,
+ * so the two must change together.
+ */
+export function profileFingerprint(ws: Workspace): string {
+  const a = ws.applicant || ({} as Workspace["applicant"]);
+  const p = ws.profile || ({} as Workspace["profile"]);
+  const t = p.testing || ({} as Workspace["profile"]["testing"]);
+  const parts = [
+    field(a.gpaUnweighted), field(a.gpaWeighted), field(a.sat) || field(t.sat), field(t.act),
+    field(a.satNote) || field(t.satNote), field(p.intended).toLowerCase(), field(p.residency).toUpperCase(),
+  ];
+  // FNV-1a, 32 bits.
+  let h = 0x811c9dc5;
+  for (const ch of JSON.stringify(parts)) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}
 
 export type Baseline = { percent: number; rate: number; source: string };
 
@@ -210,11 +242,12 @@ export function oddsFromArgs(college: College, ws: Workspace, a: Record<string, 
       factors: factors(a.factors),
       sources,
       estimatedAt: now,
+      profileFingerprint: profileFingerprint(ws),
     },
   };
 }
 
-export function readFromArgs(a: Record<string, unknown>, now: string): ApplicationRead | null {
+export function readFromArgs(a: Record<string, unknown>, now: string, ws?: Workspace): ApplicationRead | null {
   const list = (v: unknown) => (Array.isArray(v) ? v.map((s) => text(s, 200)).filter(Boolean).slice(0, 6) : []);
   const read: ApplicationRead = {
     summary: text(a.summary, 700),
@@ -225,6 +258,7 @@ export function readFromArgs(a: Record<string, unknown>, now: string): Applicati
     strengths: list(a.strengths),
     concerns: list(a.concerns),
     readAt: now,
+    ...(ws ? { profileFingerprint: profileFingerprint(ws) } : {}),
   };
   return read.summary ? read : null;
 }

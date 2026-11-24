@@ -4,6 +4,19 @@ function recommendationMoney(value) {
   return typeof value === "number" && Number.isFinite(value) ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value) : "Not reported";
 }
 
+const APP_COUNTS = [8, 9, 10, 11, 12, 13, 14, 15];
+const BUDGETS = [["lt15", "Under $15,000 a year"], ["15-30", "$15,000–$30,000 a year"], ["30-50", "$30,000–$50,000 a year"], ["50plus", "$50,000 or more a year"], ["unsure", "Not sure yet"]];
+const NOTES_LIMIT = 4000;
+
+function preferenceDraft(data) {
+  const prefs = data.onboarding?.listPrefs || {};
+  return {
+    intended: data.profile.intended || "", ambition: prefs.ambition || "balanced", regions: prefs.regions || [], settings: prefs.settings || [],
+    appCount: typeof prefs.appCount === "number" ? String(prefs.appCount) : "", notes: prefs.notes || "",
+    budget: prefs.budget || "", needAid: prefs.needAid === true, ed: prefs.ed || "",
+  };
+}
+
 function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate, onStartSetup }) {
   const [result, setResult] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -12,8 +25,7 @@ function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate, onStartSe
   const [revision, setRevision] = React.useState(0);
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const [notice, setNotice] = React.useState("");
-  const prefs = data.onboarding?.listPrefs || {};
-  const [draft, setDraft] = React.useState(() => ({ intended: data.profile.intended || "", ambition: prefs.ambition || "balanced", regions: prefs.regions || [], settings: prefs.settings || [] }));
+  const [draft, setDraft] = React.useState(() => preferenceDraft(data));
   const profileKey = JSON.stringify([data.applicant.gpaUnweighted, data.applicant.sat, data.applicant.satNote, data.profile.intended, data.profile.testing, data.onboarding?.listPrefs]);
   React.useEffect(() => {
     const controller = new AbortController();
@@ -27,7 +39,14 @@ function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate, onStartSe
   const savePrefs = async e => {
     e.preventDefault(); setBusy("preferences"); setError("");
     try {
-      const ws = await window.cfApi.patch({ profile: { intended: draft.intended.trim() }, listPrefs: { ambition: draft.ambition, regions: draft.regions, settings: draft.settings } });
+      const listPrefs = {
+        ambition: draft.ambition, regions: draft.regions, settings: draft.settings,
+        appCount: draft.appCount ? Number(draft.appCount) : null, notes: draft.notes.slice(0, NOTES_LIMIT),
+        // An untouched, never-answered aid box stays unanswered rather than saved as "no".
+        ...(draft.needAid || typeof data.onboarding?.listPrefs?.needAid === "boolean" ? { needAid: draft.needAid } : {}),
+        ...(draft.budget ? { budget: draft.budget } : {}), ...(draft.ed ? { ed: draft.ed } : {}),
+      };
+      const ws = await window.cfApi.patch({ profile: { intended: draft.intended.trim() }, listPrefs });
       onWorkspaceChange(ws); setFiltersOpen(false); setNotice("Preferences saved. Your recommendations have been refreshed.");
     } catch (e) { setError(e.message || "Couldn’t save preferences."); }
     setBusy("");
@@ -44,9 +63,14 @@ function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate, onStartSe
   const toggle = (field, value) => setDraft(d => ({ ...d, [field]: d[field].includes(value) ? d[field].filter(v => v !== value) : [...d[field], value] }));
   return (
     <div className="cf-page">
-      <header className="cf-page-header"><div><div className="cf-eyebrow" style={{ marginBottom: 10 }}>EVIDENCE FIRST. YOUR PRIORITIES ALWAYS.</div><h1 className="cf-page-title">Colleges for you</h1><p className="cf-page-lede">A starting list grounded in graduate outcomes, your academic profile, and what matters to you. Explore the reasons before you decide.</p></div><Button variant="secondary" size="sm" onClick={() => { setDraft({ intended: data.profile.intended || "", ambition: prefs.ambition || "balanced", regions: prefs.regions || [], settings: prefs.settings || [] }); setFiltersOpen(v => !v); }}>Adjust preferences</Button></header>
+      <header className="cf-page-header"><div><div className="cf-eyebrow" style={{ marginBottom: 10 }}>EVIDENCE FIRST. YOUR PRIORITIES ALWAYS.</div><h1 className="cf-page-title">Colleges for you</h1><p className="cf-page-lede">A starting list grounded in graduate outcomes, your academic profile, and what matters to you. Explore the reasons before you decide.</p></div><Button variant="secondary" size="sm" onClick={() => { setDraft(preferenceDraft(data)); setFiltersOpen(v => !v); }}>Adjust preferences</Button></header>
       {filtersOpen && <form className="cf-preference-form" onSubmit={savePrefs}>
-        <div className="cf-preference-fields"><label>Intended major<input value={draft.intended} onChange={e => setDraft(d => ({ ...d, intended: e.target.value }))} placeholder="e.g. Computer Science" /></label><label>List balance<select value={draft.ambition} onChange={e => setDraft(d => ({ ...d, ambition: e.target.value }))}><option value="balanced">Balanced mix</option><option value="ambitious">More reaches</option><option value="conservative">More likely options</option></select></label></div>
+        <div className="cf-preference-fields"><label>Intended major<input value={draft.intended} onChange={e => setDraft(d => ({ ...d, intended: e.target.value }))} placeholder="e.g. Computer Science" /></label><label>List balance<select value={draft.ambition} onChange={e => setDraft(d => ({ ...d, ambition: e.target.value }))}><option value="balanced">Balanced mix</option><option value="ambitious">More reaches</option><option value="conservative">More likely options</option></select></label>
+          <label>Number of applications<select value={draft.appCount} onChange={e => setDraft(d => ({ ...d, appCount: e.target.value }))}><option value="">No target</option>{APP_COUNTS.map(n => <option key={n} value={String(n)}>{n}</option>)}</select></label>
+          <label>Yearly amount your family can pay<select value={draft.budget} onChange={e => setDraft(d => ({ ...d, budget: e.target.value }))}>{draft.budget ? null : <option value="" disabled>Choose one</option>}{BUDGETS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+          <label>Early Decision<select value={draft.ed} onChange={e => setDraft(d => ({ ...d, ed: e.target.value }))}>{draft.ed ? null : <option value="" disabled>Choose one</option>}<option value="yes">I would apply ED</option><option value="maybe">Maybe</option><option value="no">No ED</option></select></label>
+          <label style={{ gridColumn: "1 / -1" }}>Anything else the list should follow<textarea value={draft.notes} maxLength={NOTES_LIMIT} rows={3} onChange={e => setDraft(d => ({ ...d, notes: e.target.value }))} placeholder="e.g. strong marine biology, in-state publics, no schools in big cities" style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", color: "var(--ink)", background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: 6, font: "inherit", fontSize: 13, resize: "vertical" }} /></label></div>
+        <fieldset><legend>Financial aid</legend><div><label><input type="checkbox" checked={draft.needAid} onChange={e => setDraft(d => ({ ...d, needAid: e.target.checked }))} />We will apply for need-based aid</label></div></fieldset>
         <fieldset><legend>Regions <span>Leave all unchecked for anywhere</span></legend><div>{[["northeast", "New England"], ["mid-atlantic", "Mid-Atlantic"], ["south", "South"], ["midwest", "Midwest"], ["west", "West"]].map(([value, label]) => <label key={value}><input type="checkbox" checked={draft.regions.includes(value)} onChange={() => toggle("regions", value)} />{label}</label>)}</div></fieldset>
         <fieldset><legend>Campus setting <span>Leave all unchecked for any setting</span></legend><div>{[["urban", "City"], ["suburban", "Suburban"], ["college-town", "College town"], ["rural", "Rural"]].map(([value, label]) => <label key={value}><input type="checkbox" checked={draft.settings.includes(value)} onChange={() => toggle("settings", value)} />{label}</label>)}</div></fieldset>
         <div className="cf-inline-actions"><Button disabled={!!busy} type="submit">{busy === "preferences" ? "Saving…" : "Update recommendations"}</Button><Button variant="secondary" type="button" onClick={() => setFiltersOpen(false)}>Cancel</Button></div>

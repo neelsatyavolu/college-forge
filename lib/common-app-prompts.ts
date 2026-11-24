@@ -5,7 +5,7 @@ import type { Essay } from "./store";
  * Word limit is 650 for the personal statement across all prompts.
  * Update each cycle when Common App publishes new prompts.
  */
-export const COMMON_APP_PERSONAL_PROMPTS: Essay[] = [
+export const COMMON_APP_PERSONAL_PROMPTS: Essay[] = ([
   {
     id: "ca-ps-1",
     group: "Common App",
@@ -76,7 +76,10 @@ export const COMMON_APP_PERSONAL_PROMPTS: Essay[] = [
     unit: "words",
     starter: "",
   },
-];
+] as Essay[]).map((e) =>
+  // The personal statement prompts are one choose-1 set; Additional information is optional.
+  /^ca-ps-/.test(e.id) ? { ...e, chooseGroup: "common", choose: 1 } : { ...e, required: false }
+);
 
 /** Official Common App Activities limits (confirmed via Common App FY Activities resource). */
 export const ACTIVITY_DESC_CHARS = 150;

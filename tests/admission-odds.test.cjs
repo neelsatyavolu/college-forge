@@ -175,3 +175,34 @@ test('tracked schools not on the shortlist are estimated by tracker id with thei
   assert.deepEqual(plan.schools.flatMap((s) => s.keys), ['a', 'app:x2']);
   assert.match(plan.schools[0].prompt, /B College \[app:x2\], RD: starting point 15% \(Overall admission rate 12%, SAT above the middle 50%\)/);
 });
+
+test('the profile fingerprint changes with the scores the estimate used, not with unrelated edits', () => {
+  const base = ws([tufts]);
+  const fp = odds.profileFingerprint(base);
+  assert.match(fp, /^[0-9a-f]{8}$/);
+  assert.equal(odds.profileFingerprint(ws([tufts])), fp, 'same profile, same fingerprint');
+  const newSat = ws([tufts]); newSat.applicant.sat = '1520';
+  assert.notEqual(odds.profileFingerprint(newSat), fp);
+  const act = ws([tufts]); act.profile.testing = { ...act.profile.testing, act: '34' };
+  assert.notEqual(odds.profileFingerprint(act), fp);
+  const optional = ws([tufts]); optional.applicant.satNote = 'Test optional';
+  assert.notEqual(odds.profileFingerprint(optional), fp);
+  const unrelated = ws([tufts, { slug: 'x', name: 'X' }]);
+  unrelated.applicant.name = 'Someone else';
+  unrelated.profile.counselor = 'A counselor';
+  unrelated.onboarding = { ...unrelated.onboarding, listPrefs: { ambition: 'ambitious', settings: [], size: 'any', regions: [], notes: '' } };
+  assert.equal(odds.profileFingerprint(unrelated), fp, 'name, counselor, list and list balance do not change it');
+  const caseOnly = ws([tufts]); caseOnly.profile.residency = 'ca';
+  const upper = ws([tufts]); upper.profile.residency = 'CA';
+  assert.equal(odds.profileFingerprint(caseOnly), odds.profileFingerprint(upper));
+});
+
+test('a saved estimate records the profile it was made from', () => {
+  const rd = { ...tufts, deadline: 'RD' };
+  const w = ws([rd]);
+  const r = odds.oddsFromArgs(rd, w, { percent: 10, summary: 'Fits.', sources: [] }, TODAY);
+  assert.equal(r.ok, true);
+  assert.equal(r.odds.profileFingerprint, odds.profileFingerprint(w));
+  const read = odds.readFromArgs({ summary: 'Strong reader.' }, TODAY, w);
+  assert.equal(read.profileFingerprint, odds.profileFingerprint(w));
+});

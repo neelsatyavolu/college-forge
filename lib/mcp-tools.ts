@@ -4,7 +4,13 @@ import { allow } from "./rate-limit";
 import { activeShareLinks, createShareLink, revokeShareLink, shareUrl } from "./sharing";
 
 const ORIGIN = (process.env.FORGE_ORIGIN || "https://forge.xanom.co").replace(/\/$/, "");
-import { getWorkspace } from "./store";
+import { canCompleteOnboarding, getWorkspace, updateWorkspace, type Workspace } from "./store";
+import { applyWorkspacePatch, checkWorkspacePatch, setTestScores, type WorkspacePatch } from "./workspace-patch";
+import { removeActivity, removeHonor, toolFlag, upsertActivity, upsertHonor, type Parsed } from "./profile-fields";
+import { seedRecommendedColleges } from "./college-recommendations";
+import { syncEssaySupplements } from "./essay-supplements";
+import { essayList, essayPromptsSchema, essayView, withEssayPrompts } from "./essay-tools";
+import { isTestOptionalNote } from "./colleges";
 import { ROUNDS, STATUSES, STATUS_IDS, findApp, todayIso } from "./tracker";
 import {
   TrackerError,
@@ -87,6 +93,80 @@ const toEdit = (f: { status?: string; round?: string; deadline?: string; decisio
   ...(f.decision_date !== undefined ? { decisionDate: f.decision_date } : {}),
   ...(f.notes !== undefined ? { notes: f.notes } : {}),
   ...(f.decision_note !== undefined ? { decisionNote: f.decision_note } : {}),
+});
+
+/** A refused profile write; its message is safe to show the assistant. */
+class ProfileInputError extends Error {}
+
+/** Validates a profile patch the way the Profile page does ("" and 0 mean not given), then saves it. */
+async function saveProfilePatch(ws: string, patch: WorkspacePatch): Promise<Workspace> {
+  const checked = checkWorkspacePatch(patch, "tool");
+  if (!checked.ok) throw new ProfileInputError(checked.error);
+  return updateWorkspace(ws, (w) => applyWorkspacePatch(w, checked.value));
+}
+
+/** Runs a list edit against the latest saved workspace. */
+async function editProfile(ws: string, edit: (w: Workspace) => Parsed<Workspace>): Promise<Workspace> {
+  return updateWorkspace(ws, (w) => {
+    const r = edit(w);
+    if (!r.ok) throw new ProfileInputError(r.error);
+    return r.value;
+  });
+}
+
+const present = (v: string | undefined) => (v && v !== "—" ? v : null);
+
+function profileView(w: Workspace) {
+  const p = w.profile;
+  const prefs = w.onboarding.listPrefs;
+  return {
+    name: w.applicant.name || null,
+    cycle: w.applicant.cycle || null,
+    high_school: p.hs || null,
+    grad_year: p.gradYear || null,
+    intended_major: p.intended || null,
+    location: p.location || null,
+    residency: p.residency || null,
+    counselor: p.counselor || null,
+    gpa_weighted: present(w.applicant.gpaWeighted),
+    gpa_unweighted: present(w.applicant.gpaUnweighted),
+    sat: present(p.testing.sat) ?? present(w.applicant.sat),
+    sat_note: p.testing.satNote || w.applicant.satNote || null,
+    test_optional: isTestOptionalNote(p.testing.satNote || w.applicant.satNote),
+    act: present(p.testing.act),
+    ap_scores: p.testing.aps,
+    coursework: p.coursework,
+    activities: p.activities.map((a) => ({
+      rank: a.rank, name: a.name, type: a.type || null, organization: a.org || null, role: a.role || null,
+      grades: a.years || null, hours_per_week: a.hpw || null, weeks_per_year: a.wpy || null, description: a.desc || null,
+    })),
+    honors: p.honors.map((h) => ({ title: h.title, level: h.level || null, year: h.year || null, top: !!h.top })),
+    list_preferences: prefs
+      ? {
+          ambition: prefs.ambition, app_count: prefs.appCount ?? null, regions: prefs.regions, settings: prefs.settings,
+          notes: prefs.notes || null, budget: prefs.budget ?? null, need_aid: prefs.needAid ?? null, early_decision: prefs.ed ?? null,
+        }
+      : null,
+    onboarding_complete: !!w.onboarding.completed,
+  };
+}
+
+/** Agents fill unused optional booleans with false, so tool flags are "yes" | "no", and "" means unchanged. */
+const yesNo = z.enum(["yes", "no"]).or(z.literal("")).optional();
+const activityInput = {
+  name: z.string().max(200).optional(),
+  type: z.string().max(80).optional(),
+  organization: z.string().max(200).optional(),
+  role: z.string().max(200).optional(),
+  grades: z.string().max(80).optional(),
+  hours_per_week: z.string().max(10).optional(),
+  weeks_per_year: z.string().max(10).optional(),
+  continue_in_college: yesNo,
+  description: z.string().max(150).optional(),
+};
+const toActivity = (f: z.infer<z.ZodObject<typeof activityInput>> & { rank?: number }) => ({
+  rank: f.rank, name: f.name, type: f.type, org: f.organization, role: f.role, years: f.grades,
+  hpw: f.hours_per_week, wpy: f.weeks_per_year, college: toolFlag(f.continue_in_college), desc: f.description,
 });
 
 type Tool = {
@@ -306,23 +386,191 @@ export const TOOLS: Tool[] = [
   tool({
     name: "get_profile",
     title: "Get the student's profile",
-    description: "The student's academic summary from Forge: name, class year, high school, intended major, GPA, test scores, AP scores, and activity and honor titles.",
+    description: "Everything the student can edit on their Forge profile: name, class year, high school, intended major, location, state of residence, counselor, GPA, SAT and its note (test optional or not), ACT, AP scores, coursework, activities with details, honors with levels, and college-list preferences.",
     input: z.object({}),
     readOnly: true,
+    run: async (ws) => profileView(await getWorkspace(ws)),
+  }),
+  tool({
+    name: "update_profile",
+    title: "Update the student's profile",
+    description: "Changes profile fields. Only the fields you pass change; empty strings and 0 are ignored, and \"—\" clears a GPA, SAT or ACT. gpa_unweighted 0-4, gpa_weighted 0-6, sat a whole number 400-1600, act 1-36, grad_year four digits, residency a 2-letter state code. test_optional yes marks testing as optional (scores are then ignored for list building); no removes that mark. SAT is saved everywhere Forge reads it.",
+    input: z.object({
+      name: z.string().max(200).optional(),
+      cycle: z.string().max(200).optional(),
+      high_school: z.string().max(200).optional(),
+      grad_year: z.union([z.number(), z.string()]).optional(),
+      intended_major: z.string().max(200).optional(),
+      location: z.string().max(200).optional(),
+      residency: z.string().max(40).optional(),
+      counselor: z.string().max(200).optional(),
+      gpa_weighted: z.string().max(10).optional(),
+      gpa_unweighted: z.string().max(10).optional(),
+      sat: z.string().max(10).optional(),
+      sat_note: z.string().max(200).optional(),
+      test_optional: yesNo,
+      act: z.string().max(10).optional(),
+    }),
+    readOnly: false,
+    run: async (ws, f) => {
+      const patch: WorkspacePatch = {
+        applicant: { name: f.name, cycle: f.cycle, gpaWeighted: f.gpa_weighted, gpaUnweighted: f.gpa_unweighted },
+        profile: {
+          hs: f.high_school, gradYear: f.grad_year, intended: f.intended_major, location: f.location,
+          residency: f.residency, counselor: f.counselor,
+          testing: { sat: f.sat, act: f.act },
+        },
+      };
+      const checked = checkWorkspacePatch(patch, "tool");
+      if (!checked.ok) throw new ProfileInputError(checked.error);
+      const saved = await updateWorkspace(ws, (w) => {
+        const next = applyWorkspacePatch(w, checked.value);
+        const note = w.profile.testing.satNote || w.applicant.satNote;
+        // Turning test-optional off clears only the note it set, which "" in tool mode could not express.
+        const testOptional = toolFlag(f.test_optional);
+        const satNote = testOptional === true ? "Test optional"
+          : f.sat_note ? f.sat_note.trim()
+          : testOptional === false && isTestOptionalNote(note) ? "" : undefined;
+        return satNote === undefined ? next : setTestScores(next, { satNote });
+      });
+      return profileView(saved);
+    },
+  }),
+  tool({
+    name: "update_list_preferences",
+    title: "Update college-list preferences",
+    description: "Changes the preferences Forge uses to build the college list. Only the fields you pass change. ambition: ambitious, balanced or conservative. app_count: 8-15 applications. regions: northeast, mid-atlantic, south, midwest, west, any. settings: urban, suburban, rural, college-town. budget: lt15, 15-30, 30-50, 50plus or unsure (thousands of dollars a year). need_aid: yes or no. The saved list itself does not change.",
+    input: z.object({
+      ambition: z.enum(["ambitious", "balanced", "conservative"]).or(z.literal("")).optional(),
+      app_count: z.number().optional(),
+      regions: z.array(z.enum(["northeast", "mid-atlantic", "south", "midwest", "west", "any"])).optional(),
+      settings: z.array(z.enum(["urban", "suburban", "rural", "college-town"])).optional(),
+      notes: z.string().max(4000).optional(),
+      budget: z.enum(["lt15", "15-30", "30-50", "50plus", "unsure"]).or(z.literal("")).optional(),
+      need_aid: yesNo,
+      early_decision: z.enum(["yes", "no", "maybe"]).or(z.literal("")).optional(),
+    }),
+    readOnly: false,
+    run: async (ws, f) => {
+      const listPrefs = {
+        ambition: f.ambition || undefined, appCount: f.app_count, regions: f.regions, settings: f.settings,
+        notes: f.notes, budget: f.budget || undefined, needAid: toolFlag(f.need_aid), ed: f.early_decision || undefined,
+      } as WorkspacePatch["listPrefs"];
+      return { list_preferences: profileView(await saveProfilePatch(ws, { listPrefs })).list_preferences };
+    },
+  }),
+  tool({
+    name: "upsert_activity",
+    title: "Add or change an activity",
+    description: "Adds one activity, or changes fields of a saved one matched by `match` (its current name) or `name`. Only the fields you pass change. `rank` moves it to that position (1 = most important). Up to 10 activities; descriptions up to 150 characters.",
+    input: z.object({ match: z.string().max(200).optional(), rank: z.number().int().optional(), ...activityInput }),
+    readOnly: false,
+    run: async (ws, { match, ...f }) => {
+      const saved = await editProfile(ws, (w) => {
+        const r = upsertActivity(w.profile.activities, toActivity(f), match || undefined);
+        return r.ok ? { ok: true, value: { ...w, profile: { ...w.profile, activities: r.value.list } } } : r;
+      });
+      return { activities: profileView(saved).activities };
+    },
+  }),
+  tool({
+    name: "remove_activity",
+    title: "Remove an activity",
+    description: "Removes one activity by name (or by rank). The rest are renumbered. Confirm with the student first.",
+    input: z.object({ name: z.string().max(200).optional(), rank: z.number().int().optional() }),
+    readOnly: false,
+    run: async (ws, { name, rank }) => {
+      if (!name && !rank) throw new ProfileInputError("Pass the activity's name or rank.");
+      const saved = await editProfile(ws, (w) => {
+        const r = removeActivity(w.profile.activities, { name: name || undefined, rank: rank || undefined });
+        return r.ok ? { ok: true, value: { ...w, profile: { ...w.profile, activities: r.value } } } : r;
+      });
+      return { activities: profileView(saved).activities };
+    },
+  }),
+  tool({
+    name: "upsert_honor",
+    title: "Add or change an honor",
+    description: "Adds one honor or award, or changes a saved one matched by `match` (its current title) or `title`. level: International, National, State, Regional or School. top: yes marks one of the strongest, no unmarks it. Up to 5 honors.",
+    input: z.object({
+      match: z.string().max(200).optional(), title: z.string().max(200).optional(), level: z.string().max(40).optional(),
+      year: z.string().max(40).optional(), top: yesNo,
+    }),
+    readOnly: false,
+    run: async (ws, { match, top, ...f }) => {
+      const saved = await editProfile(ws, (w) => {
+        const r = upsertHonor(w.profile.honors, { ...f, top: toolFlag(top) }, match || undefined);
+        return r.ok ? { ok: true, value: { ...w, profile: { ...w.profile, honors: r.value.list }, applicant: { ...w.applicant, awards: r.value.list.length } } } : r;
+      });
+      return { honors: profileView(saved).honors };
+    },
+  }),
+  tool({
+    name: "remove_honor",
+    title: "Remove an honor",
+    description: "Removes one honor by title. Confirm with the student first.",
+    input: z.object({ title: z.string().max(200).optional() }),
+    readOnly: false,
+    run: async (ws, { title }) => {
+      if (!title) throw new ProfileInputError("Pass the honor's title.");
+      const saved = await editProfile(ws, (w) => {
+        const r = removeHonor(w.profile.honors, title);
+        return r.ok ? { ok: true, value: { ...w, profile: { ...w.profile, honors: r.value }, applicant: { ...w.applicant, awards: r.value.length } } } : r;
+      });
+      return { honors: profileView(saved).honors };
+    },
+  }),
+  tool({
+    name: "list_essays",
+    title: "List essays",
+    description: "Every essay prompt on the student's Essays tab: Common App (school \"common\"), UC PIQs (\"uc-application\") and each school's supplements, with limit, word count and status. Draft text is left out; use get_essay for one essay.",
+    input: z.object({}),
+    readOnly: true,
+    run: async (ws) => ({ essays: essayList(await getWorkspace(ws)) }),
+  }),
+  tool({
+    name: "get_essay",
+    title: "Get one essay",
+    description: "One essay in full: the prompt, its limit, the student's current draft and count, and its status. `id` comes from list_essays.",
+    input: z.object({ id: z.string().min(1).max(200) }),
+    readOnly: true,
+    run: async (ws, { id }) => {
+      const view = essayView(await getWorkspace(ws), id);
+      if (!view) throw new ProfileInputError(`No essay has the id "${id}". Use list_essays to see the ids.`);
+      return view;
+    },
+  }),
+  tool({
+    name: "set_essays",
+    title: "Set essay prompts",
+    description: "Saves essay prompts copied from a school's current application. `supplements` maps a school slug from get_shortlist (or \"uc-application\") to its full prompt list, which replaces that school's prompts; other schools are untouched, and an empty list removes the school's group. `commonApp` replaces the Common App prompts. Keep an existing prompt's id to keep the student's draft attached. Each prompt needs id, label, prompt, limit and unit (words or characters); set required false for optional prompts. This never changes drafts.",
+    input: essayPromptsSchema,
+    readOnly: false,
+    run: async (ws, prompts) => {
+      if (!prompts.commonApp?.length && !prompts.supplements) throw new ProfileInputError("Pass commonApp or supplements.");
+      const saved = await updateWorkspace(ws, (w) => withEssayPrompts(w, prompts));
+      const changed = new Set([...(prompts.commonApp?.length ? ["common"] : []), ...Object.keys(prompts.supplements || {})]);
+      return { essays: essayList(saved).filter((e) => changed.has(e.school)) };
+    },
+  }),
+  tool({
+    name: "complete_onboarding",
+    title: "Finish Forge setup",
+    description: "Finishes the student's Forge setup once the profile has a name, high school, intended major, graduation year and at least one GPA (fill those with update_profile first). Builds a starting college list from the profile and list preferences, keeping any schools already saved.",
+    input: z.object({}),
+    readOnly: false,
     run: async (ws) => {
-      const w = await getWorkspace(ws);
+      const saved = await updateWorkspace(ws, (w) => {
+        if (w.onboarding.completed) return w;
+        const check = canCompleteOnboarding(w);
+        if (!check.ok) throw new ProfileInputError(check.error);
+        const seeded = seedRecommendedColleges(w);
+        const next = syncEssaySupplements({ ...w, colleges: seeded.colleges });
+        return { ...next, onboarding: { ...next.onboarding, completed: true, completedAt: Date.now(), listGaps: seeded.gaps } };
+      });
       return {
-        name: w.applicant.name || null,
-        cycle: w.applicant.cycle || null,
-        high_school: w.profile.hs || null,
-        grad_year: w.profile.gradYear || null,
-        intended_major: w.profile.intended || null,
-        gpa_weighted: w.applicant.gpaWeighted,
-        gpa_unweighted: w.applicant.gpaUnweighted,
-        sat: w.profile.testing.sat,
-        ap_scores: w.profile.testing.aps,
-        activities: w.profile.activities.map((a) => a.name),
-        honors: w.profile.honors.map((h) => h.title),
+        onboarding_complete: true,
+        colleges: saved.colleges.map((c) => ({ name: c.name, category: c.tier ?? null })),
       };
     },
   }),
@@ -353,7 +601,7 @@ export async function callTool(workspaceId: string, name: string, args: unknown)
     const result = await t.run(workspaceId, parsed.data as never);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }], structuredContent: result };
   } catch (err) {
-    if (err instanceof TrackerError) return { isError: true, content: [{ type: "text", text: err.message }] };
+    if (err instanceof TrackerError || err instanceof ProfileInputError) return { isError: true, content: [{ type: "text", text: err.message }] };
     console.error("mcp tool failed", name, err instanceof Error ? err.message : "unknown");
     return { isError: true, content: [{ type: "text", text: "Forge couldn't do that just now. Try again." }] };
   }

@@ -32,8 +32,10 @@ export async function POST(req: NextRequest) {
     return json({ success: false, error: "A college with a name is required." }, 400, setCookie);
   }
 
+  // The student chose this school, so a rebalance keeps it, whatever origin the client sent.
   const incoming: College = {
     ...c,
+    origin: "user",
     name: c.name,
     slug: typeof c.slug === "string" && c.slug ? c.slug : slugify(c.name),
     short: typeof c.short === "string" && c.short ? c.short : c.name,

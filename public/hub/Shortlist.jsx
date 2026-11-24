@@ -21,8 +21,31 @@ function SuppPill({ load }) {
 
 const EFFECT_MARK = { up: "+", down: "−", neutral: "·" };
 
+// Same hash as profileFingerprint in lib/admission-odds.ts; change both together.
+function profileFingerprint(ws) {
+  const field = (v) => { const s = String(v == null ? "" : v).trim(); return s === "—" ? "" : s; };
+  const a = (ws && ws.applicant) || {};
+  const p = (ws && ws.profile) || {};
+  const t = p.testing || {};
+  const parts = [
+    field(a.gpaUnweighted), field(a.gpaWeighted), field(a.sat) || field(t.sat), field(t.act),
+    field(a.satNote) || field(t.satNote), field(p.intended).toLowerCase(), field(p.residency).toUpperCase(),
+  ];
+  let h = 0x811c9dc5;
+  for (const ch of JSON.stringify(parts)) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}
+
+/** True when an estimate records a profile that no longer matches. Estimates saved before fingerprints existed are left alone. */
+function isStaleOdds(odds, fingerprint) {
+  return !!(odds && odds.profileFingerprint && odds.profileFingerprint !== fingerprint);
+}
+
 // The saved chance estimate for one school, with its reasons behind a toggle.
-function OddsLine({ odds }) {
+function OddsLine({ odds, stale }) {
   const [open, setOpen] = React.useState(false);
   if (!odds) return null;
   return (
@@ -33,6 +56,7 @@ function OddsLine({ odds }) {
         <button type="button" onClick={() => setOpen(!open)} aria-expanded={open}
           style={{ fontSize: 12, color: "var(--workspace-accent)", background: "none", border: 0, padding: 0, cursor: "pointer" }}>{open ? "Hide why" : "Why"}</button>
       </div>
+      {stale ? <div style={{ fontSize: 12, color: "var(--warning)", marginTop: 4 }}>Estimated before your profile changed</div> : null}
       {open ? (
         <div style={{ marginTop: 8, paddingLeft: 12, borderLeft: "2px solid var(--hairline)", fontSize: 13, color: "var(--body)" }}>
           <p style={{ margin: "0 0 8px" }}>{odds.summary}</p>
@@ -120,6 +144,8 @@ function ChancesPanel({ data, onWorkspaceChange }) {
   const [progress, setProgress] = React.useState("");
   const [result, setResult] = React.useState(null);
   const estimated = Object.keys(data.admissionOdds || {});
+  const fingerprint = profileFingerprint(data);
+  const staleCount = estimated.filter((k) => isStaleOdds(data.admissionOdds[k], fingerprint)).length;
   const run = async () => {
     setRunning(true); setResult(null); setProgress("Starting…");
     try {
@@ -143,8 +169,13 @@ function ChancesPanel({ data, onWorkspaceChange }) {
             The AI reads your profile, essays and uploads, looks at each school's published admission rates and what it weighs, and counts any decisions you already have. Each estimate starts from the school's published rate for your round and can move at most threefold from it. Treat it as a rough guide.
           </p>
         </div>
-        <Button size="sm" disabled={running} onClick={run}>{running ? "Estimating…" : estimated.length ? "Estimate again" : "Estimate my chances"}</Button>
+        <Button size="sm" disabled={running} onClick={run}>{running ? "Estimating…" : staleCount ? "Re-estimate" : estimated.length ? "Estimate again" : "Estimate my chances"}</Button>
       </div>
+      {staleCount && !running ? (
+        <p style={{ margin: "10px 0 0", fontSize: 13, color: "var(--warning)" }}>
+          {staleCount === estimated.length ? "Estimated before your profile changed." : `${staleCount} of ${estimated.length} estimates were made before your profile changed.`} Re-estimate to use your current scores.
+        </p>
+      ) : null}
       <div role="status" aria-live="polite" style={{ fontSize: 13, marginTop: progress || result ? 10 : 0, color: result && result.tone === "error" ? "var(--error)" : "var(--muted)" }}>
         {running ? progress : result ? result.text : ""}
       </div>
@@ -152,7 +183,7 @@ function ChancesPanel({ data, onWorkspaceChange }) {
   );
 }
 
-function SchoolRow({ s, odds, last, tracked, onTier, onTrack, onRemove, busy, error }) {
+function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemove, busy, error }) {
   const [confirmRemove, setConfirmRemove] = React.useState(false);
   return (
     <div style={{ display: "block", background: s.priority ? "color-mix(in srgb, var(--coral) 5%, transparent)" : "transparent", borderBottom: last ? "none" : "1px solid var(--hairline)" }}>
@@ -174,7 +205,7 @@ function SchoolRow({ s, odds, last, tracked, onTier, onTrack, onRemove, busy, er
             ) : null}
             {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Overall admission rate: {s.admit}</span> : null}
           </div>
-          <OddsLine odds={odds} />
+          <OddsLine odds={odds} stale={oddsStale} />
           <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
             <label style={{ fontSize: 11, color: "var(--muted)", display: "flex", alignItems: "center", gap: 6 }}>
               Tier
@@ -226,6 +257,61 @@ function applicationSlotCount(colleges) {
   return nonUc + (hasUc ? 1 : 0);
 }
 
+const AMBITION_STEPS = ["conservative", "balanced", "ambitious"];
+const AMBITION_LABEL = { conservative: "More likely options", balanced: "Balanced mix", ambitious: "More reaches" };
+const GAP_WORD = { reach: "reach", target: "target", safety: "likely" };
+
+/** Saved gaps, recounted against the list as it is now. Gaps saved before quotas were stored stay as saved. */
+function currentGaps(saved, byTier) {
+  return saved
+    .map((g) => (g && typeof g.goal === "number" && byTier[g.tier]
+      ? { ...g, missing: g.goal - byTier[g.tier].length }
+      : g))
+    .filter((g) => g && g.missing > 0);
+}
+
+/** What a rebalance changed, in a sentence. */
+function rebalanceSummary(added, removed) {
+  const a = Array.isArray(added) ? added : [];
+  const r = Array.isArray(removed) ? removed : [];
+  if (!a.length && !r.length) return "Nothing changed. Every school on your list is one you or the copilot added, or the list already matches this balance.";
+  return [a.length ? `Added ${a.join(", ")}.` : "", r.length ? `Removed ${r.join(", ")}.` : ""].filter(Boolean).join(" ");
+}
+
+/** Warnings for a list that leans too far one way, counted in application slots. */
+function balanceWarnings(likelySlots, reachSlots, appSlots) {
+  const out = [];
+  if (likelySlots < 2) out.push(`Your list has ${likelySlots} likely ${likelySlots === 1 ? "school" : "schools"}. Add at least two you would be glad to attend.`);
+  if (appSlots > 0 && reachSlots / appSlots > 0.5) out.push(`${reachSlots} of your ${appSlots} applications are reaches. Keeping reaches to half the list or fewer leaves room for schools you are likely to get into.`);
+  return out;
+}
+
+function ListBalance({ ambition, warnings, gaps, busy, error, onShift, onRebalance }) {
+  const step = AMBITION_STEPS.indexOf(ambition);
+  return (
+    <section aria-label="List balance" style={{ marginBottom: 28, padding: "16px 20px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ minWidth: 0, flex: "1 1 320px" }}>
+          <h2 className="cf-display" style={{ margin: "0 0 4px", fontSize: 20, color: "var(--ink)" }}>List balance: {AMBITION_LABEL[ambition]}</h2>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--body)" }}>Rebalancing swaps only the schools Forge picked for you. Schools you added and priority schools stay.</p>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Button variant="secondary" size="sm" disabled={busy || step >= AMBITION_STEPS.length - 1} onClick={() => onShift(1)}>More ambitious</Button>
+          <Button variant="secondary" size="sm" disabled={busy || step <= 0} onClick={() => onShift(-1)}>Safer</Button>
+          <Button size="sm" disabled={busy} onClick={onRebalance}>Rebalance list</Button>
+        </div>
+      </div>
+      {warnings.length || gaps.length ? (
+        <ul style={{ margin: "12px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 4, fontSize: 13, color: "var(--warning)" }}>
+          {warnings.map((w) => <li key={w}>{w}</li>)}
+          {gaps.map((g) => <li key={g.tier}>Rebalancing could not find {g.missing} more {GAP_WORD[g.tier] || g.tier} {g.missing === 1 ? "school" : "schools"} that fit your preferences. Add your own from Explore.</li>)}
+        </ul>
+      ) : null}
+      {error ? <p role="alert" style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
+    </section>
+  );
+}
+
 function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange }) {
   const [filter, setFilter] = React.useState("all");
   const [busy, setBusy] = React.useState(false);
@@ -239,9 +325,13 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
     safety: data.colleges.filter((c) => c.tier === "safety"),
   };
   const untiered = data.colleges.filter((c) => !c.tier || !TIER_META[c.tier]);
-  const totalSupps = data.colleges.filter((c) => c.supp && c.supp !== "No supps").length;
   const ucCount = data.colleges.filter(isUcCampus).length;
   const appSlots = applicationSlotCount(data.colleges);
+  const listPrefs = (data.onboarding && data.onboarding.listPrefs) || {};
+  const ambition = AMBITION_STEPS.includes(listPrefs.ambition) ? listPrefs.ambition : "balanced";
+  const shownGaps = currentGaps((data.onboarding && data.onboarding.listGaps) || [], byTier);
+  const warnings = balanceWarnings(applicationSlotCount(byTier.safety), applicationSlotCount(byTier.reach), appSlots);
+  const fingerprint = profileFingerprint(data);
   const FILTERS = [
     { id: "all", label: "All" }, { id: "reach", label: "Reaches" },
     { id: "target", label: "Targets" }, { id: "safety", label: "Likely" },
@@ -268,6 +358,22 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
       setNotice(`${c.name} is on your Progress tab.`);
     } catch (e) { setError({ slug: c.slug, message: e.message }); } finally { setBusy(false); }
   };
+  // Saves the new balance first, so a failed rebalance still keeps the choice.
+  const rebalance = async (nextAmbition) => {
+    let summary = "";
+    await saveChange("__balance", async () => {
+      if (nextAmbition) {
+        const saved = await window.cfApi.patch({ listPrefs: { ambition: nextAmbition } });
+        if (onWorkspaceChange) onWorkspaceChange(saved);
+      }
+      const j = await window.cfApi.postAction("rebalance", {});
+      if (!j.data) throw new Error("Could not rebalance your list. Please try again.");
+      summary = rebalanceSummary(j.added, j.removed);
+      return j.data;
+    }, "");
+    if (summary) setNotice((nextAmbition ? `List balance set to ${AMBITION_LABEL[nextAmbition].toLowerCase()}. ` : "") + summary);
+  };
+  const onShift = (dir) => rebalance(AMBITION_STEPS[Math.max(0, Math.min(AMBITION_STEPS.length - 1, AMBITION_STEPS.indexOf(ambition) + dir))]);
   const onRemove = (slug) => saveChange(slug, async () => {
     const response = await fetch(`/api/workspace/colleges?slug=${encodeURIComponent(slug)}`, { method: "DELETE", credentials: "same-origin" });
     const result = await response.json();
@@ -298,7 +404,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
             ["Campuses", data.colleges.length],
             ["App slots", appSlots],
             ["Reaches", byTier.reach.length],
-            ["With supps", `${totalSupps}/${data.colleges.length}`],
+            ["Likely", byTier.safety.length],
           ].map(([l, v]) => (
             <div key={l}>
               <div className="cf-display cf-nums" style={{ fontSize: 32, lineHeight: 1, letterSpacing: "-0.5px", color: "var(--ink)" }}>{v}</div>
@@ -306,6 +412,11 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
             </div>
           ))}
         </div>
+      ) : null}
+
+      {data.colleges.length > 0 ? (
+        <ListBalance ambition={ambition} warnings={warnings} gaps={shownGaps} busy={busy}
+          error={error && error.slug === "__balance" ? error.message : ""} onShift={onShift} onRebalance={() => rebalance(null)} />
       ) : null}
 
       {data.colleges.length > 0 ? <ChancesPanel data={data} onWorkspaceChange={onWorkspaceChange} /> : null}
@@ -339,7 +450,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
                 </div>
                 <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                   {list.map((s, i) => (
-                    <SchoolRow key={s.slug} s={s} odds={(data.admissionOdds || {})[s.slug]} last={i === list.length - 1}
+                    <SchoolRow key={s.slug} s={s} odds={(data.admissionOdds || {})[s.slug]} oddsStale={isStaleOdds((data.admissionOdds || {})[s.slug], fingerprint)} last={i === list.length - 1}
                       tracked={trackedFor(s)}
                       onTier={onTier} onTrack={onTrack} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                   ))}
@@ -355,7 +466,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
               <h2 className="cf-display" style={{ margin: "0 0 16px", fontSize: 22, color: "var(--ink)" }}>Not assessed yet</h2>
               <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                 {untiered.map((s, i) => (
-                  <SchoolRow key={s.slug} s={s} odds={(data.admissionOdds || {})[s.slug]} last={i === untiered.length - 1}
+                  <SchoolRow key={s.slug} s={s} odds={(data.admissionOdds || {})[s.slug]} oddsStale={isStaleOdds((data.admissionOdds || {})[s.slug], fingerprint)} last={i === untiered.length - 1}
                     tracked={trackedFor(s)}
                     onTier={onTier} onTrack={onTrack} onRemove={onRemove} busy={busy} error={error?.slug === s.slug ? error.message : ""} />
                 ))}

@@ -6,36 +6,36 @@ const {
   Badge: OnboardBadge,
 } = window.CollegeForgeDesignSystem_e95e63;
 
-// welcome → AI → You → Academics → Transcript → Story → List prefs → Upload → Build
+// welcome → Files (optional) → You → Academics → Fit → Story → List prefs → Build (AI is optional there)
 const STEPS = [
   { id: "welcome", label: "Welcome" },
-  { id: "connect", label: "AI" },
+  { id: "files", label: "Files" },
   { id: "identity", label: "You" },
   { id: "academics", label: "Academics" },
-  { id: "transcript", label: "Transcript" },
+  { id: "fit", label: "Fit" },
   { id: "story", label: "Story" },
   { id: "prefs", label: "List" },
-  { id: "upload", label: "Upload" },
   { id: "build", label: "Build" },
 ];
 
 const AMBITION_OPTIONS = [
-  {
-    id: "ambitious",
-    title: "Ambitious",
-    blurb: "A few major-fit dream reaches (e.g. Medill, Michigan) plus solid targets — not a full Ivy/HYP lottery list.",
-  },
-  {
-    id: "balanced",
-    title: "Just right",
-    blurb: "Realistic mix of reaches, targets, and safeties for your academics and interests.",
-  },
-  {
-    id: "conservative",
-    title: "Conservative",
-    blurb: "Lean safer — more likely admits, fewer long-shot reaches.",
-  },
+  { id: "ambitious", title: "Ambitious", blurb: "More reaches, and schools with lower odds can make the list." },
+  { id: "balanced", title: "Just right", blurb: "Mostly targets, with some reaches and likely schools." },
+  { id: "conservative", title: "Conservative", blurb: "More likely schools and fewer long shots." },
 ];
+
+// Same reach and target shares as SHARES in lib/college-recommendations.ts (a test checks they match).
+const LIST_SHARES = { ambitious: [0.4, 0.35], balanced: [0.28, 0.42], conservative: [0.15, 0.4] };
+const DEFAULT_APP_COUNT = 12;
+
+/** "About 3 reach / 5 target / 4 likely" for an ambition and application count, as the list builder splits it. */
+function listMixText(ambition, appCount) {
+  const count = typeof appCount === "number" ? appCount : DEFAULT_APP_COUNT;
+  const [reachShare, targetShare] = LIST_SHARES[ambition] || LIST_SHARES.balanced;
+  const reach = Math.round(count * reachShare);
+  const target = Math.round(count * targetShare);
+  return `About ${reach} reach / ${target} target / ${count - reach - target} likely`;
+}
 
 const SETTING_OPTIONS = [
   { id: "urban", label: "Urban" },
@@ -44,11 +44,32 @@ const SETTING_OPTIONS = [
   { id: "college-town", label: "College town" },
 ];
 
-const SIZE_OPTIONS = [
-  { id: "any", label: "Any size" },
-  { id: "small", label: "Small" },
-  { id: "medium", label: "Medium" },
-  { id: "large", label: "Large" },
+const STATE_OPTIONS = [
+  ["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"], ["CA", "California"], ["CO", "Colorado"],
+  ["CT", "Connecticut"], ["DE", "Delaware"], ["DC", "District of Columbia"], ["FL", "Florida"], ["GA", "Georgia"],
+  ["HI", "Hawaii"], ["ID", "Idaho"], ["IL", "Illinois"], ["IN", "Indiana"], ["IA", "Iowa"], ["KS", "Kansas"],
+  ["KY", "Kentucky"], ["LA", "Louisiana"], ["ME", "Maine"], ["MD", "Maryland"], ["MA", "Massachusetts"],
+  ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"], ["MO", "Missouri"], ["MT", "Montana"],
+  ["NE", "Nebraska"], ["NV", "Nevada"], ["NH", "New Hampshire"], ["NJ", "New Jersey"], ["NM", "New Mexico"],
+  ["NY", "New York"], ["NC", "North Carolina"], ["ND", "North Dakota"], ["OH", "Ohio"], ["OK", "Oklahoma"],
+  ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"], ["SC", "South Carolina"], ["SD", "South Dakota"],
+  ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"], ["VT", "Vermont"], ["VA", "Virginia"], ["WA", "Washington"],
+  ["WV", "West Virginia"], ["WI", "Wisconsin"], ["WY", "Wyoming"], ["PR", "Puerto Rico"], ["GU", "Guam"],
+  ["VI", "U.S. Virgin Islands"], ["AS", "American Samoa"], ["MP", "Northern Mariana Islands"],
+];
+
+const BUDGET_OPTIONS = [
+  { id: "lt15", label: "Under $15k" },
+  { id: "15-30", label: "$15k–30k" },
+  { id: "30-50", label: "$30k–50k" },
+  { id: "50plus", label: "$50k or more" },
+  { id: "unsure", label: "Not sure" },
+];
+
+const ED_OPTIONS = [
+  { id: "yes", label: "Yes" },
+  { id: "maybe", label: "Maybe" },
+  { id: "no", label: "No" },
 ];
 
 const REGION_OPTIONS = [
@@ -78,6 +99,50 @@ function loadAiPrefs() {
   } catch (e) {
     return {};
   }
+}
+
+// Same rule as isTestOptionalNote in lib/colleges.ts.
+function isTestOptionalNote(note) {
+  return /test[- ]optional|not (?:submitting|reporting)(?: test)? scores/i.test(note || "");
+}
+
+// Wizard progress lives in this browser until the answers are saved, so a reload resumes where it stopped.
+function onboardStorageKey(data) {
+  return "cf.onboard." + ((data && data.draftStorageKey) || "local");
+}
+
+function loadOnboardProgress(data) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(onboardStorageKey(data)) || "null");
+    return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveOnboardProgress(data, progress) {
+  try {
+    localStorage.setItem(onboardStorageKey(data), JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function clearOnboardProgress(data) {
+  try {
+    localStorage.removeItem(onboardStorageKey(data));
+  } catch (e) {}
+}
+
+/** Saved fields of the same type as the defaults; anything else in storage is ignored. */
+function restoreFields(defaults, saved) {
+  if (!saved || typeof saved !== "object") return defaults;
+  return Object.fromEntries(Object.entries(defaults).map(([key, value]) => {
+    const s = saved[key];
+    // Text stays text and lists stay lists; the other fields are numbers, booleans or null ("not chosen").
+    const ok = typeof value === "string" ? typeof s === "string"
+      : Array.isArray(value) ? Array.isArray(s) && s.every((x) => typeof x === "string")
+        : s === null || typeof s === "number" || typeof s === "boolean";
+    return [key, s !== undefined && ok ? s : value];
+  }));
 }
 
 function OnboardFieldLabel({ children, hint, required }) {
@@ -161,7 +226,7 @@ function Progress({ step }) {
 }
 
 // ── Connect ──────────────────────────────────────────────────────────────
-function ConnectStep({ status, onConnected }) {
+function ConnectStep({ status, onConnected, useAi, onUseAi }) {
   const [flow, setFlow] = React.useState(null);
   const [authUrl, setAuthUrl] = React.useState("");
   const [callback, setCallback] = React.useState("");
@@ -224,26 +289,24 @@ function ConnectStep({ status, onConnected }) {
 
   if (connected) {
     return (
-      <div className="cf-onboard-card cf-onboard-success">
-        <div style={{ fontSize: 28, marginBottom: 8 }} aria-hidden>✓</div>
-        <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 24, color: "var(--ink)" }}>
-          {activeLabel} connected
-        </h2>
-        <p style={{ margin: 0, fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
-          You can optionally use your {activeLabel} account to enrich your profile at the end.
-        </p>
-      </div>
+      <label style={{ display: "flex", gap: 8, color: "var(--body)", fontSize: 14, lineHeight: 1.5 }}>
+        <input type="checkbox" checked={useAi} onChange={(e) => onUseAi(e.target.checked)} />
+        <span>
+          Use {activeLabel} to sort my story into activities, read my files, and look up deadlines and essay prompts.
+          Your list is ready first; the lookups keep running while you use the hub.
+        </span>
+      </label>
     );
   }
 
   return (
     <div>
-      <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)" }}>
-        Connect an AI provider (optional)
-      </h2>
-      <p style={{ margin: "0 0 20px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
-        Your profile, college recommendations, and planning tools work without an AI account.
-        Connect Grok or ChatGPT for optional research and writing help, or continue now.
+      <h3 style={{ margin: "0 0 6px", fontSize: 16, color: "var(--ink)" }}>
+        Enrich with AI (optional)
+      </h3>
+      <p style={{ margin: "0 0 14px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
+        Your profile and college list are built without AI. Connect Grok or ChatGPT if you want it to read your files,
+        tidy your activities and look up each school's deadlines and essay prompts.
       </p>
 
       {!flow ? (
@@ -308,7 +371,7 @@ function StoryStep({ story, onChange }) {
       <p style={{ margin: "0 0 10px", fontSize: 14, color: "var(--body)", lineHeight: 1.65, maxWidth: 560 }}>
         This is the fuel for your hub. Dump <strong style={{ color: "var(--ink)" }}>as much as you want</strong> —
         activities, clubs, sports, jobs, research, volunteering, family responsibilities, summer programs,
-        awards, and anything that makes you you. Your notes are saved; optional AI can help organize them.
+        awards, and anything that makes you you. Each line becomes one entry on your profile, and you can edit them later.
       </p>
       <div className="cf-onboard-nudge" role="note">
         More detail → a stronger profile and a smarter college list. Don’t self-edit yet.
@@ -317,7 +380,7 @@ function StoryStep({ story, onChange }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 560, marginTop: 18 }}>
         <OnboardField
           label="Activities & extracurriculars"
-          hint="One activity per line. Role, hours/week, years, impact if you know them."
+          hint="One activity per line. Put the name first, then a dash and the details: role, hours a week, years, what you did. The first 10 lines are saved as activities."
         >
           <OnboardTextarea
             value={story.activities}
@@ -333,7 +396,7 @@ function StoryStep({ story, onChange }) {
 
         <OnboardField
           label="Awards & honors"
-          hint="School, state, national — academic, arts, sports, community."
+          hint="One per line: school, state or national, in academics, arts, sports or service. The first 5 are saved as honors."
         >
           <OnboardTextarea
             value={story.awards}
@@ -534,8 +597,7 @@ function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
         College list preferences
       </h2>
       <p style={{ margin: "0 0 18px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 560 }}>
-        Tune how aggressive the preliminary list should be and how many applications you want.
-        You’ll review everything after the AI builds the hub.
+        Choose how many applications you want and how the list leans. You can change these later and rebalance the list.
       </p>
 
       <section style={{ marginBottom: 22 }}>
@@ -546,7 +608,7 @@ function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
               key={o.id}
               active={prefs.ambition === o.id}
               title={o.title}
-              blurb={o.blurb}
+              blurb={`${o.blurb} ${listMixText(o.id, appCount)}.`}
               onClick={() => onChange({ ...prefs, ambition: o.id })}
             />
           ))}
@@ -595,21 +657,6 @@ function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
       </section>
 
       <section style={{ marginBottom: 22 }}>
-        <div className="cf-onboard-section-label">School size</div>
-        <div className="cf-onboard-chip-row">
-          {SIZE_OPTIONS.map((o) => (
-            <Chip
-              key={o.id}
-              active={(prefs.size || "any") === o.id}
-              onClick={() => onChange({ ...prefs, size: o.id })}
-            >
-              {o.label}
-            </Chip>
-          ))}
-        </div>
-      </section>
-
-      <section style={{ marginBottom: 22 }}>
         <div className="cf-onboard-section-label">Regions</div>
         <div className="cf-onboard-chip-row">
           {REGION_OPTIONS.map((o) => (
@@ -641,13 +688,13 @@ function PrefsStep({ prefs, onChange, mustHave, onMustHaveChange }) {
       <section style={{ maxWidth: 560 }}>
         <OnboardField
           label="Other list constraints"
-          hint="Majors, cost, distance from home, religious affiliation, public-only, etc."
+          hint="For example a religious affiliation, public schools only, or distance from home. The automatic list does not read this; the copilot and anyone you share with do."
         >
           <OnboardTextarea
             value={prefs.notes || ""}
             onChange={(e) => onChange({ ...prefs, notes: e.target.value })}
             rows={4}
-            placeholder="e.g. Strong CS or engineering · Prefer schools with need-based aid · Stay within 6 hours of home"
+            placeholder="e.g. Stay within 6 hours of home · Public schools only"
           />
         </OnboardField>
       </section>
@@ -684,80 +731,89 @@ function useFileUpload(onUploaded) {
   return { busy, error, fileRef, upload };
 }
 
-function TranscriptStep({ transcript, connected, onUploaded }) {
+function TranscriptCard({ transcript, onUploaded }) {
   const { busy, error, fileRef, upload } = useFileUpload(onUploaded);
 
   return (
-    <div>
-      <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <span>Upload your transcript</span>
-        <OnboardBadge variant="cream" uppercase>Optional</OnboardBadge>
-      </h2>
-      <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
-        {connected
-          ? "The AI reads your transcript to fill in your coursework, honors, and AP/IB classes. An unofficial copy is fine. You can skip."
-          : "Connect an AI in the AI step and it will read your transcript to fill in your coursework. The file is saved to your hub either way. You can skip."}
+    <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
+      <h3 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--ink)" }}>Transcript</h3>
+      <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--body)", lineHeight: 1.5 }}>
+        An unofficial copy is fine. A connected AI reads it for your courses and AP/IB classes.
       </p>
-      <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".pdf,.docx,.txt"
-          style={{ display: "none" }}
-          onChange={(e) => upload(e.target.files)}
-        />
-        <OnboardButton size="md" variant="secondary" disabled={busy} onClick={() => fileRef.current && fileRef.current.click()}>
-          {busy ? "Uploading…" : transcript ? "Replace transcript" : "Choose transcript"}
-        </OnboardButton>
-        <p style={{ margin: "10px 0 0", fontSize: 12, color: "var(--muted)" }}>PDF, DOCX, or text · max 15 MB</p>
-        {transcript ? (
-          <p style={{ margin: "14px 0 0", fontSize: 13, color: "var(--ink)" }}>
-            ✓ {transcript.name}
-            {transcript.chars ? <span style={{ color: "var(--muted)" }}> · {transcript.chars.toLocaleString()} chars</span> : null}
-          </p>
-        ) : null}
-        {error ? <p style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
-      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".pdf,.docx,.txt"
+        style={{ display: "none" }}
+        onChange={(e) => upload(e.target.files)}
+      />
+      <OnboardButton size="md" variant="secondary" disabled={busy} onClick={() => fileRef.current && fileRef.current.click()}>
+        {busy ? "Uploading…" : transcript ? "Replace transcript" : "Choose transcript"}
+      </OnboardButton>
+      <p style={{ margin: "10px 0 0", fontSize: 12, color: "var(--muted)" }}>PDF, DOCX, or text · max 15 MB</p>
+      {transcript ? (
+        <p style={{ margin: "14px 0 0", fontSize: 13, color: "var(--ink)" }}>
+          ✓ {transcript.name}
+          {transcript.chars ? <span style={{ color: "var(--muted)" }}> · {transcript.chars.toLocaleString()} chars</span> : null}
+        </p>
+      ) : null}
+      {error ? <p style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
     </div>
   );
 }
 
-function UploadStep({ uploads, onUploaded }) {
+function DocumentsCard({ uploads, transcript, onUploaded }) {
   const { busy, error, fileRef, upload } = useFileUpload(onUploaded);
+  const others = uploads.filter((u) => !transcript || u.name !== transcript.name);
 
+  return (
+    <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
+      <h3 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--ink)" }}>Resume or activity list</h3>
+      <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--body)", lineHeight: 1.5 }}>
+        A connected AI reads these for activities and awards. You can paste the same text into the Story step instead.
+      </p>
+      <input
+        ref={fileRef}
+        type="file"
+        multiple
+        accept=".pdf,.docx,.txt,.md,.csv,.json"
+        style={{ display: "none" }}
+        onChange={(e) => upload(e.target.files)}
+      />
+      <OnboardButton size="md" variant="secondary" disabled={busy} onClick={() => fileRef.current && fileRef.current.click()}>
+        {busy ? "Uploading…" : "Choose files"}
+      </OnboardButton>
+      <p style={{ margin: "10px 0 0", fontSize: 12, color: "var(--muted)" }}>PDF, DOCX, or text · max 15 MB each</p>
+      {others.length > 0 ? (
+        <ul style={{ margin: "14px 0 0", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+          {others.map((u) => (
+            <li key={u.name} style={{ fontSize: 13, color: "var(--ink)" }}>
+              ✓ {u.name}
+              {u.chars ? <span style={{ color: "var(--muted)" }}> · {u.chars.toLocaleString()} chars</span> : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {error ? <p style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
+    </div>
+  );
+}
+
+// Optional: files saved to the hub up front, so a connected AI can fill in what the student would otherwise type.
+function FilesStep({ transcript, uploads, onTranscript, onUploaded }) {
   return (
     <div>
       <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <span>Upload documents</span>
+        <span>Skip some typing</span>
         <OnboardBadge variant="cream" uppercase>Optional</OnboardBadge>
       </h2>
       <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
-        Save a resume, activities list, or award list for reference. A connected AI can use these with your permission. You can skip.
+        Upload a transcript or resume now. Files are saved to your hub either way. If you connect an AI on the last step,
+        it reads them and fills in your courses and activities.
       </p>
-      <div className="cf-onboard-card" style={{ maxWidth: 480 }}>
-        <input
-          ref={fileRef}
-          type="file"
-          multiple
-          accept=".pdf,.docx,.txt,.md,.csv,.json"
-          style={{ display: "none" }}
-          onChange={(e) => upload(e.target.files)}
-        />
-        <OnboardButton size="md" variant="secondary" disabled={busy} onClick={() => fileRef.current && fileRef.current.click()}>
-          {busy ? "Uploading…" : "Choose files"}
-        </OnboardButton>
-        <p style={{ margin: "10px 0 0", fontSize: 12, color: "var(--muted)" }}>PDF, DOCX, or text · max 15 MB each</p>
-        {uploads.length > 0 ? (
-          <ul style={{ margin: "14px 0 0", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
-            {uploads.map((u) => (
-              <li key={u.name} style={{ fontSize: 13, color: "var(--ink)" }}>
-                ✓ {u.name}
-                {u.chars ? <span style={{ color: "var(--muted)" }}> · {u.chars.toLocaleString()} chars</span> : null}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-        {error ? <p style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <TranscriptCard transcript={transcript} onUploaded={onTranscript} />
+        <DocumentsCard uploads={uploads} transcript={transcript} onUploaded={onUploaded} />
       </div>
     </div>
   );
@@ -765,6 +821,87 @@ function UploadStep({ uploads, onUploaded }) {
 
 function ambitionLabel(id) {
   return (AMBITION_OPTIONS.find((o) => o.id === id) || {}).title || id || "Just right";
+}
+
+function optionLabel(options, id, fallback) {
+  return (options.find((o) => o.id === id) || {}).label || fallback;
+}
+
+function stateName(code) {
+  const hit = STATE_OPTIONS.find(([c]) => c === code);
+  return hit ? hit[1] : code;
+}
+
+function yesNo(value) {
+  return value === true ? "Yes" : value === false ? "No" : "Not sure";
+}
+
+// ── Fit: residency and cost, the inputs the list builder uses for in-state and price checks ──
+function FitStep({ draft, onDraftChange, prefs, onPrefsChange }) {
+  return (
+    <div>
+      <h2 className="cf-display" style={{ margin: "0 0 8px", fontSize: 26, color: "var(--ink)" }}>
+        Where you live and what you can pay
+      </h2>
+      <p style={{ margin: "0 0 20px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 560 }}>
+        Your state lets the list favor in-state public schools. The budget leaves out likely schools whose average
+        net price is above it and marks reaches that cost more. All of these are optional.
+      </p>
+      <div style={{ maxWidth: 560 }}>
+        <OnboardField label="State of residence" hint="Used for in-state tuition at public schools.">
+          <select
+            aria-label="State of residence"
+            value={draft.residency}
+            onChange={(e) => onDraftChange({ ...draft, residency: e.target.value })}
+            className="cf-onboard-select"
+            style={{ display: "block", width: "100%", maxWidth: 320, minHeight: 40, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", font: "inherit", fontSize: 14 }}
+          >
+            <option value="">Outside the U.S. or prefer not to say</option>
+            {STATE_OPTIONS.map(([code, name]) => <option key={code} value={code}>{name} ({code})</option>)}
+          </select>
+        </OnboardField>
+
+        <section style={{ marginBottom: 22 }}>
+          <div className="cf-onboard-section-label">Yearly family budget for college</div>
+          <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
+            What your family could pay each year after grants, including housing and food.
+          </p>
+          <div className="cf-onboard-chip-row">
+            {BUDGET_OPTIONS.map((o) => (
+              <Chip key={o.id} active={prefs.budget === o.id} onClick={() => onPrefsChange({ ...prefs, budget: prefs.budget === o.id ? "" : o.id })}>
+                {o.label}
+              </Chip>
+            ))}
+          </div>
+        </section>
+
+        <section style={{ marginBottom: 22 }}>
+          <div className="cf-onboard-section-label">Will you apply for need-based aid?</div>
+          <div className="cf-onboard-chip-row">
+            {[["Yes", true], ["No", false], ["Not sure", null]].map(([label, value]) => (
+              <Chip key={label} active={prefs.needAid === value} onClick={() => onPrefsChange({ ...prefs, needAid: value })}>
+                {label}
+              </Chip>
+            ))}
+          </div>
+        </section>
+
+        <section style={{ marginBottom: 6 }}>
+          <div className="cf-onboard-section-label">Would you apply Early Decision?</div>
+          <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
+            Early Decision is binding: if you are admitted, you withdraw your other applications.
+          </p>
+          <div className="cf-onboard-chip-row">
+            {ED_OPTIONS.map((o) => (
+              <Chip key={o.id} active={prefs.ed === o.id} onClick={() => onPrefsChange({ ...prefs, ed: prefs.ed === o.id ? "" : o.id })}>
+                {o.label}
+              </Chip>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 }
 
 // ── Build / review ───────────────────────────────────────────────────────
@@ -775,7 +912,6 @@ function BuildStep({
   mustHave,
   uploads,
   transcript,
-  providerLabel,
   buildStatus,
   buildLog,
 }) {
@@ -803,7 +939,7 @@ function BuildStep({
         <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 520 }}>
           {buildStatus === "done"
             ? "Profile, activities, and a preliminary college list are in place. You can refine anything with the copilot."
-            : "Saving your profile and preparing recommendations. Optional AI enrichment can take a little longer."}
+            : "Saving your profile and building your list."}
         </p>
         <div className="cf-onboard-card cf-onboard-build-panel">
           <div className="cf-onboard-build-status">
@@ -825,11 +961,10 @@ function BuildStep({
         Review & build
       </h2>
       <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.6, maxWidth: 560 }}>
-        Confirm your answers to save your profile and build a preliminary list from college data and your preferences.
-        Fit labels are estimates, not admission or affordability guarantees.
+        Check your answers, then build. Your profile is saved and a starting list is picked from college data and your
+        preferences. Reach, target and likely are estimates, not admission or cost guarantees.
       </p>
       <div className="cf-onboard-card" style={{ maxWidth: 520 }}>
-        {row("AI", providerLabel || "Not connected · optional")}
         {row("Name", draft.name)}
         {row("Grad year", draft.gradYear)}
         {row("High school", draft.hs)}
@@ -838,8 +973,13 @@ function BuildStep({
         {row("GPA (W)", draft.gpaWeighted)}
         {row("GPA (UW)", draft.gpaUnweighted)}
         {row("SAT", draft.testOptional ? "Test optional" : draft.sat)}
+        {row("ACT", draft.testOptional ? "Test optional" : draft.act)}
+        {row("State", draft.residency ? stateName(draft.residency) : "Not given")}
+        {row("Budget", optionLabel(BUDGET_OPTIONS, prefs.budget, "Not given"))}
+        {row("Need-based aid", yesNo(prefs.needAid))}
+        {row("Early Decision", optionLabel(ED_OPTIONS, prefs.ed, "Not sure"))}
         {row("Transcript", transcript ? transcript.name : "None")}
-        {row("Story", storyBits.length ? storyBits.join(" · ") : "None yet (AI can still help)")}
+        {row("Story", storyBits.length ? storyBits.join(" · ") : "None yet")}
         {row("List strategy", ambitionLabel(prefs.ambition))}
         {row(
           "Applications",
@@ -853,7 +993,6 @@ function BuildStep({
             ? prefs.settings.map((s) => s.replace("-", " ")).join(", ")
             : "Any"
         )}
-        {row("Size", prefs.size || "any")}
         {row(
           "Regions",
           (prefs.regions || []).length ? prefs.regions.join(", ") : "Any"
@@ -872,7 +1011,7 @@ function BuildStep({
 function buildAiPrompt({ draft, story, prefs, mustHave, uploads, transcript = null }) {
   const satLine = draft.testOptional
     ? "Test optional — not reporting SAT/ACT"
-    : `SAT=${draft.sat || "—"} (${draft.satNote || "no section note"})`;
+    : `SAT=${draft.sat || "—"} (${draft.satNote || "no section note"}) · ACT=${draft.act || "—"}`;
 
   const must = mustHave.length
     ? mustHave.map((c) => `- ${c.name}${c.slug ? ` [${c.slug}]` : ""}${c.location ? ` — ${c.location}` : ""}`).join("\n")
@@ -900,6 +1039,7 @@ Save the courses with set_coursework: honors courses, AP/IB courses, and senior-
 - High school: ${draft.hs.trim()}
 - Location: ${draft.location.trim() || "—"}
 - Intended major: ${draft.intended.trim()}
+- State of residence: ${draft.residency || "—"}
 - GPA weighted: ${draft.gpaWeighted.trim() || "—"}
 - GPA unweighted: ${draft.gpaUnweighted.trim() || "—"}
 - ${satLine}
@@ -917,8 +1057,10 @@ ${story.other.trim() || "(none)"}
 - Strategy: ${prefs.ambition} (${ambitionLabel(prefs.ambition)})
 - Application budget: ${typeof prefs.appCount === "number" ? prefs.appCount : "auto ~12"} applications
 - Campus settings: ${(prefs.settings || []).join(", ") || "any"}
-- Size: ${prefs.size || "any"}
 - Regions: ${(prefs.regions || []).join(", ") || "any"}
+- Yearly family budget: ${optionLabel(BUDGET_OPTIONS, prefs.budget, "not given")}
+- Need-based aid: ${yesNo(prefs.needAid)}
+- Early Decision: ${optionLabel(ED_OPTIONS, prefs.ed, "not sure")}
 - Extra constraints: ${prefs.notes.trim() || "(none)"}
 
 ## College recommendations — preserve the data-backed starting list
@@ -954,6 +1096,9 @@ Call tools. Empty fields are better than invented numbers.`;
 function initialDraft(data) {
   const a = (data && data.applicant) || {};
   const p = (data && data.profile) || {};
+  const satNote = a.satNote || (p.testing && p.testing.satNote) || "";
+  // The checkbox stands in for the saved "Test optional" note, so unticking it clears the note too.
+  const testOptional = isTestOptionalNote(satNote);
   return {
     name: a.name || "",
     gradYear: p.gradYear != null && p.gradYear !== "" ? String(p.gradYear) : "",
@@ -964,8 +1109,10 @@ function initialDraft(data) {
     gpaWeighted: present(a.gpaWeighted) ? a.gpaWeighted : "",
     gpaUnweighted: present(a.gpaUnweighted) ? a.gpaUnweighted : "",
     sat: present(a.sat) ? a.sat : present(p.testing && p.testing.sat) ? p.testing.sat : "",
-    satNote: a.satNote || (p.testing && p.testing.satNote) || "",
-    testOptional: false,
+    satNote: testOptional ? "" : satNote,
+    act: present(p.testing && p.testing.act) ? String(p.testing.act) : "",
+    residency: typeof p.residency === "string" ? p.residency.trim().toUpperCase() : "",
+    testOptional,
   };
 }
 
@@ -987,9 +1134,11 @@ function initialPrefs(data) {
         ? existingPrefs.appCount
         : null,
     settings: existingPrefs.settings || [],
-    size: existingPrefs.size || "any",
     regions: existingPrefs.regions || [],
     notes: existingPrefs.notes || "",
+    budget: existingPrefs.budget || "",
+    needAid: typeof existingPrefs.needAid === "boolean" ? existingPrefs.needAid : null,
+    ed: existingPrefs.ed || "",
   };
 }
 
@@ -1122,25 +1271,41 @@ async function rebuildHub(data, onProgress) {
 
 // ── Main wizard ──────────────────────────────────────────────────────────
 function Onboarding({ data, onComplete, onCancel }) {
-  const [step, setStep] = React.useState(0);
+  // Read once: answers typed before a reload win over the saved workspace until they are submitted.
+  const [saved] = React.useState(() => loadOnboardProgress(data));
+  const [step, setStep] = React.useState(() =>
+    Number.isInteger(saved.step) && saved.step >= 0 && saved.step < STEPS.length ? saved.step : 0
+  );
   const [provider, setProvider] = React.useState(null);
-  const [mustHave, setMustHave] = React.useState(() => {
-    const cols = (data && data.colleges) || [];
-    const priority = cols.filter((c) => c.priority);
-    // Prefer explicitly marked must-haves; otherwise seed from any existing list.
-    return priority.length ? priority : cols.slice(0, 5);
-  });
+  // Only schools the student marked as must-include; seeded rows are rebuilt from the answers.
+  const [mustHave, setMustHave] = React.useState(() => ((data && data.colleges) || []).filter((c) => c.priority));
   const [uploads, setUploads] = React.useState(() => (data && data.uploads) || []);
-  const [transcript, setTranscript] = React.useState(null);
+  const [transcript, setTranscript] = React.useState(() =>
+    saved.transcript && typeof saved.transcript.name === "string" ? { name: saved.transcript.name, chars: Number(saved.transcript.chars) || 0 } : null
+  );
   const [err, setErr] = React.useState("");
   const [busy, setBusy] = React.useState(false);
   const [buildStatus, setBuildStatus] = React.useState("idle"); // idle | building | done
   const [buildLog, setBuildLog] = React.useState("");
   const [useAi, setUseAi] = React.useState(true);
 
-  const [draft, setDraft] = React.useState(() => initialDraft(data));
-  const [story, setStory] = React.useState(() => initialStory(data));
-  const [prefs, setPrefs] = React.useState(() => initialPrefs(data));
+  const [draft, setDraft] = React.useState(() => restoreFields(initialDraft(data), saved.draft));
+  const [story, setStory] = React.useState(() => restoreFields(initialStory(data), saved.story));
+  const [prefs, setPrefs] = React.useState(() => restoreFields(initialPrefs(data), saved.prefs));
+  const submittedRef = React.useRef(false);
+
+  // Save progress at once on a step change, and shortly after typing stops.
+  const progressRef = React.useRef(null);
+  progressRef.current = { step, draft, story, prefs, transcript };
+  React.useEffect(() => {
+    if (!submittedRef.current) saveOnboardProgress(data, progressRef.current);
+  }, [step]);
+  React.useEffect(() => {
+    const t = setTimeout(() => {
+      if (!submittedRef.current) saveOnboardProgress(data, progressRef.current);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [draft, story, prefs, transcript]);
 
   const set = (key) => (e) => setDraft((d) => ({ ...d, [key]: e.target.value }));
 
@@ -1187,19 +1352,20 @@ function Onboarding({ data, onComplete, onCancel }) {
         ? "Weighted GPA must be a number from 0 to 6."
         : !draft.testOptional && present(draft.sat) && (!/^\d+$/.test(draft.sat.trim()) || !validNumber(draft.sat, 400, 1600))
           ? "SAT must be a whole number from 400 to 1600, or left blank."
-          : "";
+          : !draft.testOptional && present(draft.act) && (!/^\d+$/.test(draft.act.trim()) || !validNumber(draft.act, 1, 36))
+            ? "ACT must be a whole number from 1 to 36, or left blank."
+            : "";
   const academicsOk = !academicError;
 
   const canNext = () => {
     const id = STEPS[step].id;
     if (id === "welcome") return true;
-    if (id === "connect") return true;
+    if (id === "files") return true;
     if (id === "identity") return Boolean(identityOk);
     if (id === "academics") return Boolean(academicsOk);
-    if (id === "transcript") return true;
+    if (id === "fit") return true;
     if (id === "story") return true;
     if (id === "prefs") return true;
-    if (id === "upload") return true;
     if (id === "build") return identityOk && academicsOk;
     return false;
   };
@@ -1228,12 +1394,8 @@ function Onboarding({ data, onComplete, onCancel }) {
   };
 
   const finish = async () => {
-    if (!canNext()) {
-      setErr(stepError() || "Fill required fields first.");
-      return;
-    }
-    if (!identityOk || !academicsOk) {
-      setErr("Some required fields are missing. Go back and complete them.");
+    if (!canNext() || !identityOk || !academicsOk) {
+      setErr(stepError() || "Some required fields are missing. Go back and complete them.");
       return;
     }
 
@@ -1246,6 +1408,7 @@ function Onboarding({ data, onComplete, onCancel }) {
     try {
       const sat = draft.testOptional ? "—" : draft.sat.trim() || "—";
       const satNote = draft.testOptional ? "Test optional" : draft.satNote.trim();
+      const act = draft.testOptional ? "—" : draft.act.trim() || "—";
 
       const saveRes = await fetch("/api/workspace", {
         method: "POST",
@@ -1267,8 +1430,9 @@ function Onboarding({ data, onComplete, onCancel }) {
             hs: draft.hs.trim(),
             gradYear: draft.gradYear.trim() || "",
             location: draft.location.trim(),
+            residency: draft.residency,
           },
-          testing: { sat, satNote },
+          testing: { sat, satNote, act },
           storyNotes: {
             activities: story.activities,
             awards: story.awards,
@@ -1278,9 +1442,12 @@ function Onboarding({ data, onComplete, onCancel }) {
             ambition: prefs.ambition || "balanced",
             appCount: typeof prefs.appCount === "number" ? prefs.appCount : null,
             settings: prefs.settings || [],
-            size: prefs.size || "any",
+            size: "any",
             regions: prefs.regions || [],
             notes: prefs.notes || "",
+            budget: prefs.budget || "",
+            ...(typeof prefs.needAid === "boolean" ? { needAid: prefs.needAid } : {}),
+            ed: prefs.ed || "",
           },
         }),
       });
@@ -1289,12 +1456,10 @@ function Onboarding({ data, onComplete, onCancel }) {
         throw new Error(saveJ.error || "Could not save onboarding.");
       }
       savedWs = saveJ.data || saveJ;
-      if (!connected || !useAi) {
-        setBuildStatus("done");
-        if (onComplete) await onComplete(savedWs);
-        return;
-      }
-      const fresh = await loadStatus();
+      submittedRef.current = true;
+      clearOnboardProgress(data);
+
+      const fresh = connected && useAi ? await loadStatus() : null;
       if (!fresh || !fresh.active) {
         setBuildStatus("done");
         if (onComplete) await onComplete(savedWs);
@@ -1303,28 +1468,22 @@ function Onboarding({ data, onComplete, onCancel }) {
       const seededN = (savedWs.colleges && savedWs.colleges.length) || 0;
       setBuildLog(
         seededN
-          ? `Seeded ${seededN} schools · structuring profile with AI…`
-          : "Asking the AI to build your hub…"
+          ? `Picked ${seededN} schools · ${providerLabel} is sorting your profile…`
+          : `${providerLabel} is sorting your profile…`
       );
 
       const prompt = buildAiPrompt({ draft, story, prefs, mustHave, uploads, transcript });
       await streamBuildChat(prompt, setBuildLog);
-      const { ws } = await runPlanSteps(setBuildLog);
+      const ws = await fetchWorkspace();
       setBuildStatus("done");
-      setBuildLog("Done");
-      // Brief beat so the user sees success, then hand off
-      await new Promise((r) => setTimeout(r, 600));
-      if (onComplete) await onComplete(ws);
+      // Deadlines and essay prompts are looked up in the background once the hub is open.
+      if (onComplete) await onComplete(ws, { buildPlan: true });
     } catch (e) {
       if (savedWs) {
         // The data-backed workspace is usable even when optional AI is unavailable.
         let current = savedWs;
         try {
-          const res = await fetch("/api/workspace", {credentials:"same-origin",cache:"no-store"});
-          if (res.ok) {
-            const json = await res.json();
-            if (json.success !== false) current = json.data || json;
-          }
+          current = await fetchWorkspace();
         } catch (_) {}
         setBuildStatus("done");
         if (onComplete) await onComplete(current);
@@ -1373,15 +1532,29 @@ function Onboarding({ data, onComplete, onCancel }) {
                 Organize your applications, deadlines, and essays. AI help is optional.
               </p>
               <ul className="cf-onboard-checklist">
-                <li>Optional: connect Grok or ChatGPT</li>
-                <li>Basics, academics, activities, awards — pile on detail</li>
-                <li>List strategy: ambitious, just right, or conservative</li>
-                <li>Get a college list with fit explanations and clear uncertainties</li>
+                <li>Your school, grades and test scores</li>
+                <li>Your state and what your family can pay</li>
+                <li>Activities and awards, one per line</li>
+                <li>How many applications, and how the list leans</li>
               </ul>
+              <p style={{ margin: "16px 0 0", fontSize: 13, color: "var(--muted)" }}>
+                Your answers are kept in this browser as you go, so you can close the tab and pick up where you stopped.
+              </p>
             </div>
           ) : null}
 
-          {id === "connect" ? <ConnectStep status={provider} onConnected={loadStatus} /> : null}
+          {id === "files" ? (
+            <FilesStep
+              transcript={transcript}
+              uploads={uploads}
+              onTranscript={(saved) => {
+                if (!saved.length) return;
+                setTranscript(saved[0]);
+                mergeUploads(saved);
+              }}
+              onUploaded={mergeUploads}
+            />
+          ) : null}
 
           {id === "identity" ? (
             <div>
@@ -1389,7 +1562,7 @@ function Onboarding({ data, onComplete, onCancel }) {
                 About you
               </h2>
               <p style={{ margin: "0 0 20px", fontSize: 14, color: "var(--body)", lineHeight: 1.6 }}>
-                This powers Overview and Profile. Required fields are marked.
+                This goes on your profile. Required fields are marked.
               </p>
               <div style={{ maxWidth: 440 }}>
                 <OnboardField label="Full name" required>
@@ -1417,14 +1590,14 @@ function Onboarding({ data, onComplete, onCancel }) {
                 Academics
               </h2>
               <p style={{ margin: "0 0 20px", fontSize: 14, color: "var(--body)", lineHeight: 1.6 }}>
-                At least one GPA is required. SAT is optional — mark test-optional if you’re not reporting scores.
+                Enter at least one GPA. Scores are optional; tick test optional if you are not sending any.
               </p>
               <div style={{ maxWidth: 440 }}>
-                <OnboardField label="Weighted GPA" required={!present(draft.gpaUnweighted)} hint="0–6 scale">
-                  <OnboardInput value={draft.gpaWeighted} onChange={set("gpaWeighted")} placeholder="4.28" inputMode="decimal" />
-                </OnboardField>
-                <OnboardField label="Unweighted GPA" required={!present(draft.gpaWeighted)} hint="0–4 scale">
+                <OnboardField label="Unweighted GPA (preferred)" required={!present(draft.gpaWeighted)} hint="0–4 scale. Colleges are compared on this one.">
                   <OnboardInput value={draft.gpaUnweighted} onChange={set("gpaUnweighted")} placeholder="3.95" inputMode="decimal" />
+                </OnboardField>
+                <OnboardField label="Weighted GPA" required={!present(draft.gpaUnweighted)} hint="0–6 scale. If it is the only GPA you give, it counts as 4.0 at most.">
+                  <OnboardInput value={draft.gpaWeighted} onChange={set("gpaWeighted")} placeholder="4.28" inputMode="decimal" />
                 </OnboardField>
                 <div style={{ marginBottom: 12 }}>
                   <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--ink)", cursor: "pointer" }}>
@@ -1444,6 +1617,9 @@ function Onboarding({ data, onComplete, onCancel }) {
                     <OnboardField label="SAT note" hint="e.g. 790 M / 750 EBRW — optional">
                       <OnboardInput value={draft.satNote} onChange={set("satNote")} placeholder="790 M / 750 EBRW" />
                     </OnboardField>
+                    <OnboardField label="ACT composite" hint="Optional. With no SAT, it is converted to an SAT score with the official concordance table.">
+                      <OnboardInput value={draft.act} onChange={set("act")} placeholder="32" inputMode="numeric" />
+                    </OnboardField>
                   </>
                 ) : null}
                 {academicError ? <p role="status" style={{fontSize:13,color:"var(--muted)"}}>{academicError}</p> : null}
@@ -1451,16 +1627,8 @@ function Onboarding({ data, onComplete, onCancel }) {
             </div>
           ) : null}
 
-          {id === "transcript" ? (
-            <TranscriptStep
-              transcript={transcript}
-              connected={Boolean(connected)}
-              onUploaded={(saved) => {
-                if (!saved.length) return;
-                setTranscript(saved[0]);
-                mergeUploads(saved);
-              }}
-            />
+          {id === "fit" ? (
+            <FitStep draft={draft} onDraftChange={setDraft} prefs={prefs} onPrefsChange={setPrefs} />
           ) : null}
 
           {id === "story" ? <StoryStep story={story} onChange={setStory} /> : null}
@@ -1474,11 +1642,6 @@ function Onboarding({ data, onComplete, onCancel }) {
             />
           ) : null}
 
-          {id === "upload" ? (
-            <UploadStep uploads={uploads} onUploaded={mergeUploads} />
-          ) : null}
-
-          {id === "build" && connected && !building ? <label style={{display:"flex",gap:8,marginBottom:16,color:"var(--body)",fontSize:14}}><input type="checkbox" checked={useAi} onChange={(e)=>setUseAi(e.target.checked)} />Enrich my saved profile with {providerLabel} (optional)</label> : null}
           {id === "build" ? (
             <BuildStep
               draft={draft}
@@ -1487,10 +1650,14 @@ function Onboarding({ data, onComplete, onCancel }) {
               mustHave={mustHave}
               uploads={uploads}
               transcript={transcript}
-              providerLabel={providerLabel}
               buildStatus={buildStatus}
               buildLog={buildLog}
             />
+          ) : null}
+          {id === "build" && buildStatus === "idle" ? (
+            <section className="cf-onboard-card" style={{ maxWidth: 520, marginTop: 16 }}>
+              <ConnectStep status={provider} onConnected={loadStatus} useAi={useAi} onUseAi={setUseAi} />
+            </section>
           ) : null}
 
           {err ? (
@@ -1511,7 +1678,7 @@ function Onboarding({ data, onComplete, onCancel }) {
             )}
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            {id === "upload" || (id === "transcript" && !transcript) ? (
+            {id === "files" && !uploads.length ? (
               <OnboardButton variant="secondary" size="md" onClick={goNext} disabled={busy || building}>
                 Skip
               </OnboardButton>
@@ -1524,7 +1691,7 @@ function Onboarding({ data, onComplete, onCancel }) {
               )
             ) : (
               <OnboardButton size="md" onClick={goNext} disabled={busy || building || !canNext()}>
-                {id === "connect" && !connected ? "Continue without AI" : "Continue"}
+                Continue
               </OnboardButton>
             )}
           </div>
@@ -1536,4 +1703,5 @@ function Onboarding({ data, onComplete, onCancel }) {
 
 window.Onboarding = Onboarding;
 window.cfRebuildHub = rebuildHub;
+window.cfRunPlanSteps = runPlanSteps;
 window.cfStreamBuildChat = streamBuildChat;

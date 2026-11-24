@@ -28,7 +28,7 @@ export const UC_APPLICATION_SLUG = "uc-application";
  * Official UC Personal Insight Questions (350 words each; student answers 4 of 8).
  * Prompts are stable year-to-year; word limit confirmed via UC admissions.
  */
-export const UC_PERSONAL_INSIGHT_QUESTIONS: Essay[] = [
+export const UC_PERSONAL_INSIGHT_QUESTIONS: Essay[] = ([
   {
     id: "uc-piq-1",
     group: "UC Application",
@@ -109,7 +109,7 @@ export const UC_PERSONAL_INSIGHT_QUESTIONS: Essay[] = [
     unit: "words",
     starter: "",
   },
-];
+] as Essay[]).map((e) => ({ ...e, chooseGroup: "uc", choose: 4 }));
 
 function shortName(c: College): string {
   return (c.short || c.name || c.slug || "School").trim();
@@ -216,7 +216,7 @@ export function syncSuppStatus(ws: Workspace): Workspace {
   const colleges = ws.colleges.map((c) => {
     const group = c.slug ? ws.essays?.supplements?.[c.slug] : undefined;
     if (!group?.length || !hasRealPrompts(group)) return c;
-    const supp = group.some((e) => !OPTIONAL_LABEL.test(e.label || "")) ? "Supps required" : "Supps optional";
+    const supp = group.some((e) => e.required !== false && !OPTIONAL_LABEL.test(e.label || "")) ? "Supps required" : "Supps optional";
     if (c.supp === supp) return c;
     changed = true;
     return { ...c, supp } as College;

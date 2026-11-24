@@ -262,9 +262,8 @@ function parseGpa(raw: string | number | null | undefined): number | null {
   if (raw == null || raw === "" || raw === "—") return null;
   const n = typeof raw === "number" ? raw : Number(String(raw).replace(/[^\d.]/g, ""));
   if (!Number.isFinite(n) || n <= 0 || n > 6) return null;
-  // Weighted 4.3-scale often > 4.0 — normalize roughly for comparisons
-  if (n > 4.3) return Math.round(Math.min(4.0, n * 0.93) * 100) / 100;
-  return Math.round(n * 100) / 100;
+  // A weighted GPA above 4.0 is capped at 4.0, the same as the recommender.
+  return Math.round(Math.min(4.0, n) * 100) / 100;
 }
 
 function shortName(name: string): string {

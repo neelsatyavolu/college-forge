@@ -134,3 +134,11 @@ test('queue releases after a rejected mutation and unrelated workspaces do not b
  const third=await updateWorkspace('queued',ws=>({...ws,essayDrafts:{...ws.essayDrafts,third:'Also saved'}}));
  assert.equal(third.essayDrafts.second,'Saved');assert.equal(third.essayDrafts.third,'Also saved');
 }));
+test('parallel single-activity edits from the copilot all survive',async()=>withDirectory(async()=>{
+ const {makeHubTools}=require('../lib/hub-tools.ts');
+ await getWorkspace('activities');const {executeTool}=makeHubTools('activities');
+ const replies=await Promise.all(['Robotics','Debate','Orchestra','Tutoring'].map(name=>executeTool('upsert_activity',JSON.stringify({name,type:'Other'}))));
+ assert.ok(replies.every(r=>/^Added/.test(r)),replies.join('\n'));
+ const ws=await getWorkspace('activities');
+ assert.deepEqual(ws.profile.activities.map(a=>a.rank),[1,2,3,4]);assert.equal(new Set(ws.profile.activities.map(a=>a.name)).size,4);
+}));

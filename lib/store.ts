@@ -40,11 +40,27 @@ export type College = {
   pellRate?: string;
   url?: string;
   priceCalcUrl?: string;
+  /** Who put the row on the list. "seed": the automatic list builder, which may replace it on a rebalance. Missing counts as the student's. */
+  origin?: "seed" | "user" | "agent";
 };
 export type Essay = {
   id: string; group?: string; label: string; prompt: string;
   limit: number; unit: string; starter?: string;
+  /** false: optional, or only for some applicants (see audience). Missing counts as required unless the label says optional. */
+  required?: boolean;
+  /** Prompts sharing a chooseGroup form a set where the student answers `choose` of them (UC PIQs: 4 of 8). */
+  chooseGroup?: string;
+  /** With options: how many options to answer in this one prompt. With chooseGroup: how many prompts of the set. */
+  choose?: number;
+  options?: string[];
+  /** The school, program or degree inside the university the prompt is for. */
+  audience?: string;
+  source?: "official" | "collegevine";
+  cycle?: string | null;
 };
+export type EssayStatus = "draft" | "final";
+/** Text the copilot proposed for an essay, waiting for the student to use or dismiss it. */
+export type EssaySuggestion = { text: string; createdAt: number };
 export type UploadMeta = { name: string; chars: number; uploadedAt: number };
 
 /** How aggressive the preliminary college list should be. */
@@ -66,7 +82,15 @@ export type OnboardingListPrefs = {
   regions: string[];
   /** Free-text constraints (“need strong CS”, “in-state public only”, etc.). */
   notes: string;
+  /** Yearly family budget bucket in $1,000s. "50plus" and "unsure" set no price cap. */
+  budget?: ListBudget;
+  /** The family will apply for need-based aid. */
+  needAid?: boolean;
+  /** Whether the student would apply Early Decision. */
+  ed?: "yes" | "no" | "maybe";
 };
+
+export type ListBudget = "lt15" | "15-30" | "30-50" | "50plus" | "unsure";
 
 export type OnboardingState = {
   completed: boolean;
@@ -78,6 +102,8 @@ export type OnboardingState = {
     other: string;
   };
   listPrefs?: OnboardingListPrefs;
+  /** Tiers the last list build or rebalance could not fill ("safety" is Likely in the UI). `goal` is the tier's quota. */
+  listGaps?: { tier: "reach" | "target" | "safety"; missing: number; goal?: number }[];
 };
 
 export type AppStatus =
@@ -155,7 +181,8 @@ export type Workspace = {
   profile: {
     intended: string; hs: string; gradYear: number | string; location: string;
     counselor: string; residency: string;
-    testing: { sat: string; satNote: string; aps: APScore[] };
+    /** act: ACT composite as text ("—" or missing when none). */
+    testing: { sat: string; satNote: string; act?: string; aps: APScore[] };
     coursework: { honors: string[]; aps: string[]; senior: string[] };
     activities: Activity[];
     honors: Honor[];
@@ -165,6 +192,10 @@ export type Workspace = {
   criticalDates: { date: string; label: string; detail: string; source?: "student" }[];
   colleges: College[];
   essays: { commonApp: Essay[]; supplements: Record<string, Essay[]> };
+  /** Writing status by essay id. Missing means not marked; the Essays tab treats text as a draft. */
+  essayStatus?: Record<string, EssayStatus>;
+  /** Copilot suggestions by essay id (suggest_essay_edit). */
+  essaySuggestions?: Record<string, EssaySuggestion>;
   /** Draft text keyed by essay id — server-persisted (not localStorage). */
   essayDrafts: Record<string, string>;
   /** Planner checkbox state keyed by task id. */

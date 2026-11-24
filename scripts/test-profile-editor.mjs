@@ -7,7 +7,7 @@ const browser = await puppeteer.launch({ executablePath: '/Applications/Google C
 try {
   const page = await browser.newPage();
   await page.setContent('<div id="root"></div>');
-  for (const path of ['node_modules/react/umd/react.development.js', 'node_modules/react-dom/umd/react-dom.development.js']) await page.addScriptTag({ content: readFileSync(path, 'utf8') });
+  for (const path of ['vendor/react-18.3.1/react.production.min.js', 'vendor/react-18.3.1/react-dom.production.min.js']) await page.addScriptTag({ content: readFileSync(path, 'utf8') });
   await page.evaluate(() => {
     const wrapper = ({ children }) => React.createElement('div', {}, children);
     window.CollegeForgeDesignSystem_e95e63 = { StatCard: wrapper, Badge: wrapper, VerdictBadge: wrapper, SectionLabel: wrapper, Tile: wrapper, Button: ({ children, variant, size, ...props }) => React.createElement('button', props, children) };
@@ -92,5 +92,43 @@ try {
   assert.equal(await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent === '+ Add honor').disabled), true);
   await page.setViewport({width:375,height:812});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'Profile editor must fit a mobile viewport');
-  console.log('Profile editor: fields preserved, blank entries rejected, AP scores saved, failed-save draft retained, GPA/SAT/year bounds validated, optional blanks and test-optional notes preserved, limits enforced, mobile layout fits.');
+  // Single-section edits: only that slice plus baseRevision, a Saved notice, and a 409 that keeps the draft.
+  await page.setViewport({width:1200,height:900});
+  await click('Cancel');
+  await page.evaluate(() => { window.saves = []; window.testData = {...window.testData, revision: 7}; });
+  await page.evaluate(() => { window.rerender = ws => { window.testData = ws; root.render(React.createElement(window.Profile, {data: ws, onWorkspaceChange: window.rerender})); }; window.rerender(window.testData); });
+  const clickLabel = async label => { await page.waitForFunction(label => [...document.querySelectorAll('button')].some(b => b.getAttribute('aria-label') === label && !b.disabled), {}, label); await page.evaluate(label => [...document.querySelectorAll('button')].find(b => b.getAttribute('aria-label') === label).click(), label); };
+  await clickLabel('Edit grades and test scores');
+  await page.waitForFunction(() => document.body.innerText.includes('Grades & test scores'));
+  assert.equal(await page.evaluate(() => document.querySelectorAll('fieldset').length), 0, 'Only the scores section opens');
+  await replaceAcademic('ACT', '40');
+  await click('Save section');
+  await page.waitForFunction(() => document.querySelector('[role="alert"]')?.textContent.includes('ACT must be'));
+  await replaceAcademic('ACT', '33');
+  const optionalBox = () => page.evaluateHandle(() => [...document.querySelectorAll('label')].find(el => el.textContent.includes('test optional')).querySelector('input'));
+  assert.equal(await (await optionalBox()).evaluate(el => el.checked), true, 'The checkbox reflects the test-optional note');
+  await (await optionalBox()).click();
+  await click('Save section');
+  await page.waitForFunction(() => window.saves.length === 1);
+  const slice = await page.evaluate(() => window.saves[0]);
+  assert.equal(slice.baseRevision, 7);
+  assert.equal(slice.profile.testing.act, '33');
+  assert.equal(slice.profile.testing.satNote, '', 'Unchecking test optional clears the note');
+  assert.equal(slice.profile.activities, undefined, 'A scores save does not resend activities');
+  assert.equal(slice.profile.honors, undefined);
+  assert.equal(slice.applicant.name, undefined, 'A scores save does not resend the name');
+  await page.waitForFunction(() => document.querySelector('[role="status"]')?.textContent === 'Saved your grades and scores.');
+  await page.evaluate(() => { window.cfApi.patch = async patch => { window.saves.push(patch); if (window.saves.length === 2) throw Object.assign(Error('stale'), { status: 409, data: {...window.testData, revision: 9, profile: {...window.testData.profile, honors: [...window.testData.profile.honors, {title:'Added by copilot', level:'School', year:'2026', top:false}]}} }); return window.testData; }; });
+  await clickLabel('Edit honors');
+  await page.waitForFunction(() => document.body.innerText.includes('Honors & awards · 1/5'));
+  await fillLabel('Year / grade received', '-11');
+  await click('Save section');
+  await page.waitForFunction(() => document.body.innerText.includes('Your profile changed while you were editing'));
+  assert.equal(await page.evaluate(() => window.saves[1].profile.activities), undefined, 'An honors save sends only honors');
+  assert.ok(await page.evaluate(() => document.body.innerText.includes('Added by copilot')), 'The latest version is shown');
+  assert.ok(await page.evaluate(() => [...document.querySelectorAll('input')].some(i => i.value === '2026-11')), 'The draft is kept');
+  await click('Save section');
+  await page.waitForFunction(() => window.saves.length === 3);
+  assert.equal(await page.evaluate(() => window.saves[2].baseRevision), 9, 'The retry uses the latest revision');
+  console.log('Profile editor: fields preserved, blank entries rejected, AP scores saved, failed-save draft retained, GPA/SAT/year bounds validated, optional blanks and test-optional notes preserved, limits enforced, mobile layout fits, single-section saves, ACT and test-optional, Saved notice and 409 draft kept.');
 } finally { await browser.close(); }
