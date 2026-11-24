@@ -10,6 +10,12 @@
 #   FORGE_IOS_CERT_ITEM    "Apple Distribution Certificate"  AppleDistribution_VTQW687WBQ.p12 + password
 #   FORGE_APPLE_KEY_ITEM   "Xanom Apple Dev Creds"           team API key (profile + upload)
 #   FORGE_APPLE_VAULT      "Private"
+#
+# Without 1Password: when `op` isn't signed in, the script signs with App Store Connect cloud-managed
+# distribution signing instead, using the team API key on disk:
+#   ASC_KEY_ID=<key id> ASC_ISSUER_ID=<issuer id> scripts/release-ios.sh
+# reads ~/.appstoreconnect/private_keys/AuthKey_<key id>.p8 (override with ASC_KEY_PATH). The key needs the
+# Admin role so Xcode may use the cloud certificate.
 set -euo pipefail
 
 UPLOAD=1
@@ -30,7 +36,19 @@ TEAM_ID="VTQW687WBQ"
 BUNDLE_ID="co.xanom.forge"
 PROFILE_NAME="Forge App Store"
 
-op whoami >/dev/null 2>&1 || { echo "error: 1Password CLI is not signed in (run: op signin)" >&2; exit 1; }
+LOCAL_CERT=1
+if ! op whoami >/dev/null 2>&1; then
+  LOCAL_CERT=0
+  KEY_ID="${ASC_KEY_ID:-}"
+  ISSUER_ID="${ASC_ISSUER_ID:-}"
+  KEY_PATH="${ASC_KEY_PATH:-$HOME/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8}"
+  if [ -z "$KEY_ID" ] || [ -z "$ISSUER_ID" ] || [ ! -f "$KEY_PATH" ]; then
+    echo "error: 1Password CLI is not signed in (run: op signin), and no API key was given for cloud signing" >&2
+    echo "       (set ASC_KEY_ID and ASC_ISSUER_ID, with the key at $KEY_PATH)" >&2
+    exit 1
+  fi
+  echo "› 1Password isn't signed in: using App Store Connect cloud-managed distribution signing"
+fi
 
 WORK="$(mktemp -d)"
 KEYCHAIN="$WORK/signing.keychain-db"
@@ -59,6 +77,7 @@ trap cleanup EXIT
 echo "› Generating the Xcode project"
 xcodegen generate --quiet
 
+if [ "$LOCAL_CERT" = 1 ]; then
 echo "› Loading the distribution certificate into a temporary keychain"
 op read "op://$VAULT/$CERT_ITEM/AppleDistribution_${TEAM_ID}.p12" --out-file "$WORK/dist.p12" >/dev/null
 P12_PASSWORD="$(op read "op://$VAULT/$CERT_ITEM/password")"
@@ -78,11 +97,24 @@ PROFILES_DIR="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 mkdir -p "$PROFILES_DIR"
 cp "$WORK/profile.mobileprovision" "$PROFILES_DIR/$PROFILE_UUID.mobileprovision"
 
+KEY_ID="$(op item get "$KEY_ITEM" --vault "$VAULT" --fields 'label=Key ID' --reveal)"
+ISSUER_ID="$(op item get "$KEY_ITEM" --vault "$VAULT" --fields 'label=issuer id' --reveal)"
+KEY_PATH="$WORK/AuthKey.p8"
+op read "op://$VAULT/$KEY_ITEM/AuthKey_${KEY_ID}.p8" --out-file "$KEY_PATH" >/dev/null
+fi
+AUTH=(-authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID")
+
 BUILD_NUMBER="$(date -u +%Y%m%d%H%M)"
 echo "› Archiving build $BUILD_NUMBER"
+if [ "$LOCAL_CERT" = 1 ]; then
+  SIGNING=(OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN")
+else
+  # Archive with development signing; the export re-signs with the cloud distribution certificate.
+  SIGNING=(CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Development" PROVISIONING_PROFILE_SPECIFIER= DEVELOPMENT_TEAM="$TEAM_ID" -allowProvisioningUpdates "${AUTH[@]}")
+fi
 xcodebuild -project Forge.xcodeproj -scheme Forge -configuration Release \
   -destination 'generic/platform=iOS' -archivePath "$WORK/App.xcarchive" \
-  CURRENT_PROJECT_VERSION="$BUILD_NUMBER" OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN" \
+  CURRENT_PROJECT_VERSION="$BUILD_NUMBER" "${SIGNING[@]}" \
   archive -quiet
 
 DESTINATION="export"
@@ -95,26 +127,24 @@ cat > "$WORK/ExportOptions.plist" <<PLIST
   <key>method</key><string>app-store-connect</string>
   <key>destination</key><string>$DESTINATION</string>
   <key>teamID</key><string>$TEAM_ID</string>
+$(if [ "$LOCAL_CERT" = 1 ]; then cat <<MANUAL
   <key>signingStyle</key><string>manual</string>
   <key>signingCertificate</key><string>Apple Distribution</string>
   <key>provisioningProfiles</key><dict><key>$BUNDLE_ID</key><string>$PROFILE_NAME</string></dict>
+MANUAL
+else echo '  <key>signingStyle</key><string>automatic</string>'; fi)
   <key>uploadSymbols</key><true/>
   <key>manageAppVersionAndBuildNumber</key><false/>
 </dict>
 </plist>
 PLIST
 
-KEY_ID="$(op item get "$KEY_ITEM" --vault "$VAULT" --fields 'label=Key ID' --reveal)"
-ISSUER_ID="$(op item get "$KEY_ITEM" --vault "$VAULT" --fields 'label=issuer id' --reveal)"
-op read "op://$VAULT/$KEY_ITEM/AuthKey_${KEY_ID}.p8" --out-file "$WORK/AuthKey.p8" >/dev/null
-
 mkdir -p build
-use_keychain # in case another build replaced the search list while we archived
+[ "$LOCAL_CERT" = 1 ] && use_keychain # in case another build replaced the search list while we archived
 if [ "$UPLOAD" = 1 ]; then echo "› Uploading to App Store Connect"; else echo "› Exporting build/forge.ipa"; fi
 xcodebuild -exportArchive -archivePath "$WORK/App.xcarchive" \
   -exportOptionsPlist "$WORK/ExportOptions.plist" -exportPath "$WORK/export" \
-  -authenticationKeyPath "$WORK/AuthKey.p8" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
-  -quiet
+  -allowProvisioningUpdates "${AUTH[@]}" -quiet
 
 if [ "$UPLOAD" = 1 ]; then
   echo "✓ Build $BUILD_NUMBER uploaded. It appears in TestFlight once Apple finishes processing (usually 5–15 minutes)."
