@@ -100,6 +100,7 @@ export async function checkApp(app: TrackedApp, login: PortalLogin | undefined, 
       update: snap.update,
       ...(snap.decisionDate ? { decisionDate: snap.decisionDate } : {}),
       ...(snap.round ? { round: snap.round } : {}),
+      ...(snap.outcome ? { outcome: snap.outcome } : {}),
     };
   } catch (err) {
     if (err instanceof CheckFailure) return failed(err.message, err.code);

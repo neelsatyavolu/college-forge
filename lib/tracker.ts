@@ -48,6 +48,8 @@ export interface PortalResult {
   update: string;
   decisionDate?: string;
   round?: string;
+  /** What the decision letter behind a posted update says ("Admitted", "Not admitted", ...). Shown only after a reveal. */
+  outcome?: string;
 }
 
 export interface TrackedApp {
@@ -147,7 +149,7 @@ export function decisionOf(app: TrackedApp): DecisionView {
   const key = portalDecisionKey(app);
   if (key) {
     const status = app.portal!.statusText;
-    const portalText = NAMES_OUTCOME.test(status) && !NO_OUTCOME.test(status) ? status : "";
+    const portalText = NAMES_OUTCOME.test(status) && !NO_OUTCOME.test(status) ? status : app.portal!.outcome || "";
     return app.decisionSeen === key ? { state: "revealed", portalText } : { state: "hidden", portalText: "" };
   }
   const stage = statusInfo(app.status).stage;
@@ -160,7 +162,8 @@ export function shownPortal(app: TrackedApp): PortalResult | undefined {
   const p = app.portal;
   if (!p) return undefined;
   if (portalDecisionKey(app) && app.decisionSeen !== portalDecisionKey(app)) {
-    return { ...p, statusText: "", update: DECISION_RECEIVED, checklist: [] };
+    const { outcome: _hidden, ...rest } = p;
+    return { ...rest, statusText: "", update: DECISION_RECEIVED, checklist: [] };
   }
   return { ...p, checklist: p.checklist.filter((c) => !revealsDecision(c.item) || app.decisionSeen === portalDecisionKey(app)) };
 }

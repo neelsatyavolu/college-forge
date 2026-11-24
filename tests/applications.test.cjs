@@ -78,6 +78,18 @@ test('a posted decision stays hidden until revealed', () => {
   assert.equal(tracker.decisionOf(app({ status: 'denied' })).state, 'recorded');
 });
 
+test('the letter’s outcome shows only after the decision is revealed', () => {
+  // Binghamton-style: the status page only says an update was posted; the outcome came from the letter.
+  const posted = tracker.withResult(app({ status: 'complete' }), result({ statusText: 'Decision Released', update: 'View Update', outcome: 'Admitted' }));
+  assert.deepEqual(tracker.decisionOf(posted), { state: 'hidden', portalText: '' });
+  assert.equal(tracker.shownPortal(posted).outcome, undefined);
+  const seen = tracker.revealDecision(posted);
+  assert.deepEqual(tracker.decisionOf(seen), { state: 'revealed', portalText: 'Admitted' });
+  // A status that names the outcome itself still wins.
+  const named = tracker.revealDecision(tracker.withResult(app(), result({ statusText: 'Waitlisted', update: 'View Update', outcome: 'Admitted' })));
+  assert.equal(tracker.decisionOf(named).portalText, 'Waitlisted');
+});
+
 test('edits are validated', () => {
   assert.throws(() => tracker.editApp(app(), { status: 'accepted' }), /Unknown status/);
   assert.throws(() => tracker.editApp(app(), { deadline: 'Jan 1' }), /yyyy-mm-dd/);
