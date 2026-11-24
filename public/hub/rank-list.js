@@ -24,23 +24,69 @@
     return prefix.length === 1 ? prefix[0] : null;
   }
 
-  function ranksOf(s) {
+  function ranksOf(s, toNational) {
+    var usn = (s.usn && s.usn.rank) || null;
+    var lac = !!(s.usn && s.usn.lac);
     return {
-      usn: (s.usn && s.usn.rank) || null,
+      usn: usn,
       // U.S. News ranks liberal arts colleges on their own list, so that number
       // isn't on the same scale as a university's. Niche and Forbes rank both together.
-      lac: !!(s.usn && s.usn.lac),
+      lac: lac,
+      // The national-list rank the LAC rank links to; null when it can't be linked.
+      usnNational: lac ? (usn && toNational ? toNational(usn) : null) : usn,
       niche: (s.niche && s.niche.rank) || null,
       forbes: s.forbes || null,
     };
   }
 
-  /** Every app with its ranks and their average, best first; schools with no rank go last. */
+  function nicheForbes(s) {
+    var v = [s.niche && s.niche.rank, s.forbes].filter(function (r) { return r; });
+    return v.length ? v.reduce(function (a, b) { return a + b; }, 0) / v.length : null;
+  }
+
+  // Reduced major axis fit of log(anchor) on log(rank): the symmetric line
+  // concordance tables use, which doesn't shrink a weak fit toward the middle.
+  function logLine(pairs) {
+    var n = pairs.length;
+    if (n < 3) return null;
+    var xs = pairs.map(function (p) { return Math.log(p[0]); });
+    var ys = pairs.map(function (p) { return Math.log(p[1]); });
+    var mx = xs.reduce(function (a, b) { return a + b; }, 0) / n;
+    var my = ys.reduce(function (a, b) { return a + b; }, 0) / n;
+    var sxx = 0, syy = 0, sxy = 0;
+    for (var i = 0; i < n; i++) { sxx += (xs[i] - mx) * (xs[i] - mx); syy += (ys[i] - my) * (ys[i] - my); sxy += (xs[i] - mx) * (ys[i] - my); }
+    if (!sxx || !syy || sxy <= 0) return null;
+    var b = Math.sqrt(syy / sxx);
+    return { a: my - b * mx, b: b };
+  }
+
+  /**
+   * Turns a U.S. News liberal arts rank into the national-university rank at the
+   * same standing. Niche and Forbes rank both kinds of school on one list, so
+   * their average is the common yardstick: fit how each U.S. News list tracks it
+   * across every school in the ranking file, then read the LAC rank's yardstick
+   * value back through the national line. Null when either list is too thin.
+   */
+  function lacLink(schools) {
+    var lac = [], nat = [];
+    schools.forEach(function (s) {
+      var anchor = nicheForbes(s);
+      if (!s.usn || !s.usn.rank || anchor == null) return;
+      (s.usn.lac ? lac : nat).push([s.usn.rank, anchor]);
+    });
+    var L = logLine(lac), N = logLine(nat);
+    if (!L || !N) return null;
+    return function (rank) { return Math.exp((L.a + L.b * Math.log(rank) - N.a) / N.b); };
+  }
+
+  /** Every app with its ranks and their average, best first; schools with no rank go last.
+   * A liberal arts college's U.S. News rank counts as its linked national rank. */
   function rankList(apps, schools) {
+    var toNational = lacLink(schools);
     var rows = apps.map(function (app) {
       var school = matchSchool(app.name, schools);
-      var ranks = school ? ranksOf(school) : { usn: null, lac: false, niche: null, forbes: null };
-      var have = [ranks.lac ? null : ranks.usn, ranks.niche, ranks.forbes].filter(function (r) { return r != null; });
+      var ranks = school ? ranksOf(school, toNational) : { usn: null, lac: false, usnNational: null, niche: null, forbes: null };
+      var have = [ranks.usnNational, ranks.niche, ranks.forbes].filter(function (r) { return r != null; });
       var avg = have.length ? have.reduce(function (a, b) { return a + b; }, 0) / have.length : null;
       return { app: app, ranks: ranks, avg: avg };
     });
@@ -62,7 +108,7 @@
     }).join("\n");
   }
 
-  var api = { matchSchool: matchSchool, rankList: rankList, copyText: copyText };
+  var api = { matchSchool: matchSchool, rankList: rankList, copyText: copyText, lacLink: lacLink };
   root.cfRankList = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

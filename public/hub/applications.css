@@ -217,9 +217,13 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-rank-row .cf-school-mark { width: 22px; height: 22px; font-size: 8px; letter-spacing: 0; }
 .cf-rank-row__pos, .cf-rank-row__src, .cf-rank-row__avg { font: 400 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--muted); }
 .cf-rank-row__pos { text-align: right; }
-.cf-rank-row__name { font-size: 15px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-rank-row__name { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 15px; color: var(--ink); }
+.cf-rank-row__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cf-rank-row__avg { text-align: right; font-size: 13px; color: var(--ink); }
+.cf-rank-row.is-admitted { background: color-mix(in srgb, var(--success) 12%, transparent); box-shadow: inset 3px 0 0 var(--success); }
+.cf-rank-row__tag { flex: none; font: 500 11px/1 var(--font-sans); padding: 4px 8px; border-radius: var(--radius-pill); background: color-mix(in srgb, var(--success) 22%, transparent); color: var(--ink); }
 @media (max-width: 600px) {
   .cf-rank-row { grid-template-columns: 2em 22px minmax(0, 1fr) 3.2em; padding: 6px 12px; }
   .cf-rank-row__src { display: none; }
+  .cf-rank-row__tag { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }

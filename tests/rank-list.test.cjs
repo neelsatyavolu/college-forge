@@ -38,12 +38,27 @@ test('the list runs best average rank first, unranked schools last', () => {
   assert.equal(list[3].avg, null);
 });
 
-test('a liberal arts college’s separate U.S. News rank stays out of its average', () => {
+test('a liberal arts college’s U.S. News rank counts as its linked national rank', () => {
   const [row] = rankList([{ id: 'a', name: 'Amherst College' }], schools);
   const amherst = schools.find((s) => s.name === 'Amherst');
   assert.equal(row.ranks.lac, true);
   assert.equal(row.ranks.usn, amherst.usn.rank);
-  assert.equal(row.avg, (amherst.niche.rank + amherst.forbes) / 2);
+  // #2 on the LAC list links to a national rank below #2 but above its Niche/Forbes average.
+  assert.ok(row.ranks.usnNational > amherst.usn.rank && row.ranks.usnNational < (amherst.niche.rank + amherst.forbes) / 2);
+  assert.equal(row.avg, (row.ranks.usnNational + amherst.niche.rank + amherst.forbes) / 3);
+});
+
+test('the LAC link keeps order: a better LAC rank links to a better national rank', () => {
+  const { lacLink } = require('../public/hub/rank-list.js');
+  const toNational = lacLink(schools);
+  for (let r = 1; r < 60; r++) assert.ok(toNational(r) < toNational(r + 1));
+});
+
+test('without enough schools to link, a LAC rank stays out of the average', () => {
+  const few = [{ name: 'Testing College', full: 'Testing College', usn: { rank: 3, lac: true }, niche: { rank: 20 }, forbes: 40 }];
+  const [row] = rankList([{ id: 't', name: 'Testing College' }], few);
+  assert.equal(row.ranks.usnNational, null);
+  assert.equal(row.avg, 30);
 });
 
 test('the average uses only the ranks a school has', () => {
