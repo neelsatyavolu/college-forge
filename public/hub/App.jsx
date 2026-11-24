@@ -11,6 +11,7 @@ const NAV = [
   { id: "recommendations", label: "Colleges for you", group: "Find colleges", icon: "spark" },
   { id: "explore", label: "Explore colleges", group: "Find colleges", icon: "search" },
   { id: "shortlist", label: "Your shortlist", group: "Find colleges", icon: "bookmark" },
+  { id: "official", label: "Official rankings", group: "Find colleges", icon: "award" },
   { id: "profile", label: "Your profile", group: "You", icon: "user" },
   { id: "share", label: "Share & export", group: "You", icon: "share" },
   { id: "settings", label: "Settings", group: "You", icon: "settings" },
@@ -36,6 +37,7 @@ function NavIcon({ name }) {
     scatter: "M3 3v18h18M8 15h.01M11 10h.01M15 13h.01M18 7h.01M9 7h.01",
     edit: "m15 4 5 5M4 20l5-1L21 7l-5-5L4 14ZM13 21h8",
     list: "M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01",
+    award: "M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM8.5 14 7 22l5-3 5 3-1.5-8",
     check: "m4 6 2 2 4-4M13 6h7M4 13l2 2 4-4M13 13h7M4 20h16",
     calendar: "M4 5h16v16H4ZM8 2v6m8-6v6M4 11h16",
     folder: "M3 6h7l2 3h9v12H3Z",
@@ -263,6 +265,7 @@ function App() {
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={applyWorkspace} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} />}
           {view === "list" && <RankList tracker={tracker} />}
+          {view === "official" && <OfficialRankings />}
           {view === "profile" && <Profile data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "recommendations" && <Recommendations data={data} onAsk={openChat} onNavigate={navigate} onWorkspaceChange={applyWorkspace} onStartSetup={() => setRunOnboarding(true)} />}
           {view === "explore" && <Explore data={data} favorites={favorites} onToggleFavorite={toggleFav} onWorkspaceChange={refresh} />}

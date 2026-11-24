@@ -227,3 +227,29 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
   .cf-rank-row__src { display: none; }
   .cf-rank-row__tag { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
+
+/* Official rankings tab: one line per school, opening to its facts. */
+.cf-orank__source { margin: 0 0 12px; font: 400 12px/1.4 var(--font-mono); color: var(--muted); }
+.cf-orank__row { display: grid; grid-template-columns: 2.4em 22px minmax(0, 1fr) auto 16px; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 14px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.cf-orank__row:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.cf-orank__row:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.cf-orank__row .cf-school-mark { width: 22px; height: 22px; font-size: 8px; letter-spacing: 0; }
+.cf-orank__pos { text-align: right; font: 400 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.cf-orank__name { font-size: 15px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-orank__place { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.cf-orank__chev { color: var(--muted); transition: transform 160ms; }
+.cf-orank__item.is-open .cf-orank__chev { transform: rotate(180deg); }
+.cf-orank__details { padding: 4px 14px 16px calc(2.4em + 22px + 34px); }
+.cf-orank__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 24px; max-width: 640px; margin: 0 0 12px; }
+.cf-orank__facts div { min-width: 0; }
+.cf-orank__facts dt { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+.cf-orank__facts dd { margin: 0; font: 400 14px/1.3 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+.cf-orank__others { margin: 0; font-size: 13px; color: var(--muted); }
+.cf-orank__others b { font: 500 13px var(--font-mono); color: var(--ink); }
+.cf-orank__foot { margin-top: 14px; }
+@media (max-width: 600px) {
+  .cf-orank__row { grid-template-columns: 2em 22px minmax(0, 1fr) 16px; padding: 6px 12px; }
+  .cf-orank__place { display: none; }
+  .cf-orank__details { padding: 4px 12px 14px; }
+  .cf-orank__facts { grid-template-columns: 1fr 1fr; }
+}

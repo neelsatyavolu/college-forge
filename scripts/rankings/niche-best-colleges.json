@@ -1,0 +1,808 @@
+{
+ "source": "https://www.niche.com/colleges/search/best-colleges/ (pages 1-4)",
+ "edition": "2027 Best Colleges in America",
+ "captured": "2026-11-24",
+ "note": "Niche blocks plain HTTP clients, so this list is read from the public pages in a browser and saved here. Re-capture yearly when Niche publishes a new edition.",
+ "schools": [
+  {
+   "rank": 1,
+   "name": "Massachusetts Institute of Technology",
+   "city": "Cambridge",
+   "state": "MA",
+   "stars": 4.2,
+   "reviews": 681
+  },
+  {
+   "rank": 2,
+   "name": "Stanford University",
+   "city": "Stanford",
+   "state": "CA",
+   "stars": 4.1,
+   "reviews": 1327
+  },
+  {
+   "rank": 3,
+   "name": "Yale University",
+   "city": "New Haven",
+   "state": "CT",
+   "stars": 4.1,
+   "reviews": 1007
+  },
+  {
+   "rank": 4,
+   "name": "Harvard University",
+   "city": "Cambridge",
+   "state": "MA",
+   "stars": 4.2,
+   "reviews": 920
+  },
+  {
+   "rank": 5,
+   "name": "Princeton University",
+   "city": "Princeton",
+   "state": "NJ",
+   "stars": 4.0,
+   "reviews": 532
+  },
+  {
+   "rank": 6,
+   "name": "California Institute of Technology",
+   "city": "Pasadena",
+   "state": "CA",
+   "stars": 4.0,
+   "reviews": 140
+  },
+  {
+   "rank": 7,
+   "name": "Vanderbilt University",
+   "city": "Nashville",
+   "state": "TN",
+   "stars": 4.0,
+   "reviews": 1411
+  },
+  {
+   "rank": 8,
+   "name": "Dartmouth College",
+   "city": "Hanover",
+   "state": "NH",
+   "stars": 3.9,
+   "reviews": 780
+  },
+  {
+   "rank": 9,
+   "name": "Columbia University",
+   "city": "New York",
+   "state": "NY",
+   "stars": 3.9,
+   "reviews": 1448
+  },
+  {
+   "rank": 10,
+   "name": "Rice University",
+   "city": "Houston",
+   "state": "TX",
+   "stars": 4.1,
+   "reviews": 1162
+  },
+  {
+   "rank": 11,
+   "name": "Duke University",
+   "city": "Durham",
+   "state": "NC",
+   "stars": 4.0,
+   "reviews": 1264
+  },
+  {
+   "rank": 12,
+   "name": "Brown University",
+   "city": "Providence",
+   "state": "RI",
+   "stars": 3.9,
+   "reviews": 1136
+  },
+  {
+   "rank": 13,
+   "name": "Washington University in St. Louis",
+   "city": "Saint Louis",
+   "state": "MO",
+   "stars": 4.1,
+   "reviews": 1647
+  },
+  {
+   "rank": 14,
+   "name": "University of Pennsylvania",
+   "city": "Philadelphia",
+   "state": "PA",
+   "stars": 3.9,
+   "reviews": 1427
+  },
+  {
+   "rank": 15,
+   "name": "Harvey Mudd College",
+   "city": "Claremont",
+   "state": "CA",
+   "stars": 3.8,
+   "reviews": 168
+  },
+  {
+   "rank": 16,
+   "name": "University of Chicago",
+   "city": "Chicago",
+   "state": "IL",
+   "stars": 3.8,
+   "reviews": 1356
+  },
+  {
+   "rank": 17,
+   "name": "University of California - Los Angeles",
+   "city": "Los Angeles",
+   "state": "CA",
+   "stars": 4.0,
+   "reviews": 5906
+  },
+  {
+   "rank": 18,
+   "name": "Carnegie Mellon University",
+   "city": "Pittsburgh",
+   "state": "PA",
+   "stars": 3.7,
+   "reviews": 1510
+  },
+  {
+   "rank": 19,
+   "name": "Johns Hopkins University",
+   "city": "Baltimore",
+   "state": "MD",
+   "stars": 3.7,
+   "reviews": 1461
+  },
+  {
+   "rank": 20,
+   "name": "University of Michigan - Ann Arbor",
+   "city": "Ann Arbor",
+   "state": "MI",
+   "stars": 4.0,
+   "reviews": 5049
+  },
+  {
+   "rank": 21,
+   "name": "Cornell University",
+   "city": "Ithaca",
+   "state": "NY",
+   "stars": 3.6,
+   "reviews": 2346
+  },
+  {
+   "rank": 22,
+   "name": "University of Notre Dame",
+   "city": "Notre Dame",
+   "state": "IN",
+   "stars": 4.0,
+   "reviews": 1481
+  },
+  {
+   "rank": 23,
+   "name": "Pomona College",
+   "city": "Claremont",
+   "state": "CA",
+   "stars": 4.3,
+   "reviews": 445
+  },
+  {
+   "rank": 24,
+   "name": "Claremont McKenna College",
+   "city": "Claremont",
+   "state": "CA",
+   "stars": 4.0,
+   "reviews": 344
+  },
+  {
+   "rank": 25,
+   "name": "Georgetown University",
+   "city": "Washington",
+   "state": "DC",
+   "stars": 3.8,
+   "reviews": 1338
+  },
+  {
+   "rank": 26,
+   "name": "University of Virginia",
+   "city": "Charlottesville",
+   "state": "VA",
+   "stars": 3.9,
+   "reviews": 2537
+  },
+  {
+   "rank": 27,
+   "name": "Northwestern University",
+   "city": "Evanston",
+   "state": "IL",
+   "stars": 3.7,
+   "reviews": 1531
+  },
+  {
+   "rank": 28,
+   "name": "Georgia Institute of Technology",
+   "city": "Atlanta",
+   "state": "GA",
+   "stars": 3.9,
+   "reviews": 2324
+  },
+  {
+   "rank": 29,
+   "name": "Washington and Lee University",
+   "city": "Lexington",
+   "state": "VA",
+   "stars": 4.0,
+   "reviews": 485
+  },
+  {
+   "rank": 30,
+   "name": "University of Texas - Austin",
+   "city": "Austin",
+   "state": "TX",
+   "stars": 4.0,
+   "reviews": 7110
+  },
+  {
+   "rank": 31,
+   "name": "University of Florida",
+   "city": "Gainesville",
+   "state": "FL",
+   "stars": 3.9,
+   "reviews": 8413
+  },
+  {
+   "rank": 32,
+   "name": "Emory University",
+   "city": "Atlanta",
+   "state": "GA",
+   "stars": 3.9,
+   "reviews": 1678
+  },
+  {
+   "rank": 33,
+   "name": "Bowdoin College",
+   "city": "Brunswick",
+   "state": "ME",
+   "stars": 4.2,
+   "reviews": 672
+  },
+  {
+   "rank": 34,
+   "name": "University of Illinois Urbana-Champaign",
+   "city": "Champaign",
+   "state": "IL",
+   "stars": 3.8,
+   "reviews": 5246
+  },
+  {
+   "rank": 35,
+   "name": "Swarthmore College",
+   "city": "Swarthmore",
+   "state": "PA",
+   "stars": 3.7,
+   "reviews": 447
+  },
+  {
+   "rank": 36,
+   "name": "University of North Carolina at Chapel Hill",
+   "city": "Chapel Hill",
+   "state": "NC",
+   "stars": null,
+   "reviews": 2804
+  },
+  {
+   "rank": 37,
+   "name": "University of Southern California",
+   "city": "Los Angeles",
+   "state": "CA",
+   "stars": 4.0,
+   "reviews": 4247
+  },
+  {
+   "rank": 38,
+   "name": "Williams College",
+   "city": "Williamstown",
+   "state": "MA",
+   "stars": 3.9,
+   "reviews": 329
+  },
+  {
+   "rank": 39,
+   "name": "Davidson College",
+   "city": "Davidson",
+   "state": "NC",
+   "stars": 4.0,
+   "reviews": 378
+  },
+  {
+   "rank": 40,
+   "name": "Boston University",
+   "city": "Boston",
+   "state": "MA",
+   "stars": 3.7,
+   "reviews": 3881
+  },
+  {
+   "rank": 41,
+   "name": "Middlebury College",
+   "city": "Middlebury",
+   "state": "VT",
+   "stars": 3.9,
+   "reviews": 542
+  },
+  {
+   "rank": 42,
+   "name": "University of California - Berkeley",
+   "city": "Berkeley",
+   "state": "CA",
+   "stars": 3.7,
+   "reviews": 4713
+  },
+  {
+   "rank": 43,
+   "name": "Amherst College",
+   "city": "Amherst",
+   "state": "MA",
+   "stars": 3.9,
+   "reviews": 345
+  },
+  {
+   "rank": 44,
+   "name": "University of Wisconsin-Madison",
+   "city": "Madison",
+   "state": "WI",
+   "stars": 3.9,
+   "reviews": 3679
+  },
+  {
+   "rank": 45,
+   "name": "University of California - San Diego",
+   "city": "La Jolla",
+   "state": "CA",
+   "stars": 3.7,
+   "reviews": 4243
+  },
+  {
+   "rank": 46,
+   "name": "Northeastern University",
+   "city": "Boston",
+   "state": "MA",
+   "stars": 3.8,
+   "reviews": 3929
+  },
+  {
+   "rank": 47,
+   "name": "Florida State University",
+   "city": "Tallahassee",
+   "state": "FL",
+   "stars": 4.0,
+   "reviews": 9033
+  },
+  {
+   "rank": 48,
+   "name": "University of Georgia",
+   "city": "Athens",
+   "state": "GA",
+   "stars": 4.0,
+   "reviews": 5992
+  },
+  {
+   "rank": 49,
+   "name": "Hamilton College",
+   "city": "Clinton",
+   "state": "NY",
+   "stars": 3.8,
+   "reviews": 510
+  },
+  {
+   "rank": 50,
+   "name": "Boston College",
+   "city": "Chestnut Hill",
+   "state": "MA",
+   "stars": 3.7,
+   "reviews": 1689
+  },
+  {
+   "rank": 51,
+   "name": "University of California - Davis",
+   "city": "Davis",
+   "state": "CA",
+   "stars": 3.9,
+   "reviews": 5901
+  },
+  {
+   "rank": 52,
+   "name": "Texas A&M University",
+   "city": "College Station",
+   "state": "TX",
+   "stars": 4.1,
+   "reviews": 8294
+  },
+  {
+   "rank": 53,
+   "name": "University of Miami",
+   "city": "Coral Gables",
+   "state": "FL",
+   "stars": 3.9,
+   "reviews": 3228
+  },
+  {
+   "rank": 54,
+   "name": "Tufts University",
+   "city": "Medford",
+   "state": "MA",
+   "stars": 3.7,
+   "reviews": 1120
+  },
+  {
+   "rank": 55,
+   "name": "Lehigh University",
+   "city": "Bethlehem",
+   "state": "PA",
+   "stars": 3.7,
+   "reviews": 1019
+  },
+  {
+   "rank": 56,
+   "name": "Wellesley College",
+   "city": "Wellesley",
+   "state": "MA",
+   "stars": 3.8,
+   "reviews": 665
+  },
+  {
+   "rank": 57,
+   "name": "University of Washington",
+   "city": "Seattle",
+   "state": "WA",
+   "stars": 3.8,
+   "reviews": 4914
+  },
+  {
+   "rank": 58,
+   "name": "William & Mary",
+   "city": "Williamsburg",
+   "state": "VA",
+   "stars": 4.0,
+   "reviews": 2528
+  },
+  {
+   "rank": 59,
+   "name": "New York University",
+   "city": "New York",
+   "state": "NY",
+   "stars": 3.8,
+   "reviews": 5968
+  },
+  {
+   "rank": 60,
+   "name": "Wake Forest University",
+   "city": "Winston-Salem",
+   "state": "NC",
+   "stars": 3.7,
+   "reviews": 916
+  },
+  {
+   "rank": 61,
+   "name": "Wesleyan University",
+   "city": "Middletown",
+   "state": "CT",
+   "stars": 3.8,
+   "reviews": 785
+  },
+  {
+   "rank": 62,
+   "name": "Vassar College",
+   "city": "Poughkeepsie",
+   "state": "NY",
+   "stars": 3.8,
+   "reviews": 687
+  },
+  {
+   "rank": 63,
+   "name": "The Ohio State University",
+   "city": "Columbus",
+   "state": "OH",
+   "stars": 3.9,
+   "reviews": 6170
+  },
+  {
+   "rank": 64,
+   "name": "Barnard College",
+   "city": "New York",
+   "state": "NY",
+   "stars": 3.9,
+   "reviews": 508
+  },
+  {
+   "rank": 65,
+   "name": "Trinity University",
+   "city": "San Antonio",
+   "state": "TX",
+   "stars": 3.8,
+   "reviews": 797
+  },
+  {
+   "rank": 66,
+   "name": "Tulane University",
+   "city": "New Orleans",
+   "state": "LA",
+   "stars": 3.8,
+   "reviews": 1796
+  },
+  {
+   "rank": 67,
+   "name": "Virginia Tech",
+   "city": "Blacksburg",
+   "state": "VA",
+   "stars": 4.0,
+   "reviews": 4374
+  },
+  {
+   "rank": 68,
+   "name": "Penn State",
+   "city": "University Park",
+   "state": "PA",
+   "stars": 3.9,
+   "reviews": 7962
+  },
+  {
+   "rank": 69,
+   "name": "University of California - Irvine",
+   "city": "Irvine",
+   "state": "CA",
+   "stars": 3.8,
+   "reviews": 4497
+  },
+  {
+   "rank": 70,
+   "name": "Purdue University",
+   "city": "West Lafayette",
+   "state": "IN",
+   "stars": 3.9,
+   "reviews": 5430
+  },
+  {
+   "rank": 71,
+   "name": "University of South Florida",
+   "city": "Tampa",
+   "state": "FL",
+   "stars": 3.8,
+   "reviews": 7888
+  },
+  {
+   "rank": 72,
+   "name": "Colby College",
+   "city": "Waterville",
+   "state": "ME",
+   "stars": 3.9,
+   "reviews": 722
+  },
+  {
+   "rank": 73,
+   "name": "University of Maryland - College Park",
+   "city": "College Park",
+   "state": "MD",
+   "stars": 3.7,
+   "reviews": 5805
+  },
+  {
+   "rank": 74,
+   "name": "University of Richmond",
+   "city": "Richmond",
+   "state": "VA",
+   "stars": 3.9,
+   "reviews": 806
+  },
+  {
+   "rank": 75,
+   "name": "New Mexico Tech",
+   "city": "Socorro",
+   "state": "NM",
+   "stars": 3.6,
+   "reviews": 574
+  },
+  {
+   "rank": 76,
+   "name": "Clemson University",
+   "city": "Clemson",
+   "state": "SC",
+   "stars": 4.0,
+   "reviews": 3868
+  },
+  {
+   "rank": 77,
+   "name": "Florida International University",
+   "city": "Miami",
+   "state": "FL",
+   "stars": 3.8,
+   "reviews": 7900
+  },
+  {
+   "rank": 78,
+   "name": "Bates College",
+   "city": "Lewiston",
+   "state": "ME",
+   "stars": 4.0,
+   "reviews": 422
+  },
+  {
+   "rank": 79,
+   "name": "The Cooper Union for the Advancement of Science and Art",
+   "city": "New York",
+   "state": "NY",
+   "stars": null,
+   "reviews": 109
+  },
+  {
+   "rank": 80,
+   "name": "Colgate University",
+   "city": "Hamilton",
+   "state": "NY",
+   "stars": 3.6,
+   "reviews": 1071
+  },
+  {
+   "rank": 81,
+   "name": "Case Western Reserve University",
+   "city": "Cleveland",
+   "state": "OH",
+   "stars": 3.7,
+   "reviews": 1863
+  },
+  {
+   "rank": 82,
+   "name": "University of Pittsburgh",
+   "city": "Pittsburgh",
+   "state": "PA",
+   "stars": 3.8,
+   "reviews": 4562
+  },
+  {
+   "rank": 83,
+   "name": "University of Minnesota Twin Cities",
+   "city": "Minneapolis",
+   "state": "MN",
+   "stars": null,
+   "reviews": 5168
+  },
+  {
+   "rank": 84,
+   "name": "Auburn University",
+   "city": "Auburn",
+   "state": "AL",
+   "stars": 4.1,
+   "reviews": 2778
+  },
+  {
+   "rank": 85,
+   "name": "University of California - Santa Barbara",
+   "city": "Santa Barbara",
+   "state": "CA",
+   "stars": null,
+   "reviews": 4900
+  },
+  {
+   "rank": 86,
+   "name": "University of Alabama - Birmingham",
+   "city": "Birmingham",
+   "state": "AL",
+   "stars": 3.9,
+   "reviews": 2418
+  },
+  {
+   "rank": 87,
+   "name": "Haverford College",
+   "city": "Haverford",
+   "state": "PA",
+   "stars": 4.0,
+   "reviews": 316
+  },
+  {
+   "rank": 88,
+   "name": "Villanova University",
+   "city": "Villanova",
+   "state": "PA",
+   "stars": 3.7,
+   "reviews": 1618
+  },
+  {
+   "rank": 89,
+   "name": "Carleton College",
+   "city": "Northfield",
+   "state": "MN",
+   "stars": 3.9,
+   "reviews": 571
+  },
+  {
+   "rank": 90,
+   "name": "University of Iowa",
+   "city": "Iowa City",
+   "state": "IA",
+   "stars": 3.8,
+   "reviews": 4012
+  },
+  {
+   "rank": 91,
+   "name": "Rutgers University\u2013New Brunswick",
+   "city": "Piscataway",
+   "state": "NJ",
+   "stars": 3.7,
+   "reviews": 6428
+  },
+  {
+   "rank": 92,
+   "name": "Brigham Young University",
+   "city": "Provo",
+   "state": "UT",
+   "stars": 4.1,
+   "reviews": 9109
+  },
+  {
+   "rank": 93,
+   "name": "University of Oklahoma",
+   "city": "Norman",
+   "state": "OK",
+   "stars": 3.9,
+   "reviews": 3471
+  },
+  {
+   "rank": 94,
+   "name": "University of Massachusetts Amherst",
+   "city": "Amherst",
+   "state": "MA",
+   "stars": 4.0,
+   "reviews": 5527
+  },
+  {
+   "rank": 95,
+   "name": "North Carolina State University",
+   "city": "Raleigh",
+   "state": "NC",
+   "stars": 3.9,
+   "reviews": 3629
+  },
+  {
+   "rank": 96,
+   "name": "University of Central Florida",
+   "city": "Orlando",
+   "state": "FL",
+   "stars": 3.8,
+   "reviews": 22826
+  },
+  {
+   "rank": 97,
+   "name": "Michigan State University",
+   "city": "East Lansing",
+   "state": "MI",
+   "stars": 3.9,
+   "reviews": 6717
+  },
+  {
+   "rank": 98,
+   "name": "Arizona State University",
+   "city": "Tempe",
+   "state": "AZ",
+   "stars": 3.8,
+   "reviews": 12560
+  },
+  {
+   "rank": 99,
+   "name": "United States Merchant Marine Academy",
+   "city": "Kings Point",
+   "state": "NY",
+   "stars": 3.7,
+   "reviews": 96
+  },
+  {
+   "rank": 100,
+   "name": "Babson College",
+   "city": "Wellesley",
+   "state": "MA",
+   "stars": 3.8,
+   "reviews": 404
+  }
+ ]
+}
