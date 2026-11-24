@@ -109,8 +109,10 @@ function App() {
       const me = await window.cfApi.me();
       setAccount(me);
       if (!me.signedIn) { setLoading(false); return; }
-      if (me.needsOnboarding && !autoOnboardRef.current) { autoOnboardRef.current = true; setRunOnboarding(true); }
       const [ws, apps] = await Promise.all([window.cfApi.getWorkspace(), window.cfApi.applications()]);
+      let setupDismissed = false;
+      try { setupDismissed = localStorage.getItem("cf.setupBannerHidden." + (ws?.draftStorageKey || "local")) === "1"; } catch (e) {}
+      if (me.needsOnboarding && !setupDismissed && !autoOnboardRef.current) { autoOnboardRef.current = true; setRunOnboarding(true); }
       setTrackerState(apps.data);
       if (requestedScope && requestedScope !== window.CF_DATA?.draftStorageKey) return;
       applyWorkspace(ws, true);
@@ -200,6 +202,16 @@ function App() {
     navigate("recommendations");
     if (options && options.buildPlan) runPlanInBackground();
   };
+  // "Dismiss" on the setup banner is remembered per workspace in this browser; Settings can still start setup.
+  const setupBannerKey = "cf.setupBannerHidden." + (data?.draftStorageKey || "local");
+  const [setupBannerHidden, setSetupBannerHidden] = React.useState(false);
+  React.useEffect(() => {
+    try { setSetupBannerHidden(localStorage.getItem(setupBannerKey) === "1"); } catch (e) { setSetupBannerHidden(false); }
+  }, [setupBannerKey]);
+  const hideSetupBanner = () => {
+    setSetupBannerHidden(true);
+    try { localStorage.setItem(setupBannerKey, "1"); } catch (e) {}
+  };
   const hiddenDecisions = tracker.apps.filter(a => a.decision && a.decision.state === "hidden").length;
   const portalCount = tracker.apps.filter(a => a.stage !== "working" || (a.login && a.login.hasPassword)).length;
   if (loading) return <div className="cf-loading-screen" role="status"><span className="cf-loading-mark">✱</span>Opening your workspace…</div>;
@@ -240,9 +252,12 @@ function App() {
       <div className="cf-workspace-body">
         <div className="cf-workspace-topline"><span>MY COLLEGE WORKSPACE</span><span>{account && account.user ? account.user.email : data.applicant.cycle || "Your next chapter starts here"}</span></div>
         <main id="workspace-main" className="cf-hub-main" ref={mainRef} tabIndex={-1}>
-          {!data.onboarding?.completed && <div className="cf-setup-banner" role="note" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", margin: "0 0 16px", padding: "12px 16px", borderRadius: 8, border: "1px solid var(--hairline)", background: "var(--surface-soft)", color: "var(--body)", fontSize: 14 }}>
+          {!data.onboarding?.completed && !setupBannerHidden && <div className="cf-setup-banner" role="note" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", margin: "24px 0 0", padding: "12px 16px", borderRadius: 8, border: "1px solid var(--hairline)", background: "var(--surface-soft)", color: "var(--body)", fontSize: 14 }}>
             <span>Setup isn't finished. Answer a few questions to get a starting college list.</span>
-            <Button size="sm" onClick={() => setRunOnboarding(true)}>Finish setup</Button>
+            <span style={{ display: "flex", gap: 8 }}>
+              <Button size="sm" variant="secondary" onClick={hideSetupBanner}>Dismiss</Button>
+              <Button size="sm" onClick={() => setRunOnboarding(true)}>Finish setup</Button>
+            </span>
           </div>}
           {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTracker} />}
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={applyWorkspace} />}
