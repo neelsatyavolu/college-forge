@@ -51,3 +51,25 @@ test('the average uses only the ranks a school has', () => {
   const [row] = rankList([{ id: 't', name: 'Testing College' }], one);
   assert.equal(row.avg, 15);
 });
+
+test('copy text is one "Full name - round" line per school, in list order', () => {
+  const { copyText } = require('../public/hub/rank-list.js');
+  const apps = [
+    { id: 'a', name: 'Arizona State University', round: 'EA' },
+    { id: 'c', name: 'Cornell University', round: 'ED' },
+    { id: 'u', name: 'University of California-Los Angeles', round: 'RD' },
+    { id: 'm', name: 'University of Michigan', round: 'REA' },
+    { id: 'n', name: 'Northeastern University', round: 'ED2' },
+    { id: 'p', name: 'Purdue University', round: 'Rolling' },
+    { id: 'r', name: 'Rice University', round: '' },
+  ];
+  assert.equal(copyText(rankList(apps, schools)), [
+    'Cornell University - ED1',
+    'University of California-Los Angeles - UC',
+    'University of Michigan - EA',
+    'Northeastern University - ED2',
+    'Purdue University - Rolling',
+    'Arizona State University - EA',
+    'Rice University',
+  ].join('\n'));
+});

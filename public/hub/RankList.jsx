@@ -17,8 +17,19 @@ const rankText = (n) => (n == null ? "—" : `#${n}`);
 
 function RankList({ tracker }) {
   const { SchoolMark } = window.cfApp;
+  const { Button } = window.CollegeForgeDesignSystem_e95e63;
   const { schools, error } = useRankingSchools();
+  const [copied, setCopied] = React.useState("");
   const rows = schools ? window.cfRankList.rankList(tracker.apps, schools) : [];
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(window.cfRankList.copyText(rows));
+      setCopied("Copied");
+    } catch (e) {
+      setCopied("Couldn’t copy");
+    }
+    setTimeout(() => setCopied(""), 1800);
+  };
   return (
     <div className="cf-page">
       <header className="cf-page-header">
@@ -26,6 +37,7 @@ function RankList({ tracker }) {
           <h1 className="cf-page-title">List</h1>
           <p className="cf-page-lede">Your schools, ordered by the average of their U.S. News, Niche and Forbes ranks. U.S. News ranks liberal arts colleges on a separate list, so those average Niche and Forbes only.</p>
         </div>
+        {rows.length ? <div className="cf-row-actions"><Button size="sm" variant="secondary" onClick={copy}>{copied || "Copy colleges"}</Button></div> : null}
       </header>
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>Couldn’t load the rankings. Reload the page to try again.</p> : null}
       {!tracker.apps.length ? <p className="cf-help">Add schools on <a href="#applications">Portals</a> or <a href="#progress">Progress</a> and they’ll show up here.</p> : null}

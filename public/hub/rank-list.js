@@ -50,7 +50,19 @@
     });
   }
 
-  var api = { matchSchool: matchSchool, rankList: rankList };
+  var UC_NAME = /^(university of california|uc )/i;
+  // Restrictive early action is still early action for this list.
+  var ROUND_LABEL = { ED: "ED1", ED2: "ED2", EA: "EA", REA: "EA", RD: "RD", Rolling: "Rolling" };
+
+  /** "Cornell University - ED1", one line per school in list order; UC campuses say "UC". */
+  function copyText(rows) {
+    return rows.map(function (r) {
+      var round = UC_NAME.test(r.app.name) ? "UC" : ROUND_LABEL[r.app.round] || "";
+      return round ? r.app.name + " - " + round : r.app.name;
+    }).join("\n");
+  }
+
+  var api = { matchSchool: matchSchool, rankList: rankList, copyText: copyText };
   root.cfRankList = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
