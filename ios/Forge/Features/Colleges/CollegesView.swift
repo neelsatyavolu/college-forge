@@ -1,13 +1,14 @@
 import SwiftUI
 
 enum CollegesSegment: String, CaseIterable, Identifiable {
-    case forYou, explore, shortlist
+    case forYou, explore, rankings, shortlist
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .forYou: "For you"
         case .explore: "Explore"
+        case .rankings: "Rankings"
         case .shortlist: "Shortlist"
         }
     }
@@ -18,7 +19,7 @@ struct CollegesDetailRoute: Hashable {
     let college: College
 }
 
-/// The Colleges tab: recommendations, the ranking and search, and the student's shortlist.
+/// The Colleges tab: recommendations, the U.S. News list and search, career rankings, and the student's shortlist.
 struct CollegesView: View {
     @Environment(Router.self) private var router
     @AppStorage("forge.colleges.segment") private var segment: CollegesSegment = .forYou
@@ -26,6 +27,7 @@ struct CollegesView: View {
     @State private var picks = CollegesPicksModel()
     @State private var chances = CollegesChancesModel()
     @State private var favorites = CollegesFavorites()
+    @State private var rankings = RankingsModel()
 
     var body: some View {
         @Bindable var router = router
@@ -41,17 +43,22 @@ struct CollegesView: View {
             .navigationDestination(for: CollegesDetailRoute.self) { route in
                 CollegeDetailView(college: route.college)
             }
+            .navigationDestination(for: RankingsDetailRoute.self) { route in
+                RankingsDetailView(row: route.row, path: route.path)
+            }
         }
         .environment(explore)
         .environment(picks)
         .environment(chances)
         .environment(favorites)
+        .environment(rankings)
     }
 
     @ViewBuilder private var content: some View {
         switch segment {
         case .forYou: RecommendationsView(segment: $segment)
         case .explore: ExploreView()
+        case .rankings: RankingsView()
         case .shortlist: ShortlistView(segment: $segment)
         }
     }

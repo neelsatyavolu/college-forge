@@ -1,0 +1,325 @@
+{
+ "total": 52,
+ "generated": "2026-11-23",
+ "signedIn": false,
+ "hasWorkspace": true,
+ "view": "path",
+ "title": "Ranked by the majors you can reach",
+ "tabs": [
+  {
+   "id": "path",
+   "label": "My path"
+  },
+  {
+   "id": "admitted",
+   "label": "Admitted"
+  },
+  {
+   "id": "overall",
+   "label": "All majors"
+  },
+  {
+   "id": "econ",
+   "label": "Economics"
+  },
+  {
+   "id": "business",
+   "label": "Business & finance"
+  },
+  {
+   "id": "cs",
+   "label": "Computer science"
+  },
+  {
+   "id": "stats",
+   "label": "Stats & data"
+  },
+  {
+   "id": "appmath",
+   "label": "Applied math"
+  }
+ ],
+ "majors": [
+  {
+   "key": "econ",
+   "label": "Economics"
+  },
+  {
+   "key": "business",
+   "label": "Business"
+  },
+  {
+   "key": "cs",
+   "label": "Computer science"
+  },
+  {
+   "key": "stats",
+   "label": "Statistics and data science"
+  },
+  {
+   "key": "appmath",
+   "label": "Applied math"
+  }
+ ],
+ "targets": [
+  "econ",
+  "business",
+  "cs",
+  "stats",
+  "appmath"
+ ],
+ "weights": {
+  "pay": 20,
+  "wealth": 25,
+  "rep": 10,
+  "jobs": 10,
+  "floor": 10,
+  "campus": 25
+ },
+ "flags": {
+  "col": true,
+  "va": false,
+  "stretch": false
+ },
+ "defaults": {
+  "weights": {
+   "pay": 20,
+   "wealth": 25,
+   "rep": 10,
+   "jobs": 10,
+   "floor": 10,
+   "campus": 25
+  },
+  "flags": {
+   "col": true,
+   "va": false,
+   "stretch": false
+  }
+ },
+ "pillars": [
+  {
+   "key": "pay",
+   "label": "Typical pay",
+   "sub": "median, by major",
+   "note": "Median pay 1 to 7 years out in the major counted here, against the same major at the other schools."
+  },
+  {
+   "key": "wealth",
+   "label": "Getting rich",
+   "sub": "top quarter, top 1%",
+   "note": "Top-quarter pay 10 years in, and the share of students from middle- and upper-income families who reach the top 1%."
+  },
+  {
+   "key": "rep",
+   "label": "Employer pull",
+   "sub": "name, recruiting, jobs nearby",
+   "note": "U.S. News, QS employer survey, LinkedIn career outcomes, Wall Street and Big Tech hiring, and finance and tech jobs nearby."
+  },
+  {
+   "key": "jobs",
+   "label": "Jobs",
+   "sub": "landing work, finishing",
+   "note": "Share of graduates working or in school, and the graduation rate."
+  },
+  {
+   "key": "floor",
+   "label": "Earnings floor",
+   "sub": "bottom quarter",
+   "note": "Bottom-quarter pay 10 years in."
+  },
+  {
+   "key": "campus",
+   "label": "Campus life",
+   "sub": "facilities, dorms, food",
+   "note": "Niche's campus, dorm and food grades, with their cost share taken out."
+  }
+ ],
+ "ai": null,
+ "missing": [],
+ "rows": [
+  {
+   "id": 144050,
+   "name": "UChicago",
+   "logo": "/logos/uchicago.png",
+   "place": "Chicago, IL",
+   "rank": "1",
+   "best": 1,
+   "worst": 1,
+   "score": 100,
+   "admitted": false,
+   "notes": [
+    "Econ · beats CS, Stats"
+   ],
+   "counted": "Econ",
+   "pay4": 157530.10858835146,
+   "top1": 0.09676831231683804,
+   "top1System": null,
+   "usNews": 9,
+   "usNewsLac": false,
+   "niche": 16,
+   "forbes": 17,
+   "measures": [
+    {
+     "key": "pay",
+     "share": 20,
+     "word": "Strong",
+     "percentile": 98
+    },
+    {
+     "key": "wealth",
+     "share": 25,
+     "word": "Strong",
+     "percentile": 96
+    },
+    {
+     "key": "rep",
+     "share": 10,
+     "word": "Strong",
+     "percentile": 99
+    },
+    {
+     "key": "jobs",
+     "share": 10,
+     "word": "Strong",
+     "percentile": 88
+    },
+    {
+     "key": "floor",
+     "share": 10,
+     "word": "Strong",
+     "percentile": 91
+    },
+    {
+     "key": "campus",
+     "share": 25,
+     "word": "Strong",
+     "percentile": 90
+    }
+   ],
+   "facts": {
+    "topQuarter": 197929,
+    "bottomQuarter": 66115,
+    "idle": 0.0332,
+    "grad": 0.9501,
+    "admit": 0.0448,
+    "campus": "A",
+    "dorms": "A+",
+    "food": "A-"
+   },
+   "switches": [
+    {
+     "name": "Economics",
+     "how": "open"
+    },
+    {
+     "name": "Business",
+     "how": "not counted"
+    },
+    {
+     "name": "Computer science",
+     "how": "open"
+    },
+    {
+     "name": "Statistics and data science",
+     "how": "open"
+    },
+    {
+     "name": "Applied math",
+     "how": "open"
+    }
+   ]
+  },
+  {
+   "id": 217156,
+   "name": "Brown",
+   "logo": "/logos/brown.png",
+   "place": "Providence, RI",
+   "rank": "2",
+   "best": 2,
+   "worst": 3,
+   "score": 94,
+   "admitted": false,
+   "notes": [
+    "CS · beats Econ, Applied math"
+   ],
+   "counted": "CS",
+   "pay4": 210686.64047151292,
+   "top1": 0.1340225775051302,
+   "top1System": null,
+   "usNews": 16,
+   "usNewsLac": false,
+   "niche": 12,
+   "forbes": 18,
+   "measures": [
+    {
+     "key": "pay",
+     "share": 20,
+     "word": "Strong",
+     "percentile": 98
+    },
+    {
+     "key": "wealth",
+     "share": 25,
+     "word": "Strong",
+     "percentile": 98
+    },
+    {
+     "key": "rep",
+     "share": 10,
+     "word": "Strong",
+     "percentile": 96
+    },
+    {
+     "key": "jobs",
+     "share": 10,
+     "word": "Good",
+     "percentile": 83
+    },
+    {
+     "key": "floor",
+     "share": 10,
+     "word": "Strong",
+     "percentile": 90
+    },
+    {
+     "key": "campus",
+     "share": 25,
+     "word": "Average",
+     "percentile": 63
+    }
+   ],
+   "facts": {
+    "topQuarter": 174606,
+    "bottomQuarter": 65867,
+    "idle": 0.0416,
+    "grad": 0.9564,
+    "admit": 0.0539,
+    "campus": "A-",
+    "dorms": "B-",
+    "food": "B"
+   },
+   "switches": [
+    {
+     "name": "Economics",
+     "how": "open"
+    },
+    {
+     "name": "Business",
+     "how": "not counted"
+    },
+    {
+     "name": "Computer science",
+     "how": "open"
+    },
+    {
+     "name": "Statistics and data science",
+     "how": "open"
+    },
+    {
+     "name": "Applied math",
+     "how": "open"
+    }
+   ]
+  }
+ ]
+}
