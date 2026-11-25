@@ -196,6 +196,15 @@ try {
   assert.equal(done.onboarding.completed, true);
   assert.equal(done.onboarding.interview.phase, 'done');
   assert.equal(done.colleges.length, 9, 'Finishing does not rebuild the approved list');
+  // Shortlist shows the sourced research facts.
+  const sample = JSON.parse(readFileSync(path.join(root, 'lib/school-research/university-of-miami.json'), 'utf8'));
+  await store.updateWorkspace(WS, (w) => ({ ...w, colleges: w.colleges.map((c, i) => (i === 0 ? { ...c, research: sample } : c)) }));
+  await page.goto(ORIGIN + '/hub/index.html#shortlist');
+  await page.reload();
+  await page.waitForSelector('.cf-research summary');
+  await page.evaluate(() => { document.querySelector('.cf-research').open = true; document.querySelector('.cf-research').scrollIntoView(); });
+  await waitText('Cost of attendance');
+  for (const w of [1440, 390]) { await page.setViewport({ width: w, height: 900 }); await new Promise((r) => setTimeout(r, 150)); await page.screenshot({ path: path.join(shots, `06-shortlist-research-${w}.png`) }); }
   assert.deepEqual(errors, [], 'No page errors');
   console.log(`onboarding chat flow passed; screenshots in ${shots}`);
 } finally {

@@ -183,6 +183,48 @@ function ChancesPanel({ data, onWorkspaceChange }) {
   );
 }
 
+const RESEARCH_GROUPS = [
+  ["Admissions", [["admit_rate", "Admit rate"], ["ed_admit_rate", "Early admit rate"], ["sat_mid50", "SAT middle 50%"], ["act_mid50", "ACT middle 50%"], ["gpa_note", "GPA"], ["test_policy", "Testing"]]],
+  ["Cost and aid", [["sticker_cost", "Cost of attendance"], ["meets_full_need", "Need-based aid"], ["css_profile", "CSS Profile"], ["merit_aid", "Merit aid"], ["net_price_lt30k", "Net price, under $30k income"], ["net_price_30_48k", "Net price, $30–48k"], ["net_price_48_75k", "Net price, $48–75k"], ["net_price_75_110k", "Net price, $75–110k"], ["net_price_gt110k", "Net price, over $110k"]]],
+  ["Applying", [["ed_ea_options", "Early rounds"], ["interview", "Interview"], ["demonstrated_interest", "Demonstrated interest"], ["major_notes", "Your major"], ["notes", "Notes"]]],
+];
+
+/** Sourced facts from setup research, grouped, each linked to the page it came from. */
+function ResearchFacts({ research }) {
+  if (!research || !(research.facts || []).length) return null;
+  const facts = research.facts;
+  return (
+    <details className="cf-research">
+      <summary>
+        Research · <span className="cf-nums">{facts.length} facts · checked {research.checkedAt}</span>
+        {research.needsReview ? <span className="cf-research-flag"> · some facts still need checking</span> : null}
+      </summary>
+      {RESEARCH_GROUPS.map(([group, keys]) => {
+        const rows = keys.flatMap(([key, label]) => facts.filter((f) => f.key === key).map((f, i) => ({ f, label, id: key + i })));
+        if (!rows.length) return null;
+        return (
+          <div key={group} className="cf-research-group">
+            <h4>{group}</h4>
+            <dl>
+              {rows.map(({ f, label, id }) => (
+                <div key={id}>
+                  <dt>{label}</dt>
+                  <dd>
+                    {f.value}{" "}
+                    {/^https?:\/\//.test(f.sourceUrl) ? <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">source</a> : null}
+                    {f.cycle !== "2026-27" ? <span className="cf-research-tag">{f.cycle} cycle</span> : null}
+                    {f.thirdParty ? <span className="cf-research-tag">third-party</span> : null}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        );
+      })}
+    </details>
+  );
+}
+
 function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemove, busy, error }) {
   const [confirmRemove, setConfirmRemove] = React.useState(false);
   return (
@@ -206,6 +248,7 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
             {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Overall admission rate: {s.admit}</span> : null}
           </div>
           <OddsLine odds={odds} stale={oddsStale} />
+          <ResearchFacts research={s.research} />
           <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
             <label style={{ fontSize: 11, color: "var(--muted)", display: "flex", alignItems: "center", gap: 6 }}>
               Tier
