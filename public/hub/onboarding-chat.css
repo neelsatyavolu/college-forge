@@ -103,3 +103,22 @@
 .oc-shell--chat .oc-head { position: static; flex: none; }
 .oc-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .oc-shell--chat .oc-composer { position: static; flex: none; }
+
+/* Activities and honors list tile. */
+.oc-acts { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border: 1px solid var(--hairline); border-radius: 10px; }
+.oc-acts-head, .oc-acts-row { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr) minmax(0, 0.8fr) minmax(0, 0.7fr) auto; gap: 8px; align-items: center; }
+.oc-acts-head { font-size: 12px; font-weight: 600; color: var(--muted); }
+.oc-acts-head--honors { margin-top: 10px; }
+.oc-acts-row .oc-input { min-width: 0; padding: 8px 10px; font-size: 14px; }
+.oc-acts-row--honor { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr) minmax(0, 0.8fr) auto; }
+.oc-acts-head--honors { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr) minmax(0, 0.8fr) auto; }
+.oc-acts-add { align-self: flex-start; font-size: 13px; }
+.oc-acts-actions { margin-top: 6px; }
+.oc-acts-or { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.oc-upload--compact { flex-direction: row; justify-content: center; padding: 14px 16px; gap: 10px; }
+.oc-upload--compact .oc-upload-hint { display: none; }
+@media (max-width: 560px) {
+  .oc-acts-head { display: none; }
+  .oc-acts-row, .oc-acts-row--honor { grid-template-columns: 1fr 1fr; padding-bottom: 8px; border-bottom: 1px solid var(--hairline-soft); }
+  .oc-acts-row .oc-input:first-child { grid-column: 1 / -1; }
+}

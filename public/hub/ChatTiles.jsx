@@ -56,7 +56,7 @@ function OcNumberTile({ q, disabled, onAnswer }) {
   );
 }
 
-function OcUploadTile({ disabled, onAnswer }) {
+function OcUploadTile({ disabled, onAnswer, compact }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
   const [over, setOver] = React.useState(false);
@@ -80,16 +80,16 @@ function OcUploadTile({ disabled, onAnswer }) {
   };
   return (
     <div>
-      <label className={"oc-upload" + (over ? " is-over" : "")}
+      <label className={"oc-upload" + (compact ? " oc-upload--compact" : "") + (over ? " is-over" : "")}
         onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); if (!disabled && !busy) upload(e.dataTransfer.files); }}>
         <input ref={inputRef} type="file" accept=".pdf,.docx,.txt,.csv" multiple hidden disabled={disabled || busy} onChange={(e) => upload(e.target.files)} />
         <span className="oc-upload-icon" aria-hidden="true">↑</span>
-        <span className="oc-upload-title">{busy ? "Reading your file…" : "Drop your transcript here, or choose a file"}</span>
+        <span className="oc-upload-title">{busy ? "Reading your file…" : compact ? "Drop a resume or activities list, or choose a file" : "Drop your transcript here, or choose a file"}</span>
         <span className="oc-upload-hint">PDF, Word or text · up to 15 MB</span>
       </label>
       {error && <p className="oc-error" role="alert">{error}</p>}
-      <button type="button" className="oc-link" disabled={disabled || busy} onClick={() => onAnswer("I don't have my transcript handy. Let's do it by hand.")}>I'll type my grades instead</button>
+      {!compact && <button type="button" className="oc-link" disabled={disabled || busy} onClick={() => onAnswer("I don't have my transcript handy. Let's do it by hand.")}>I'll type my grades instead</button>}
     </div>
   );
 }
@@ -115,7 +115,87 @@ function OcSchoolSearchTile({ disabled, onAnswer }) {
   );
 }
 
-function OcQuestionBody({ q, disabled, onAnswer }) {
+const OC_MAX_ACTIVITIES = 10;
+const OC_MAX_HONORS = 5;
+const ocBlankActivity = () => ({ name: "", role: "", years: "", hpw: "" });
+const ocBlankHonor = () => ({ title: "", level: "", year: "" });
+
+/**
+ * An editable activities and honors list, prefilled from the profile. Saving writes it straight to the
+ * profile (same rules as the Profile page), then tells the AI what was saved so it can ask about the
+ * ones that matter most. A resume or activities PDF can be uploaded instead for the AI to read.
+ */
+function OcActivitiesTile({ profile, revision, disabled, onAnswer }) {
+  const saved = (profile && profile.activities) || [];
+  const savedHonors = (profile && profile.honors) || [];
+  // Saved rows first, then empty ones to fill: at least 3 activity rows and 1 honor row.
+  const pad = (list, blank, min, max) => [...list, ...Array.from({ length: Math.max(0, Math.min(max, Math.max(min, list.length + 1)) - list.length) }, blank)];
+  const [rows, setRows] = React.useState(() => pad(saved.map((a) => ({ ...a, hpw: a.hpw || "" })), ocBlankActivity, 3, OC_MAX_ACTIVITIES));
+  const [honors, setHonors] = React.useState(() => pad(savedHonors.map((h) => ({ ...h })), ocBlankHonor, 1, OC_MAX_HONORS));
+  const [busy, setBusy] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const edit = (setter, i, key) => (e) => { const v = e.target.value; setter((list) => list.map((r, j) => (j === i ? { ...r, [key]: v } : r))); };
+  const remove = (setter, i) => setter((list) => list.filter((_, j) => j !== i));
+
+  const save = async () => {
+    const activities = rows.filter((r) => r.name.trim()).map((r, i) => ({ ...r, name: r.name.trim(), role: (r.role || "").trim(), years: (r.years || "").trim(), hpw: String(r.hpw || "").trim(), type: r.type || "", rank: i + 1 }));
+    const honorList = honors.filter((h) => h.title.trim()).map((h) => ({ ...h, title: h.title.trim(), level: (h.level || "").trim(), year: (h.year || "").trim() }));
+    if (!activities.length && !honorList.length) { setError("Add at least one activity, or tell the AI you don't have any yet."); return; }
+    setBusy(true); setError("");
+    try {
+      await window.cfApi.patch({ profile: { activities, honors: honorList }, ...(Number.isInteger(revision) ? { baseRevision: revision } : {}) });
+      const line = (a) => [a.name, a.role, a.years && `grades ${a.years}`, a.hpw && `${a.hpw} hrs/wk`].filter(Boolean).join(", ");
+      const honorLine = (h) => [h.title, h.level, h.year].filter(Boolean).join(", ");
+      onAnswer([
+        `I saved my list: ${activities.length} ${activities.length === 1 ? "activity" : "activities"}${honorList.length ? ` and ${honorList.length} ${honorList.length === 1 ? "honor" : "honors"}` : ""}.`,
+        ...activities.map((a, i) => `${i + 1}. ${line(a)}`),
+        ...(honorList.length ? ["Honors:", ...honorList.map((h) => `- ${honorLine(h)}`)] : []),
+      ].join("\n"));
+    } catch (e) {
+      setError(e.status === 409 ? "Your profile changed in another tab. Reload and try again." : e.message || "That didn't save. Try again.");
+    }
+    setBusy(false);
+  };
+
+  const off = disabled || busy;
+  return (
+    <div className="oc-acts">
+      <div className="oc-acts-head"><span>Activity</span><span>Your role</span><span>Grades</span><span>Hrs/wk</span><span /></div>
+      {rows.map((r, i) => (
+        <div className="oc-acts-row" key={"a" + i}>
+          <input className="oc-input" aria-label={`Activity ${i + 1}`} placeholder="Robotics team" value={r.name} disabled={off} onChange={edit(setRows, i, "name")} maxLength={200} />
+          <input className="oc-input" aria-label={`Role in activity ${i + 1}`} placeholder="Build lead" value={r.role || ""} disabled={off} onChange={edit(setRows, i, "role")} maxLength={200} />
+          <input className="oc-input" aria-label={`Grades for activity ${i + 1}`} placeholder="9–12" value={r.years || ""} disabled={off} onChange={edit(setRows, i, "years")} maxLength={40} />
+          <input className="oc-input" aria-label={`Hours per week for activity ${i + 1}`} inputMode="numeric" placeholder="8" value={r.hpw || ""} disabled={off} onChange={edit(setRows, i, "hpw")} maxLength={4} />
+          <button type="button" className="oc-link" aria-label={`Remove activity ${i + 1}`} disabled={off} onClick={() => remove(setRows, i)}>Remove</button>
+        </div>
+      ))}
+      {rows.length < OC_MAX_ACTIVITIES && <button type="button" className="oc-link oc-acts-add" disabled={off} onClick={() => setRows((l) => [...l, ocBlankActivity()])}>+ Add activity</button>}
+
+      <div className="oc-acts-head oc-acts-head--honors"><span>Award or honor</span><span>Level</span><span>Year</span><span /></div>
+      {honors.map((h, i) => (
+        <div className="oc-acts-row oc-acts-row--honor" key={"h" + i}>
+          <input className="oc-input" aria-label={`Honor ${i + 1}`} placeholder="AP Scholar with Distinction" value={h.title} disabled={off} onChange={edit(setHonors, i, "title")} maxLength={200} />
+          <input className="oc-input" aria-label={`Level of honor ${i + 1}`} placeholder="School, State, National…" value={h.level || ""} disabled={off} onChange={edit(setHonors, i, "level")} maxLength={40} />
+          <input className="oc-input" aria-label={`Year of honor ${i + 1}`} placeholder="11" value={h.year || ""} disabled={off} onChange={edit(setHonors, i, "year")} maxLength={40} />
+          <button type="button" className="oc-link" aria-label={`Remove honor ${i + 1}`} disabled={off} onClick={() => remove(setHonors, i)}>Remove</button>
+        </div>
+      ))}
+      {honors.length < OC_MAX_HONORS && <button type="button" className="oc-link oc-acts-add" disabled={off} onClick={() => setHonors((l) => [...l, ocBlankHonor()])}>+ Add honor</button>}
+
+      <div className="oc-tile-row oc-acts-actions">
+        <OcButton size="sm" disabled={off} onClick={save}>{busy ? "Saving…" : "Save my list"}</OcButton>
+        <span className="oc-tile-note">Up to {OC_MAX_ACTIVITIES} activities and {OC_MAX_HONORS} honors, like the Common App. Rough is fine.</span>
+      </div>
+      {error && <p className="oc-error" role="alert">{error}</p>}
+      <p className="oc-acts-or">Have a resume or activities list already?</p>
+      <OcUploadTile disabled={off} onAnswer={(msg) => onAnswer(`${msg} It has my activities and awards; please read it and fill in my list.`)} compact />
+    </div>
+  );
+}
+
+function OcQuestionBody({ q, profile, revision, disabled, onAnswer }) {
+  if (q.kind === "activities") return <OcActivitiesTile profile={profile} revision={revision} disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "upload") return <OcUploadTile disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "number") return <OcNumberTile q={q} disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "school_search") return <OcSchoolSearchTile disabled={disabled} onAnswer={onAnswer} />;
@@ -126,12 +206,12 @@ function OcQuestionBody({ q, disabled, onAnswer }) {
 const ocNorm = (t) => (t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 /** The question itself, then its tiles. The prompt is skipped when the message above already says it. */
-function OcQuestion({ q, lead, disabled, onAnswer }) {
+function OcQuestion({ q, lead, profile, revision, disabled, onAnswer }) {
   const said = q.prompt && ocNorm(lead).includes(ocNorm(q.prompt));
   return (
     <div className="oc-question">
       {!said && <p className="oc-question-prompt">{q.prompt}</p>}
-      <OcQuestionBody q={q} disabled={disabled} onAnswer={onAnswer} />
+      <OcQuestionBody q={q} profile={profile} revision={revision} disabled={disabled} onAnswer={onAnswer} />
     </div>
   );
 }

@@ -73,8 +73,9 @@ async function scripted(body) {
   const n = state.chats.filter((c) => c.mode === 'onboarding').length;
   if (n === 1) return nd({ type: 'delta', text: "Great to meet you, Sam. Let's start with where you'd like to live for four years." }, { type: 'question', question: { id: 'setting', kind: 'multi', prompt: 'Campus setting', options: [{ value: 'urban', label: 'City' }, { value: 'suburban', label: 'Suburban' }, { value: 'college-town', label: 'College town', hint: 'Campus is the town' }, { value: 'rural', label: 'Rural' }, { value: 'any', label: 'No preference' }], allowOther: true } });
   if (n === 2) return nd({ type: 'delta', text: 'Got it. Do you have your transcript? It saves us typing every course.' }, { type: 'question', question: { id: 'transcript', kind: 'upload', prompt: 'Transcript' } });
-  if (n === 3) return nd({ type: 'delta', text: 'Thanks, I read it. What did you get on the SAT?' }, { type: 'question', question: { id: 'sat', kind: 'number', prompt: 'SAT total', min: 400, max: 1600 } });
-  if (n === 4) {
+  if (n === 3) return nd({ type: 'delta', text: 'Thanks, I read it. Now the things you do outside class.' }, { type: 'question', question: { id: 'acts', kind: 'activities', prompt: 'List your activities and any awards' } });
+  if (n === 4) return nd({ type: 'delta', text: 'Great list. What did you get on the SAT?' }, { type: 'question', question: { id: 'sat', kind: 'number', prompt: 'SAT total', min: 400, max: 1600 } });
+  if (n === 5) {
     await store.updateWorkspace(WS, (w) => ({ ...w, onboarding: { ...w.onboarding, interview: { ...w.onboarding.interview, phase: 'list', listDraft: SCHOOLS } } }));
     return nd({ type: 'delta', text: "Here's a first list: 10 applications, balanced, with two likely schools that fit your budget." }, { type: 'list', schools: SCHOOLS });
   }
@@ -88,7 +89,7 @@ async function answer(request) {
   const body = request.postData();
   const parsed = body && body.startsWith('{') ? JSON.parse(body) : null;
   if (url.pathname === '/api/me') return realRoute(meRoute.GET, request);
-  if (url.pathname === '/api/workspace') return realRoute(request.method() === 'GET' ? workspaceRoute.GET : workspaceRoute.POST, request);
+  if (url.pathname === '/api/workspace') return realRoute(workspaceRoute[request.method()] || workspaceRoute.POST, request);
   if (url.pathname === '/api/applications') return json({ success: true, data: { revision: 0, autocheck: false, apps: [] } });
   if (url.pathname === '/api/applications/catalog') return json([{ id: 'x', name: 'Rice University' }]);
   if (url.pathname === '/api/ai/status') return json({ active: state.aiConnected ? 'codex' : null, codexConnected: state.aiConnected });
@@ -199,7 +200,25 @@ try {
   const tmpFile = path.join(dataDir, 'transcript.pdf');
   (await import('node:fs')).writeFileSync(tmpFile, 'synthetic transcript');
   await input.uploadFile(tmpFile);
+
+  // The activities list: prefilled from the profile, editable, saved straight to the profile.
+  await waitText('List your activities and any awards');
+  await assertVisible('.oc-acts-actions', 'activities save button');
+  const typeInto = async (label, value) => { const el = await page.$(`[aria-label="${label}"]`); await el.click({ clickCount: 3 }); await el.type(value); };
+  await typeInto('Activity 2', 'School newspaper');
+  await typeInto('Role in activity 2', 'Co-editor');
+  await typeInto('Grades for activity 2', '10-12');
+  await typeInto('Hours per week for activity 2', '6');
+  await typeInto('Honor 1', 'Regional science fair, 2nd place');
+  await typeInto('Level of honor 1', 'Regional');
+  await shoot('03c-activities');
+  await click('Save my list');
   await waitText('What did you get on the SAT?');
+  const afterActs = await store.getWorkspace(WS);
+  assert.deepEqual(afterActs.profile.activities.map((a) => a.name), ['Science Olympiad', 'School newspaper'], 'existing activity kept, new one added');
+  assert.equal(afterActs.profile.activities[1].role, 'Co-editor');
+  assert.equal(afterActs.profile.honors[0].title, 'Regional science fair, 2nd place');
+  assert.match(state.chats.at(-1).messages.at(-1).content, /I saved my list: 2 activities and 1 honor/);
   await page.type('.oc-input--number', '1410');
   await click('Send');
 

@@ -14,7 +14,7 @@ type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
 
 export const TRANSCRIPT_CAP = 120;
-const KINDS: UiQuestion["kind"][] = ["single", "multi", "upload", "number", "school_search", "confirm"];
+const KINDS: UiQuestion["kind"][] = ["single", "multi", "upload", "number", "school_search", "confirm", "activities"];
 const TIERS: UiSchool["tier"][] = ["reach", "target", "likely"];
 const NO_PRICE_CAP = new Set(["50plus", "unsure"]);
 
@@ -57,7 +57,7 @@ export function parseQuestion(a: Args): UiQuestion | string {
   const id = text(a.id, 60);
   const prompt = text(a.prompt, 500);
   const kind = KINDS.find((k) => k === a.kind);
-  if (!id || !prompt || !kind) return "ask_question needs id, prompt and kind (single | multi | upload | number | school_search | confirm).";
+  if (!id || !prompt || !kind) return "ask_question needs id, prompt and kind (single | multi | upload | number | school_search | confirm | activities).";
   const options = Array.isArray(a.options)
     ? a.options.flatMap((o) => {
         const r = (o ?? {}) as Args;
@@ -177,7 +177,7 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   {
     name: "ask_question",
     description:
-      "Show the student one question as tiles and END YOUR TURN. Use it for anything with fixed answers (single/multi choice, confirm), the transcript upload (kind 'upload'), a number (GPA, scores: kind 'number' with min/max) or schools they already like (kind 'school_search'). Write any lead-in sentence before calling it. The student may type instead of tapping.",
+      "Show the student one question as tiles and END YOUR TURN. Use it for anything with fixed answers (single/multi choice, confirm), the transcript upload (kind 'upload'), a number (GPA, scores: kind 'number' with min/max) or schools they already like (kind 'school_search'), or the editable activities-and-honors list (kind 'activities': the student fills in rows or uploads a resume; saving writes the list to their profile). Write any lead-in sentence before calling it. The student may type instead of tapping.",
     parameters: {
       type: "object",
       properties: {
