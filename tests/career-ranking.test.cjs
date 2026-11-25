@@ -63,15 +63,19 @@ test('school names from applications match the ranked school', () => {
   assert.equal(name('University of California, Davis'), 'UC Davis');
   assert.equal(name('Washington University in St. Louis'), 'WashU');
   assert.equal(name('University of Washington'), 'Washington');
-  assert.equal(name('Harvard University'), null);
-  assert.equal(name('Boston College'), null);
+  assert.equal(name('Harvard University'), 'Harvard University');
+  // Boston College never matches Boston University.
+  assert.equal(name('Boston College'), 'Boston College');
+  assert.equal(name('Gotham University'), null);
   assert.equal(name('Penn State'), 'Penn State');
 });
 
 test('free-text majors map to the ranking\'s majors', () => {
   assert.deepEqual(majorKeysOf('Computer Science and Economics'), ['econ', 'cs']);
   assert.deepEqual(majorKeysOf('Data Science'), ['stats']);
-  assert.deepEqual(majorKeysOf('Media Studies'), []);
+  assert.deepEqual(majorKeysOf('Media Studies'), ['comm']);
+  assert.deepEqual(majorKeysOf('Nursing'), ['nursing']);
+  assert.deepEqual(majorKeysOf('Underwater Basket Weaving'), []);
 });
 
 test('reading a workspace for the rankings page never creates one', async () => {
@@ -89,4 +93,19 @@ test('reading a workspace for the rankings page never creates one', async () => 
     if (priorBlob === undefined) delete process.env.BLOB_READ_WRITE_TOKEN; else process.env.BLOB_READ_WRITE_TOKEN = priorBlob;
     await fs.promises.rm(directory, { recursive: true, force: true });
   }
+});
+
+test('any major works: schools that do not offer it rank last on My path', () => {
+  const r = createRanker(data);
+  const st = { track: 'path', va: false, col: true, stretch: false, w: { ...DEFAULT_WEIGHTS } };
+  for (const k of r.majors.map((m) => m.key)) {
+    const rows = r.rank(st, { targets: [k], direct: {} });
+    assert.equal(rows.length, data.schools.length);
+    assert.ok(rows.every((x) => Number.isFinite(x.score)), k);
+    const firstNone = rows.findIndex((x) => x.mx.none);
+    if (firstNone >= 0) assert.ok(rows.slice(firstNone).every((x) => x.mx.none), k);
+  }
+  const nursing = r.rank(st, { targets: ['nursing'], direct: {} });
+  assert.ok(!nursing[0].mx.none);
+  assert.equal(nursing[0].mx.parts[0].k, 'nursing');
 });

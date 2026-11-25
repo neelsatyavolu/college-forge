@@ -75,9 +75,11 @@ export default function RankingsClient() {
     ...(admitted.size ? [{ id: "admitted", label: "Admitted" }] : []),
     ...(me.ai ? [{ id: "ai", label: "AI My Path" }] : []),
     { id: "overall", label: "All majors" },
-    ...majors.map((m) => ({ id: m.key, label: m.tab || m.label })),
+    ...majors.filter((m) => m.tab).map((m) => ({ id: m.key, label: m.tab! })),
   ], [majors, admitted.size, me.ai]);
-  const active = tabs.some((t) => t.id === view) ? view : "path";
+  // Majors without a tab of their own are picked from a menu next to the tabs.
+  const more = useMemo(() => majors.filter((m) => !m.tab).sort((a, b) => a.label.localeCompare(b.label)), [majors]);
+  const active = tabs.some((t) => t.id === view) || more.some((m) => m.key === view) ? view : "path";
   const isAi = active === "ai", isAdmitted = active === "admitted", isPath = active === "path" || isAdmitted;
 
   const result = useMemo(() => {
@@ -116,6 +118,17 @@ export default function RankingsClient() {
               </button>
             ))}
           </div>
+          {more.length > 0 && (
+            <select
+              className="rk-more"
+              aria-label="Rank one more major"
+              value={more.some((m) => m.key === active) ? active : ""}
+              onChange={(e) => e.target.value && setView(e.target.value)}
+            >
+              <option value="">More majors…</option>
+              {more.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
+            </select>
+          )}
         </div>
 
         {data.error && <div className="cf-notice" role="alert">{data.error}</div>}

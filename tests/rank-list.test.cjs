@@ -20,14 +20,14 @@ test('application names match the ranking file’s schools', () => {
 
 test('ambiguous or unknown names do not match', () => {
   assert.equal(nameOf('University of California'), undefined);
-  assert.equal(nameOf('Rice University'), undefined);
+  assert.equal(nameOf('Gotham University'), undefined);
   assert.equal(nameOf(''), undefined);
 });
 
 test('the list runs best average rank first, unranked schools last', () => {
   const apps = [
     { id: 'a', name: 'Arizona State University' },
-    { id: 'r', name: 'Rice University' },
+    { id: 'r', name: 'Gotham University' },
     { id: 'c', name: 'Cornell University' },
     { id: 'm', name: 'University of Michigan' },
   ];
@@ -76,7 +76,7 @@ test('copy text is one "Full name - round" line per school, in list order', () =
     { id: 'm', name: 'University of Michigan', round: 'REA' },
     { id: 'n', name: 'Northeastern University', round: 'ED2' },
     { id: 'p', name: 'Purdue University', round: 'Rolling' },
-    { id: 'r', name: 'Rice University', round: '' },
+    { id: 'r', name: 'Gotham University', round: '' },
   ];
   assert.equal(copyText(rankList(apps, schools)), [
     'Cornell University - ED1',
@@ -85,7 +85,7 @@ test('copy text is one "Full name - round" line per school, in list order', () =
     'Northeastern University - ED2',
     'Purdue University - Rolling',
     'Arizona State University - EA',
-    'Rice University',
+    'Gotham University',
   ].join('\n'));
 });
 

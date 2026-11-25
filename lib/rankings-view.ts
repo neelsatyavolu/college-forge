@@ -137,7 +137,7 @@ export function buildRankingsView(data: CareerData, me: RankingsMe, input: Ranki
       const counted = r.mx.home ? "All majors" : label(r.mx.parts[0].k, r);
       const notes = [
         pathRanks ? `My path ${pathRanks.get(s.id)} of ${pathRanks.size}` : "",
-        isPath ? (r.mx.home ? "no easy switch, scored on all majors" : `${counted}${r.mx.direct ? " (applied)" : ""}${r.mx.also?.length ? " · beats " + r.mx.also.map((k) => label(k, r)).join(", ") : ""}`) : "",
+        isPath ? (r.mx.none ? "doesn’t offer your majors, scored on all majors" : r.mx.home ? "no easy switch, scored on all majors" : `${counted}${r.mx.direct ? " (applied)" : ""}${r.mx.also?.length ? " · beats " + r.mx.also.slice(0, 3).map((k) => label(k, r)).join(", ") + (r.mx.also.length > 3 ? ` and ${r.mx.also.length - 3} more` : "") : ""}`) : "",
         r.obs < 0.5 ? "thin pay data" : "",
       ].filter(Boolean);
       return {
@@ -164,9 +164,9 @@ export function buildRankingsView(data: CareerData, me: RankingsMe, input: Ranki
           topQuarter: num(s.p75_10), bottomQuarter: num(s.p25_10), idle: num(r.idle), grad: num(s.grad), admit: num(s.admit),
           campus: s.niche?.campus ?? null, dorms: s.niche?.dorms ?? null, food: s.niche?.food ?? null,
         },
-        switches: isPath ? targets.map((k) => {
+        switches: isPath ? targets.filter((k) => s.switch.lv[k] != null || !!s.tracks[k]).map((k) => {
           const lv = s.switch.lv[k];
-          return { name: s.switch.lbl[k] || majors.find((m) => m.key === k)?.label || k, how: lv ? SWITCH_LABELS[String(lv)] ?? "unknown" : "not counted" };
+          return { name: s.switch.lbl[k] || majors.find((m) => m.key === k)?.label || k, how: lv == null ? SWITCH_LABELS.unchecked : lv ? SWITCH_LABELS[String(lv)] ?? "unknown" : "not counted" };
         }) : [],
       };
     }),
