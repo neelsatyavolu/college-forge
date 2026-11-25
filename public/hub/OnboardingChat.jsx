@@ -147,9 +147,9 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   React.useEffect(() => { checkAi(); }, []);
   React.useEffect(() => { endRef.current && endRef.current.scrollIntoView({ block: "end", behavior: "smooth" }); }, [turns.length, busy, cards.length]);
 
-  /** Sends one student message to the interviewer and streams the reply. */
+  /** Sends one student message to the interviewer and streams the reply. Resolves true when the reply arrived. */
   const send = async (text) => {
-    if (busyRef.current || !text.trim()) return;
+    if (busyRef.current || !text.trim()) return false;
     setError(""); setBusy(true); setStatus("Thinking…");
     const history = [...turnsRef.current, { role: "user", content: text }];
     setTurns([...history, { role: "assistant", content: "" }]);
@@ -170,12 +170,13 @@ function OnboardingChat({ data, onComplete, onCancel }) {
       // The interview is done but the AI ended its turn without a list: ask for it once.
       const nextIv = next?.onboarding?.interview;
       if (nextIv?.phase === "list" && !(nextIv.listDraft || []).length && !(ui && ui.list) && text !== OC_SHOW_LIST) return send(OC_SHOW_LIST);
-      return;
+      return true;
     } catch (e) {
       setError(e.message || "Something went wrong. Try again.");
       setTurns(history);
     }
     setBusy(false); setStatus("");
+    return false;
   };
 
   // Start or resume the interview once the AI is connected.
@@ -219,6 +220,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
       const update = (slug, patch) => setCards((cs) => cs.map((c) => (c.slug === slug ? { ...c, ...patch } : c)));
       let queue = startRes.steps || [];
       const running = new Set();
+      const failed = new Set();
       const worker = async () => {
         while (queue.length) {
           const step = queue.shift();
@@ -230,7 +232,13 @@ function OnboardingChat({ data, onComplete, onCancel }) {
               if (ev.type === "tool" && ev.name === "web_fetch") update(step.slug, { stage: "reading" });
               if (ev.type === "research") update(ev.slug, { stage: ev.stage, facts: undefined, note: `${ev.facts} facts saved` });
             });
-          } catch (e) { update(step.slug, { note: "Retrying…" }); }
+          } catch (e) {
+            // A failed AI call (rate limit, network) isn't an attempt: the school stays queued for "Try again".
+            running.delete(step.slug);
+            failed.add(step.slug);
+            update(step.slug, { stage: "queued", note: "The AI didn't answer. It will retry." });
+            continue;
+          }
           const after = await fetch("/api/ai/research-plan", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "attempt", slug: step.slug }) }).then((r) => r.json()).catch(() => ({ steps: [] }));
           running.delete(step.slug);
           const left = (after.steps || []).find((s) => s.slug === step.slug);
@@ -245,7 +253,13 @@ function OnboardingChat({ data, onComplete, onCancel }) {
       await Promise.all(Array.from({ length: OC_RESEARCH_CONCURRENCY }, worker));
       await reload();
       setBusy(false); setStatus("");
-      await send(OC_RESEARCH_DONE);
+      if (failed.size) {
+        setError(`Research didn't finish for ${failed.size} ${failed.size === 1 ? "school" : "schools"} because the AI didn't answer.`);
+        return;
+      }
+      const ok = await send(OC_RESEARCH_DONE);
+      // The AI must answer with a recommendation; without one the phase can't move, so offer a retry.
+      if (ok && (await reload())?.onboarding?.interview?.phase === "research") setError("The AI didn't suggest an early plan yet.");
     } catch (e) {
       setError(e.message || "Research stopped. Try again."); setBusy(false); setStatus("");
     }
@@ -253,8 +267,13 @@ function OnboardingChat({ data, onComplete, onCancel }) {
 
   /** After the student confirms the strategy: save it, then build rounds and the timeline. */
   const confirmStrategy = async () => {
-    await send(OC_CONFIRM);
-    await window.cfApi.postAction("set-interview-phase", { phase: "plan", strategyConfirmed: true });
+    if (!(await send(OC_CONFIRM))) return;
+    try {
+      await window.cfApi.postAction("set-interview-phase", { phase: "plan", strategyConfirmed: true });
+    } catch (e) {
+      setError(e.message || "Couldn't save that. Try again.");
+      return;
+    }
     await runPlan();
   };
   const runPlan = async () => {

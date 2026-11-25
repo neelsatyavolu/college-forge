@@ -6,6 +6,7 @@ import { buildHubSystemPrompt } from "@/lib/hub-context";
 import { makeHubTools } from "@/lib/hub-tools";
 import { makeInterviewTools, recordTurn } from "@/lib/interview-tools";
 import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
+import { sensitiveRefusal, toolAllowed } from "@/lib/tool-policy";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
 export const runtime = "nodejs";
@@ -13,8 +14,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 const MAX_TURNS = 24;
-/** During the interview the list changes only through propose_list and the student's approval. */
-const INTERVIEW_BLOCKED_TOOLS = new Set(["upsert_college", "remove_college", "rebalance_list", "set_application_status"]);
+
 const MAX_CONTENT_LEN = 8_000;
 
 type IncomingTurn = { role: "user" | "assistant"; content: string };
@@ -95,17 +95,24 @@ export async function POST(req: NextRequest) {
         const ws = await getWorkspace(workspaceId);
         const lastUserText = [...turns].reverse().find((t) => t.role === "user")?.content || "";
         const hub = makeHubTools(workspaceId, { userText: lastUserText, draftStorageKey: ws.draftStorageKey });
-        const mutate = (fn: Parameters<typeof updateWorkspace>[1]) => updateWorkspace(workspaceId, fn);
+        // Same scope check as the hub tools: a workspace reset mid-chat must not receive these writes.
+        const mutate = (fn: Parameters<typeof updateWorkspace>[1]) => updateWorkspace(workspaceId, (w) => {
+          if (w.draftStorageKey !== ws.draftStorageKey) throw new Error("This workspace was reset or changed. Start setup again.");
+          return fn(w);
+        });
         const interview = makeInterviewTools(mutate, () => getWorkspace(workspaceId), emit);
         const setup = mode !== "hub";
         const instructions = mode === "onboarding"
           ? buildInterviewPrompt(ws)
           : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}` : buildHubSystemPrompt(ws);
-        const hubTools = mode === "onboarding" ? hub.tools.filter((t) => !INTERVIEW_BLOCKED_TOOLS.has(t.name)) : hub.tools;
         const interviewNames = new Set(interview.tools.map((t) => t.name));
-        const tools = setup ? [...hubTools.filter((t) => !interviewNames.has(t.name)), ...interview.tools] : hub.tools;
+        const tools = (setup ? [...hub.tools.filter((t) => !interviewNames.has(t.name)), ...interview.tools] : hub.tools)
+          .filter((t) => toolAllowed(mode, t.name));
         const executeTool: typeof hub.executeTool = async (name, argsJson) => {
-          if (mode === "onboarding" && INTERVIEW_BLOCKED_TOOLS.has(name)) return `${name} isn't available during setup. Use propose_list; the student approves changes to the list.`;
+          if (!toolAllowed(mode, name)) return `${name} isn't available here.`;
+          // Research turns never carry a student message, so the student's words come only from hub chats.
+          const refusal = sensitiveRefusal(name, mode === "hub" ? lastUserText : "");
+          if (refusal) return refusal;
           return (setup ? await interview.execute(name, argsJson) : null) ?? hub.executeTool(name, argsJson);
         };
         if (mode === "onboarding") {

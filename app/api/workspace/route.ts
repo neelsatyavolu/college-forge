@@ -198,6 +198,7 @@ export async function POST(req: NextRequest) {
     const names = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && !!x.trim()).map((x) => x.slice(0, 160)).slice(0, 40) : []);
     let error = "";
     const saved = await updateWorkspace(id, (ws) => {
+      error = ""; // the store can re-run this on a version conflict
       const r = action === "apply-list"
         ? applyApprovedList(ws, names(body.keep), names(body.drop))
         : action === "finish-onboarding"

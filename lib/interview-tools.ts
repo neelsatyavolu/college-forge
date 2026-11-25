@@ -270,6 +270,7 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
     } catch {
       return `Invalid JSON arguments for ${name}.`;
     }
+    if (!a || typeof a !== "object" || Array.isArray(a)) return `Invalid JSON object arguments for ${name}.`;
     switch (name) {
       case "ask_question": {
         if (ended) return "You already asked a question this turn. Stop now and wait for the student's answer.";
@@ -313,6 +314,7 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
       case "advance_section": {
         let error = "";
         const ws = await mutate((w) => {
+          error = "";
           const r = applyAdvance(w, String(a.to ?? ""));
           if ("error" in r) { error = r.error; return w; }
           return r.ws;

@@ -38,6 +38,7 @@ export async function runExtraTool(workspaceId: string, mutate: Mutate, name: st
       if (!id || !["draft", "final", "clear"].includes(String(status))) return "set_essay_status needs essay_id and status (draft | final | clear).";
       let missing = false;
       await mutate((ws) => {
+        missing = false;
         if (!allEssayIds(ws).has(id)) { missing = true; return ws; }
         const { [id]: _old, ...rest } = ws.essayStatus ?? {};
         return { ...ws, essayStatus: status === "clear" ? rest : { ...rest, [id]: status as EssayStatus } };

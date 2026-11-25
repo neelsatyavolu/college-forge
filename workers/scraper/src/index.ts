@@ -37,8 +37,21 @@ function toMarkdown(html: string): string {
   return nhm.translate(main).trim().slice(0, MAX_MARKDOWN);
 }
 
+/** Follows up to 5 redirects by hand so every hop passes the same public-URL check. */
+async function fetchChecked(url: string): Promise<Response> {
+  let current = url;
+  for (let hop = 0; hop < 6; hop++) {
+    if (!isAllowedUrl(current)) throw new Error("redirect to a non-public URL");
+    const res = await fetch(current, { headers: { "user-agent": UA, accept: "text/html,*/*" }, redirect: "manual", signal: AbortSignal.timeout(15_000) });
+    const next = res.status >= 300 && res.status < 400 ? res.headers.get("location") : null;
+    if (!next) return Object.defineProperty(res, "url", { value: current });
+    current = new URL(next, current).toString();
+  }
+  throw new Error("too many redirects");
+}
+
 async function plainFetch(url: string): Promise<{ html?: string; finalUrl: string; error?: string }> {
-  const res = await fetch(url, { headers: { "user-agent": UA, accept: "text/html,*/*" }, redirect: "follow", signal: AbortSignal.timeout(15_000) });
+  const res = await fetchChecked(url);
   const type = res.headers.get("content-type") || "";
   if (!res.ok) return { finalUrl: res.url || url, error: `http ${res.status}` };
   if (type.includes("pdf")) return { finalUrl: res.url || url, error: "pdf" };
@@ -52,6 +65,7 @@ async function browserFetch(env: Env, url: string): Promise<string> {
     const page = await browser.newPage();
     await page.setUserAgent(UA);
     await page.goto(url, { waitUntil: "networkidle2", timeout: 25_000 });
+    if (!isAllowedUrl(page.url())) throw new Error("redirect to a non-public URL");
     return await page.content();
   } finally {
     await browser.close();
