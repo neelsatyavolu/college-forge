@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@cloudflare/puppeteer": "2.0.1",
-    "node-html-markdown": "2.0.0"
+    "node-html-markdown": "2.0.0",
+    "unpdf": "^2.2.2"
   }
 }

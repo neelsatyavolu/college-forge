@@ -453,6 +453,45 @@ export async function runWebSearch(query: string): Promise<WebSearchResult> {
 /**
  * Fetch one or more URLs via TinyFish Fetch (full page markdown).
  */
+const FOCUS_CHUNK = 1_500;
+const STOP = new Set(["the", "and", "for", "with", "from", "this", "that", "what", "about", "page", "find", "look", "need", "school", "college", "university"]);
+
+/**
+ * Text for the model from a long page: the opening, then the chunks that best match what the model
+ * said it was looking for (`purpose`), in page order. A Common Data Set runs past 100k characters and
+ * its admissions sections sit far from the top, so the first 12k alone would miss them.
+ */
+export function focusText(text: string, purpose: string | undefined, limit: number): string {
+  if (text.length <= limit || !purpose?.trim()) return text.slice(0, limit);
+  const terms = [...new Set(purpose.toLowerCase().match(/[a-z0-9]{2,}/g) ?? [])].filter((t) => !STOP.has(t) && (t.length > 2 || /\d/.test(t)));
+  if (!terms.length) return text.slice(0, limit);
+  // Chunks end on line breaks so a table row is never split from its label.
+  const chunks: string[] = [];
+  let current = "";
+  const lines = text.split("\n").flatMap((l) => (l.length <= FOCUS_CHUNK ? [l] : l.match(new RegExp(`.{1,${FOCUS_CHUNK}}`, "g")) ?? []));
+  for (const line of lines) {
+    if (current && current.length + line.length + 1 > FOCUS_CHUNK) { chunks.push(current); current = ""; }
+    current += (current ? "\n" : "") + line;
+  }
+  if (current) chunks.push(current);
+  // Distinct requested terms count most, so a chunk repeating one word ("percentile") can't crowd out
+  // the other sections asked for; repeats only break ties.
+  const score = (c: string) => {
+    const low = c.toLowerCase();
+    const hits = terms.map((t) => low.match(new RegExp(`\\b${t}\\b`, "g"))?.length ?? 0);
+    return hits.filter((h) => h > 0).length + Math.min(hits.reduce((a, b) => a + b, 0), 20) / 100;
+  };
+  const ranked = chunks.map((c, i) => ({ i, s: score(c) })).filter((x) => x.i > 0 && x.s > 0).sort((a, b) => b.s - a.s || a.i - b.i);
+  const keep = new Set([0]);
+  let used = chunks[0].length;
+  for (const { i } of ranked) {
+    if (used + chunks[i].length + 40 > limit) break;
+    keep.add(i);
+    used += chunks[i].length + 40;
+  }
+  return [...keep].sort((a, b) => a - b).map((i, k, all) => (k === 0 ? "" : all[k - 1] !== i - 1 ? "\n[…]\n" : "\n") + chunks[i]).join("");
+}
+
 export async function runWebFetch(
   url: string,
   purpose?: string
@@ -469,7 +508,9 @@ export async function runWebFetch(
   if (firecrawlBase()) {
     const page = await firecrawlScrape(u);
     if (!("error" in page)) {
-      return { ok: true, content: `Fetched page (via Firecrawl):\n# ${page.title}\n${page.url}\n\n${page.text.slice(0, MAX_OUTPUT_CHARS - 200)}` };
+      const body = focusText(page.text, purpose, MAX_OUTPUT_CHARS - 300);
+      const note = body.length < page.text.length ? `\n(Long page: showing the start and the parts matching "${(purpose || "").slice(0, 80)}". Call again with a different purpose for other sections.)` : "";
+      return { ok: true, content: `Fetched page (via Firecrawl):\n# ${page.title}\n${page.url}${note}\n\n${body}` };
     }
     firecrawlError = page.error;
   }
