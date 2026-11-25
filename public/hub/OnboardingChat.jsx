@@ -120,13 +120,13 @@ function ocDedupe(text) {
   return kept.map((k) => k.text).join("\n\n");
 }
 
-function OcMessage({ m, live, busy, onAnswer, onApprove, onRevise, onConfirm }) {
+function OcMessage({ m, live, busy, profile, revision, onAnswer, onApprove, onRevise, onConfirm }) {
   const ui = m.ui || {};
   const content = m.role === "assistant" ? ocDedupe(m.content) : m.content;
   return (
     <div className={"oc-msg oc-msg--" + m.role}>
       {content && <div className="oc-bubble">{content}</div>}
-      {live && ui.question && <window.OcQuestion q={ui.question} lead={content} disabled={busy} onAnswer={onAnswer} />}
+      {live && ui.question && <window.OcQuestion q={ui.question} lead={content} profile={profile} revision={revision} disabled={busy} onAnswer={onAnswer} />}
       {live && ui.list && <window.OcListTiles schools={ui.list} disabled={busy} onApprove={onApprove} onRevise={onRevise} />}
       {live && ui.strategy && <window.OcStrategyTiles strategy={ui.strategy} disabled={busy} onConfirm={onConfirm} onAnswer={onAnswer} />}
     </div>
@@ -356,7 +356,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         {turns.filter((t) => !(t.role === "user" && OC_HIDDEN.has(t.content))).map((m, i, shown) => (
           m.board
             ? (cards.length > 0 && <window.OcResearchBoard key={i} cards={cards} />)
-            : <OcMessage key={i} m={m} live={m === turns[lastAssistant] && i === shown.length - 1 && phase !== "research"} busy={busy}
+            : <OcMessage key={i} m={m} live={m === turns[lastAssistant] && i === shown.length - 1 && phase !== "research"} busy={busy} profile={ws?.profile} revision={ws?.revision}
                 onAnswer={send} onApprove={approve} onRevise={revise} onConfirm={confirmStrategy} />
         ))}
         {!turns.some((t) => t.board) && cards.length > 0 && <window.OcResearchBoard cards={cards} />}
