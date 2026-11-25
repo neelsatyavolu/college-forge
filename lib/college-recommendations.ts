@@ -4,6 +4,27 @@ import type { College, Workspace } from "./store";
 import { US_NEWS_BY_SCORECARD_ID, type UsNewsCollege } from "./us-news-rankings";
 import { slugify, isTestOptionalNote } from "./colleges";
 import { actToSat } from "./act-concordance";
+import careerData from "../public/data/career-ranking.json";
+import { majorKeysOf, SWITCH_LABELS, type CareerData } from "./career-ranking";
+
+const CAREER = careerData as unknown as CareerData;
+const CAREER_BY_ID = new Map(CAREER.schools.map((s) => [s.id, s]));
+const MAJOR_LABEL = new Map(CAREER.meta.majors.map((m) => [m.key, m.label]));
+
+/**
+ * What Forge's career-ranking data says about the intended major at a college: whether it has
+ * graduates in any of the matching majors, and how hard it is to switch in (checked by hand for
+ * some colleges). Null when the college isn't in that data or the major is unrecognized.
+ */
+export function majorAccess(unitid: number, intended: string): { offered: boolean; hardSwitch: string | null } | null {
+  const school = CAREER_BY_ID.get(unitid);
+  const keys = majorKeysOf(intended);
+  if (!school || !keys.length || /^(undecided|exploring|not sure)$/i.test(intended.trim())) return null;
+  const offered = keys.filter((k) => school.tracks[k]);
+  if (!offered.length) return { offered: false, hardSwitch: null };
+  const hard = offered.find((k) => (school.switch?.lv?.[k] ?? 0) >= 3);
+  return { offered: true, hardSwitch: hard ? `${MAJOR_LABEL.get(hard) ?? hard}: ${SWITCH_LABELS[String(school.switch.lv[hard])]}` : null };
+}
 
 export type AcademicFit = {
   tier: College["tier"] | null;
@@ -254,6 +275,9 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     if (admissions && farBelowSatRange(admissions, academics.sat)) return [];
     const gate = hasAcademics && admissions ? realismGate(admissions, academics, prefs?.ambition === "ambitious") : { ok: true };
     if (!gate.ok) return [];
+    // Not suggested when Forge's career data shows no graduates in the student's major there.
+    const access = majorAccess(row.unitid, ws.profile.intended || "");
+    if (access && !access.offered) return [];
     if (options.excludeOnList && ws.colleges.some(c => c.scorecardId === row.unitid || c.slug === (admissions?.slug || slugify(row.institution)))) return [];
     const overBudget = budget !== null && row.net_price != null && row.net_price > budget;
     if (overBudget && base.tier === "safety") return [];
@@ -272,6 +296,7 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     const cautions = [
       ...base.cautions,
       ...(!major && codes.size ? ["No published earnings for a matching major at this college. This does not mean the program is absent or weak; verify its curriculum."] : []),
+      ...(access?.hardSwitch ? [`Getting into ${access.hardSwitch.split(":")[0]} here is ${access.hardSwitch.split(": ")[1]} for students who don't start in it. Apply to the major directly if the college allows it.`] : []),
       ...(!row.location_observed ? ["Where graduates work (used for cost of living) is modeled for this institution, not observed."] : []),
       ...(overBudget ? [`Average net price ${money(row.net_price!)} is above your budget of ${money(budget!)} a year. Run this college's net price calculator.`] : []),
     ];
@@ -339,7 +364,7 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
   if (hasAcademics && !selected.some(c => c.fit.tier === "safety")) limitations.push("No likely option could be supported by the available evidence. Broaden your search and verify a financially workable safer choice.");
   return {
     generatedAt: rankings.generated,
-    methodology: "Each college gets one planning estimate: its overall admission rate × an SAT factor (1.25 at or above the 75th percentile, 1.0 inside the middle 50%, 0.6 below the 25th) × a GPA factor (1.25 at 0.15 above the reported unweighted average, 0.6 more than 0.3 below it). The same constants apply to every college. Reach: estimate under 25% or admission under 20%. Likely: estimate 60% or more at a college admitting at least 50% (75% when there is nothing to compare). Ambition sets the minimum estimate to be suggested (2%, 4% or 8%) and the category mix. A college is not suggested when your SAT is more than 1.5 middle-50% widths below its 25th percentile (Tukey's outlier fence). Selective colleges also need you in realistic range: under 15% admission, an SAT at or above the 25th percentile and an unweighted GPA within 0.10 of the average; 15–35%, an SAT no more than half a middle-50% width below the 25th percentile and a GPA within 0.25; with neither comparison available they aren't suggested. An ambitious student with a clear upward grade trend gets 0.10 more room on the GPA test. A weighted GPA is never compared with unweighted averages. Within the target and likely categories, colleges where your scores sit in the upper half of the reported range come first. Within each group, sort by 75% of the career-outcomes score with a half cost-of-living adjustment (0–100) + up to 25 points for where the intended major ranks among colleges with published earnings. Region and campus-setting choices filter the pool. A budget removes likely colleges above it and flags the rest. The estimate is not an admission probability.",
+    methodology: "Each college gets one planning estimate: its overall admission rate × an SAT factor (1.25 at or above the 75th percentile, 1.0 inside the middle 50%, 0.6 below the 25th) × a GPA factor (1.25 at 0.15 above the reported unweighted average, 0.6 more than 0.3 below it). The same constants apply to every college. Reach: estimate under 25% or admission under 20%. Likely: estimate 60% or more at a college admitting at least 50% (75% when there is nothing to compare). Ambition sets the minimum estimate to be suggested (2%, 4% or 8%) and the category mix. A college is not suggested when your SAT is more than 1.5 middle-50% widths below its 25th percentile (Tukey's outlier fence). Selective colleges also need you in realistic range: under 15% admission, an SAT at or above the 25th percentile and an unweighted GPA within 0.10 of the average; 15–35%, an SAT no more than half a middle-50% width below the 25th percentile and a GPA within 0.25; with neither comparison available they aren't suggested. An ambitious student with a clear upward grade trend gets 0.10 more room on the GPA test. A weighted GPA is never compared with unweighted averages. Colleges that Forge's career data shows with no graduates in your intended major aren't suggested. Within the target and likely categories, colleges where your scores sit in the upper half of the reported range come first. Within each group, sort by 75% of the career-outcomes score with a half cost-of-living adjustment (0–100) + up to 25 points for where the intended major ranks among colleges with published earnings. Region and campus-setting choices filter the pool. A budget removes likely colleges above it and flags the rest. The estimate is not an admission probability.",
     sources: [{label:"Ranking data and sources",url:"/data/rankings/sources.md"},{label:"Methodology limitations",url:"/data/rankings/DISCLOSURE.md"},{label:"US Department of Education College Scorecard",url:"https://collegescorecard.ed.gov/data/"},{label:"UC testing policy",url:"https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/filling-out-the-application.html"}],
     limitations, profileGaps, gaps,
     recommendations: selected.map(({score: _score, band: _band, matchesPrefs: _matches, inStatePublic: _local, ...row}) => row),

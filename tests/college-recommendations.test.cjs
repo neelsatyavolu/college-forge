@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const ts = require('typescript');
 // Compile local TypeScript on demand without a second build or test dependency.
 require.extensions['.ts'] = (mod, file) => mod._compile(ts.transpileModule(fs.readFileSync(file, 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS, target:ts.ScriptTarget.ES2021, esModuleInterop:true, resolveJsonModule:true}}).outputText,file);
-const { recommendColleges, assessAcademicFit, seedRecommendedColleges, realismGate, studentAcademics, GATE } = require('../lib/college-recommendations.ts');
+const { recommendColleges, assessAcademicFit, seedRecommendedColleges, realismGate, studentAcademics, GATE, majorAccess } = require('../lib/college-recommendations.ts');
 const { emptyWorkspace } = require('../lib/store.ts');
 const data = require('../public/data/rankings/top250.json');
 const { US_NEWS_TOP_250 } = require('../lib/us-news-rankings.ts');
@@ -309,4 +309,26 @@ test('seeding a list of all reaches reports the missing categories instead of ad
  const {colleges,gaps}=seedRecommendedColleges(ws);
  assert.equal(colleges.length,12);
  assert.deepEqual(gaps,[{tier:'target',missing:5,goal:5},{tier:'safety',missing:4,goal:4}]);
+});
+
+const career = require('../public/data/career-ranking.json');
+test('colleges with no graduates in the intended major are not suggested', () => {
+ const mit = career.schools.find(x=>x.id===166683);
+ assert.ok(mit && !mit.tracks.nursing, 'fixture: MIT has no nursing track');
+ assert.deepEqual(majorAccess(166683,'Nursing'),{offered:false,hardSwitch:null});
+ const ws=profile();ws.applicant.gpaUnweighted='4.0';ws.applicant.sat='1580';ws.profile.intended='Nursing';
+ const rows=recommendColleges(ws).recommendations;
+ assert.ok(!rows.some(r=>r.college.scorecardId===166683),'MIT is not suggested for nursing');
+ for (const r of rows) { const a=majorAccess(r.college.scorecardId,'Nursing'); assert.ok(!a||a.offered, r.college.name); }
+});
+test('undecided or unrecognized majors never exclude a college', () => {
+ assert.equal(majorAccess(166683,'Undecided'),null);
+ assert.equal(majorAccess(166683,'xyzzy'),null);
+});
+test('a hard switch into the major is called out', () => {
+ const hard = career.schools.find(x=>Object.entries(x.switch.lv).some(([k,v])=>v>=3 && x.tracks[k]));
+ const key = Object.entries(hard.switch.lv).find(([k,v])=>v>=3 && hard.tracks[k])[0];
+ const label = career.meta.majors.find(m=>m.key===key).label;
+ const a = majorAccess(hard.id, label);
+ assert.ok(a && a.offered && a.hardSwitch, `${hard.name} ${label}`);
 });
