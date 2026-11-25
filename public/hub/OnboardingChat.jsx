@@ -108,12 +108,25 @@ function OcConnectGate({ onConnected, onCancel }) {
   );
 }
 
+/** Drops a paragraph that repeats an earlier one in the same reply (mirrors dedupeParagraphs on the server). */
+function ocDedupe(text) {
+  const words = (p) => new Set(p.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length > 2));
+  const kept = [];
+  for (const para of (text || "").split(/\n{2,}/)) {
+    const w = words(para);
+    const repeat = w.size > 3 && kept.some((k) => [...w].filter((x) => k.w.has(x)).length / Math.min(w.size, k.w.size) >= 0.7);
+    if (!repeat && para.trim()) kept.push({ text: para, w });
+  }
+  return kept.map((k) => k.text).join("\n\n");
+}
+
 function OcMessage({ m, live, busy, onAnswer, onApprove, onRevise, onConfirm }) {
   const ui = m.ui || {};
+  const content = m.role === "assistant" ? ocDedupe(m.content) : m.content;
   return (
     <div className={"oc-msg oc-msg--" + m.role}>
-      {m.content && <div className="oc-bubble">{m.content}</div>}
-      {live && ui.question && <window.OcQuestion q={ui.question} disabled={busy} onAnswer={onAnswer} />}
+      {content && <div className="oc-bubble">{content}</div>}
+      {live && ui.question && <window.OcQuestion q={ui.question} lead={content} disabled={busy} onAnswer={onAnswer} />}
       {live && ui.list && <window.OcListTiles schools={ui.list} disabled={busy} onApprove={onApprove} onRevise={onRevise} />}
       {live && ui.strategy && <window.OcStrategyTiles strategy={ui.strategy} disabled={busy} onConfirm={onConfirm} onAnswer={onAnswer} />}
     </div>
@@ -145,7 +158,18 @@ function OnboardingChat({ data, onComplete, onCancel }) {
     setAi(Boolean(s.codexConnected || s.grokConnected));
   };
   React.useEffect(() => { checkAi(); }, []);
-  React.useEffect(() => { endRef.current && endRef.current.scrollIntoView({ block: "end", behavior: "smooth" }); }, [turns.length, busy, cards.length]);
+  // Follow the conversation as replies stream in and tiles appear, unless the student scrolled up to read.
+  const followRef = React.useRef(true);
+  React.useEffect(() => {
+    const onScroll = () => { followRef.current = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 160; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  React.useEffect(() => {
+    const last = turns[turns.length - 1];
+    if (last && last.role === "user") followRef.current = true;
+    if (followRef.current && endRef.current) endRef.current.scrollIntoView({ block: "end", behavior: "smooth" });
+  }, [turns, busy, cards, status, error]);
 
   /** Sends one student message to the interviewer and streams the reply. Resolves true when the reply arrived. */
   const send = async (text) => {
@@ -295,6 +319,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
 
   const sectionIndex = Math.max(0, OC_SECTIONS.findIndex(([id]) => id === iv?.section));
   const lastAssistant = turns.map((t, i) => (t.role === "assistant" ? i : -1)).filter((i) => i >= 0).pop();
+  const lastLive = !!(turns[lastAssistant] && turns[lastAssistant].ui && phase !== "research");
   const stepLabel = phase === "interview" ? OC_SECTIONS[sectionIndex][1] : { list: "Your list", research: "Research", strategy: "Early plan", plan: "Timeline", done: "Done" }[phase];
   return (
     <div className="oc-shell">
@@ -320,7 +345,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         <div ref={endRef} />
       </main>
       <form className="oc-composer" onSubmit={(e) => { e.preventDefault(); const t = draft; setDraft(""); send(t); }}>
-        <textarea className="oc-input" rows={1} placeholder="Type your answer…" value={draft} disabled={busy || phase === "research" || phase === "plan"}
+        <textarea className="oc-input" rows={1} placeholder={lastLive ? "Or type your answer…" : "Type your answer…"} value={draft} disabled={busy || phase === "research" || phase === "plan"}
           onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); const t = draft; setDraft(""); send(t); } }} />
         <OcBtn size="sm" type="submit" disabled={busy || !draft.trim()}>Send</OcBtn>
       </form>

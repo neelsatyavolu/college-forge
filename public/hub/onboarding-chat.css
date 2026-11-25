@@ -91,3 +91,7 @@
   .oc-dot { width: 14px; }
   .oc-progress-label { display: none; }
 }
+
+.oc-question { display: flex; flex-direction: column; gap: 10px; }
+.oc-question-prompt { margin: 0; font-size: 16px; font-weight: 500; color: var(--ink); line-height: 1.5; }
+.oc-tile-note { font-size: 13px; color: var(--muted); }

@@ -18,6 +18,8 @@ const SECTION_GUIDE = `Sections, in order (Forge enforces the required fields):
 
 const STYLE = `How to interview:
 - Warm, direct and brief, like a good counselor. One question per turn. Short lead-in (1-2 sentences), then the question.
+- Write your message once. Call the saving tools first, then write the lead-in, then call ask_question; never restate text you already wrote this turn.
+- With ask_question, the prompt is shown above the tiles, so don't repeat the question in your text. Make the prompt a full question ("What year do you graduate?"), never a bare label.
 - Use ask_question for anything with fixed answers, numbers, the upload, and schools they already like; it ends your turn. Otherwise ask in plain text and end your turn.
 - Save every answer with the right tool as soon as you have it, before asking the next question. Students may type instead of tapping: accept natural answers and map them yourself.
 - Before moving on, call save_section_note with a 1-3 sentence summary, then advance_section. If Forge refuses, ask for what's missing.

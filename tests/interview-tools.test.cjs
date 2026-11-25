@@ -137,3 +137,11 @@ test('deep answers also feed story notes', async () => {
   assert.equal(h.ws.onboarding.interview.deep.length, 1);
   assert.match(h.ws.onboarding.storyNotes.other, /old radios/);
 });
+
+test('a paragraph repeated later in the same reply is dropped', () => {
+  const a = "You don't need to predict your eventual major, but choose a field you'd honestly be happy studying. We'll check each college's rules before counting on a switch.";
+  const b = "You don't need to predict your future major, but choose one you'd genuinely want to study. We'll check each college's rules before counting on a switch.";
+  assert.equal(T.dedupeParagraphs(`${a}\n\n${b}`), a);
+  assert.equal(T.dedupeParagraphs('Nice to meet you!\n\nWhat high school do you attend?'), 'Nice to meet you!\n\nWhat high school do you attend?', 'different paragraphs stay');
+  assert.equal(T.dedupeParagraphs('Got it.\n\nGot it.'), 'Got it.\n\nGot it.', 'very short lines are left alone');
+});

@@ -6,14 +6,12 @@ const { Button: OcButton } = window.CollegeForgeDesignSystem_e95e63;
 function OcChoiceTiles({ q, disabled, onAnswer }) {
   const multi = q.kind === "multi";
   const [picked, setPicked] = React.useState([]);
-  const [other, setOther] = React.useState("");
   const toggle = (opt) => {
     if (!multi) return onAnswer(opt.label);
     setPicked((p) => (p.includes(opt.label) ? p.filter((x) => x !== opt.label) : [...p, opt.label]));
   };
   const submitMulti = () => {
-    const all = [...picked, ...(other.trim() ? [other.trim()] : [])];
-    if (all.length) onAnswer(all.join(", "));
+    if (picked.length) onAnswer(picked.join(", "));
   };
   return (
     <div className="oc-tiles" role={multi ? "group" : "radiogroup"} aria-label={q.prompt}>
@@ -25,12 +23,10 @@ function OcChoiceTiles({ q, disabled, onAnswer }) {
           </button>
         ))}
       </div>
-      {(multi || q.allowOther) && (
+      {multi && (
         <div className="oc-tile-row">
-          {q.allowOther && <input className="oc-input" placeholder="Something else" value={other} disabled={disabled} onChange={(e) => setOther(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !multi && other.trim()) onAnswer(other.trim()); }} />}
-          {multi && <OcButton size="sm" disabled={disabled || (!picked.length && !other.trim())} onClick={submitMulti}>Continue</OcButton>}
-          {!multi && q.allowOther && <OcButton size="sm" variant="secondary" disabled={disabled || !other.trim()} onClick={() => onAnswer(other.trim())}>Send</OcButton>}
+          <OcButton size="sm" disabled={disabled || !picked.length} onClick={submitMulti}>Continue{picked.length ? ` with ${picked.length}` : ""}</OcButton>
+          <span className="oc-tile-note">Pick all that apply</span>
         </div>
       )}
     </div>
@@ -119,12 +115,25 @@ function OcSchoolSearchTile({ disabled, onAnswer }) {
   );
 }
 
-function OcQuestion({ q, disabled, onAnswer }) {
+function OcQuestionBody({ q, disabled, onAnswer }) {
   if (q.kind === "upload") return <OcUploadTile disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "number") return <OcNumberTile q={q} disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "school_search") return <OcSchoolSearchTile disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "confirm") return <OcConfirmTiles disabled={disabled} onAnswer={onAnswer} />;
   return <OcChoiceTiles q={q} disabled={disabled} onAnswer={onAnswer} />;
+}
+
+const ocNorm = (t) => (t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+/** The question itself, then its tiles. The prompt is skipped when the message above already says it. */
+function OcQuestion({ q, lead, disabled, onAnswer }) {
+  const said = q.prompt && ocNorm(lead).includes(ocNorm(q.prompt));
+  return (
+    <div className="oc-question">
+      {!said && <p className="oc-question-prompt">{q.prompt}</p>}
+      <OcQuestionBody q={q} disabled={disabled} onAnswer={onAnswer} />
+    </div>
+  );
 }
 
 const OC_TIERS = [["reach", "Reach"], ["target", "Target"], ["likely", "Likely"]];

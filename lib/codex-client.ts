@@ -11,7 +11,8 @@ import {
   friendlyToolBudgetNote,
 } from "./chat-status";
 
-export const DEFAULT_CODEX_MODEL = process.env.CODEX_MODEL ?? "gpt-6-astra";
+export const DEFAULT_CODEX_MODEL = process.env.CODEX_MODEL ?? "gpt-6.2-sol";
+export type CodexEffort = "low" | "medium";
 const MAX_ROUNDS = 6;
 // A single reasoning-model round should never legitimately need this long.
 // If the ChatGPT backend stalls past this we abort with a clear error,
@@ -61,7 +62,8 @@ async function callCodex(
   emit: ChatEmitter,
   round: number,
   hasPriorText: boolean,
-  tools: ToolSpec[]
+  tools: ToolSpec[],
+  effort: CodexEffort = "low"
 ): Promise<{ text: string; toolCalls: FunctionCall[]; finishReason: string | null }> {
   const headers: Record<string, string> = {
     "content-type": "application/json",
@@ -84,7 +86,7 @@ async function callCodex(
     // ("Unsupported parameter"), so we rely on a low reasoning effort to
     // leave the model's plan-budget for the visible answer instead of
     // burning it on hidden thinking tokens.
-    body.reasoning = { effort: "low" };
+    body.reasoning = { effort };
   }
 
   const controller = new AbortController();
@@ -393,6 +395,8 @@ export async function runCodexChat(params: {
   shouldEndTurn?: () => boolean;
   /** Overrides the tool-round cap (research steps need more reads). */
   maxRounds?: number;
+  /** Reasoning effort: "low" (default) keeps interview replies quick; "medium" for research and the copilot. */
+  effort?: CodexEffort;
 }): Promise<CodexChatResult> {
   const { emit } = params;
   const tools = params.tools ?? DEFAULT_TOOLS;
@@ -423,7 +427,8 @@ export async function runCodexChat(params: {
       emit,
       round + 1,
       accumulated.length > 0,
-      tools
+      tools,
+      params.effort
     );
     lastFinishReason = finishReason;
     if (text) accumulated += (accumulated ? "\n\n" : "") + text;
