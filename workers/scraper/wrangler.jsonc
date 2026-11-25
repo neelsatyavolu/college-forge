@@ -1,0 +1,10 @@
+{
+  "name": "forge-scraper",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "5eac7df5e71a989ae9dbf9c8e9761c24",
+  "browser": { "binding": "BROWSER" },
+  "kv_namespaces": [{ "binding": "PAGES", "id": "5dc0d5c69217478bbeea19a3857dca2d" }],
+  "observability": { "enabled": true }
+}

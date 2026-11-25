@@ -16,3 +16,4 @@ scripts/*
 # Private local workspace data and regenerated browser assets
 /data/
 /public/hub/compiled/
+workers
