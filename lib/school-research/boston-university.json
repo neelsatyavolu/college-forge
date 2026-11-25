@@ -2,7 +2,7 @@
   "slug": "boston-university",
   "name": "Boston University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -141,6 +141,14 @@
       "thirdParty": false
     },
     {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest': Considered)",
+      "sourceUrl": "https://www.bu.edu/asir/files/2026/07/CDS-2025-2026-C-updated.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
       "key": "notes",
       "value": "Dec 1 merit deadline matters for RD applicants: apply by Dec 1 to be considered for the Presidential Scholarship even though RD is Jan 5",
       "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
@@ -150,7 +158,7 @@
     },
     {
       "key": "notes",
-      "value": "Gaps: CDS C7 table (demonstrated interest) is unreadable in the official PDF, so demonstrated_interest is missing; supplement prompt and Kilachand essay prompt not published on BU's site (main prompt from a third party)",
+      "value": "Gaps: supplement prompt and Kilachand essay prompt not published on BU's site (main prompt from a third party)",
       "sourceUrl": "https://www.bu.edu/asir/files/2026/07/CDS-2025-2026-C-updated.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",

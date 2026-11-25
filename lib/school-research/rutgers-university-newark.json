@@ -2,7 +2,7 @@
   "slug": "rutgers-university-newark",
   "name": "Rutgers University--Newark",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     { "key": "admit_rate", "value": "67.1% (28,804 of 42,907; Fall 2025 entry, CDS 2025-26)", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Newark%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
     { "key": "sat_mid50", "value": "Not reported in CDS (test-blind). Rutgers' Fall 2026 admitted-student profile (submitted scores): Arts & Sciences 1320-1500, Business 1300-1470, Criminal Justice 1050-1400, Public Affairs 1220-1450", "sourceUrl": "https://admissions.rutgers.edu/sites/default/files/2026-08/2026%20Admissions%20Profile.pdf", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
@@ -19,10 +19,11 @@
     { "key": "net_price_gt110k", "value": "$33,018 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186399", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
     { "key": "sticker_cost", "value": "2026-27 tuition + required fees + on-campus food & housing: $36,253 in-state ($15,381 + $3,275 + $17,597); $57,703 out-of-state (tuition $36,831). Books, transport, personal extra", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Newark%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
     { "key": "ed_ea_options", "value": "Non-binding, non-restrictive EA (Nov 1, decision by Jan 31) and RD (Dec 1, decision by Feb 28). No ED. Due dates are not hard deadlines; late applications are reviewed while space remains", "sourceUrl": "https://admissions.rutgers.edu/apply/dates-deadlines/newark", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
-    { "key": "interview", "value": "No interview listed among first-year requirements (only Mason Gross arts applicants at New Brunswick have a talent assessment that may include an interview)", "sourceUrl": "https://admissions.rutgers.edu/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "No interview listed among first-year requirements; interview 'Not considered' (Newark CDS 2025-26 C7)", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Newark%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
     { "key": "major_notes", "value": "Apply to a specific school: Arts & Sciences-Newark, Rutgers Business School-Newark, Criminal Justice, or Public Affairs & Administration; admitted ranges differ by school. 7-year BA/MD with NJ Medical School requires SAT/ACT", "sourceUrl": "https://admissions.rutgers.edu/sites/default/files/2026-08/2026%20Admissions%20Profile.pdf", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
-    { "key": "notes", "value": "Gap: CDS C7 (interview, level of applicant's interest) did not render legibly in the 2024-25 or 2025-26 PDFs, so demonstrated interest is unknown. H2 percent-of-need-met figures also unreadable", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Newark%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
-    { "key": "notes", "value": "Application via Rutgers Application or Common App; $70 fee. EOF program open to eligible NJ residents. Net prices are College Navigator in-state figures", "sourceUrl": "https://admissions.rutgers.edu/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+    { "key": "notes", "value": "Newark CDS 2025-26 H2 reports an average of 10% of need met for first-year aid recipients (35 with need fully met); figure as printed, looks low, verify with Rutgers before relying on it", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Newark%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "notes", "value": "Application via Rutgers Application or Common App; $70 fee. EOF program open to eligible NJ residents. Net prices are College Navigator in-state figures", "sourceUrl": "https://admissions.rutgers.edu/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Considered (Newark CDS 2025-26 C7 'Level of applicant's interest')", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Newark%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false }
   ],
   "deadlines": [
     { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://admissions.rutgers.edu/apply/dates-deadlines/newark", "cycle": "2026-27", "note": "Non-binding, non-restrictive; decision by Jan 31, 2027" },

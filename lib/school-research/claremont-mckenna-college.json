@@ -2,39 +2,39 @@
   "slug": "claremont-mckenna-college",
   "name": "Claremont McKenna College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
       "value": "9.4% (655 of 6,939; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "sourceUrl": "https://www.cmc.edu/sites/default/files/CDS_2025-26_Annotated%28Updated20260605%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
       "value": "22% (216 of 978 ED applicants, ED I and II combined; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "sourceUrl": "https://www.cmc.edu/sites/default/files/CDS_2025-26_Annotated%28Updated20260605%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1480-1540 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "value": "1480-1540 (enrolled Fall 2025; 34% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.cmc.edu/sites/default/files/CDS_2025-26_Annotated%28Updated20260605%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "33-35 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "value": "33-35 (enrolled Fall 2025; 14% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.cmc.edu/sites/default/files/CDS_2025-26_Annotated%28Updated20260605%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -46,11 +46,11 @@
     },
     {
       "key": "meets_full_need",
-      "value": "Yes: average 100% of need met for first-year aid recipients (CDS 2025-26 H2); need-blind admission",
-      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "value": "Yes: average 100% of need met for first-year aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.cmc.edu/sites/default/files/CDS_2025-26_Annotated%28Updated20260605%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "css_profile",
@@ -95,10 +95,10 @@
     {
       "key": "demonstrated_interest",
       "value": "Not considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "sourceUrl": "https://www.cmc.edu/sites/default/files/CDS_2025-26_Annotated%28Updated20260605%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",
@@ -154,6 +154,14 @@
       "sourceUrl": "https://collegescorecard.ed.gov/school/?112260",
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Need-blind admission for U.S. citizens and permanent residents; need-aware for international applicants",
+      "sourceUrl": "https://www.cmc.edu/financial-aid/prospective-and-new-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
       "thirdParty": false
     }
   ],

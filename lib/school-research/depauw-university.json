@@ -147,6 +147,14 @@
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
       "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: demonstrated interest not confirmed. CDS 2025-26 C7 marks \"Level of applicant's interest\" but the PDF's columns are lost in extraction (fetch.py fails on depauw.edu's SSL certificate; Firecrawl text drops the column)",
+      "sourceUrl": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
     }
   ],
   "deadlines": [

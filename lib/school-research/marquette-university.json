@@ -2,39 +2,39 @@
   "slug": "marquette-university",
   "name": "Marquette University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
-      "value": "78% (15,606 of 20,000; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "value": "78.0% (15,606 of 20,002; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1230-1360 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "value": "1230-1360 (enrolled Fall 2025; 15% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "26-30 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "value": "26-30 (enrolled Fall 2025; 26% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "gpa_note",
-      "value": "Average HS GPA 3.60 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "value": "Average HS GPA 3.60 (enrolled Fall 2025, CDS 2025-26); 28% in top tenth among the 24% reporting rank",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -46,19 +46,19 @@
     },
     {
       "key": "meets_full_need",
-      "value": "No guarantee of full need; average 86% of need met for first-year aid recipients (CDS 2025-26 H2)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "value": "No guarantee of full need; average 86% of need met for first-year need-based aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "css_profile",
-      "value": "Not required; CDS 2025-26 lists FAFSA as the only aid form. Marquette urges filing the FAFSA for full aid consideration",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "value": "Not required; FAFSA is the only form domestic first-years must submit, no filing deadline (CDS 2025-26 H8-H9)",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "merit_aid",
@@ -87,18 +87,18 @@
     {
       "key": "interview",
       "value": "No interview listed in application materials; CDS 2025-26 C7 rates interview as Considered",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
-      "value": "Not considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "value": "Not considered (CDS 2025-26 C7, 'Level of applicant's interest')",
+      "sourceUrl": "https://www.marquette.edu/academic-effectiveness/institutional-research-analysis/documents/cds-2025-2026_final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",
@@ -118,42 +118,42 @@
     },
     {
       "key": "net_price_lt30k",
-      "value": "$20,708 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "value": "$22,269 (2023-24, Title IV recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=239105",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_30_48k",
-      "value": "$20,217 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "value": "$18,916 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=239105",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_48_75k",
-      "value": "$23,377 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "value": "$27,378 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=239105",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_75_110k",
-      "value": "$30,314 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "value": "$32,374 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=239105",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_gt110k",
-      "value": "$37,187 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "value": "$36,813 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=239105",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     }
   ],

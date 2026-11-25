@@ -2,7 +2,7 @@
  "slug": "georgia-institute-of-technology",
  "name": "Georgia Institute of Technology",
  "checkedAt": "2026-11-25",
- "complete": false,
+ "complete": true,
  "facts": [
   {
    "key": "admit_rate",
@@ -157,8 +157,8 @@
    "thirdParty": false
   },
   {
-   "key": "notes",
-   "value": "Gap: demonstrated interest not determined. CDS 2025-26 C7 column marks for level of applicant's interest are lost in the PDF text and no official statement was found.",
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest'; interview also 'Not Considered')",
    "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgia-tech/2025-26/598830d23246891448e3859e3ae961274984cd31161980280d2293737af25a68.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",

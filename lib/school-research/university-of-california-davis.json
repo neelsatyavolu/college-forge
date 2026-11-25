@@ -94,19 +94,19 @@
     },
     {
       "key": "interview",
-      "value": "No interviews; interview not considered (CDS 2025-26 C7, as parsed by collegedata.fyi)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/uc-davis/2025-26",
+      "value": "No interviews; interview not considered (CDS 2025-26 C7: Not Considered)",
+      "sourceUrl": "https://aggiedata.ucdavis.edu/sites/g/files/dgvnsk1841/files/media/documents/CDS_UCD_0.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
-      "value": "Not considered (CDS 2025-26 C7, as parsed by collegedata.fyi)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/uc-davis/2025-26",
+      "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest': Not Considered)",
+      "sourceUrl": "https://aggiedata.ucdavis.edu/sites/g/files/dgvnsk1841/files/media/documents/CDS_UCD_0.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

@@ -94,7 +94,7 @@
     },
     {
       "key": "interview",
-      "value": "No interviews: Penn discontinued its optional alumni interview starting with the 2025-26 cycle (per The Daily Pennsylvanian, Aug 2026); CDS C7 interview row left blank",
+      "value": "No interviews: Penn discontinued its optional alumni interview starting with the 2025-26 cycle (per The Daily Pennsylvanian, Aug 2026). Penn's old Alumni Conversations page now redirects to a page that doesn't mention interviews; CDS 2025-26 C7 rates interview 'Not Considered'",
       "sourceUrl": "https://www.thedp.com/article/2026/08/penn-admissions-alumni-interview-reinstate",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
@@ -102,7 +102,7 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Considered (CDS C7 'Level of applicant's interest')",
+      "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest')",
       "sourceUrl": "https://upenn.app.box.com/s/woo7d85yxpol6j9e2o121aucjc6dc1k5",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",

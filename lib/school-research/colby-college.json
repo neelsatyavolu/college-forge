@@ -142,11 +142,11 @@
     },
     {
       "key": "notes",
-      "value": "Gap: Colby does not post a current Common Data Set, so no ED admit rate or CDS C7 demonstrated-interest rating was found; admit rate and scores come from IPEDS Fall 2024",
-      "sourceUrl": "https://gradpilot.com/news/demonstrated-interest-top-colleges-common-data-set",
+      "value": "Gap: no official Colby Common Data Set found (2025-26 searched 2026-11-25; third-party archives list only 2019-20), so no ED admit rate or CDS C7 demonstrated-interest rating; admit rate and scores come from IPEDS Fall 2024",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     }
   ],
   "deadlines": [

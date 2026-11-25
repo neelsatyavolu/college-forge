@@ -6,35 +6,35 @@
   "facts": [
     {
       "key": "admit_rate",
-      "value": "48% (10,906 of 22,680; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/texas-christian-university/2025-26",
+      "value": "48.1% (10,906 of 22,680; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
       "value": "68% (935 of 1,373 ED applicants, ED I and II combined; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/texas-christian-university/2025-26",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1110-1330 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/texas-christian-university/2025-26",
+      "value": "1110-1330 (enrolled Fall 2025; 27% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "26-31 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/texas-christian-university/2025-26",
+      "value": "26-31 (enrolled Fall 2025; 21% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -46,11 +46,11 @@
     },
     {
       "key": "meets_full_need",
-      "value": "No guarantee of full need; average 78.6% of need met for first-year aid recipients (CDS 2025-26 H2). TCU for Texans: full tuition plus housing/food help for Pell-eligible Texas residents with AGI up to $100,000",
-      "sourceUrl": "https://www.collegedata.fyi/schools/texas-christian-university/2025-26",
+      "value": "No guarantee of full need; average 78.6% of need met for first-year need-based aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "css_profile",
@@ -86,19 +86,19 @@
     },
     {
       "key": "interview",
-      "value": "Not considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/texas-christian-university/2025-26",
+      "value": "Not considered (CDS 2025-26 C7); no interview in the application",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
-      "value": "Considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/texas-christian-university/2025-26",
+      "value": "Considered (CDS 2025-26 C7, 'Level of applicant's interest')",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",
@@ -160,6 +160,14 @@
       "key": "notes",
       "value": "No school-specific supplemental essay for Common App/Coalition/ApplyTexas applicants: only one essay is required, and those applicants use the prompts within their application",
       "sourceUrl": "https://admissions.tcu.edu/frequently-asked-questions/what-are-the-essay-questions.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "TCU for Texans: full tuition, food and housing help and guaranteed on-campus housing for 4 years for Pell-eligible Texas residents (family AGI $100,000 or less) entering as fall first-years",
+      "sourceUrl": "https://admissions.tcu.edu/afford/scholarship-aid/tcu-for-texans.php",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false

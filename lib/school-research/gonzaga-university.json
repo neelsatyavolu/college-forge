@@ -7,34 +7,34 @@
     {
       "key": "admit_rate",
       "value": "79.6% (7,091 of 8,906; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/gonzaga-university/2025-26",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
       "value": "1230-1383 (enrolled Fall 2025; 19% submitted SAT; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/gonzaga-university/2025-26",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
       "value": "29-32 (enrolled Fall 2025; 6% submitted ACT; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/gonzaga-university/2025-26",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "gpa_note",
-      "value": "Average HS GPA 3.70 (enrolled Fall 2025, CDS 2025-26); no minimum GPA, but an interview is highly encouraged for unweighted GPA at or below 3.2",
-      "sourceUrl": "https://www.collegedata.fyi/schools/gonzaga-university/2025-26",
+      "value": "Average HS GPA 3.70 (enrolled Fall 2025, CDS 2025-26); 36% in top tenth of class among the 39% reporting rank",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -46,11 +46,11 @@
     },
     {
       "key": "meets_full_need",
-      "value": "No guarantee of full need; average 85% of need met for first-year aid recipients (CDS 2024-25 H2)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/gonzaga-university/2024-25",
+      "value": "No guarantee of full need; average 86% of need met for first-year need-based aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "css_profile",
@@ -134,11 +134,11 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Important (CDS 2024-25 C7, 'Level of applicant's interest')",
-      "sourceUrl": "https://www.collegedata.fyi/schools/gonzaga-university/2024-25",
+      "value": "Important (CDS 2025-26 C7, 'Level of applicant's interest')",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "major_notes",
@@ -150,7 +150,7 @@
     },
     {
       "key": "notes",
-      "value": "The official CDS 2025-26 PDF is a fillable form whose values did not extract; CDS figures were read from collegedata.fyi's parse of the school's CDS files (2025-26 for C1/C9, 2024-25 for C7/H2). Gonzaga Guarantee: Gonzaga-funded scholarships and grants won't decrease over 4 years in good standing",
+      "value": "CDS figures read from the official CDS 2025-26 PDF (values are drawn as graphics, read from rendered pages). Gonzaga Guarantee: Gonzaga-funded scholarships and grants won't decrease over 4 years in good standing",
       "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/tuition-aid/scholarship-opportunities",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",

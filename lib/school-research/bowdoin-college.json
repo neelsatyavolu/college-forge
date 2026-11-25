@@ -2,39 +2,39 @@
   "slug": "bowdoin-college",
   "name": "Bowdoin College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
       "value": "6.8% (957 of 14,045; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "sourceUrl": "https://www.bowdoin.edu/ir/pdf/bowdoin-cds_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
       "value": "15% (296 of 1,985 ED applicants, ED I and II combined; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "sourceUrl": "https://www.bowdoin.edu/ir/pdf/bowdoin-cds_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1470-1540 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "value": "1470-1540 (enrolled Fall 2025; 35% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.bowdoin.edu/ir/pdf/bowdoin-cds_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "33-35 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "value": "33-35 (enrolled Fall 2025; 17% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.bowdoin.edu/ir/pdf/bowdoin-cds_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -62,11 +62,11 @@
     },
     {
       "key": "merit_aid",
-      "value": "Essentially none: aid is need-based; CDS 2025-26 reports 17 first-year institutional non-need grants averaging $1,000",
-      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "value": "Essentially none: aid is need-based; CDS 2025-26 H2A reports 17 first-year institutional non-need grants averaging $1,000",
+      "sourceUrl": "https://www.bowdoin.edu/ir/pdf/bowdoin-cds_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sticker_cost",
@@ -95,10 +95,10 @@
     {
       "key": "demonstrated_interest",
       "value": "Considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "sourceUrl": "https://www.bowdoin.edu/ir/pdf/bowdoin-cds_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",
@@ -158,6 +158,13 @@
     }
   ],
   "deadlines": [
+    {
+      "plan": "QuestBridge",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/dates-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "QuestBridge National College Match"
+    },
     {
       "plan": "ED",
       "date": "2026-11-15",

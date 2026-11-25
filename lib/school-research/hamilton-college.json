@@ -103,10 +103,10 @@
     {
       "key": "demonstrated_interest",
       "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'; interview also 'considered')",
-      "sourceUrl": "https://www.collegedata.fyi/schools/hamilton-college/2025-26",
+      "sourceUrl": "https://www.hamilton.edu/offices/oir/common-data-sets/cds-2025-26",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

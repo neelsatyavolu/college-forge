@@ -158,11 +158,11 @@
   },
   {
    "key": "demonstrated_interest",
-   "value": "Not considered (CDS 2025-26 C7 level of applicant's interest, as parsed by collegedata.fyi; row is garbled in the PDF text)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/unc/2025-26",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/unc/2025-26/faab453ba03d65f687ad684f80c466db8e16799d665703897b722d85231ecc88.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   }
  ],
  "deadlines": [

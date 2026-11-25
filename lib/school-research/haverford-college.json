@@ -2,7 +2,7 @@
   "slug": "haverford-college",
   "name": "Haverford College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -38,7 +38,7 @@
     },
     {
       "key": "test_policy",
-      "value": "Test-optional (now official policy); self-reported or official scores accepted; official scores required after enrollment",
+      "value": "Test-optional; self-reported or official scores accepted (no preference); students who submit scores must send official scores after enrolling",
       "sourceUrl": "https://www.haverford.edu/admission/applying/application-instructions",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
@@ -133,19 +133,27 @@
       "thirdParty": false
     },
     {
-      "key": "notes",
-      "value": "Haverford Supplement (two 150-200 word answers) is a required part of the application",
-      "sourceUrl": "https://www.haverford.edu/admission/applying/application-checklist",
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Students declare a major during their fourth semester; no capped or separately admitted majors found on admissions pages",
+      "sourceUrl": "https://catalog.haverford.edu/majors-minors-concentrations",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
     },
     {
       "key": "notes",
-      "value": "Gap: CDS C7 table layout did not show the demonstrated-interest column clearly; no major/program admission notes found",
-      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "value": "Haverford Supplement (two 150-200 word answers) is a required part of the application",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-checklist",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     }
   ],

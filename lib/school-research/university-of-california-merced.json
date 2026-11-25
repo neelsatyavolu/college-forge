@@ -2,14 +2,14 @@
  "slug": "university-of-california-merced",
  "name": "University of California, Merced",
  "checkedAt": "2026-11-25",
- "complete": false,
+ "complete": true,
  "facts": [
   {
    "key": "admit_rate",
-   "value": "90.5% (Fall 2024 entry, IPEDS via College Scorecard). No current UC Merced CDS found",
-   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=id,latest.admissions.admission_rate.overall,2024.admissions.admission_rate.overall,2023.admissions.admission_rate.overall",
+   "value": "94.7% (46,812 of 49,426; Fall 2026 admits, UC first-year admit data)",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/campuses-majors/merced/first-year-admit-data.html",
    "checkedAt": "2026-11-25",
-   "cycle": "2024-25",
+   "cycle": "2025-26",
    "thirdParty": false
   },
   {
@@ -94,10 +94,10 @@
   },
   {
    "key": "notes",
-   "value": "Gaps: no UC Merced Common Data Set newer than 2022-23 found, and the admissions 'Paying for College' page blocked automated reads. Missing: interview and demonstrated-interest policy, % of need met, impacted-major rules",
-   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=id,latest.admissions.admission_rate.overall,2024.admissions.admission_rate.overall,2023.admissions.admission_rate.overall",
+   "value": "Gaps: newest UC Merced Common Data Set found covers Fall 2022 entry (C7 ratings above come from it); % of need met and any impacted-major rules not found on UC Merced pages",
+   "sourceUrl": "https://cie.ucmerced.edu/sites/g/files/ufvvjh616/f/page/documents/2023_cds_uc_merced_c.pdf",
    "checkedAt": "2026-11-25",
-   "cycle": "2026-27",
+   "cycle": "2022-23",
    "thirdParty": false
   },
   {
@@ -146,6 +146,30 @@
    "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=school.name,latest.cost.net_price.public.by_income_level",
    "checkedAt": "2026-11-25",
    "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Admitted Fall 2026 middle 50% HS GPA 3.57-4.16 (UC first-year admit data)",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/campuses-majors/merced/first-year-admit-data.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interviews; interview 'Not considered' (UC Merced CDS C7, Fall 2022 entry, newest Merced CDS found)",
+   "sourceUrl": "https://cie.ucmerced.edu/sites/g/files/ufvvjh616/f/page/documents/2023_cds_uc_merced_c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2022-23",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (UC Merced CDS C7 'Level of applicant's interest', Fall 2022 entry, newest Merced CDS found)",
+   "sourceUrl": "https://cie.ucmerced.edu/sites/g/files/ufvvjh616/f/page/documents/2023_cds_uc_merced_c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2022-23",
    "thirdParty": false
   }
  ],

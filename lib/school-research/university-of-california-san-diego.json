@@ -142,19 +142,19 @@
   },
   {
    "key": "interview",
-   "value": "Not considered (CDS 2025-26 C7 as parsed by collegedata.fyi; the PDF marks are ambiguous); UC application has no interview step on UC San Diego's review page",
-   "sourceUrl": "https://www.collegedata.fyi/schools/uc-san-diego/2025-26",
+   "value": "No interviews: CDS 2025-26 C7 rates interview 'Not Considered'; the UC application has no interview step",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/uc-san-diego/2025-26/4480df3c34df2e7daf3ccff09ac4141e44db26d0fa6d96c0204b9b0a6e211700.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "demonstrated_interest",
-   "value": "Not considered (CDS 2025-26 C7 level of applicant's interest, as parsed by collegedata.fyi)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/uc-san-diego/2025-26",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/uc-san-diego/2025-26/4480df3c34df2e7daf3ccff09ac4141e44db26d0fa6d96c0204b9b0a6e211700.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   }
  ],
  "deadlines": [

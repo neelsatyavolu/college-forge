@@ -142,11 +142,11 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Not considered (CDS 2025-26 C7; interview 'considered')",
-      "sourceUrl": "https://www.collegedata.fyi/schools/carleton-college/2025-26",
+      "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest'; interview 'Considered')",
+      "sourceUrl": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

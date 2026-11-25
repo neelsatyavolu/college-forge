@@ -86,7 +86,7 @@
   },
   {
    "key": "interview",
-   "value": "Not offered; evaluative interviews are not required or offered",
+   "value": "Not offered; evaluative interviews are not required or offered; CDS 2025-26 C7: Not Considered",
    "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
    "checkedAt": "2026-11-25",
    "cycle": "2026-27",
@@ -95,10 +95,10 @@
   {
    "key": "demonstrated_interest",
    "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
-   "sourceUrl": "https://www.collegedata.fyi/schools/gwu/2025-26",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",
@@ -110,11 +110,11 @@
   },
   {
    "key": "notes",
-   "value": "C7 ratings read from collegedata.fyi's render of GW's CDS (checkboxes don't extract from the official PDF). CDS lists 6,084 offered waitlist spots, 616 admitted from it",
-   "sourceUrl": "https://www.collegedata.fyi/schools/gwu/2025-26",
+   "value": "CDS 2025-26 lists 6,084 offered waitlist spots, 616 admitted from it",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "notes",
@@ -177,21 +177,21 @@
   {
    "plan": "ED",
    "date": "2026-11-01",
-   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "sourceUrl": "https://bulletin.gwu.edu/undergraduate-admissions/",
    "cycle": "2026-27",
    "note": "ED I, binding; financial aid deadline also Nov 1; decision late December"
   },
   {
    "plan": "ED2",
    "date": "2027-01-05",
-   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "sourceUrl": "https://bulletin.gwu.edu/undergraduate-admissions/",
    "cycle": "2026-27",
    "note": "Binding; financial aid deadline Jan 5; decision late February"
   },
   {
    "plan": "RD",
    "date": "2027-01-05",
-   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "sourceUrl": "https://bulletin.gwu.edu/undergraduate-admissions/",
    "cycle": "2026-27",
    "note": "Financial aid deadline Jan 5; decision late March"
   }

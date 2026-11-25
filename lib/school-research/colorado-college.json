@@ -141,8 +141,16 @@
       "thirdParty": false
     },
     {
+      "key": "major_notes",
+      "value": "Admission to the College; first-year application page lists no major-specific applications; optional art supplement via the CC Applicant Portal",
+      "sourceUrl": "https://www.coloradocollege.edu/admission/apply/first-year-students.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
       "key": "notes",
-      "value": "Gap: CDS C7 checkboxes did not render, so the demonstrated-interest rating was not found; no major/program admission notes found",
+      "value": "Gap: CDS 2025-26 C7 is a fillable form whose checkboxes do not render in any text extraction (rechecked 2026-11-25), so the demonstrated-interest rating is unconfirmed",
       "sourceUrl": "https://www.coloradocollege.edu/offices/ipe/documents/CDS-2025-2026_PDF_Final.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",

@@ -94,11 +94,11 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'; interview not considered)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/middlebury-college/2025-26",
+      "value": "Considered (Fall 2025 CDS C7 'Level of applicant's interest'; interview 'Not Considered')",
+      "sourceUrl": "https://www.middlebury.edu/sites/default/files/2026-06/Fall%202025%20CDS%20FINAL.pdf?fv=XbZmhGZl",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

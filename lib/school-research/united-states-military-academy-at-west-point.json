@@ -6,11 +6,11 @@
   "facts": [
     {
       "key": "admit_rate",
-      "value": "12.5% (1,534 admitted of 12,316; Fall 2024, CDS 2024-25 as parsed by collegedata.fyi; West Point's PDF omits the admit count)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/united-states-military-academy/2024-25",
+      "value": "12.5% (1,534 admitted of 12,316 applicants; Fall 2024 entry, CDS 2024-25; no 2025-26 CDS posted)",
+      "sourceUrl": "https://s3.amazonaws.com/usma-media/inline-images/about/g5/G5OIR_CDS_2024-2025.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
@@ -54,18 +54,18 @@
     },
     {
       "key": "interview",
-      "value": "No admissions interview listed among West Point's application steps (candidate checklist: transcripts, 3 teacher evaluations, essays, activities, scores)",
-      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "value": "CDS 2024-25 C7 rates Interview 'Very Important', but the current steps-to-admission page lists no interview among candidate checklist items; confirm with your regional admissions officer",
+      "sourceUrl": "https://s3.amazonaws.com/usma-media/inline-images/about/g5/G5OIR_CDS_2024-2025.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2026-27",
+      "cycle": "2024-25",
       "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
-      "value": "Not applicable: whole-candidate score of academics (55%), leadership/character (30%) and fitness (15%), plus a required nomination",
-      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "value": "Important (CDS 2024-25 C7 'Level of applicant's interest'); nomination also required",
+      "sourceUrl": "https://s3.amazonaws.com/usma-media/inline-images/about/g5/G5OIR_CDS_2024-2025.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2026-27",
+      "cycle": "2024-25",
       "thirdParty": false
     },
     {

@@ -171,6 +171,14 @@
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
       "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Hillsdale posts no Common Data Set newer than 2018-19 (none found Nov 2026). Admit rate is IPEDS Fall 2024; College Navigator timed out on re-check, so it was not re-verified this audit. major_notes is still third-party (the catalog core page lists courses but not admission rules)",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
     }
   ],
   "deadlines": [

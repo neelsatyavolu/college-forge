@@ -38,11 +38,11 @@
   },
   {
    "key": "gpa_note",
-   "value": "Avg HS GPA 3.68 (CDS 2025-26 C12)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/howard-university/2025-26",
+   "value": "Avg HS GPA 3.68, 100% submitted (CDS 2025-26 C12)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "test_policy",
@@ -94,19 +94,19 @@
   },
   {
    "key": "interview",
-   "value": "No interview in Howard's first-year requirements; CDS 2025-26 C7 marks interview Not Considered",
-   "sourceUrl": "https://www.collegedata.fyi/schools/howard-university/2025-26",
+   "value": "No interview in Howard's first-year requirements; interview 'Not considered' (CDS 2025-26 C7)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "demonstrated_interest",
    "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
-   "sourceUrl": "https://www.collegedata.fyi/schools/howard-university/2025-26",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",
@@ -122,14 +122,6 @@
    "sourceUrl": "https://www.esslo.org/college-essay-grader/howard",
    "checkedAt": "2026-11-25",
    "cycle": "2026-27",
-   "thirdParty": true
-  },
-  {
-   "key": "notes",
-   "value": "C7 ratings and GPA from collegedata.fyi's render of the official CDS; other CDS numbers read from the official PDF",
-   "sourceUrl": "https://www.collegedata.fyi/schools/howard-university/2025-26",
-   "checkedAt": "2026-11-25",
-   "cycle": "2025-26",
    "thirdParty": true
   },
   {

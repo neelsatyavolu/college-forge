@@ -2,7 +2,7 @@
   "slug": "university-of-chicago",
   "name": "University of Chicago",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -33,7 +33,7 @@
       "value": "Test-optional with a 'no harm' policy (scores used only if they help); self-report allowed; SAT and ACT superscored. Accepts Oct ACT/Nov SAT for EA/ED I, Dec for ED II, Jan SAT/Feb ACT for RD",
       "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/uchicago-admissions-faq/",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
@@ -78,10 +78,10 @@
     },
     {
       "key": "interview",
-      "value": "No on-campus or alumni interviews; optional two-minute video profile, or a Glimpse/InitialView interview in its place",
+      "value": "No on-campus or alumni interviews; optional (highly recommended) two-minute video profile, or a Glimpse/InitialView interview in its place",
       "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/uchicago-admissions-faq/",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
@@ -94,16 +94,16 @@
     },
     {
       "key": "major_notes",
-      "value": "Applicants don't declare a major on admission; students can declare later, by Spring Quarter of third year unless a department says otherwise",
-      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/uchicago-admissions-faq/",
+      "value": "No major declared on admission; students may declare from week 8 of first-year Spring Quarter and must declare by the end of second year (sixth quarter)",
+      "sourceUrl": "http://collegecatalog.uchicago.edu/thecollege/programsofstudy/",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
       "key": "notes",
-      "value": "Gaps: UChicago's admissions and aid sites blocked automated reading, so facts were taken from official-page excerpts in web search and need a manual check. Supplement prompts come from a third-party guide and match the prompt list on UChicago's essay page",
-      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/application/",
+      "value": "Supplement: one required 'Why UChicago' essay plus one required extended essay chosen from the prompts listed. Aid deadlines: Nov 15 (EA/ED I), Jan 15 (ED II), Feb 15 (RD)",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/financial-support/financial-overview/",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
@@ -184,57 +184,57 @@
       "label": "Why UChicago",
       "prompt": "How does the University of Chicago, as you know it now, satisfy your desire for a particular kind of learning, community, and future? Please address with some specificity your own wishes and how they relate to UChicago.",
       "required": true,
-      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/7/9/how-to-write-the-uchicago-supplementnbsp2026-2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Extended essay (choose one): Food for thought",
       "prompt": "Food for thought: How do thoughts eat?",
       "required": false,
-      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/7/9/how-to-write-the-uchicago-supplementnbsp2026-2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Extended essay (choose one): Origami",
       "prompt": "The James Webb Space Telescope, launched in 2021, utilized origami-inspired techniques to compactly store and deploy its sunshield in space. Choose an artistic practice and use its principles to propose an elegant solution to a problem.",
       "required": false,
-      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/7/9/how-to-write-the-uchicago-supplementnbsp2026-2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Extended essay (choose one): Mixed metaphor",
       "prompt": "Sometimes metaphors get mixed up. For one reason or another, one could say, “we'll burn that bridge when we get there” or “the world is your china shop”. Make up your own mixed metaphor. Explain how it could make sense, be understood, or even applied.",
       "required": false,
-      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/7/9/how-to-write-the-uchicago-supplementnbsp2026-2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Extended essay (choose one): Mundane Olympics",
       "prompt": "The Olympics have long celebrated the pinnacle of human athletic achievement. But what if they expanded to honor the mundane? Imagine a new Olympic event built around an everyday activity like speed dishwashing or competitive grocery bagging. How is it scored, officiated, and judged? Why is it a worthy addition?",
       "required": false,
-      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/7/9/how-to-write-the-uchicago-supplementnbsp2026-2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Extended essay (choose one): Mistaken acronym",
       "prompt": "AI: Allen Iverson. NASA, or the North American Saxophone Alliance. Share a potentially confounding, comedic, or captivating example of MIA (Mistaken Identity of Acronym) and tell us its backstory.",
       "required": false,
-      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/7/9/how-to-write-the-uchicago-supplementnbsp2026-2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Extended essay (choose one): Choose your own",
-      "prompt": "In the spirit of adventurous inquiry, choose one of our past prompts (or create a question of your own). Be original, creative, thought provoking. Draw on your best qualities as a writer, thinker, visionary, social critic, sage, citizen of the world, or future citizen of the University of Chicago; take a little risk, and have fun!",
+      "prompt": "And, as always… the classic choose your own adventure option! In the spirit of adventurous inquiry, choose one of our past prompts (or create a question of your own). Be original, creative, thought provoking. Draw on your best qualities as a writer, thinker, visionary, social critic, sage, citizen of the world, or future citizen of the University of Chicago; take a little risk, and have fun!",
       "required": false,
-      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/7/9/how-to-write-the-uchicago-supplementnbsp2026-2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     }
   ]
 }

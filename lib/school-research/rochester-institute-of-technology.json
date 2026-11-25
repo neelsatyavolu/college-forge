@@ -2,47 +2,47 @@
   "slug": "rochester-institute-of-technology",
   "name": "Rochester Institute of Technology",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
       "value": "71% (22,439 of 31,565; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
       "value": "73% (1,028 of 1,405 ED applicants, ED I and II combined; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
       "value": "1310-1440 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
       "value": "30-34 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "gpa_note",
       "value": "Average HS GPA 3.90 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -55,10 +55,10 @@
     {
       "key": "meets_full_need",
       "value": "No guarantee of full need; average 92% of need met for first-year aid recipients (CDS 2025-26 H2)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "css_profile",
@@ -95,18 +95,18 @@
     {
       "key": "interview",
       "value": "Considered (CDS 2025-26 C7); no interview listed in the application checklist",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
       "value": "Considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "sourceUrl": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

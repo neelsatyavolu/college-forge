@@ -94,7 +94,7 @@
   },
   {
    "key": "notes",
-   "value": "Gaps: IU Bloomington's Common Data Set app (iuia.iu.edu/apps/cds) blocked automated reads, so C7 interview/demonstrated-interest ratings, GPA/rank and % need met are missing. Admissions numbers come from IU's own Fall 2025 IPEDS report",
+   "value": "Gaps: IU Bloomington's Common Data Set app (iuia.iu.edu/apps/cds) returned nothing to local or Firecrawl cloud reads on 2026-11-25, so C7 demonstrated-interest rating, GPA/rank and % need met are missing. Admissions numbers come from IU's IPEDS Admissions report",
    "sourceUrl": "https://iuia.iu.edu/doc/compliance/ipeds/admissions/2025_BL_IPEDS_Admissions.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
@@ -146,6 +146,14 @@
    "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=151351&fields=school.name,latest.cost.net_price.public.by_income_level",
    "checkedAt": "2026-11-25",
    "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No general admissions interview: IU's listed review factors don't include one. Jacobs School of Music majors (except Theatre and Drama) need an audition/interview for direct admission",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/paths/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
    "thirdParty": false
   }
  ],

@@ -2,7 +2,7 @@
   "slug": "colgate-university",
   "name": "Colgate University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -141,6 +141,14 @@
       "thirdParty": false
     },
     {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
       "key": "major_notes",
       "value": "Apply to the university, not a major; arts portfolio optional and not needed to declare an arts major",
       "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
@@ -163,14 +171,6 @@
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": true
-    },
-    {
-      "key": "notes",
-      "value": "Gap: CDS C7 checkboxes did not render, so demonstrated-interest rating was not found",
-      "sourceUrl": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf",
-      "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
-      "thirdParty": false
     }
   ],
   "deadlines": [

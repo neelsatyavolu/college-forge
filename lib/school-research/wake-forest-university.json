@@ -100,18 +100,18 @@
     {
       "key": "demonstrated_interest",
       "value": "Considered (CDS 2025-26 C7: level of applicant's interest 'Considered'; interview marked 'Important')",
-      "sourceUrl": "https://www.collegedata.fyi/schools/wake-forest/2025-26",
+      "sourceUrl": "https://prod.wp.cdn.aws.wfu.edu/sites/202/2026/06/CDS_2025-2026-PDF_Template_WFU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",
-      "value": "Admission is to the university; Accountancy, Business and Enterprise Management, Decision Analytics and Finance require a separate School of Business application in the fall of sophomore year after prerequisites",
-      "sourceUrl": "https://wfuogb.com/28737/features/why-are-school-of-business-decisions-released-so-late/",
+      "value": "Admission is to the university; Accountancy, Business and Enterprise Management, Decision Analytics and Finance need a separate, highly competitive School of Business application in the fall of the second year, with ECN 150, MTH 111/112 and ACC 111 done by the end of that fall; meeting the minimums doesn't guarantee admission",
+      "sourceUrl": "https://business.wfu.edu/undergraduate-programs/undergraduate-application/",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
-      "thirdParty": true
+      "cycle": "2026-27",
+      "thirdParty": false
     },
     {
       "key": "notes",
@@ -123,7 +123,7 @@
     },
     {
       "key": "notes",
-      "value": "Gaps: the official CDS PDF text doesn't show the C7 check marks (C7 read from collegedata.fyi's parse of the same PDF); CDS leaves ED applicant/admit counts blank, so no ED admit rate",
+      "value": "Gap: CDS 2025-26 leaves ED applicant/admit counts (C21) blank, so no ED admit rate. C7 read from the official PDF's layout text",
       "sourceUrl": "https://prod.wp.cdn.aws.wfu.edu/sites/202/2026/06/CDS_2025-2026-PDF_Template_WFU.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",

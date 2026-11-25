@@ -2,7 +2,7 @@
   "slug": "rutgers-university-camden",
   "name": "Rutgers University--Camden",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -78,10 +78,10 @@
     },
     {
       "key": "interview",
-      "value": "No interview in the first-year application requirements",
-      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/first-year-applicants",
+      "value": "No interview: Not Considered (CDS 2025-26 C7); none in the first-year application requirements",
+      "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2026-27",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
@@ -94,7 +94,7 @@
     },
     {
       "key": "notes",
-      "value": "One Rutgers application (Rutgers App or Common App) covers Camden, Newark and New Brunswick. Gaps: CDS C7 (incl. demonstrated interest), C9 SAT composite and H2 % of need met did not extract from the PDF; College Navigator net price not retrieved",
+      "value": "One Rutgers application (Rutgers App or Common App) covers Camden, Newark and New Brunswick. Gaps: the CDS 2025-26 leaves the C9 SAT composite blank (section scores only); net price is from College Scorecard, not College Navigator",
       "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
@@ -147,6 +147,14 @@
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
       "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Important (CDS 2025-26 C7 \"Level of applicant’s interest\")",
+      "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf",
+      "cycle": "2025-26",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
     }
   ],
   "deadlines": [

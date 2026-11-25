@@ -2,7 +2,7 @@
   "slug": "auburn-university",
   "name": "Auburn University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",

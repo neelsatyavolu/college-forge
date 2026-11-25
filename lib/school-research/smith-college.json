@@ -2,38 +2,38 @@
   "slug": "smith-college",
   "name": "Smith College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
-      "value": "21.0% (1,820 of 8,666; Class of 2028, CDS 2024-25)",
-      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "value": "22.4% (1,816 of 8,102; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1qDhlH43IbOCQzP6xtUHMzTmgEss1I-68/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
-      "value": "38.2% ED (353 of 924; CDS 2024-25)",
-      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "value": "33.5% ED (371 of 1,107; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1qDhlH43IbOCQzP6xtUHMzTmgEss1I-68/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1450-1520 (enrolled Fall 2024, CDS 2024-25)",
-      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "value": "1420-1520 (enrolled Fall 2025, CDS 2025-26; 30% submitted SAT)",
+      "sourceUrl": "https://drive.google.com/file/d/1qDhlH43IbOCQzP6xtUHMzTmgEss1I-68/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "32-35 (enrolled Fall 2024, CDS 2024-25)",
-      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "value": "32-34 (enrolled Fall 2025, CDS 2025-26; 15% submitted ACT)",
+      "sourceUrl": "https://drive.google.com/file/d/1qDhlH43IbOCQzP6xtUHMzTmgEss1I-68/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
@@ -126,7 +126,7 @@
     },
     {
       "key": "interview",
-      "value": "Optional alumnae interviews, requested through the applicant portal after applying; CDS 2024-25 rates interview Important",
+      "value": "Optional alumnae interviews, requested through the applicant portal after applying; CDS 2025-26 rates interview Important",
       "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
@@ -134,10 +134,18 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Considered (CDS 2024-25 C7)",
-      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://drive.google.com/file/d/1qDhlH43IbOCQzP6xtUHMzTmgEss1I-68/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Majors are declared after enrolling, by the end of sophomore spring registration (as early as first-year spring); concentrations need a separate application",
+      "sourceUrl": "https://www.smith.edu/about-smith/class-deans/majors-minors",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
@@ -150,10 +158,10 @@
     },
     {
       "key": "notes",
-      "value": "Gap: newest CDS found is 2024-25 (2025-26 not located); no major/program admission notes found",
+      "value": "CDS 2025-26 is posted in Smith's shared Google Drive folder linked from the Data About Smith page (PDF header still reads 2024-2025, but the data are for Fall 2025)",
       "sourceUrl": "https://www.smith.edu/your-campus/offices-services/institutional-research/data-about-smith",
       "checkedAt": "2026-11-25",
-      "cycle": "2026-27",
+      "cycle": "2025-26",
       "thirdParty": false
     }
   ],

@@ -6,7 +6,7 @@
   "facts": [
     {
       "key": "admit_rate",
-      "value": "43.4% (37,881 of 87,220; Class of 2029, CDS 2025-26, West Lafayette)",
+      "value": "43.4% (37,881 of 87,220; Class of 2029, CDS 2025-26; West Lafayette, Indianapolis and Polytechnic Statewide combined)",
       "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
@@ -30,7 +30,7 @@
     },
     {
       "key": "gpa_note",
-      "value": "Average HS GPA 3.81 (92.8% submitted); 52% top tenth, 80% top quarter. Rigor, GPA and essay 'very important'; tests 'important' (CDS 2025-26 C7/C10/C12). Grades in courses related to the intended major weigh heavily",
+      "value": "Average HS GPA 3.81 (92.8% submitted); 52% top tenth, 80% top quarter. Rigor, GPA and essay 'very important'; tests 'important' (CDS 2025-26 C7/C10/C12)",
       "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
@@ -46,11 +46,19 @@
     },
     {
       "key": "meets_full_need",
-      "value": "No; average 65.3% of need met for first-years, 549 of 3,311 with need fully met (CDS 2025-26 H2). Boiler Gold Grant covers tuition, fees and books for Indiana students with family income under $80,000 or Pell-eligible",
+      "value": "No; average 65.3% of need met for first-years, 549 of 3,311 with need fully met (CDS 2025-26 H2; West Lafayette, Indianapolis and Polytechnic Statewide combined)",
       "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
       "thirdParty": true
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Boiler Gold Grant: full-time Indiana residents at West Lafayette or Indianapolis with demonstrated need who are Pell-eligible or have family AGI of $80,000 or less get the rest of tuition, fees and estimated books covered after other gift aid, up to 8 semesters",
+      "sourceUrl": "https://www.purdue.edu/dfa/aid/boilergoldgrant/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
     },
     {
       "key": "css_profile",
@@ -150,8 +158,16 @@
     },
     {
       "key": "notes",
-      "value": "CDS figures come from collegedata.fyi's copy of Purdue's official 2025-26 CDS workbook (https://www.purdue.edu/idata/wp-content/uploads/2026/04/CDS-2025-2026.xlsx), which purdue.edu blocked behind a bot check. Purdue's deadline pages give no year; dates read as recurring for the 2026-27 cycle. App fee $60. Honors College applicants answer four extra 200-word prompts",
+      "value": "CDS facts are still read from collegedata.fyi's mirror of Purdue's 2025-26 workbook: the official file (https://www.purdue.edu/idata/wp-content/uploads/2026/04/CDS-2025-2026.xlsx) is behind a bot check (fetch.py and Firecrawl both blocked on 2026-11-25). Numbers were re-read from the mirror. Purdue's CDS page says from 2024-25 on the CDS combines West Lafayette, Indianapolis and Polytechnic Statewide, so admit rate and scores are not West Lafayette-only. A claim that grades in major-related courses weigh heavily was removed (no source found). Purdue's deadline pages give no year; dates read as recurring for the 2026-27 cycle. App fee $60. Honors College applicants answer four extra 200-word prompts",
       "sourceUrl": "https://www.purdue.edu/idata/products-services/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Fall 2026: over 82,000 undergraduate applications; Purdue admitted 75% of Indiana-resident applicants and under 50% of non-residents. Average SAT of admits to the main campus 1342; average HS GPA 3.8",
+      "sourceUrl": "https://www.purdue.edu/newsroom/2026/Q3/purdue-value-proposition-continues-to-drive-strong-demand-undergrad-enrollment-increases",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false

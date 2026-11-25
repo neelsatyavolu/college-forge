@@ -142,19 +142,11 @@
   },
   {
    "key": "demonstrated_interest",
-   "value": "Brown says contacting the office is neither required nor an advantage",
-   "sourceUrl": "https://admission.brown.edu/ask/admission-process",
-   "checkedAt": "2026-11-25",
-   "cycle": "2026-27",
-   "thirdParty": false
-  },
-  {
-   "key": "demonstrated_interest",
-   "value": "CDS 2025-26 C7: level of applicant interest and interview both 'Not considered'",
-   "sourceUrl": "https://www.collegedata.fyi/schools/brown/2025-26",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest'; interview also 'Not Considered'). Brown says contacting the office is neither required nor an advantage",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/brown/2025-26/e45da2405f678ccaf78f36640359c83b4cec8c173a1b2ca93e7aefe3d899291c.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",

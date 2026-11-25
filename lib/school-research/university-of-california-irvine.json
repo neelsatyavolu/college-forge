@@ -86,19 +86,19 @@
     },
     {
       "key": "interview",
-      "value": "No interviews; interview not considered (CDS 2024-25 C7, as parsed by collegedata.fyi; 2025-26 PDF checkboxes unreadable)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/uc-irvine/2024-25",
+      "value": "No interviews; interview not considered (CDS 2025-26 C7: Not Considered)",
+      "sourceUrl": "https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/2/5478/files/2026/05/2025-26-CDS-PDF-Upload.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
-      "value": "Not considered (CDS 2024-25 C7, as parsed by collegedata.fyi)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/uc-irvine/2024-25",
+      "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest': Not Considered)",
+      "sourceUrl": "https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/2/5478/files/2026/05/2025-26-CDS-PDF-Upload.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "major_notes",

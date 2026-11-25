@@ -142,11 +142,11 @@
   },
   {
    "key": "demonstrated_interest",
-   "value": "Considered (CDS C7 level of applicant interest); interview also 'Considered'",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rice/2025-26",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'); interview also 'Considered'",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/rice/2025-26/27379583b988c4b4c794876160df246b4f9dbf06b4afc24564975477dcb882e8.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",

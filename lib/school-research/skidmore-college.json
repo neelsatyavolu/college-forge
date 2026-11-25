@@ -22,27 +22,27 @@
     },
     {
       "key": "sat_mid50",
-      "value": "1360-1460 (submitters only; about two-thirds of students apply without scores; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/skidmore-college/2025-26",
+      "value": "1360-1460 (25% of enrollees submitted SAT; about two-thirds of applicants apply without scores; CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "31-34 (submitters only; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/skidmore-college/2025-26",
+      "value": "31-34 (8% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "gpa_note",
-      "value": "45% of rank-reporting enrollees in top 10%, 70% in top quarter (CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/skidmore-college/2025-26",
+      "value": "45% of rank-reporting enrollees in top 10%, 70% in top quarter (only 119 of 692 reported rank); no average GPA reported (CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -142,11 +142,11 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Considered (CDS 2025-26 C7, as parsed by collegedata.fyi)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/skidmore-college/2025-26",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

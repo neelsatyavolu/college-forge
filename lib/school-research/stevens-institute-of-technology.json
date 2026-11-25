@@ -7,42 +7,42 @@
   {
    "key": "admit_rate",
    "value": "50.7% (5,321 of 10,499; Fall 2025 entry, CDS 2025-26)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "sourceUrl": "https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "ed_admit_rate",
    "value": "69.8% ED (284 of 407; CDS 2025-26 C21)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "sourceUrl": "https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "sat_mid50",
    "value": "1370-1470 (enrolled Fall 2025, CDS 2025-26 C9)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "sourceUrl": "https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "act_mid50",
    "value": "32-34 (enrolled Fall 2025, CDS 2025-26 C9)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "sourceUrl": "https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "gpa_note",
    "value": "Avg HS GPA 3.83; 47.5% in top tenth of class (CDS 2025-26 C11/C10)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "sourceUrl": "https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "test_policy",
@@ -94,7 +94,7 @@
   },
   {
    "key": "interview",
-   "value": "Optional for most applicants, complete by the application deadline; separate interview rules for Accelerated Pre-Med and Pre-Law. CDS 2025-26 C7: Considered",
+   "value": "Optional for most applicants, complete by the application deadline; separate interview rules for Accelerated Pre-Med and Pre-Law. CDS 2025-26 C7: Considered (official PDF)",
    "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/first-year-students",
    "checkedAt": "2026-11-25",
    "cycle": "2026-27",
@@ -102,11 +102,11 @@
   },
   {
    "key": "demonstrated_interest",
-   "value": "Not published: CDS 2025-26 C7 leaves 'Level of applicant's interest' unmarked",
-   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",
@@ -115,14 +115,6 @@
    "checkedAt": "2026-11-25",
    "cycle": "2026-27",
    "thirdParty": false
-  },
-  {
-   "key": "notes",
-   "value": "CDS 2025-26 numbers read from collegedata.fyi's render of Stevens' fillable CDS (official PDF form values did not extract): https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
-   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
-   "checkedAt": "2026-11-25",
-   "cycle": "2025-26",
-   "thirdParty": true
   },
   {
    "key": "notes",

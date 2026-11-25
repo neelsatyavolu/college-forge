@@ -2,39 +2,39 @@
   "slug": "williams-college",
   "name": "Williams College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
       "value": "8.6% (1,336 of 15,520; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/williams-college/2025-26",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
       "value": "27% (256 of 964 ED applicants; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/williams-college/2025-26",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1490-1550 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/williams-college/2025-26",
+      "value": "1490-1550 (enrolled Fall 2025; 43% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "33-35 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/williams-college/2025-26",
+      "value": "33-35 (enrolled Fall 2025; 18% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -62,11 +62,11 @@
     },
     {
       "key": "merit_aid",
-      "value": "No merit aid: $0 institutional non-need-based grants (CDS 2025-26 H1); aid is need-based",
-      "sourceUrl": "https://www.collegedata.fyi/schools/williams-college/2025-26",
+      "value": "No merit aid: $0 institutional non-need-based grants (CDS 2025-26 H1) and 0 first-year non-need awards (H2A); aid is need-based",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sticker_cost",
@@ -95,10 +95,10 @@
     {
       "key": "demonstrated_interest",
       "value": "Not considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/williams-college/2025-26",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

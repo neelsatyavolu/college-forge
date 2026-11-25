@@ -7,34 +7,34 @@
     {
       "key": "admit_rate",
       "value": "76% (22,674 of 29,929; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
       "value": "1030-1300 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
       "value": "24-31 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "gpa_note",
-      "value": "Average HS GPA 3.45 (enrolled Fall 2025, CDS 2025-26); UIC publishes separate test-optional and test-inclusive GPA profiles by college",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "value": "Average HS GPA 3.45 (enrolled Fall 2025, CDS 2025-26 C12)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -46,19 +46,19 @@
     },
     {
       "key": "meets_full_need",
-      "value": "No; average 53% of need met for first-year aid recipients (CDS 2025-26 H2). UIC Aspire: $0 tuition and fees for new Illinois residents with household income of $75,000 or less (stated for Fall 2026)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "value": "No; average 53% of need met for full-time first-year aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "css_profile",
       "value": "Not required; CDS 2025-26 lists FAFSA only. File FAFSA for need-based grants",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "merit_aid",
@@ -87,18 +87,18 @@
     {
       "key": "interview",
       "value": "Not considered (CDS 2025-26 C7); Honors College applicants have an additional interview requirement",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
       "value": "Not considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/university-of-illinois-chicago/2025-26",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",
@@ -155,15 +155,23 @@
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
       "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "UIC Aspire (Fall 2027): $0 tuition and fees for new first-year Illinois residents with family income and assets of $75,000 or less; automatic consideration if admitted and FAFSA filed by Mar 15",
+      "sourceUrl": "https://free.uic.edu/",
+      "cycle": "2026-27",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
     }
   ],
   "deadlines": [
     {
       "plan": "EA",
       "date": "2026-11-02",
-      "sourceUrl": "https://admissions.uic.edu/node/70",
+      "sourceUrl": "https://admissions.uic.edu/undergraduate/requirements-deadlines/deadlines",
       "cycle": "2026-27",
-      "note": "Application must be complete by this date. Date seen in search results for this page; the page no longer lists it after it passed"
+      "note": "Non-binding; application and all required documents must be dated by Nov 2. Also Honors College, Business Scholars and scholarship priority date"
     },
     {
       "plan": "RD",

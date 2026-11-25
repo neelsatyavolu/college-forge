@@ -94,11 +94,11 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Not considered (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/barnard/2025-26",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'; interview 'Not Considered')",
+      "sourceUrl": "https://barnard.edu/sites/default/files/2026-09/Barnard_CDS_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

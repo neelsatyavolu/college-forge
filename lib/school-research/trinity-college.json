@@ -2,7 +2,7 @@
   "slug": "trinity-college",
   "name": "Trinity College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -133,19 +133,27 @@
       "thirdParty": false
     },
     {
-      "key": "notes",
-      "value": "Optional Trinity essay (under 300 words) in addition to the Common App essay",
-      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "key": "demonstrated_interest",
+      "value": "Important (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Students must declare at least one major by the Friday after spring break of sophomore year; no capped or direct-admit majors found on admissions pages",
+      "sourceUrl": "https://www.trincoll.edu/registrar/policy-faq/",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
     },
     {
       "key": "notes",
-      "value": "Gap: CDS C7 checkmarks did not map to rows, so the demonstrated-interest rating was not confirmed; no major/program admission notes found",
-      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "value": "Optional Trinity essay (under 300 words) in addition to the Common App essay",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     }
   ],

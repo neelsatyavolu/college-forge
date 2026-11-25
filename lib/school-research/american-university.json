@@ -2,39 +2,39 @@
   "slug": "american-university",
   "name": "American University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
-      "value": "66% (13,741 of 20,960; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "value": "65.6% (13,741 of 20,960; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.american.edu/provost/oira/upload/CDS-PDF-2025-2026_PDF_American-University_WEB_FINAL_04-23-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
-      "value": "81% (316 of 392 ED applicants, ED I and II combined; CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "value": "81% (316 of 392 ED applicants, ED I and II combined; CDS 2025-26 C21, which labels it the Fall 2024 entering class)",
+      "sourceUrl": "https://www.american.edu/provost/oira/upload/CDS-PDF-2025-2026_PDF_American-University_WEB_FINAL_04-23-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1320-1440 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "value": "1320-1440 (enrolled Fall 2025; 16% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.american.edu/provost/oira/upload/CDS-PDF-2025-2026_PDF_American-University_WEB_FINAL_04-23-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "30-33 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "value": "30-33 (enrolled Fall 2025; 6% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.american.edu/provost/oira/upload/CDS-PDF-2025-2026_PDF_American-University_WEB_FINAL_04-23-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -46,11 +46,11 @@
     },
     {
       "key": "meets_full_need",
-      "value": "No guarantee of full need; average 88% of need met for first-year aid recipients (CDS 2025-26 H2)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "value": "No guarantee of full need; average 88% of need met for first-year need-based aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.american.edu/provost/oira/upload/CDS-PDF-2025-2026_PDF_American-University_WEB_FINAL_04-23-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "css_profile",
@@ -87,18 +87,18 @@
     {
       "key": "interview",
       "value": "Not considered (CDS 2025-26 C7); no interview listed in the application checklist",
-      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "sourceUrl": "https://www.american.edu/provost/oira/upload/CDS-PDF-2025-2026_PDF_American-University_WEB_FINAL_04-23-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
-      "value": "Very important (CDS 2025-26 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "value": "Very important (CDS 2025-26 C7, 'Level of applicant's interest')",
+      "sourceUrl": "https://www.american.edu/provost/oira/upload/CDS-PDF-2025-2026_PDF_American-University_WEB_FINAL_04-23-26.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",
@@ -110,42 +110,42 @@
     },
     {
       "key": "net_price_lt30k",
-      "value": "$28,397 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "value": "$23,233 (2023-24, Title IV recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131159",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_30_48k",
-      "value": "$19,487 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "value": "$20,444 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131159",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_48_75k",
-      "value": "$27,150 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "value": "$26,035 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131159",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_75_110k",
-      "value": "$31,984 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "value": "$30,063 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131159",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_gt110k",
-      "value": "$53,571 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "value": "$53,673 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131159",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     }
   ],

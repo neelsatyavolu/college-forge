@@ -2,7 +2,7 @@
   "slug": "bucknell-university",
   "name": "Bucknell University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -22,23 +22,23 @@
     },
     {
       "key": "sat_mid50",
-      "value": "Score submitters, Class of 2028: ERW 670-740, Math 670-760. CDS 2025-26 reports 1170-1360 for all enrolled (enrolling students must send scores)",
-      "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
+      "value": "CDS 2025-26 (Fall 2025 enrollees who sent scores, 68% sent SAT): 1170-1360 composite (ERW 590-690, Math 570-680). Bucknell requires all enrolling students to send scores, so this includes students admitted without them. Bucknell testing profile, Class of 2028: ERW 670-740, Math 670-760",
+      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2026-27",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "Score submitters, Class of 2028: 31-34. CDS 2025-26 (all enrolled): 25-32",
-      "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
+      "value": "CDS 2025-26 (Fall 2025 enrollees who sent scores, 18% sent ACT): 25-32. Bucknell testing profile, Class of 2028: 31-34",
+      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2026-27",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "test_policy",
-      "value": "Test-optional pilot extended through the current cycle; applicants choose whether scores are reviewed; enrolling students must send official scores",
+      "value": "Test-optional for 2026-27 (pilot extended; page says through 2026-27 in one place and 2027-28 in another); applicant chooses whether scores are reviewed; enrollees must send official scores if they have any",
       "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
@@ -133,6 +133,14 @@
       "thirdParty": false
     },
     {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 \"Level of applicant's interest\"); interview not considered",
+      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
       "key": "major_notes",
       "value": "Apply directly to one of three colleges (Arts & Sciences, Engineering, Freeman College of Management); transfer into Engineering is quite limited and Management is open only to students admitted to it directly",
       "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
@@ -150,11 +158,11 @@
     },
     {
       "key": "notes",
-      "value": "Gap: CDS C7 table did not parse cleanly, so the demonstrated-interest rating was not confirmed",
-      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
+      "value": "Supplement prompt is from a third-party site; a search excerpt of an official Bucknell viewbook says there is no Bucknell-specific essay, only a short (250-word) explanation of major choice. The viewbook page would not load, so this is unconfirmed",
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/bucknell-university-supplemental-essay-prompts/",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
-      "thirdParty": false
+      "cycle": "2026-27",
+      "thirdParty": true
     }
   ],
   "deadlines": [

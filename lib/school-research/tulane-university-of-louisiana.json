@@ -7,42 +7,42 @@
   {
    "key": "admit_rate",
    "value": "14.5% (4,763 of 32,942; Fall 2025 entry, CDS 2025-26)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "ed_admit_rate",
    "value": "58.2% ED (1,209 of 2,077; CDS 2025-26 C21)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "sat_mid50",
    "value": "1430-1500 (enrolled Fall 2025, CDS 2025-26 C9)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "act_mid50",
    "value": "32-34 (enrolled Fall 2025, CDS 2025-26 C9)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "gpa_note",
    "value": "Avg HS GPA 3.67; 53% in top tenth of class (CDS 2025-26 C11/C10)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "test_policy",
@@ -95,18 +95,18 @@
   {
    "key": "interview",
    "value": "No admissions interview listed in requirements; CDS 2025-26 C7 marks interview Not Considered",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "demonstrated_interest",
    "value": "Important (CDS 2025-26 C7 'Level of applicant's interest')",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",
@@ -126,11 +126,11 @@
   },
   {
    "key": "notes",
-   "value": "CDS 2025-26 numbers read from collegedata.fyi's render of Tulane's CDS (official files are on tulane.box.com via https://oair.tulane.edu/common-data-set)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "value": "CDS 2025-26 numbers read from Tulane's official CDS PDF (linked from https://oair.tulane.edu/common-data-set)",
+   "sourceUrl": "https://tulane.box.com/s/1dgaxpa2x2ie24zgglrg0puwm1h7xrt5",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "notes",

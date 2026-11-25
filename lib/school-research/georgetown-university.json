@@ -2,7 +2,7 @@
  "slug": "georgetown-university",
  "name": "Georgetown University",
  "checkedAt": "2026-11-25",
- "complete": false,
+ "complete": true,
  "facts": [
   {
    "key": "admit_rate",
@@ -149,8 +149,8 @@
    "thirdParty": false
   },
   {
-   "key": "notes",
-   "value": "Gap: demonstrated interest not determined. CDS 2025-26 C7 checkbox for level of applicant's interest could not be read from the PDF, and no official statement was found.",
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest'; the row falls after a page break, where its mark sits in the right-most column with religious affiliation). Interview rated 'Important'",
    "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgetown-university/2025-26/7166516c352f733179a65dd9af5e266829ff0b09f396fcfd779c007f30bb9571.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",

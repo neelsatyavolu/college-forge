@@ -38,7 +38,7 @@
     },
     {
       "key": "test_policy",
-      "value": "ACT, SAT or CLT required; take as often as you like, highest scores counted; take by early December (March tests not considered)",
+      "value": "ACT, SAT or CLT required; take as often as you like, highest scores counted; take by early December (March tests not considered); official scores due Jan 31 of senior year",
       "sourceUrl": "https://www.usafa.edu/admissions/student-applicant/grades-11-12/",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
@@ -64,6 +64,14 @@
       "key": "demonstrated_interest",
       "value": "Not applicable: selection based on academics, fitness, medical qualification, character review, interview and a required nomination",
       "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No admission by major; cadets may declare from day one but must declare by October of their third semester; 26 disciplinary majors plus divisional majors and minors",
+      "sourceUrl": "https://www.usafa.edu/academics/majors-minors/",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
@@ -118,7 +126,7 @@
     },
     {
       "key": "notes",
-      "value": "Gap: the three essay prompts appear only in the applicant portal and were not reviewed; major selection rules not researched",
+      "value": "Gap: the three essay questions (choose 2 of 3 per the Grades 11-12 page; max 3,000 characters) appear only in the applicant portal and were not reviewed. No Common Data Set found for USAFA, so CDS-based C7 data does not exist",
       "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",

@@ -2,7 +2,7 @@
   "slug": "denison-university",
   "name": "Denison University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -141,16 +141,16 @@
       "thirdParty": false
     },
     {
-      "key": "notes",
-      "value": "No supplemental essay required and no application fee",
-      "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
+      "key": "major_notes",
+      "value": "Students formally declare a major by the end of sophomore year; no capped or direct-admit majors found on admissions pages",
+      "sourceUrl": "https://denison.edu/academics/curriculum/academic-majors",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
     },
     {
       "key": "notes",
-      "value": "Gap: no major/program admission notes found",
+      "value": "No supplemental essay required and no application fee",
       "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",

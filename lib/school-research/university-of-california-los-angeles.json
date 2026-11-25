@@ -134,11 +134,11 @@
   },
   {
    "key": "demonstrated_interest",
-   "value": "Not considered (CDS 2025-26 C7 level of applicant interest)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/ucla/2025-26",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/ucla/2025-26/34ebd833ddc8493ba28d7a1fd1953621fddcbc1e233cc418bbe046b42b151e70.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",

@@ -2,31 +2,31 @@
   "slug": "pomona-college",
   "name": "Pomona College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
       "value": "7.1% (890 of 12,470; Fall 2025 entry, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "sourceUrl": "https://tableau.campus.pomona.edu/views/CDS2025-26/C_First-timeFirst-yearadmission",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
       "value": "1490-1550 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "sourceUrl": "https://tableau.campus.pomona.edu/views/CDS2025-26/C_First-timeFirst-yearadmission",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
       "value": "32-34 (enrolled Fall 2025, CDS 2025-26)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "sourceUrl": "https://tableau.campus.pomona.edu/views/CDS2025-26/C_First-timeFirst-yearadmission",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -54,11 +54,11 @@
     },
     {
       "key": "merit_aid",
-      "value": "Essentially none: aid is need-based; CDS 2025-26 H1 reports only $36,902 in institutional non-need aid college-wide",
-      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "value": "Essentially none: aid is need-based; CDS 2025-26 H2A reports 0 first-years and 2 undergraduates with institutional non-need grants",
+      "sourceUrl": "https://tableau.campus.pomona.edu/views/CDS2025-26/H_FinancialAid",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sticker_cost",
@@ -130,6 +130,14 @@
       "sourceUrl": "https://collegescorecard.ed.gov/school/?121345",
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7); interview also not considered",
+      "sourceUrl": "https://tableau.campus.pomona.edu/views/CDS2025-26/C_First-timeFirst-yearadmission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
       "thirdParty": false
     }
   ],

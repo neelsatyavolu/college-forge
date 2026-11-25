@@ -2,38 +2,38 @@
   "slug": "franklin-and-marshall-college",
   "name": "Franklin & Marshall College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
-      "value": "28.2% (2,785 of 9,881; Class of 2028, CDS 2024-25)",
-      "sourceUrl": "https://www.fandm.edu/_resources/pdfs/IR_CDS%202024-25.pdf",
+      "value": "31.6% (3,047 of 9,634; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "ed_admit_rate",
-      "value": "28.1% ED (270 of 961; CDS 2024-25)",
-      "sourceUrl": "https://www.fandm.edu/_resources/pdfs/IR_CDS%202024-25.pdf",
+      "value": "29.5% ED I + ED II combined (254 of 860; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1330-1430 (enrolled Fall 2024, CDS 2024-25)",
-      "sourceUrl": "https://www.fandm.edu/_resources/pdfs/IR_CDS%202024-25.pdf",
+      "value": "1310-1470 (31% of enrollees submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "30-33 (enrolled Fall 2024, CDS 2024-25)",
-      "sourceUrl": "https://www.fandm.edu/_resources/pdfs/IR_CDS%202024-25.pdf",
+      "value": "29-32 (7% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2025-26",
       "thirdParty": false
     },
     {
@@ -126,8 +126,24 @@
     },
     {
       "key": "interview",
-      "value": "Interviews offered (F&M publishes interview guidance); whether evaluative or recommended is not stated on the page read",
+      "value": "Interviews offered; schedule through the F&M applicant portal. CDS 2025-26 C7 rates interview Important",
       "sourceUrl": "https://www.fandm.edu/apply/interview-tips.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission to the College; application checklist lists no major- or program-specific applications; optional supplemental materials (e.g., portfolio) via the applicant portal",
+      "sourceUrl": "https://www.fandm.edu/apply/regular-decision-application-checklist.html",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
@@ -142,10 +158,10 @@
     },
     {
       "key": "notes",
-      "value": "Gap: the 2025-26 CDS is posted only as a Google Drive file, so figures come from CDS 2024-25; C7 demonstrated-interest row was not readable; no major/program admission notes found",
-      "sourceUrl": "https://www.fandm.edu/institutional-research/",
+      "value": "CDS 2025-26 (Google Drive file, read 2026-11-25) used for admissions figures; other CDS-based facts still cite CDS 2024-25",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
       "checkedAt": "2026-11-25",
-      "cycle": "2026-27",
+      "cycle": "2025-26",
       "thirdParty": false
     }
   ],

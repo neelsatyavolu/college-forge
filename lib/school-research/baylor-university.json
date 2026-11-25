@@ -2,7 +2,7 @@
   "slug": "baylor-university",
   "name": "Baylor University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -118,7 +118,7 @@
     },
     {
       "key": "notes",
-      "value": "Essay required (in the Common App or in goBAYLOR after submitting the Baylor app). Recommended: STARS self-reported transcript, résumé, two recommendations. Aid timeline page lists RD as Feb 15, but the admissions process page says Feb 1; Feb 1 used here",
+      "value": "Essay required (in the Common App or in goBAYLOR after submitting the Baylor app). Recommended: STARS self-reported transcript, résumé, two recommendations. RD deadline is Feb 1 per the admissions application-process page (rechecked 2026-11-25); the One Stop aid timeline page still calls the plan 'February 15 Non-Binding (Regular Decision)', which conflicts. Treat Feb 1 as the deadline",
       "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",

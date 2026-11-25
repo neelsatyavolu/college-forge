@@ -2,7 +2,7 @@
   "slug": "amherst-college",
   "name": "Amherst College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -22,11 +22,11 @@
     },
     {
       "key": "sat_mid50",
-      "value": "1500-1560 (enrolled Fall 2024, CDS 2024-25); CDS 2025-26 SAT Math 730-790, composite not readable in the PDF",
-      "sourceUrl": "https://www.collegedata.fyi/schools/amherst-college/2024-25",
+      "value": "1470-1540 (enrolled Fall 2025; 40% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
@@ -54,19 +54,19 @@
     },
     {
       "key": "css_profile",
-      "value": "Required: CDS 2024-25 lists FAFSA and CSS Profile as required aid forms",
-      "sourceUrl": "https://www.collegedata.fyi/schools/amherst-college/2024-25",
+      "value": "Required: domestic first-years submit FAFSA, CSS Profile and Noncustodial Profile; international applicants submit CSS Profile (CDS 2025-26 H7-H8)",
+      "sourceUrl": "https://www.amherst.edu/system/files/H.%20Financial%20Aid%202025-26_0.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "merit_aid",
-      "value": "No merit aid: 0 first-year recipients of institutional non-need grants (CDS 2024-25 H2A)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/amherst-college/2024-25",
+      "value": "Essentially none: aid is need-based; CDS 2025-26 H2A reports 1 first-year awarded an institutional non-need grant",
+      "sourceUrl": "https://www.amherst.edu/system/files/H.%20Financial%20Aid%202025-26_0.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "sticker_cost",
@@ -86,19 +86,19 @@
     },
     {
       "key": "interview",
-      "value": "Not considered (CDS 2024-25 C7); no interview listed in application materials",
-      "sourceUrl": "https://www.collegedata.fyi/schools/amherst-college/2024-25",
+      "value": "Not considered (CDS 2025-26 C7); the first-year application page lists no interview",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "demonstrated_interest",
-      "value": "Not considered (CDS 2024-25 C7)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/amherst-college/2024-25",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
-      "thirdParty": true
+      "cycle": "2025-26",
+      "thirdParty": false
     },
     {
       "key": "major_notes",

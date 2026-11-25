@@ -2,7 +2,7 @@
   "slug": "college-of-the-holy-cross",
   "name": "College of the Holy Cross",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -141,6 +141,14 @@
       "thirdParty": false
     },
     {
+      "key": "major_notes",
+      "value": "Majors are declared after enrolling, between the second semester of first year and the enrollment period before junior year",
+      "sourceUrl": "https://www.holycross.edu/academics/requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
       "key": "notes",
       "value": "No school-specific supplemental essay listed among required items (Common App/Coalition, transcript, two recommendations, $65 fee, ED form)",
       "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
@@ -158,7 +166,7 @@
     },
     {
       "key": "notes",
-      "value": "Gap: newest posted CDS is 2023-24; no major/program admission notes found",
+      "value": "Gap: newest posted CDS is 2023-24 (checked 2026-11-25), so admit rate and scores come from the Class of 2030 profile and the CDS figures are older",
       "sourceUrl": "https://www.holycross.edu/about-holy-cross/offices-services/office-of-institutional-research-analytics",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",

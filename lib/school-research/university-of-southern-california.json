@@ -30,11 +30,11 @@
   },
   {
    "key": "gpa_note",
-   "value": "Average HS GPA 3.85; 69% of enrollees who reported rank in top 10% (CDS 2025-26)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/usc/2025-26",
+   "value": "Average HS GPA 3.85 (CDS C12); 69% of enrollees who reported rank were in the top 10% (CDS C10, 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/usc/2025-26/899c1316d80eb5709d0212b37ba8500671f987c906499d60a3c9a52b83504a36.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "test_policy",

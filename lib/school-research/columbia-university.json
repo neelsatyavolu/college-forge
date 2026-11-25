@@ -2,7 +2,7 @@
   "slug": "columbia-university",
   "name": "Columbia University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -46,18 +46,18 @@
     },
     {
       "key": "meets_full_need",
-      "value": "Meets 100% of demonstrated need for all domestic students (and internationals admitted with aid) for four years, with grants and work only; no loans in aid packages",
-      "sourceUrl": "https://cc-seas.financialaid.columbia.edu/faq-page/prospective-students",
+      "value": "Meets 100% of demonstrated need for all domestic students (and internationals admitted with aid) for four years; grants and student work only, no loans",
+      "sourceUrl": "https://cc-seas.financialaid.columbia.edu/how/aid/works",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
       "key": "css_profile",
-      "value": "CSS Profile required (code 2116) plus FAFSA. Last posted first-year aid deadlines were Nov 15 (ED) and Feb 15 (RD) for the 2025-26 cycle; 2026-27 dates not confirmed",
-      "sourceUrl": "https://cc-seas.financialaid.columbia.edu/faq-page/prospective-students",
+      "value": "CSS Profile and FAFSA required. First-year aid applications due Nov 15 (ED) and Feb 15 (RD)",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/firstyear",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
@@ -65,7 +65,7 @@
       "value": "No merit aid: no academic, athletic or talent-based institutional scholarships; aid is need-based only",
       "sourceUrl": "https://cc-seas.financialaid.columbia.edu/faq-page/prospective-students",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
@@ -89,7 +89,7 @@
       "value": "No interviews for any applicants (ended May 2023); optional InitialView/Vericant videos only for language fluency",
       "sourceUrl": "https://undergrad.admissions.columbia.edu/faq",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     },
     {
@@ -103,15 +103,15 @@
     {
       "key": "major_notes",
       "value": "Apply to Columbia College or Columbia Engineering (SEAS); the final prompt asks about your preferred areas of study at the school you choose",
-      "sourceUrl": "https://prepmaven.com/blog/applying/columbia-supplemental-essays/",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
     },
     {
       "key": "notes",
-      "value": "Columbia's admissions and aid sites blocked automated reading, so facts come from official-page excerpts in web search and need a manual check; the supplement text is from a third-party guide whose wording matches Columbia's question 6. Policy change: testing returns as required in 2027-28",
-      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/firstyear",
+      "value": "Policy change: SAT/ACT required starting August 2027 (2027-28 cycle, fall 2028 entry). Latest Columbia College/Engineering CDS on Columbia's site is 2024-25; the 2025-26 file was not found",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/testing",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
@@ -175,23 +175,23 @@
   "supplements": [
     {
       "label": "List of texts",
-      "prompt": "List a selection of texts, resources and outlets that have contributed to your intellectual development outside of academic courses, including but not limited to books, journals, websites, podcasts, essays, plays, presentations, videos, museums and other content that you enjoy.",
+      "prompt": "List the titles of texts, resources and outlets that have contributed to your intellectual development outside of academic courses, including but not limited to books, journals, websites, podcasts, essays, plays, presentations, videos, museums and other content that you enjoy.",
       "limit": 100,
       "unit": "words",
       "required": true,
-      "sourceUrl": "https://prepmaven.com/blog/applying/columbia-supplemental-essays/",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Lived experience",
-      "prompt": "Tell us about an aspect of your life so far or your lived experience that is important to you, and describe how it has shaped the way you would learn from and contribute to Columbia’s multidimensional and collaborative environment.",
+      "prompt": "Tell us about an aspect of your life so far or your lived experience that is important to you, and describe how it has shaped the way you would learn from and contribute to Columbia's multidimensional and collaborative environment.",
       "limit": 150,
       "unit": "words",
       "required": true,
-      "sourceUrl": "https://prepmaven.com/blog/applying/columbia-supplemental-essays/",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Disagreement",
@@ -199,9 +199,9 @@
       "limit": 150,
       "unit": "words",
       "required": true,
-      "sourceUrl": "https://prepmaven.com/blog/applying/columbia-supplemental-essays/",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Adversity",
@@ -209,9 +209,9 @@
       "limit": 150,
       "unit": "words",
       "required": true,
-      "sourceUrl": "https://prepmaven.com/blog/applying/columbia-supplemental-essays/",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Why Columbia",
@@ -219,9 +219,9 @@
       "limit": 150,
       "unit": "words",
       "required": true,
-      "sourceUrl": "https://prepmaven.com/blog/applying/columbia-supplemental-essays/",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "label": "Areas of study",
@@ -229,9 +229,9 @@
       "limit": 150,
       "unit": "words",
       "required": true,
-      "sourceUrl": "https://prepmaven.com/blog/applying/columbia-supplemental-essays/",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
       "cycle": "2026-27",
-      "thirdParty": true
+      "thirdParty": false
     }
   ]
 }

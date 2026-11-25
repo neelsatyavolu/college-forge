@@ -2,7 +2,7 @@
   "slug": "macalester-college",
   "name": "Macalester College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -133,6 +133,22 @@
       "thirdParty": false
     },
     {
+      "key": "demonstrated_interest",
+      "value": "Not rated: the CDS 2025-26 C7 row for level of applicant's interest is left blank",
+      "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major chosen at admission found; students must declare a major before registering for junior year",
+      "sourceUrl": "https://www.macalester.edu/academic-programs/academicadvising-2/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
       "key": "notes",
       "value": "Two optional Macalester essay prompts in the Common App member section; no word limit stated on the page",
       "sourceUrl": "https://www.macalester.edu/admissions/us-admissions/first-year/",
@@ -142,7 +158,7 @@
     },
     {
       "key": "notes",
-      "value": "Gap: CDS C7 checkboxes did not render, so the demonstrated-interest rating was not found; no major/program admission notes found",
+      "value": "Gap: CDS 2025-26 C7 leaves level of applicant's interest unmarked (checked in the PDF form fields), and no official statement on demonstrated interest was found",
       "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",

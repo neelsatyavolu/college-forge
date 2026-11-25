@@ -2,31 +2,31 @@
   "slug": "new-york-university",
   "name": "New York University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
-      "value": "9.1% (10,340 of 114,125; Fall 2025 entry, CDS 2025-26 as transcribed by collegedata.fyi)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/nyu/2025-26",
+      "value": "9.1% (10,340 of 114,125; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "sat_mid50",
-      "value": "1480-1550 (enrolled Fall 2025, CDS 2025-26 as transcribed by collegedata.fyi)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/nyu/2025-26",
+      "value": "1480-1550, median 1520 (enrolled Fall 2025; EBRW 730-770, Math 750-790; CDS 2025-26)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "act_mid50",
-      "value": "34-35 (enrolled Fall 2025, CDS 2025-26 as transcribed by collegedata.fyi)",
-      "sourceUrl": "https://www.collegedata.fyi/schools/nyu/2025-26",
+      "value": "34-35, median 35 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "test_policy",
@@ -125,6 +125,22 @@
       "thirdParty": false
     },
     {
+      "key": "interview",
+      "value": "Interview not considered in general admission (CDS 2025-26 C7: Not Considered); some Tisch/Steinhardt programs use auditions, interviews or portfolios",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest': Considered)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
       "key": "notes",
       "value": "One recommendation required (teacher, counselor, coach, supervisor or similar; up to three). Supplemental materials in the portal are usually due 1-2 weeks after the application deadline. $85 fee or waiver",
       "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/all-freshmen-applicants.html",
@@ -134,8 +150,8 @@
     },
     {
       "key": "notes",
-      "value": "Gaps: NYU's official CDS 2025-26 PDF could not be read by our scraper, so admit rate and scores come from a third-party transcription; ED admit rate, interview and demonstrated-interest (CDS C7) are missing",
-      "sourceUrl": "https://www.nyu.edu/employees/resources-and-services/administrative-services/institutional-research/self-service-reporting-resources/factbook.html",
+      "value": "Gaps: NYU's CDS 2025-26 C21 leaves ED applicant and admit counts blank, so no ED admit rate is published",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
       "thirdParty": false

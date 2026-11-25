@@ -7,42 +7,42 @@
   {
    "key": "admit_rate",
    "value": "67.3% (9,655 of 14,356; Fall 2025 entry, CDS 2025-26)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "ed_admit_rate",
-   "value": "69.1% ED (219 of 317; CDS 2025-26 C21)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "value": "69.1% ED (219 of 317; CDS 2025-26 C21, which labels the rows 'Fall 2024 entering class')",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "sat_mid50",
    "value": "1380-1500 (enrolled Fall 2025, CDS 2025-26 C9)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "act_mid50",
    "value": "31-34 (enrolled Fall 2025, CDS 2025-26 C9)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "gpa_note",
    "value": "Avg HS GPA 3.93; 63% in top tenth of class (CDS 2025-26 C11/C10)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "test_policy",
@@ -55,10 +55,10 @@
   {
    "key": "meets_full_need",
    "value": "No; avg 63% of need met for first-years with need (CDS 2025-26 H2)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "css_profile",
@@ -103,10 +103,10 @@
   {
    "key": "demonstrated_interest",
    "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",
@@ -118,11 +118,11 @@
   },
   {
    "key": "notes",
-   "value": "CDS 2025-26 numbers read from collegedata.fyi's render of RPI's CDS (official file on rpi.box.com: https://rpi.box.com/s/fkqisnv4wxanikf1yfpw0yvajjtupg2z)",
-   "sourceUrl": "https://www.collegedata.fyi/schools/rensselaer-polytechnic-institute/2025-26",
+   "value": "CDS 2025-26 numbers read from RPI's official CDS PDF (linked from https://provost.rpi.edu/institutional-research-and-assessment)",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "notes",

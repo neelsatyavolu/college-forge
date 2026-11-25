@@ -99,6 +99,62 @@
       "checkedAt": "2026-11-25",
       "cycle": "2024-25",
       "thirdParty": false
+    },
+    {
+      "key": "admit_rate",
+      "value": "77.0% (16,690 of 21,669; Fall 2023 entry, CDS 2023-24, the newest CDS Mizzou has posted)",
+      "sourceUrl": "https://mailmissouri.sharepoint.com/:b:/s/IRQI-Website-Ogrp/EfpfiY0eArJGlaBY-aJbELsBLc5O0Ee56iU6zrLG0O7PCQ",
+      "cycle": "2023-24",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Composite not reported; sections EBRW 580-670, Math 570-660 (enrolled Fall 2023; 10% submitted SAT; CDS 2023-24)",
+      "sourceUrl": "https://mailmissouri.sharepoint.com/:b:/s/IRQI-Website-Ogrp/EfpfiY0eArJGlaBY-aJbELsBLc5O0Ee56iU6zrLG0O7PCQ",
+      "cycle": "2023-24",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "key": "act_mid50",
+      "value": "23-29 (enrolled Fall 2023; 66% submitted ACT; CDS 2023-24)",
+      "sourceUrl": "https://mailmissouri.sharepoint.com/:b:/s/IRQI-Website-Ogrp/EfpfiY0eArJGlaBY-aJbELsBLc5O0Ee56iU6zrLG0O7PCQ",
+      "cycle": "2023-24",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No; average 70% of need met for full-time first-year aid recipients (CDS 2023-24 H2)",
+      "sourceUrl": "https://mailmissouri.sharepoint.com/:b:/s/IRQI-Website-Ogrp/EfpfiY0eArJGlaBY-aJbELsBLc5O0Ee56iU6zrLG0O7PCQ",
+      "cycle": "2023-24",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "key": "interview",
+      "value": "Not considered (CDS 2023-24 C7)",
+      "sourceUrl": "https://mailmissouri.sharepoint.com/:b:/s/IRQI-Website-Ogrp/EfpfiY0eArJGlaBY-aJbELsBLc5O0Ee56iU6zrLG0O7PCQ",
+      "cycle": "2023-24",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2023-24 C7 \"Level of applicant’s interest\")",
+      "sourceUrl": "https://mailmissouri.sharepoint.com/:b:/s/IRQI-Website-Ogrp/EfpfiY0eArJGlaBY-aJbELsBLc5O0Ee56iU6zrLG0O7PCQ",
+      "cycle": "2023-24",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "key": "notes",
+      "value": "Gaps: Mizzou’s institutional research page posts CDS only through 2023-24, so admit rate, scores, need met and C7 are from Fall 2023; no 2024-25 or 2025-26 CDS found",
+      "sourceUrl": "https://udair.missouri.edu/mu-data/common-data-set/",
+      "cycle": "2023-24",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
     }
   ],
   "deadlines": [

@@ -2,7 +2,7 @@
   "slug": "lafayette-college",
   "name": "Lafayette College",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -133,19 +133,27 @@
       "thirdParty": false
     },
     {
-      "key": "notes",
-      "value": "Application review focuses on the top six activities listed",
-      "sourceUrl": "https://admissions.lafayette.edu/apply",
+      "key": "demonstrated_interest",
+      "value": "Important (CDS 2025-26 C7)",
+      "sourceUrl": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission is to the College, not a major; indicating engineering interest helps course planning but does not affect admission chances",
+      "sourceUrl": "https://engineering.lafayette.edu/about/admissions-faq/",
       "checkedAt": "2026-11-25",
       "cycle": "2026-27",
       "thirdParty": false
     },
     {
       "key": "notes",
-      "value": "Gap: CDS C7 table did not parse cleanly, so the demonstrated-interest rating was not confirmed; no major/program admission notes found",
-      "sourceUrl": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf",
+      "value": "Application review focuses on the top six activities listed",
+      "sourceUrl": "https://admissions.lafayette.edu/apply",
       "checkedAt": "2026-11-25",
-      "cycle": "2025-26",
+      "cycle": "2026-27",
       "thirdParty": false
     }
   ],

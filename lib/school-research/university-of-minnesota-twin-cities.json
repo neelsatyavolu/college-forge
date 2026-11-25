@@ -2,7 +2,7 @@
  "slug": "university-of-minnesota-twin-cities",
  "name": "University of Minnesota--Twin Cities",
  "checkedAt": "2026-11-25",
- "complete": false,
+ "complete": true,
  "facts": [
   {
    "key": "admit_rate",
@@ -86,7 +86,7 @@
   },
   {
    "key": "interview",
-   "value": "Not part of the application: only the application, $55 fee and self-reported academic record are required",
+   "value": "Not part of the application: only the application, $55 fee and self-reported academic record are required; CDS 2025-26 C7: Not Considered",
    "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission-university-minnesota-twin-cities",
    "checkedAt": "2026-11-25",
    "cycle": "2026-27",
@@ -94,10 +94,10 @@
   },
   {
    "key": "demonstrated_interest",
-   "value": "Not determined: CDS C7 checkbox values don't extract from UMN's PDFs, and UMN's listed review factors don't mention demonstrated interest",
-   "sourceUrl": "https://admissions.tc.umn.edu/hs-counselor-guidebook/review-process-and-student-profile",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
    "checkedAt": "2026-11-25",
-   "cycle": "2026-27",
+   "cycle": "2025-26",
    "thirdParty": false
   },
   {
@@ -118,7 +118,7 @@
   },
   {
    "key": "notes",
-   "value": "Gap: CDS C7 checkbox ratings (demonstrated interest, interview) don't extract from UMN's PDF. Note collegedata.fyi's 2025-26 page for UMN-TC shows another campus's data; don't use it",
+   "value": "Note: collegedata.fyi's 2025-26 page for UMN-TC shows another campus's data; don't use it. C7 ratings here read from the official PDF's layout text",
    "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",

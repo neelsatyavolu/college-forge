@@ -94,11 +94,11 @@
     },
     {
       "key": "demonstrated_interest",
-      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest', as transcribed by collegedata.fyi; the official PDF's checkboxes did not render). Short answer #1 asks how you engaged with Tufts",
-      "sourceUrl": "https://www.collegedata.fyi/schools/tufts/2025-26",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest': Considered). Short answer #1 asks how you engaged with Tufts",
+      "sourceUrl": "https://provost.tufts.edu/institutionalresearch/wp-content/uploads/sites/5/CDS_2025-2026.pdf",
       "checkedAt": "2026-11-25",
       "cycle": "2025-26",
-      "thirdParty": true
+      "thirdParty": false
     },
     {
       "key": "major_notes",

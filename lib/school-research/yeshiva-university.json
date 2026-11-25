@@ -2,7 +2,7 @@
   "slug": "yeshiva-university",
   "name": "Yeshiva University",
   "checkedAt": "2026-11-25",
-  "complete": false,
+  "complete": true,
   "facts": [
     {
       "key": "admit_rate",
@@ -118,42 +118,42 @@
     },
     {
       "key": "net_price_lt30k",
-      "value": "$31,255 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "value": "$24,103 (2023-24, Title IV recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197708",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_30_48k",
-      "value": "$27,653 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "value": "$25,462 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197708",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_48_75k",
-      "value": "$32,813 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "value": "$28,207 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197708",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_75_110k",
-      "value": "$41,814 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "value": "$41,944 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197708",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     },
     {
       "key": "net_price_gt110k",
-      "value": "$72,673 average net price, federal aid recipients, 2024-25 (College Scorecard)",
-      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "value": "$69,618 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197708",
       "checkedAt": "2026-11-25",
-      "cycle": "2024-25",
+      "cycle": "2023-24",
       "thirdParty": false
     }
   ],

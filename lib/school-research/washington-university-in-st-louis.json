@@ -151,10 +151,10 @@
   {
    "key": "demonstrated_interest",
    "value": "CDS 2025-26 C7: level of applicant's interest 'Considered'",
-   "sourceUrl": "https://www.collegedata.fyi/schools/washington-university-in-st-louis/2025-26",
+   "sourceUrl": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf",
    "checkedAt": "2026-11-25",
    "cycle": "2025-26",
-   "thirdParty": true
+   "thirdParty": false
   },
   {
    "key": "major_notes",
