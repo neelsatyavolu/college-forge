@@ -147,6 +147,14 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   const [error, setError] = React.useState("");
   const [cards, setCards] = React.useState([]);
   const [draft, setDraft] = React.useState("");
+  // The answer box grows with what the student types (2 lines up to about 8), then scrolls.
+  const boxRef = React.useRef(null);
+  React.useLayoutEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight + 2, 220)}px`;
+  }, [draft]);
   const started = React.useRef(false);
   const endRef = React.useRef(null);
   const iv = ws?.onboarding?.interview;
@@ -345,7 +353,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         <div ref={endRef} />
       </main>
       <form className="oc-composer" onSubmit={(e) => { e.preventDefault(); const t = draft; setDraft(""); send(t); }}>
-        <textarea className="oc-input" rows={1} placeholder={lastLive ? "Or type your answer…" : "Type your answer…"} value={draft} disabled={busy || phase === "research" || phase === "plan"}
+        <textarea ref={boxRef} className="oc-input oc-composer-box" rows={2} aria-label="Your answer" placeholder={lastLive ? "Or type your answer…" : "Type your answer…"} value={draft} disabled={busy || phase === "research" || phase === "plan"}
           onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); const t = draft; setDraft(""); send(t); } }} />
         <OcBtn size="sm" type="submit" disabled={busy || !draft.trim()}>Send</OcBtn>
       </form>
