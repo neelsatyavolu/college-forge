@@ -155,13 +155,14 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
   {
     name: "set_list_preferences",
     description:
-      "Save the student's college-list preferences. Only the fields you pass change. ambition: ambitious | balanced | conservative (more reaches or more likely schools). appCount: number of applications, 8-15. regions: northeast, mid-atlantic, south, midwest, west, any. settings: urban, suburban, rural, college-town. budget: lt15 | 15-30 | 30-50 | 50plus | unsure (thousands of dollars a year). needAid: yes | no (applying for need-based aid). ed: yes | no | maybe (would apply Early Decision). This does not change the saved list; call rebalance_list after, when the student wants the list updated.",
+      "Save the student's college-list preferences. Only the fields you pass change. ambition: ambitious | balanced | conservative (more reaches or more likely schools). appCount: number of applications, 8-15. regions: northeast, mid-atlantic, south, midwest, west, any. settings: urban, suburban, rural, college-town, any. size: small | medium | large | any. budget: lt15 | 15-30 | 30-50 | 50plus | unsure (thousands of dollars a year). needAid: yes | no (applying for need-based aid). ed: yes | no | maybe (would apply Early Decision). This does not change the saved list; call rebalance_list after, when the student wants the list updated.",
     parameters: {
       type: "object",
       properties: {
         ambition: { type: "string", enum: ["ambitious", "balanced", "conservative"] },
         appCount: { type: "number" },
         regions: { type: "array", items: str }, settings: { type: "array", items: str },
+        size: { type: "string", enum: ["small", "medium", "large", "any"] },
         notes: { type: "string", description: "Free-text constraints. Replaces the saved notes." },
         budget: { type: "string", enum: ["lt15", "15-30", "30-50", "50plus", "unsure"] },
         needAid: yesNo("yes: applying for need-based aid. no: not applying."), ed: { type: "string", enum: ["yes", "no", "maybe"] },
@@ -277,7 +278,7 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
       }, () => "Removed the honor.");
     }
     case "set_list_preferences": {
-      const listPrefs = { ...pick(a, ["ambition", "appCount", "regions", "settings", "notes", "budget", "ed"]), needAid: toolFlag(a.needAid) };
+      const listPrefs = { ...pick(a, ["ambition", "appCount", "regions", "settings", "size", "notes", "budget", "ed"]), needAid: toolFlag(a.needAid) };
       return savePatch(mutate, { listPrefs }, "Saved the list preferences. The saved list is unchanged until rebalance_list runs.");
     }
     case "rebalance_list": {

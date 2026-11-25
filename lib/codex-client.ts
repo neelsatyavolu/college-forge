@@ -389,6 +389,10 @@ export async function runCodexChat(params: {
   emit: ChatEmitter;
   tools?: ToolSpec[];
   executeTool?: ToolExecutor;
+  /** Checked after each round of tool calls: true ends the turn (an onboarding question is waiting for the student). */
+  shouldEndTurn?: () => boolean;
+  /** Overrides the tool-round cap (research steps need more reads). */
+  maxRounds?: number;
 }): Promise<CodexChatResult> {
   const { emit } = params;
   const tools = params.tools ?? DEFAULT_TOOLS;
@@ -402,7 +406,8 @@ export async function runCodexChat(params: {
   let lastFinishReason: string | null = null;
   let truncated = false;
 
-  for (let round = 0; round < MAX_ROUNDS; round++) {
+  const maxRounds = params.maxRounds && params.maxRounds > 0 ? Math.min(params.maxRounds, 16) : MAX_ROUNDS;
+  for (let round = 0; round < maxRounds; round++) {
     emit({
       type: "status",
       stage: round === 0 ? "thinking" : "round",
@@ -449,6 +454,9 @@ export async function runCodexChat(params: {
       const output = await exec(call.name, call.arguments);
       input.push({ type: "function_call_output", call_id: call.call_id, output });
     }
+    if (params.shouldEndTurn?.()) {
+      return { text: accumulated, model, finishReason: "awaiting_student", rounds: round + 1, truncated };
+    }
   }
 
   const suffix = friendlyToolBudgetNote();
@@ -458,7 +466,7 @@ export async function runCodexChat(params: {
     text: accumulated,
     model,
     finishReason: "tool_round_limit",
-    rounds: MAX_ROUNDS,
+    rounds: maxRounds,
     truncated,
   };
 }

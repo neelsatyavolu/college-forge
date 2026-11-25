@@ -1,9 +1,11 @@
 import { NextRequest } from "next/server";
 import { runChat } from "@/lib/providers";
 import type { ChatEvent, ChatTurn, ProviderName } from "@/lib/chat-types";
-import { getWorkspace } from "@/lib/store";
+import { getWorkspace, updateWorkspace } from "@/lib/store";
 import { buildHubSystemPrompt } from "@/lib/hub-context";
 import { makeHubTools } from "@/lib/hub-tools";
+import { makeInterviewTools, recordTurn } from "@/lib/interview-tools";
+import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
 export const runtime = "nodejs";
@@ -34,6 +36,8 @@ export async function POST(req: NextRequest) {
     codexModel?: unknown;
     grokModel?: unknown;
     opencodeModel?: unknown;
+    /** "onboarding": the setup interview. "research": one school's research step during setup. */
+    mode?: unknown;
   };
   try {
     body = await req.json();
@@ -67,6 +71,8 @@ export async function POST(req: NextRequest) {
   const codexModel = typeof body.codexModel === "string" ? body.codexModel : undefined;
   const grokModel = typeof body.grokModel === "string" ? body.grokModel : undefined;
 
+  const mode = body.mode === "onboarding" || body.mode === "research" ? body.mode : "hub";
+
   const encoder = new TextEncoder();
   const startedAt = Date.now();
 
@@ -85,9 +91,20 @@ export async function POST(req: NextRequest) {
       try {
         emit({ type: "status", stage: "context", message: "Loading your hub…" });
         const ws = await getWorkspace(workspaceId);
-        const instructions = buildHubSystemPrompt(ws);
         const lastUserText = [...turns].reverse().find((t) => t.role === "user")?.content || "";
-        const { tools, executeTool } = makeHubTools(workspaceId, { userText: lastUserText, draftStorageKey: ws.draftStorageKey });
+        const hub = makeHubTools(workspaceId, { userText: lastUserText, draftStorageKey: ws.draftStorageKey });
+        const mutate = (fn: Parameters<typeof updateWorkspace>[1]) => updateWorkspace(workspaceId, fn);
+        const interview = makeInterviewTools(mutate, () => getWorkspace(workspaceId), emit);
+        const setup = mode !== "hub";
+        const instructions = mode === "onboarding"
+          ? buildInterviewPrompt(ws)
+          : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}` : buildHubSystemPrompt(ws);
+        const tools = setup ? [...hub.tools, ...interview.tools] : hub.tools;
+        const executeTool: typeof hub.executeTool = async (name, argsJson) =>
+          (setup ? await interview.execute(name, argsJson) : null) ?? hub.executeTool(name, argsJson);
+        if (mode === "onboarding") {
+          await mutate((w) => recordTurn(w, { role: "user", content: lastUserText.slice(0, 4000), at: Date.now() }));
+        }
 
         console.log(
           `[ai-chat] start ws=${wsTag} turns=${turns.length} uploads=${ws.uploads.length} ` +
@@ -112,7 +129,13 @@ export async function POST(req: NextRequest) {
           emit,
           tools,
           executeTool: countingExecuteTool,
+          ...(setup ? { requireTools: true, shouldEndTurn: interview.endTurn } : {}),
+          ...(mode === "research" ? { maxRounds: 14 } : {}),
         });
+        if (mode === "onboarding") {
+          const ui = interview.shown();
+          await mutate((w) => recordTurn(w, { role: "assistant", content: result.text.slice(0, 4000), ...(ui ? { ui } : {}), at: Date.now() }));
+        }
 
         // Reads and answers do not authorize implicit changes to saved choices.
         // All writes occur through explicit workspace tools above.

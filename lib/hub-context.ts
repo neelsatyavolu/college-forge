@@ -5,7 +5,7 @@ import { oddsTargets } from "./admission-odds";
 
 // A compact, readable snapshot of the current workspace so the model knows
 // what's already populated and what's still empty.
-function snapshot(ws: Workspace): string {
+export function snapshot(ws: Workspace): string {
   const lines: string[] = [];
   const a = ws.applicant;
   lines.push(

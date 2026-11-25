@@ -168,7 +168,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     };
     if (["balanced", "ambitious", "conservative"].includes(p.ambition as string)) listPrefs.ambition = p.ambition!;
     if (["small", "medium", "large", "any"].includes(p.size as string)) listPrefs.size = p.size!;
-    if (Array.isArray(p.settings)) listPrefs.settings = [...new Set(p.settings.filter(s => ["urban", "suburban", "rural", "college-town"].includes(s)))];
+    if (Array.isArray(p.settings)) listPrefs.settings = [...new Set(p.settings.filter(s => ["urban", "suburban", "rural", "college-town", "any"].includes(s)))];
     if (Array.isArray(p.regions)) listPrefs.regions = [...new Set(p.regions.filter(r => ["northeast", "mid-atlantic", "south", "midwest", "west", "any"].includes(r)))];
     if (typeof p.notes === "string") listPrefs.notes = p.notes.trim().slice(0, 4000);
     if ((LIST_BUDGETS as readonly unknown[]).includes(p.budget)) listPrefs.budget = p.budget;

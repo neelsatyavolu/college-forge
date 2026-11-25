@@ -113,6 +113,8 @@ export type InterviewState = {
   meritInterest?: "yes" | "no" | "unsure";
   /** The AI's ED/EA recommendation once the student confirmed it. */
   strategy?: { ed?: string; ea: string[]; reasons: string; confirmed: boolean };
+  /** The last draft list the AI proposed (UiSchool[] from lib/chat-types.ts). */
+  listDraft?: import("./chat-types").UiSchool[];
   startedAt: number;
 };
 
