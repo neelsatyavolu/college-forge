@@ -60,6 +60,8 @@ export default function Methodology({ count, generated }: { count: number; gener
             <li>The top-1% data follows students born 1980–82, and the SAT update is an estimate.</li>
             <li>No public dataset reports internships or co-op for every school, so only nearby jobs count.</li>
             <li>How hard a switch is depends on where you start. The levels here assume you start in a different college at the same school.</li>
+            <li>Switching rules were checked by hand at 61 schools, and only for economics, business, computer science, statistics and applied math. Everywhere else a major shows as “not checked” and counts if the school offers it. A school that offers none of your majors ranks below every school that does.</li>
+            <li>Some schools have no checked QS score, LinkedIn rank or Niche grades yet. Missing ranks count as average, and a school with no Niche grades gets no campus score.</li>
             <li>This compares past graduates. It is not a promise about any one student.</li>
           </ul>
         </div>

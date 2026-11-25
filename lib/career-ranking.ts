@@ -20,8 +20,11 @@ export const PILLAR_LABELS: Record<Pillar, [string, string]> = {
   floor: ["Earnings floor", "bottom quarter"],
   campus: ["Campus life", "facilities, dorms, food"],
 };
-/** Switch levels: 1 open, 2 grade bar, 2.5 most applicants get in, 3 competitive, 4 long shot. 0 or missing: not counted. */
-export const SWITCH_LABELS: Record<string, string> = { "1": "open", "2": "grade bar", "2.5": "most get in", "3": "competitive", "4": "long shot" };
+/**
+ * Switch levels: 1 open, 2 grade bar, 2.5 most applicants get in, 3 competitive, 4 long shot, 0 not offered or not counted.
+ * Missing: the school's rules were never checked for that major. It counts when the school offers the major.
+ */
+export const SWITCH_LABELS: Record<string, string> = { "1": "open", "2": "grade bar", "2.5": "most get in", "3": "competitive", "4": "long shot", unchecked: "not checked" };
 /** Schools within this many score points of the first school in their group share a rank. */
 export const TIE = 2.5;
 
@@ -41,6 +44,8 @@ export type CareerSchool = {
   niche: { overall?: string; campus?: string; dorms?: string; food?: string; rank?: number } | null;
   tracks: Record<string, Track>; ptracks: Record<string, Track>;
   switch: { lv: Record<string, number>; lbl: Record<string, string> };
+  /** false for schools added only for Forge: no researched switching rules, QS, LinkedIn rank or Niche grades. */
+  checked?: boolean;
 };
 export type CareerData = {
   meta: { gpa: Record<string, number>; generated: string; editions: Record<string, string>; majors: MajorInfo[] };
@@ -65,7 +70,8 @@ export type Student = {
   direct: Record<number, string[]>;
 };
 export type MixPart = { k: string; w: number };
-export type Mix = { parts: MixPart[]; also?: string[]; home?: boolean; direct?: boolean };
+/** home: no target major is reachable, so all-majors pay counts. none: the school offers none of the target majors at all. */
+export type Mix = { parts: MixPart[]; also?: string[]; home?: boolean; none?: boolean; direct?: boolean };
 export type RankedRow = {
   s: CareerSchool; mx: Mix; pay4: number | null; idle: number; obs: number; raw: number;
   best: number; worst: number; score: number; rk: string; z: Record<Pillar, number | null>; top1: number | null;
@@ -135,12 +141,40 @@ function scoreWith(P: Record<Pillar, (number | null)[]>, n: number, w: Weights) 
 export function majorKeysOf(text: string | undefined | null): string[] {
   const t = (text || "").toLowerCase();
   const out: string[] = [];
+  const add = (re: RegExp, k: string) => { if (re.test(t)) out.push(k); };
   if (/\becon/.test(t)) out.push("econ");
   if (/business|financ|accounting|management|marketing|commerce/.test(t)) out.push("business");
   if (/computer|\bcs\b|software|computing|artificial intelligence|\bai\b|machine learning|informatics|information science/.test(t)) out.push("cs");
   if (/statistic|data science|data analytics/.test(t)) out.push("stats");
   if (/math/.test(t)) out.push("appmath");
-  return out;
+  add(/\bmath/, "math");
+  add(/communica|journalism|media|broadcast|public relations|advertising|film|cinema/, "comm");
+  add(/biolog|\bbio\b|neuroscience|biochem|molecular|ecology|genetic|pre-?med/, "bio");
+  add(/engineer/, "eng");
+  add(/nursing/, "nursing");
+  add(/health|pre-?med|pre-?health|public health|pharmac|kinesiolog|nutrition|biomedical/, "health");
+  add(/psych|cognitive/, "psych");
+  add(/politic|government|international relations|international affairs|pre-?law/, "polisci");
+  add(/sociolog|anthropolog|geograph|social science|international/, "socsci");
+  add(/english|writing|literature/, "english");
+  add(/histor/, "history");
+  add(/\bart\b|\barts\b|music|theat|dance|design|film|photograph|animation/, "arts");
+  add(/physics|chemistry|astronom|geolog|earth science|physical science/, "physsci");
+  add(/philosoph|religio/, "phil");
+  add(/language|spanish|french|chinese|german|japanese|linguistic|classics/, "lang");
+  add(/ethnic|gender|area studies|african american|american studies|latin american|asian studies/, "area");
+  add(/liberal arts|interdisciplinary|general studies/, "interdisc");
+  add(/environment|sustainab|natural resource|forestry|conservation/, "envsci");
+  add(/agricultur|food science|animal science/, "ag");
+  add(/kinesiolog|exercise|sport|recreation/, "kines");
+  add(/public policy|social work|public admin/, "policy");
+  add(/educat|teaching/, "educ");
+  add(/architect|urban planning/, "arch");
+  add(/criminal|criminolog|homeland|cyber ?security/, "crim");
+  add(/information tech|cyber|informatics|information system/, "it");
+  add(/legal studies|paralegal/, "legal");
+  add(/hospitality|real estate|entrepreneur|human resources|international business|sales|construction management/, "busother");
+  return [...new Set(out)];
 }
 
 export function createRanker(data: CareerData) {
@@ -155,6 +189,11 @@ export function createRanker(data: CareerData) {
   const feedPts = (s: CareerSchool, k: string) => {
     const b = s.feed.bank ? s.feed.bank.pts : 0, t = s.feed.tech ? s.feed.tech.pts : 0;
     return FEED[k] === "tech" ? t : FEED[k] === "bank" ? b : (b + t) / 2;
+  };
+  /** A major counts when its level is within reach, or when the school offers it and its rules were never checked. */
+  const reachable = (s: CareerSchool, k: string, thr: number) => {
+    const v = s.switch.lv[k];
+    return v == null ? !!s.tracks[k] : v > 0 && v <= thr;
   };
   const oiOf = (s: CareerSchool) => (s.oi && !s.oi.system ? s.oi : null);
   // Top-1% share brought forward from students who started around 2000 to today's intake.
@@ -234,8 +273,11 @@ export function createRanker(data: CareerData) {
     // Which major counts for this school on My path: the reachable target whose graduates earn the most here.
     const mix = (s: CareerSchool): Mix => {
       const d = stu.direct[s.id] ?? [];
-      const R = stu.targets.filter((k) => PAYOK[k] && (d.includes(k) || ((s.switch.lv[k] || 0) > 0 && s.switch.lv[k] <= thr)));
-      if (!R.length) return { home: true, parts: [{ k: "overall", w: 1 }] };
+      const R = stu.targets.filter((k) => PAYOK[k] && (d.includes(k) || reachable(s, k, thr)));
+      if (!R.length) {
+        const offered = stu.targets.some((k) => !!s.tracks[k] || (s.switch.lv[k] || 0) > 0);
+        return { home: true, none: !offered, parts: [{ k: "overall", w: 1 }] };
+      }
       // A major with no published pay here only competes when no reachable major has published pay.
       const pub = R.filter((k) => PAY[k].get(s.id)!.obs > 0), U = pub.length ? pub : R;
       const best = U.slice().sort((x, y) => payOf(s, y) - lev(y) - (payOf(s, x) - lev(x)))[0];
@@ -254,8 +296,9 @@ export function createRanker(data: CareerData) {
     const qsVals = S.map((s) => s.qs).filter((v): v is number => v != null), qsLow = Math.min(...qsVals);
     const rep = blend([
       S.map((s) => (s.usn && s.usn.rank && !s.usn.lac ? -Math.log(s.usn.rank) : null)),
-      S.map((s) => (s.qs != null ? s.qs : s.usn && s.usn.lac ? null : qsLow)),
-      S.map((s) => (s.li ? 51 - s.li : 0)),
+      // Not checked (a Forge-only school) counts as average rather than as unranked.
+      S.map((s) => (s.qs != null ? s.qs : (s.usn && s.usn.lac) || s.checked === false ? null : qsLow)),
+      S.map((s) => (s.li ? 51 - s.li : s.checked === false ? null : 0)),
       S.map((s, i) => wsum(i, (k) => feedPts(s, k))),
       S.map((s) => Math.log1p(s.near)),
     ], [1, 1, 1, 1, 1]);
@@ -295,12 +338,13 @@ export function createRanker(data: CareerData) {
         z: Object.fromEntries(PILLARS.map((k) => [k, P[k][i]])) as Record<Pillar, number | null>,
         top1: oiOf(s) ? TOP1.get(s.id)! : null,
       };
-    }).sort((x, y) => y.raw - x.raw);
+    // On My path, schools that don't offer any of the student's majors rank after every school that does.
+    }).sort((x, y) => (x.mx.none ? 1 : 0) - (y.mx.none ? 1 : 0) || y.raw - x.raw);
     // Ties: schools within TIE points of the first school in their group share a rank, shown as T-N.
     // The range under a rank starts from that shared rank, so a T-33 never shows a range of 36–37.
     for (let i = 0; i < R.length; ) {
       let j = i + 1;
-      while (j < R.length && R[i].score - R[j].score < TIE) j++;
+      while (j < R.length && !!R[j].mx.none === !!R[i].mx.none && R[i].score - R[j].score < TIE) j++;
       for (let k = i; k < j; k++) {
         R[k].rk = j - i > 1 ? `T-${i + 1}` : `${i + 1}`;
         R[k].best = Math.min(R[k].best, i + 1);
@@ -311,7 +355,7 @@ export function createRanker(data: CareerData) {
     return R;
   }
 
-  return { rank, majors: MJ, targets: TGT, has };
+  return { rank, majors: MJ, targets: TGT, has, reachable };
 }
 
 const norm = (v: string) =>
