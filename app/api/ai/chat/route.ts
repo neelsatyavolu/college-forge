@@ -102,7 +102,8 @@ export async function POST(req: NextRequest) {
           ? buildInterviewPrompt(ws)
           : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}` : buildHubSystemPrompt(ws);
         const hubTools = mode === "onboarding" ? hub.tools.filter((t) => !INTERVIEW_BLOCKED_TOOLS.has(t.name)) : hub.tools;
-        const tools = setup ? [...hubTools, ...interview.tools] : hub.tools;
+        const interviewNames = new Set(interview.tools.map((t) => t.name));
+        const tools = setup ? [...hubTools.filter((t) => !interviewNames.has(t.name)), ...interview.tools] : hub.tools;
         const executeTool: typeof hub.executeTool = async (name, argsJson) => {
           if (mode === "onboarding" && INTERVIEW_BLOCKED_TOOLS.has(name)) return `${name} isn't available during setup. Use propose_list; the student approves changes to the list.`;
           return (setup ? await interview.execute(name, argsJson) : null) ?? hub.executeTool(name, argsJson);

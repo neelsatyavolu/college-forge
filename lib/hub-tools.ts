@@ -1,3 +1,5 @@
+import { EXTRA_TOOL_SPECS, runExtraTool } from "./copilot-extra-tools";
+import { bridgeToolSpecs, runBridgeTool } from "./copilot-bridge-tools";
 import type { ToolSpec, ToolExecutor } from "./chat-types";
 import { runWebSearch, runWebFetch } from "./web-search-tool";
 import {
@@ -392,6 +394,11 @@ export function makeHubTools(
     },
   ];
 
+  // The MCP server's tracker, sharing and read tools, for everything the list above doesn't cover.
+  const bridged = bridgeToolSpecs(new Set([...tools.map((t) => t.name), ...PROFILE_TOOL_SPECS.map((t) => t.name), ...EXTRA_TOOL_SPECS.map((t) => t.name)]));
+  const bridgedNames = new Set(bridged.map((t) => t.name));
+  const allTools = [...tools, ...EXTRA_TOOL_SPECS, ...bridged];
+
   const executeTool: ToolExecutor = async (name, argsJson) => {
     // Log the operation, not student details or URLs contained in arguments.
     console.log(`[hub-tools] ws=${wsTag} CALL ${name}`);
@@ -407,6 +414,8 @@ export function makeHubTools(
     try {
       const profileReply = await runProfileTool(name, a, mutate);
       if (profileReply !== null) return profileReply;
+      const extraReply = await runExtraTool(workspaceId, mutate, name, a);
+      if (extraReply !== null) return extraReply;
       switch (name) {
         case "get_college_recommendations": {
           return JSON.stringify(recommendColleges(await scopedWorkspace()));
@@ -608,7 +617,11 @@ export function makeHubTools(
           });
           return label;
         }
-        default:
+        default: {
+          await scopedWorkspace();
+          const bridgedReply = await runBridgeTool(workspaceId, bridgedNames, name, argsJson);
+          if (bridgedReply !== null) return bridgedReply;
+        }
           console.error(`[hub-tools] ws=${wsTag} unknown tool ${name}`);
           return `Unknown tool: ${name}`;
       }
@@ -620,5 +633,5 @@ export function makeHubTools(
     }
   };
 
-  return { tools, executeTool };
+  return { tools: allTools, executeTool };
 }
