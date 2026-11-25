@@ -167,17 +167,28 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   };
   React.useEffect(() => { checkAi(); }, []);
   // Follow the conversation as replies stream in and tiles appear, unless the student scrolled up to read.
+  // The thread is its own scroll area between the header and the answer box, so nothing can end up
+  // hidden under the answer box. It follows new content unless the student scrolled up to read.
+  const scrollRef = React.useRef(null);
   const followRef = React.useRef(true);
-  React.useEffect(() => {
-    const onScroll = () => { followRef.current = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 160; };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  React.useEffect(() => {
+  const onThreadScroll = () => {
+    const el = scrollRef.current;
+    if (el) followRef.current = el.scrollTop + el.clientHeight >= el.scrollHeight - 120;
+  };
+  React.useLayoutEffect(() => {
     const last = turns[turns.length - 1];
     if (last && last.role === "user") followRef.current = true;
-    if (followRef.current && endRef.current) endRef.current.scrollIntoView({ block: "end", behavior: "smooth" });
+    const el = scrollRef.current;
+    if (el && followRef.current) el.scrollTop = el.scrollHeight;
   }, [turns, busy, cards, status, error]);
+  // Tiles and images can grow after render (fonts, layout); keep the bottom in view while following.
+  React.useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => { if (followRef.current) el.scrollTop = el.scrollHeight; });
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    return () => ro.disconnect();
+  }, [ai]);
 
   /** Sends one student message to the interviewer and streams the reply. Resolves true when the reply arrived. */
   const send = async (text) => {
@@ -330,7 +341,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   const lastLive = !!(turns[lastAssistant] && turns[lastAssistant].ui && phase !== "research");
   const stepLabel = phase === "interview" ? OC_SECTIONS[sectionIndex][1] : { list: "Your list", research: "Research", strategy: "Early plan", plan: "Timeline", done: "Done" }[phase];
   return (
-    <div className="oc-shell">
+    <div className="oc-shell oc-shell--chat">
       <header className="oc-head">
         <div className="oc-progress" aria-label={`Setup: ${stepLabel}`}>
           {OC_SECTIONS.map(([id, label], i) => (
@@ -340,6 +351,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         </div>
         {onCancel && <button type="button" className="oc-link" onClick={onCancel}>Save and exit</button>}
       </header>
+      <div className="oc-scroll" ref={scrollRef} onScroll={onThreadScroll}>
       <main className="oc-thread">
         {turns.filter((t) => !(t.role === "user" && OC_HIDDEN.has(t.content))).map((m, i, shown) => (
           m.board
@@ -352,6 +364,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         {error && <div className="oc-error" role="alert">{error} <button type="button" className="oc-link" onClick={() => (phase === "research" ? runResearch() : phase === "plan" ? runPlan() : setError(""))}>Try again</button></div>}
         <div ref={endRef} />
       </main>
+      </div>
       <form className="oc-composer" onSubmit={(e) => { e.preventDefault(); const t = draft; setDraft(""); send(t); }}>
         <textarea ref={boxRef} className="oc-input oc-composer-box" rows={2} aria-label="Your answer" placeholder={lastLive ? "Or type your answer…" : "Type your answer…"} value={draft} disabled={busy || phase === "research" || phase === "plan"}
           onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); const t = draft; setDraft(""); send(t); } }} />

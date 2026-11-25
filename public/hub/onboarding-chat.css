@@ -97,3 +97,9 @@
 .oc-question { display: flex; flex-direction: column; gap: 10px; }
 .oc-question-prompt { margin: 0; font-size: 16px; font-weight: 500; color: var(--ink); line-height: 1.5; }
 .oc-tile-note { font-size: 13px; color: var(--muted); }
+
+/* Chat layout: header, a scrolling thread, and the answer box, filling the window. */
+.oc-shell--chat { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+.oc-shell--chat .oc-head { position: static; flex: none; }
+.oc-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.oc-shell--chat .oc-composer { position: static; flex: none; }

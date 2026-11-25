@@ -136,6 +136,18 @@ try {
     if (!el) throw Error('No enabled button ' + label);
     el.click();
   }, label);
+  // The newest content must sit above the answer box, never hidden under it.
+  const assertVisible = async (selector, label) => {
+    await new Promise((r) => setTimeout(r, 250));
+    const box = await page.evaluate((sel) => {
+      const els = [...document.querySelectorAll(sel)];
+      const el = els[els.length - 1];
+      const composer = document.querySelector('.oc-composer');
+      return el && composer ? { bottom: el.getBoundingClientRect().bottom, top: composer.getBoundingClientRect().top } : null;
+    }, selector);
+    assert.ok(box, `${label}: element found`);
+    assert.ok(box.bottom <= box.top + 1, `${label}: bottom ${Math.round(box.bottom)} is above the answer box at ${Math.round(box.top)}`);
+  };
   const shoot = async (name) => {
     for (const [w, h] of [[1440, 900], [1000, 800], [390, 844]]) {
       await page.setViewport({ width: w, height: h });
@@ -158,6 +170,9 @@ try {
   await page.reload();
   await waitText("where you'd like to live");
   await page.waitForSelector('.oc-tile');
+  await page.setViewport({ width: 1440, height: 560 });
+  await assertVisible('.oc-tile', 'last tile on a short window');
+  await page.setViewport({ width: 1440, height: 900 });
   await shoot('02-tiles');
   await click('Suburban');
   await click('College town');
@@ -190,6 +205,7 @@ try {
 
   // Typing instead of tapping works too: the list arrives after a typed message.
   await waitText("Here's a first list");
+  await assertVisible('.oc-list-actions', 'list approval buttons');
   await shoot('04-list');
   await page.evaluate(() => [...document.querySelectorAll('.oc-school')].find((s) => s.textContent.includes('Rice University')).querySelector('button').click());
   await click('Research these 9');
