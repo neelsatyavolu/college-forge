@@ -60,7 +60,7 @@ async function counselorTurn(history, mode = 'onboarding') {
     tokens, instructions: mode === 'onboarding' ? buildInterviewPrompt(ws) : `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`,
     turns: history.slice(-16), emit: noop, tools: [...hub.tools, ...iv.tools],
     executeTool: async (n, a) => { calls.push(n); return exec(n, a); },
-    shouldEndTurn: iv.endTurn, ...(mode === 'research' || ws.onboarding.interview?.phase === 'list' ? { maxRounds: 14 } : {}),
+    shouldEndTurn: iv.endTurn, maxRounds: 14, effort: mode === 'onboarding' ? 'low' : 'medium',
   });
   if (mode === 'onboarding') await mutate((w) => recordTurn(recordTurn(w, { role: 'user', content: history.at(-1).content, at: Date.now() }), { role: 'assistant', content: result.text, at: Date.now() }));
   return { text: result.text, events, calls, finish: result.finishReason };
