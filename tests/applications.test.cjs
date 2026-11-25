@@ -59,12 +59,28 @@ test('portal checks move status forward but never set a decision', () => {
   assert.equal(tracker.suggestedStatus(app({ status: 'submitted' }), result({ ok: false, error: 'x' })), 'submitted');
 });
 
+test('mid-year reports are not missing until Jan 5', () => {
+  const item = (name) => ({ item: name, status: 'Awaiting', date: '', done: false, optional: false });
+  const portal = result({ checklist: [item('School Report'), item('Mid-Year Report (Due Feb. 8)'), item('Mid-Year/1st Trimester Grades'), item('Midyear Transcript')] });
+  assert.deepEqual(tracker.missingItems(app({ portal }), '2026-11-25'), ['School Report']);
+  assert.deepEqual(tracker.missingItems(app({ portal }), '2027-01-04'), ['School Report']);
+  assert.deepEqual(tracker.missingItems(app({ portal }), '2027-01-05'), ['School Report', 'Mid-Year Report (Due Feb. 8)', 'Mid-Year/1st Trimester Grades', 'Midyear Transcript']);
+  assert.deepEqual(service.viewApp(app({ portal }), '2026-12-01').missing, ['School Report']);
+});
+
+test('submitted_npy is a waiting status a portal check can move on', () => {
+  assert.equal(tracker.isStatus('submitted_npy'), true);
+  assert.equal(tracker.statusInfo('submitted_npy').stage, 'waiting');
+  const allIn = result({ checklist: [{ item: 'Transcript', status: 'Received', date: '', done: true, optional: false }] });
+  assert.equal(tracker.suggestedStatus(app({ status: 'submitted_npy' }), allIn), 'complete');
+});
+
 test('a school can ignore financial aid items', () => {
   const item = (name, done = false) => ({ item: name, status: done ? 'Received' : 'Awaiting', date: '', done, optional: false });
   const portal = result({ checklist: [item('Official High School Transcript', true), item('CSS Profile'), item('Free Application for Federal Student Aid (FAFSA)'), item('2025 Parent Federal Tax Return'), item('Mid-Year Grade Report')] });
-  assert.deepEqual(tracker.missingItems(app({ portal })), ['CSS Profile', 'Free Application for Federal Student Aid (FAFSA)', '2025 Parent Federal Tax Return', 'Mid-Year Grade Report']);
+  assert.deepEqual(tracker.missingItems(app({ portal }), '2027-01-10'), ['CSS Profile', 'Free Application for Federal Student Aid (FAFSA)', '2025 Parent Federal Tax Return', 'Mid-Year Grade Report']);
   const noAid = tracker.editApp(app({ portal }), { ignoreAid: true });
-  assert.deepEqual(tracker.missingItems(noAid), ['Mid-Year Grade Report']);
+  assert.deepEqual(tracker.missingItems(noAid, '2027-01-10'), ['Mid-Year Grade Report']);
   assert.equal(service.viewApp(noAid, '2026-11-24').portal.checklist.length, 2);
   const onlyAid = result({ checklist: [item('Transcript', true), item('IDOC financial aid documents')] });
   assert.equal(tracker.suggestedStatus(app({ status: 'submitted', ignoreAid: true }), onlyAid), 'complete');

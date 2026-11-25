@@ -11,6 +11,7 @@ export const STATUSES = [
   { id: "in_progress", label: "Writing", stage: "working" },
   { id: "final_checks", label: "Final checks", stage: "working" },
   { id: "submitted", label: "Submitted", stage: "waiting" },
+  { id: "submitted_npy", label: "Submitted - NPY", stage: "waiting" },
   { id: "complete", label: "Under review", stage: "waiting" },
   { id: "deferred", label: "Deferred", stage: "waiting" },
   { id: "waitlisted", label: "Waitlisted", stage: "waiting" },
@@ -177,9 +178,20 @@ export const isAidItem = (text: string): boolean => AID_WORDS.test(text);
 export const countedItems = (app: TrackedApp, checklist: PortalItem[]): PortalItem[] =>
   app.ignoreAid ? checklist.filter((c) => !isAidItem(c.item)) : checklist;
 
-export function missingItems(app: TrackedApp): string[] {
+const MID_YEAR = /\bmid[\s-]?year\b/i;
+/** Mid-year grades can't exist before first-semester grades close, so they aren't missing until Jan 5 (Aug–Jan 4). */
+const midYearNotDue = (today: string): boolean => {
+  const md = today.slice(5);
+  return md >= "08-01" || md < "01-05";
+};
+
+export function missingItems(app: TrackedApp, today = todayIso()): string[] {
   const p = app.portal;
-  return p?.ok ? countedItems(app, p.checklist).filter((c) => !c.done && !c.optional && !revealsDecision(c.item)).map((c) => c.item) : [];
+  if (!p?.ok) return [];
+  const early = midYearNotDue(today);
+  return countedItems(app, p.checklist)
+    .filter((c) => !c.done && !c.optional && !revealsDecision(c.item) && !(early && MID_YEAR.test(c.item)))
+    .map((c) => c.item);
 }
 
 // ── Dates ─────────────────────────────────────────────────────────────────
@@ -218,7 +230,7 @@ export function todayIso(now = new Date()): string {
 
 // ── Applying a portal check ───────────────────────────────────────────────
 
-const ADJUSTABLE: StatusId[] = ["planning", "in_progress", "final_checks", "submitted", "complete"];
+const ADJUSTABLE: StatusId[] = ["planning", "in_progress", "final_checks", "submitted", "submitted_npy", "complete"];
 
 /** Statuses a check may set: never a decision, deferral or waitlist, which are the student's to record. */
 export function suggestedStatus(app: TrackedApp, result: PortalResult): StatusId {

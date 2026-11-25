@@ -15,7 +15,7 @@ export const maxDuration = 120;
 const SUPPORTED = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
 const INSTRUCTIONS =
   "Forge tracks a student's college applications: status, rounds, deadlines, decision dates and what each school's portal says. " +
-  "Use list_applications first. Statuses: planning (not started), in_progress (writing), final_checks (final checks before submitting), submitted, complete (under review), deferred, waitlisted, admitted, committed, denied, withdrawn. " +
+  "Use list_applications first. Statuses: planning (not started), in_progress (writing), final_checks (final checks before submitting), submitted, submitted_npy (submitted, no portal yet), complete (under review), deferred, waitlisted, admitted, committed, denied, withdrawn. " +
   "A decision a portal posted stays hidden until the student asks to see it; only then call reveal_decision. " +
   "Keep the progress page current: add schools, update statuses, add follow-ups (to-dos per school) and flags (problems across schools), and complete them when done. Dates are yyyy-mm-dd.";
 

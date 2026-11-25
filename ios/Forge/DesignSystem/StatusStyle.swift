@@ -7,7 +7,7 @@ extension AppStatus {
         case .planning, .withdrawn: Theme.mutedSoft
         case .inProgress, .deferred, .waitlisted: Theme.amber
         case .finalChecks, .complete: Theme.teal
-        case .submitted: Theme.coral
+        case .submitted, .submittedNpy: Theme.coral
         case .admitted, .committed: Theme.success
         case .denied: Theme.danger
         default: Theme.mutedSoft

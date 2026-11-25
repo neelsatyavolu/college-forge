@@ -64,7 +64,7 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
     portal: portal
       ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: countedItems(app, portal.checklist) }
       : null,
-    missing: missingItems(app),
+    missing: missingItems(app, today),
     ignoreAid: !!app.ignoreAid,
     hasAidItems: !!app.portal?.checklist.some((c) => isAidItem(c.item)),
     submittedAt: app.submittedAt ?? "",

@@ -90,7 +90,7 @@ struct ModelDecodingTests {
         #expect(AppStatus.complete.label == "Under review")
         #expect(AppStatus.committed.stage == .admitted)
         #expect(AppStatus.withdrawn.stage == .closed)
-        #expect(AppStatus.all.count == 11)
+        #expect(AppStatus.all.count == 12)
         #expect(ApplicationRound.none.label == "Not set")
     }
 

@@ -5,6 +5,7 @@ const APP_STATUSES = [
   { id: "in_progress", label: "Writing", stage: "working", tone: "var(--accent-amber)" },
   { id: "final_checks", label: "Final checks", stage: "working", tone: "var(--accent-teal)" },
   { id: "submitted", label: "Submitted", stage: "waiting", tone: "var(--coral)" },
+  { id: "submitted_npy", label: "Submitted - NPY", stage: "waiting", tone: "var(--coral)" },
   { id: "complete", label: "Under review", stage: "waiting", tone: "var(--accent-teal)" },
   { id: "deferred", label: "Deferred", stage: "waiting", tone: "var(--accent-amber)" },
   { id: "waitlisted", label: "Waitlisted", stage: "waiting", tone: "var(--accent-amber)" },

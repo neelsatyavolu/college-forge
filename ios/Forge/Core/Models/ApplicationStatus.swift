@@ -10,6 +10,7 @@ struct AppStatus: OpenEnum, Identifiable {
     static let inProgress = Self(rawValue: "in_progress")
     static let finalChecks = Self(rawValue: "final_checks")
     static let submitted = Self(rawValue: "submitted")
+    static let submittedNpy = Self(rawValue: "submitted_npy")
     static let complete = Self(rawValue: "complete")
     static let deferred = Self(rawValue: "deferred")
     static let waitlisted = Self(rawValue: "waitlisted")
@@ -20,7 +21,7 @@ struct AppStatus: OpenEnum, Identifiable {
 
     /// Every status in the order the web picker lists them.
     static let all: [Self] = [
-        .planning, .inProgress, .finalChecks, .submitted, .complete, .deferred,
+        .planning, .inProgress, .finalChecks, .submitted, .submittedNpy, .complete, .deferred,
         .waitlisted, .admitted, .committed, .denied, .withdrawn,
     ]
 
@@ -30,6 +31,7 @@ struct AppStatus: OpenEnum, Identifiable {
         case .inProgress: "Writing"
         case .finalChecks: "Final checks"
         case .submitted: "Submitted"
+        case .submittedNpy: "Submitted - NPY"
         case .complete: "Under review"
         case .deferred: "Deferred"
         case .waitlisted: "Waitlisted"
@@ -44,7 +46,7 @@ struct AppStatus: OpenEnum, Identifiable {
     var stage: AppStage {
         switch self {
         case .planning, .inProgress, .finalChecks: .working
-        case .submitted, .complete, .deferred, .waitlisted: .waiting
+        case .submitted, .submittedNpy, .complete, .deferred, .waitlisted: .waiting
         case .admitted, .committed: .admitted
         case .denied: .denied
         case .withdrawn: .closed

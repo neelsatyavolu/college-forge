@@ -126,7 +126,7 @@ All decode leniently: missing fields get defaults, numbers-as-strings are accept
 
 `TrackedApplication`: `id, collegeId?, slug?, name, logo? (site-relative path), portalName, portalUrl, status: AppStatus, statusLabel, stage: AppStage, round: ApplicationRound, roundFromPortal, deadline ("yyyy-mm-dd" or ""), decisionDate: KeyDate?, nextDate: KeyDate?, decision: DecisionView{state, portalText}, portal: PortalSnapshot?{checkedAt, ok, error, statusText, update, checklist: [PortalItem{item, status, date, done, optional}]}, missing: [String], submittedAt, followUps: [FollowUp{id, text, due, done, createdAt}], lastFailure: PortalFailure?{at, error}, notes, decisionNote, login: PortalLogin?{username, hasPassword}, lastChecked (ms)?, updatedAt`.
 
-- `AppStatus` (`.planning .inProgress .finalChecks .submitted .complete .deferred .waitlisted .admitted .committed .denied .withdrawn`, `.all`, `.label`, `.stage`, `.isOutcome`; DesignSystem adds `.tone`, `.systemImage`).
+- `AppStatus` (`.planning .inProgress .finalChecks .submitted .submittedNpy .complete .deferred .waitlisted .admitted .committed .denied .withdrawn`, `.all`, `.label`, `.stage`, `.isOutcome`; DesignSystem adds `.tone`, `.systemImage`).
 - `AppStage` (`.working .waiting .admitted .denied .closed`, `.all`, `.label`, `.tone`).
 - `ApplicationRound` (`.none ("") .ed .ed2 .ea .rea .rd .rolling`, `.all`, `.label`, `.short`).
 - `DecisionState`: `.none`, `.hidden` (posted, not opened: show "Decision posted" and a reveal action; never show outcome text), `.revealed`, `.recorded`.
