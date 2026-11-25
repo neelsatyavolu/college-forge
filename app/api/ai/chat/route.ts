@@ -135,8 +135,8 @@ export async function POST(req: NextRequest) {
           tools,
           executeTool: countingExecuteTool,
           ...(setup ? { requireTools: true, shouldEndTurn: interview.endTurn } : {}),
-          // Research steps and the turn that builds the draft list need more lookups than an interview question.
-          ...(mode === "research" || (mode === "onboarding" && ws.onboarding.interview?.phase === "list") ? { maxRounds: 14 } : {}),
+          // Setup turns can move into the list step mid-turn, and research needs many reads; interview questions end early anyway.
+          ...(setup ? { maxRounds: 14 } : {}),
         });
         if (mode === "onboarding") {
           const ui = interview.shown();
