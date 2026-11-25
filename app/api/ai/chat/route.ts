@@ -13,6 +13,8 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 const MAX_TURNS = 24;
+/** During the interview the list changes only through propose_list and the student's approval. */
+const INTERVIEW_BLOCKED_TOOLS = new Set(["upsert_college", "remove_college", "rebalance_list", "set_application_status"]);
 const MAX_CONTENT_LEN = 8_000;
 
 type IncomingTurn = { role: "user" | "assistant"; content: string };
@@ -99,9 +101,12 @@ export async function POST(req: NextRequest) {
         const instructions = mode === "onboarding"
           ? buildInterviewPrompt(ws)
           : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}` : buildHubSystemPrompt(ws);
-        const tools = setup ? [...hub.tools, ...interview.tools] : hub.tools;
-        const executeTool: typeof hub.executeTool = async (name, argsJson) =>
-          (setup ? await interview.execute(name, argsJson) : null) ?? hub.executeTool(name, argsJson);
+        const hubTools = mode === "onboarding" ? hub.tools.filter((t) => !INTERVIEW_BLOCKED_TOOLS.has(t.name)) : hub.tools;
+        const tools = setup ? [...hubTools, ...interview.tools] : hub.tools;
+        const executeTool: typeof hub.executeTool = async (name, argsJson) => {
+          if (mode === "onboarding" && INTERVIEW_BLOCKED_TOOLS.has(name)) return `${name} isn't available during setup. Use propose_list; the student approves changes to the list.`;
+          return (setup ? await interview.execute(name, argsJson) : null) ?? hub.executeTool(name, argsJson);
+        };
         if (mode === "onboarding") {
           await mutate((w) => recordTurn(w, { role: "user", content: lastUserText.slice(0, 4000), at: Date.now() }));
         }
