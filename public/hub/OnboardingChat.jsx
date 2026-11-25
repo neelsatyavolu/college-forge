@@ -1,0 +1,306 @@
+// Onboarding v2: the student connects their AI, which interviews them in a chat (tiles come from
+// its tool calls), proposes a list, researches each school while they watch, recommends an ED/EA
+// plan, then builds the timeline. Progress lives in the workspace, so a closed tab resumes.
+const { Button: OcBtn } = window.CollegeForgeDesignSystem_e95e63;
+
+const OC_SECTIONS = [["basics", "Basics"], ["school", "Grades"], ["testing", "Testing"], ["activities", "Activities"], ["campus", "Campus"], ["money", "Money"], ["early", "Early plans"], ["deep", "Deeper"]];
+const OC_KICKOFF = "Hi! I'm ready to set up Forge.";
+const OC_RESEARCH_DONE = "Research is done. Recommend my early application plan.";
+const OC_CONFIRM = "Yes, that plan sounds right. Save my Early Decision and Early Action choices.";
+/** Messages Forge sends on the student's behalf: kept in the AI's history, not shown as theirs. */
+const OC_HIDDEN = new Set([OC_KICKOFF, OC_RESEARCH_DONE, OC_CONFIRM]);
+const OC_RESEARCH_CONCURRENCY = 3;
+const OC_HISTORY = 16;
+
+function ocProviderBody() {
+  const p = typeof loadAiPrefs === "function" ? loadAiPrefs() : {};
+  const body = {};
+  if (p.preferred && p.preferred !== "auto" && p.preferred !== "opencode") body.provider = p.preferred;
+  if (p.grokModel) body.grokModel = p.grokModel;
+  if (p.codexModel) body.codexModel = p.codexModel;
+  return body;
+}
+
+/** Streams one chat request; calls onEvent for every NDJSON event. Resolves with the reply text. */
+async function ocStream(messages, mode, onEvent) {
+  const res = await fetch("/api/ai/chat", {
+    method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ messages, ...(mode ? { mode } : {}), ...ocProviderBody() }),
+  });
+  if (!res.ok || !res.body) {
+    const j = await res.json().catch(() => ({}));
+    throw new Error(j.error || `The AI request failed (${res.status}).`);
+  }
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "", text = "", failure = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, i); buf = buf.slice(i + 1);
+      if (!line.trim()) continue;
+      let ev; try { ev = JSON.parse(line); } catch (e) { continue; }
+      if (ev.type === "delta") text += ev.text;
+      if (ev.type === "error") failure = ev.message;
+      onEvent(ev);
+    }
+  }
+  if (failure) throw new Error(failure);
+  return text;
+}
+
+function ocTurnsFrom(transcript) {
+  return (transcript || []).map((t) => ({ role: t.role, content: t.content || "", ui: t.ui }));
+}
+
+function OcConnectGate({ onConnected, onCancel }) {
+  const [flow, setFlow] = React.useState(null);
+  const [callback, setCallback] = React.useState("");
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState("");
+  const start = async (provider) => {
+    setErr(""); setBusy(true); setFlow(provider);
+    try {
+      const res = await fetch(`/api/auth/${provider}/start`, { method: "POST", credentials: "same-origin" });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Could not start sign-in.");
+      window.open(j.authorizeUrl, "_blank", "noopener");
+    } catch (e) { setErr(e.message); setFlow(null); }
+    setBusy(false);
+  };
+  const complete = async () => {
+    setErr(""); setBusy(true);
+    try {
+      const res = await fetch(`/api/auth/${flow}/complete`, { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ callback: callback.trim() }) });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Sign-in didn't finish. Try again.");
+      await onConnected();
+    } catch (e) { setErr(e.message); }
+    setBusy(false);
+  };
+  return (
+    <section className="oc-connect">
+      <h1>Let's set up your applications</h1>
+      <p>Forge runs on your own AI. Connect ChatGPT or Grok and it will interview you, build a college list that fits, and research every school on it.</p>
+      <p className="oc-fine">Your answers, including what you share about money, are sent to the AI you connect. It runs on your own ChatGPT or Grok plan.</p>
+      {!flow ? (
+        <div className="oc-connect-actions">
+          <OcBtn onClick={() => start("codex")} disabled={busy}>Connect ChatGPT</OcBtn>
+          <OcBtn variant="secondary" onClick={() => start("grok")} disabled={busy}>Connect Grok</OcBtn>
+        </div>
+      ) : (
+        <div className="oc-connect-step">
+          <p>Sign in on the tab that opened. When it lands on a page that won't load, copy that page's whole address and paste it here.</p>
+          <div className="oc-tile-row">
+            <input className="oc-input" placeholder="http://localhost:1455/auth/callback?code=…" value={callback} onChange={(e) => setCallback(e.target.value)} />
+            <OcBtn size="sm" disabled={busy || !callback.trim()} onClick={complete}>Connect</OcBtn>
+          </div>
+          <button type="button" className="oc-link" onClick={() => { setFlow(null); setCallback(""); }}>Use a different AI</button>
+        </div>
+      )}
+      {err && <p className="oc-error" role="alert">{err}</p>}
+      {onCancel && <button type="button" className="oc-link oc-leave" onClick={onCancel}>Back to workspace</button>}
+    </section>
+  );
+}
+
+function OcMessage({ m, live, busy, onAnswer, onApprove, onRevise, onConfirm }) {
+  const ui = m.ui || {};
+  return (
+    <div className={"oc-msg oc-msg--" + m.role}>
+      {m.content && <div className="oc-bubble">{m.content}</div>}
+      {live && ui.question && <window.OcQuestion q={ui.question} disabled={busy} onAnswer={onAnswer} />}
+      {live && ui.list && <window.OcListTiles schools={ui.list} disabled={busy} onApprove={onApprove} onRevise={onRevise} />}
+      {live && ui.strategy && <window.OcStrategyTiles strategy={ui.strategy} disabled={busy} onConfirm={onConfirm} onAnswer={onAnswer} />}
+    </div>
+  );
+}
+
+function OnboardingChat({ data, onComplete, onCancel }) {
+  const [ai, setAi] = React.useState(null); // null loading, false not connected, true connected
+  const [ws, setWs] = React.useState(data);
+  const [turns, setTurnsState] = React.useState(() => ocTurnsFrom(data?.onboarding?.interview?.transcript));
+  const [busy, setBusyState] = React.useState(false);
+  // Async flows (research, plan) outlive a render, so they read the latest values from refs.
+  const turnsRef = React.useRef(turns);
+  const busyRef = React.useRef(false);
+  const setTurns = (next) => { turnsRef.current = typeof next === "function" ? next(turnsRef.current) : next; setTurnsState(turnsRef.current); };
+  const setBusy = (b) => { busyRef.current = b; setBusyState(b); };
+  const [status, setStatus] = React.useState("");
+  const [error, setError] = React.useState("");
+  const [cards, setCards] = React.useState([]);
+  const [draft, setDraft] = React.useState("");
+  const started = React.useRef(false);
+  const endRef = React.useRef(null);
+  const iv = ws?.onboarding?.interview;
+  const phase = iv?.phase || "interview";
+
+  const reload = async () => { const next = await window.cfApi.getWorkspace(); setWs(next); return next; };
+  const checkAi = async () => {
+    const s = await fetch("/api/ai/status", { credentials: "same-origin", cache: "no-store" }).then((r) => r.json()).catch(() => ({}));
+    setAi(Boolean(s.codexConnected || s.grokConnected));
+  };
+  React.useEffect(() => { checkAi(); }, []);
+  React.useEffect(() => { endRef.current && endRef.current.scrollIntoView({ block: "end", behavior: "smooth" }); }, [turns.length, busy, cards.length]);
+
+  /** Sends one student message to the interviewer and streams the reply. */
+  const send = async (text) => {
+    if (busyRef.current || !text.trim()) return;
+    setError(""); setBusy(true); setStatus("Thinking…");
+    const history = [...turnsRef.current, { role: "user", content: text }];
+    setTurns([...history, { role: "assistant", content: "" }]);
+    let reply = "", ui = null;
+    try {
+      await ocStream(history.slice(-OC_HISTORY).map((t) => ({ role: t.role, content: t.content || "(shown as tiles)" })), "onboarding", (ev) => {
+        if (ev.type === "status") setStatus(window.cfChatStatus?.softenStatusMessage ? window.cfChatStatus.softenStatusMessage(ev.message) : ev.message);
+        if (ev.type === "delta") reply += ev.text;
+        if (ev.type === "question") ui = { question: ev.question };
+        if (ev.type === "list") ui = { list: ev.schools };
+        if (ev.type === "strategy") ui = { strategy: ev.strategy };
+        if (ev.type === "delta" || ev.type === "question" || ev.type === "list" || ev.type === "strategy") {
+          setTurns([...history, { role: "assistant", content: reply, ui }]);
+        }
+      });
+      await reload();
+    } catch (e) {
+      setError(e.message || "Something went wrong. Try again.");
+      setTurns(history);
+    }
+    setBusy(false); setStatus("");
+  };
+
+  // Start or resume the interview once the AI is connected.
+  React.useEffect(() => {
+    if (ai !== true || started.current) return;
+    started.current = true;
+    (async () => {
+      let current = ws;
+      if (!current?.onboarding?.interview || current.onboarding.interview.phase === "done") {
+        current = (await window.cfApi.postAction("start-interview", {})).data;
+        setWs(current); setTurns([]);
+      }
+      const p = current.onboarding.interview.phase;
+      if (p === "research") return runResearch();
+      if (p === "plan") return runPlan();
+      if (!current.onboarding.interview.transcript.length) send(OC_KICKOFF);
+    })().catch((e) => setError(e.message));
+  }, [ai]);
+
+  const approve = async (keep, drop) => {
+    setBusy(true); setError("");
+    try {
+      await window.cfApi.postAction("apply-list", { keep, drop });
+      setTurns((t) => [...t, { role: "user", content: `Let's research these ${keep.length} schools.` }, { role: "assistant", content: "", board: true }]);
+      await reload();
+      setBusy(false);
+      await runResearch();
+    } catch (e) { setError(e.message); setBusy(false); }
+  };
+  const revise = (note, dropped) => send(dropped.length ? `${note} (I'd drop: ${dropped.join(", ")})` : note);
+
+  /** Researches each school while the student watches, three at a time; resumes where it stopped. */
+  const runResearch = async () => {
+    setBusy(true); setError(""); setStatus("Researching your schools…");
+    try {
+      const startRes = await fetch("/api/ai/research-plan", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "start" }) }).then((r) => r.json());
+      if (startRes.error) throw new Error(startRes.error);
+      const fresh = await reload();
+      const stageOf = (c) => (c.research?.complete ? "done" : c.research?.needsReview ? "needs_review" : "queued");
+      setCards(fresh.colleges.map((c) => ({ slug: c.slug, name: c.short || c.name, stage: stageOf(c), facts: c.research?.facts?.length || 0 })));
+      const update = (slug, patch) => setCards((cs) => cs.map((c) => (c.slug === slug ? { ...c, ...patch } : c)));
+      let queue = startRes.steps || [];
+      const running = new Set();
+      const worker = async () => {
+        while (queue.length) {
+          const step = queue.shift();
+          if (running.has(step.slug)) continue;
+          running.add(step.slug);
+          update(step.slug, { stage: "searching" });
+          try {
+            await ocStream([{ role: "user", content: step.prompt }], "research", (ev) => {
+              if (ev.type === "tool" && ev.name === "web_fetch") update(step.slug, { stage: "reading" });
+              if (ev.type === "research") update(ev.slug, { stage: ev.stage, facts: undefined, note: `${ev.facts} facts saved` });
+            });
+          } catch (e) { update(step.slug, { note: "Retrying…" }); }
+          const after = await fetch("/api/ai/research-plan", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "attempt", slug: step.slug }) }).then((r) => r.json()).catch(() => ({ steps: [] }));
+          running.delete(step.slug);
+          const left = (after.steps || []).find((s) => s.slug === step.slug);
+          if (left) queue.push(left);
+          else {
+            const latest = await reload();
+            const c = latest.colleges.find((x) => x.slug === step.slug);
+            update(step.slug, { stage: c ? stageOf(c) : "done", facts: c?.research?.facts?.length || 0, note: "" });
+          }
+        }
+      };
+      await Promise.all(Array.from({ length: OC_RESEARCH_CONCURRENCY }, worker));
+      await reload();
+      setBusy(false); setStatus("");
+      await send(OC_RESEARCH_DONE);
+    } catch (e) {
+      setError(e.message || "Research stopped. Try again."); setBusy(false); setStatus("");
+    }
+  };
+
+  /** After the student confirms the strategy: save it, then build rounds and the timeline. */
+  const confirmStrategy = async () => {
+    await send(OC_CONFIRM);
+    await window.cfApi.postAction("set-interview-phase", { phase: "plan", strategyConfirmed: true });
+    await runPlan();
+  };
+  const runPlan = async () => {
+    setBusy(true); setError("");
+    try {
+      const plan = await fetch("/api/ai/build-plan", { credentials: "same-origin", cache: "no-store" }).then((r) => r.json());
+      for (const step of [plan.rounds, plan.milestones].filter(Boolean)) {
+        setStatus(`${step.label}…`);
+        await ocStream([{ role: "user", content: step.prompt }], null, () => {});
+      }
+      const done = await window.cfApi.postAction("finish-onboarding", {});
+      setBusy(false); setStatus("");
+      onComplete(done.data, { buildPlan: false });
+    } catch (e) { setError(e.message || "Couldn't finish setting up. Try again."); setBusy(false); setStatus(""); }
+  };
+
+  if (ai === null) return <div className="cf-loading-screen" role="status"><span className="cf-loading-mark">✱</span>Checking your AI connection…</div>;
+  if (ai === false) return <div className="oc-shell"><OcConnectGate onConnected={checkAi} onCancel={onCancel} /></div>;
+
+  const sectionIndex = Math.max(0, OC_SECTIONS.findIndex(([id]) => id === iv?.section));
+  const lastAssistant = turns.map((t, i) => (t.role === "assistant" ? i : -1)).filter((i) => i >= 0).pop();
+  const stepLabel = phase === "interview" ? OC_SECTIONS[sectionIndex][1] : { list: "Your list", research: "Research", strategy: "Early plan", plan: "Timeline", done: "Done" }[phase];
+  return (
+    <div className="oc-shell">
+      <header className="oc-head">
+        <div className="oc-progress" aria-label={`Setup: ${stepLabel}`}>
+          {OC_SECTIONS.map(([id, label], i) => (
+            <span key={id} className={"oc-dot" + (phase !== "interview" || i < sectionIndex ? " is-done" : i === sectionIndex ? " is-on" : "")} title={label} />
+          ))}
+          <span className="oc-progress-label">{stepLabel}</span>
+        </div>
+        {onCancel && <button type="button" className="oc-link" onClick={onCancel}>Save and exit</button>}
+      </header>
+      <main className="oc-thread">
+        {turns.filter((t) => !(t.role === "user" && OC_HIDDEN.has(t.content))).map((m, i, shown) => (
+          m.board
+            ? (cards.length > 0 && <window.OcResearchBoard key={i} cards={cards} />)
+            : <OcMessage key={i} m={m} live={m === turns[lastAssistant] && i === shown.length - 1 && phase !== "research"} busy={busy}
+                onAnswer={send} onApprove={approve} onRevise={revise} onConfirm={confirmStrategy} />
+        ))}
+        {!turns.some((t) => t.board) && cards.length > 0 && <window.OcResearchBoard cards={cards} />}
+        {status && <p className="oc-status" role="status">{status}</p>}
+        {error && <div className="oc-error" role="alert">{error} <button type="button" className="oc-link" onClick={() => (phase === "research" ? runResearch() : phase === "plan" ? runPlan() : setError(""))}>Try again</button></div>}
+        <div ref={endRef} />
+      </main>
+      <form className="oc-composer" onSubmit={(e) => { e.preventDefault(); const t = draft; setDraft(""); send(t); }}>
+        <textarea className="oc-input" rows={1} placeholder="Type your answer…" value={draft} disabled={busy || phase === "research" || phase === "plan"}
+          onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); const t = draft; setDraft(""); send(t); } }} />
+        <OcBtn size="sm" type="submit" disabled={busy || !draft.trim()}>Send</OcBtn>
+      </form>
+    </div>
+  );
+}
+
+window.OnboardingChat = OnboardingChat;

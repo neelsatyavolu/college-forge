@@ -293,6 +293,8 @@ export function emptyWorkspace(): Workspace {
 /** True while the full-screen onboarding wizard should block the hub. */
 export function needsOnboarding(ws: Workspace): boolean {
   if (ws.onboarding?.completed) return false;
+  // An interview in progress reopens by itself, even after the student's name is saved.
+  if (ws.onboarding?.interview && ws.onboarding.interview.phase !== "done") return true;
   if ((ws.applicant?.name || "").trim()) return false;
   if ((ws.colleges?.length || 0) > 0) return false;
   if ((ws.profile?.activities?.length || 0) > 0) return false;
