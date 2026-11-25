@@ -107,7 +107,7 @@ function gpaFactor(school: UsNewsCollege, gpa: number | null): number | null {
  */
 export const GATE = { verySelective: 0.15, selective: 0.35, gpaMarginVery: 0.1, gpaMarginSelective: 0.25, satWidthsSelective: 0.5, trendRelief: 0.1 } as const;
 
-export function realismGate(school: UsNewsCollege, academics: StudentAcademics, ambitious: boolean): { ok: boolean; reason?: string } {
+export function realismGate(school: UsNewsCollege, academics: StudentAcademics, ambitious: boolean): { ok: boolean; reason?: string; passedBecauseOfTrend?: boolean } {
   const admit = school.admitRate;
   if (admit === null || admit >= GATE.selective) return { ok: true };
   const very = admit < GATE.verySelective;
@@ -122,8 +122,10 @@ export function realismGate(school: UsNewsCollege, academics: StudentAcademics, 
     if (academics.sat! < floor) return { ok: false, reason: `SAT ${academics.sat} is below ${floor}.` };
   }
   if (gpaComparable) {
-    const floor = avg! - (very ? GATE.gpaMarginVery : GATE.gpaMarginSelective) - relief;
+    const strict = avg! - (very ? GATE.gpaMarginVery : GATE.gpaMarginSelective);
+    const floor = strict - relief;
     if (academics.gpa! < floor - 1e-9) return { ok: false, reason: `Unweighted GPA ${academics.gpa} is below ${Math.round(floor * 100) / 100}.` };
+    if (academics.gpa! < strict - 1e-9) return { ok: true, passedBecauseOfTrend: true };
   }
   return { ok: true };
 }
@@ -250,7 +252,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     // Too long a shot for this ambition level. Saved choices remain untouched.
     if (hasAcademics && estimate !== null && estimate < minEstimate) return [];
     if (admissions && farBelowSatRange(admissions, academics.sat)) return [];
-    if (hasAcademics && admissions && !realismGate(admissions, academics, prefs?.ambition === "ambitious").ok) return [];
+    const gate = hasAcademics && admissions ? realismGate(admissions, academics, prefs?.ambition === "ambitious") : { ok: true };
+    if (!gate.ok) return [];
     if (options.excludeOnList && ws.colleges.some(c => c.scorecardId === row.unitid || c.slug === (admissions?.slug || slugify(row.institution)))) return [];
     const overBudget = budget !== null && row.net_price != null && row.net_price > budget;
     if (overBudget && base.tier === "safety") return [];
@@ -287,7 +290,7 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     const score = row.score_partial * 0.75 + (major ? 25 * (1 - (major.rank - 1) / major.of) : 0);
     // Targets and likely schools where the student sits in the upper half of the range come first.
     const band = base.tier === "reach" ? 0 : academicBand(admissions, academics);
-    if (academics.trendUp && prefs?.ambition === "ambitious" && base.tier === "reach") reasons.push("Your upward grade trend counts in your favor here; admissions offices read the transcript year by year.");
+    if (gate.passedBecauseOfTrend) reasons.push(`Suggested because you reported a clear upward grade trend: it relaxed Forge's GPA screen for this college by ${GATE.trendRelief.toFixed(2)}. Your cumulative GPA is still below its typical range.`);
     return [{ college, fit, score, band, matchesPrefs: inRegion && inSetting, inStatePublic: inState && isPublic,
       onList: ws.colleges.some(c => c.scorecardId === row.unitid || c.slug === college.slug), evidence: {
       fairRank: row.rank_partial, rankLow: row.rank_partial_low, rankHigh: row.rank_partial_high,

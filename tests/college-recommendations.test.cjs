@@ -71,6 +71,19 @@ test('an upward trend helps only ambitious students, and only on the GPA test', 
  assert.equal(realismGate(s,academics(3.72,1500,true),true).ok,true,'ambitious + upward trend');
  assert.equal(realismGate(s,academics(3.72,1440,true),true).ok,false,'SAT test unchanged');
  assert.equal(GATE.trendRelief,0.1);
+ assert.equal(realismGate(s,academics(3.72,1500,true),true).passedBecauseOfTrend,true);
+ assert.equal(realismGate(s,academics(3.85,1500,true),true).passedBecauseOfTrend,undefined,'passes without the relief');
+ assert.equal(realismGate({...s,gpa:null},academics(3.0,1500,true),true).passedBecauseOfTrend,undefined,'no GPA comparison, no relief');
+});
+test('the trend reason appears exactly where the trend let a college through', () => {
+ const ws=profile();ws.applicant.gpaUnweighted='3.6';ws.applicant.sat='1500';ws.applicant.gpaTrend='up';ws.onboarding.listPrefs={ambition:'ambitious',settings:[],size:'any',regions:[],notes:''};
+ const rows=recommendColleges(ws).recommendations;
+ for (const r of rows) {
+  const school=US_NEWS_TOP_250.find(x=>x.scorecardId===r.college.scorecardId);
+  const said=r.fit.reasons.some(x=>/upward grade trend/.test(x));
+  const real=!!(school && realismGate(school,studentAcademics(ws),true).passedBecauseOfTrend);
+  assert.equal(said,real,r.college.name);
+ }
 });
 test('low academics are never seeded with colleges admitting under 15%', () => {
  const ws=profile();ws.applicant.gpaUnweighted='3.2';ws.applicant.sat='1150';ws.onboarding.listPrefs={ambition:'ambitious',settings:[],size:'any',regions:[],notes:''};
