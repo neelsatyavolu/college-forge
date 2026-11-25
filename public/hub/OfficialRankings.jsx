@@ -95,7 +95,7 @@ function OfficialRankings() {
                 <li key={key} className={"cf-orank__item" + (isOpen ? " is-open" : "")}>
                   <button type="button" className="cf-orank__row" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : key)}>
                     <span className="cf-orank__pos">{r.rank}</span>
-                    <SchoolMark name={r.name} />
+                    <SchoolMark name={r.name} logo={r.logo} />
                     <span className="cf-orank__name">{r.name}</span>
                     <span className="cf-orank__place">{[r.city, r.state].filter(Boolean).join(", ")}</span>
                     <svg className="cf-orank__chev" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>

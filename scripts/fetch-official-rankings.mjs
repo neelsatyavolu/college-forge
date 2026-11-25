@@ -8,8 +8,12 @@
  *
  *   node scripts/fetch-official-rankings.mjs [--forbes-year 2027] [--dry-run]
  */
-import { readFile, writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { readFile, writeFile, mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { build } from "esbuild";
+import { existsSync } from "node:fs";
 import { createFetcher } from "./supplements/http.mjs";
 import { FORBES_URL, parseForbes, buildOfficial } from "./rankings/official.mjs";
 
@@ -25,6 +29,21 @@ async function usNewsArray(name) {
   const end = src.indexOf("\n];", start);
   if (at < 0 || start < 0 || end < 0) throw new Error(`Could not find ${name} in ${RANKINGS}`);
   return JSON.parse(src.slice(start + 2, end + 2));
+}
+
+/** The college catalog (lib/catalog, TypeScript) with each school's logo path. */
+async function catalogLogos() {
+  const dir = await mkdtemp(join(tmpdir(), "forge-catalog-"));
+  try {
+    const out = join(dir, "catalog.mjs");
+    await build({ entryPoints: [root("lib/catalog/index.ts")], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error" });
+    const { COLLEGES, logoUrl } = await import(pathToFileURL(out).href);
+    // A logo file named for the school's id counts too, mapped in lib/catalog or not.
+    const logoOf = (id) => logoUrl(id) || (existsSync(root(`public/logos/${id}.png`)) ? `/logos/${id}.png` : null);
+    return COLLEGES.map((c) => ({ name: c.name, aliases: c.aliases || [], domains: [c.website, ...(c.domains || [])].filter(Boolean), logo: logoOf(c.id) }));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 }
 
 async function main() {
@@ -49,8 +68,11 @@ async function main() {
     niche: niche.schools,
     editions: { usn: `${usnEdition} edition`, forbes: `${forbesYear} list`, niche: niche.edition },
     generated: new Date().toISOString().slice(0, 10),
+    catalog: await catalogLogos(),
   });
   for (const [id, list] of Object.entries(data.lists)) console.log(`${id}: ${list.length} schools`);
+  const noLogo = Object.entries(data.lists).flatMap(([id, list]) => list.filter((s) => !s.logo).map((s) => `${id}: ${s.name}`));
+  if (noLogo.length) console.log(`No logo for ${noLogo.length}:\n  ${noLogo.join("\n  ")}`);
   if (unmatched.length) console.log(`No Forbes facts for ${unmatched.length}:\n  ${unmatched.join("\n  ")}`);
   if (argv.includes("--dry-run")) return;
   await writeFile(OUT, JSON.stringify(data) + "\n");

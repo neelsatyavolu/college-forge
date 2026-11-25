@@ -51,6 +51,19 @@ test("lists are cut to their top N and cross-reference each other", async () => 
   assert.deepEqual(data.lists.lac[0].elsewhere, { forbes: 2 });
 });
 
+test("a ranked school finds its catalog logo by domain, then by name", async () => {
+  const { logoFinder } = await load();
+  const logoOf = logoFinder([
+    { name: "Amherst College", aliases: [], domains: ["amherst.edu"], logo: "/logos/amherst.png" },
+    { name: "UC Merced", aliases: [], domains: ["ucmerced.edu"], logo: "/logos/ucmerced.png" },
+    { name: "Testing College", aliases: [], domains: ["testing.edu"], logo: null },
+  ]);
+  assert.equal(logoOf("Some Other Name", "www.amherst.edu"), "/logos/amherst.png");
+  assert.equal(logoOf("University of California, Merced", null), "/logos/ucmerced.png");
+  assert.equal(logoOf("Testing College", "testing.edu"), null);
+  assert.equal(logoOf("Unknown University", null), null);
+});
+
 test("the saved data file has the four lists at their sizes", async () => {
   const data = JSON.parse(await readFile(path.join(__dirname, "../public/data/official-rankings.json"), "utf8"));
   assert.ok(data.lists.usn.length >= 100 && data.lists.usn.every((r) => r.rank <= 100));

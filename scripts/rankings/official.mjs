@@ -31,6 +31,7 @@ const ALIASES = {
   "university of oklahoma norman": "university of oklahoma",
   "university of south": "sewanee",
   "sewanee university of south": "sewanee",
+  "united states military academy west point": "united states military academy",
 };
 
 /** One key per school, whatever list it came from. */
@@ -75,7 +76,33 @@ export function parseForbes(o) {
  * the facts we hold for that school (Forbes's full 500 list, then U.S. News)
  * and where it sits on the other three lists.
  */
-export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated }) {
+const domainOf = (site) => (site ? String(site).toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "") : null);
+
+/**
+ * A lookup from a ranked school to its catalog logo: by website domain first
+ * (names differ across lists, domains don't), then by name or alias.
+ */
+export function logoFinder(catalog = []) {
+  const byDomain = new Map();
+  const byName = new Map();
+  for (const c of catalog) {
+    if (!c.logo) continue;
+    for (const site of c.domains || []) {
+      const d = domainOf(site);
+      if (d && !byDomain.has(d)) byDomain.set(d, c.logo);
+    }
+    for (const n of [c.name, ...(c.aliases || [])]) {
+      // The catalog says "UC Merced"; the lists say "University of California, Merced".
+      for (const k of [schoolKey(n), schoolKey(n.replace(/^UC /i, "University of California "))]) {
+        if (k && !byName.has(k)) byName.set(k, c.logo);
+      }
+    }
+  }
+  return (name, website) => byDomain.get(domainOf(website)) || byName.get(schoolKey(name)) || null;
+}
+
+export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated, catalog = [] }) {
+  const logoOf = logoFinder(catalog);
   const forbesTop = forbesAll.filter((s) => s.rank <= 100);
   const lists = {
     usn: usn.filter((s) => s.rank <= 100),
@@ -114,7 +141,7 @@ export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated 
         const r = rankIn[other].get(key);
         if (r != null) elsewhere[other] = r;
       }
-      const row = { rank: s.rank, name: s.name, city: s.city || null, state: s.state || null, facts, elsewhere };
+      const row = { rank: s.rank, name: s.name, city: s.city || null, state: s.state || null, logo: logoOf(s.name, facts.website), facts, elsewhere };
       if (id === "niche") { row.stars = s.stars ?? null; row.reviews = s.reviews ?? null; }
       return row;
     });
