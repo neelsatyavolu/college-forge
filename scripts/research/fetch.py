@@ -10,6 +10,7 @@ curl_cffi impersonating Chrome's TLS and HTTP/2 fingerprint, which gets past man
 Akamai/Cloudflare checks, and converts the HTML to markdown.
 
     uv run scripts/research/fetch.py <url> > page.md
+    uv run scripts/research/fetch.py --pdf <url> > cds.txt   # PDF text with layout kept (CDS checkboxes)
 
 PDFs are left to firecrawl-local (it reads them locally). Exit code 2: still blocked.
 """
@@ -60,9 +61,32 @@ def impersonated(url: str) -> str:
     return f"<!-- source: {r.url} (HTTP {r.status_code}) -->\n" + conv.handle(main.group(0) if main else html)
 
 
+def pdf_layout(url: str) -> int:
+    """Downloads a PDF (Chrome-impersonating) and prints pdftotext -layout output, which keeps
+    table columns and X marks that plain extraction drops."""
+    import tempfile
+    from curl_cffi import requests
+
+    r = requests.get(url, impersonate="chrome", timeout=60, allow_redirects=True)
+    if r.status_code != 200 or not r.content.startswith(b"%PDF"):
+        print(f"not a PDF (HTTP {r.status_code})", file=sys.stderr)
+        return 2
+    with tempfile.NamedTemporaryFile(suffix=".pdf") as f:
+        f.write(r.content)
+        f.flush()
+        out = subprocess.run(["pdftotext", "-layout", f.name, "-"], capture_output=True, text=True, timeout=120)
+    if out.returncode != 0 or not out.stdout.strip():
+        print("pdftotext could not read it", file=sys.stderr)
+        return 2
+    sys.stdout.write(out.stdout)
+    return 0
+
+
 def main() -> int:
+    if len(sys.argv) == 3 and sys.argv[1] == "--pdf" and re.match(r"^https?://", sys.argv[2]):
+        return pdf_layout(sys.argv[2])
     if len(sys.argv) != 2 or not re.match(r"^https?://", sys.argv[1]):
-        print("usage: fetch.py <http(s) url>", file=sys.stderr)
+        print("usage: fetch.py [--pdf] <http(s) url>", file=sys.stderr)
         return 1
     url = sys.argv[1]
     text = local_scrape(url)
