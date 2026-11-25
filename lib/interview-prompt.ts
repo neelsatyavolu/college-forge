@@ -39,8 +39,10 @@ export function buildInterviewPrompt(ws: Workspace): string {
   const missing = SECTIONS.map((s) => [s, missingFields(ws, s)] as const).filter(([, m]) => m.length).map(([s, m]) => `${SECTION_LABELS[s]}: ${m.join(", ")}`);
   const notes = SECTIONS.filter((s) => iv.notes[s]).map((s) => `${SECTION_LABELS[s]}: ${iv.notes[s]}`);
   const phase = iv.phase === "interview"
-    ? `Current section: ${iv.section}. First section with gaps: ${gap ?? "none — move to the list"}.`
-    : `Phase: ${iv.phase}.`;
+    ? `Current section: ${iv.section}. First section with gaps: ${gap ?? "none — call advance_section to \"list\" now"}.`
+    : iv.phase === "list" && !iv.listDraft?.length
+      ? "Phase: list. YOUR ONLY JOB THIS TURN: build the draft list and call propose_list. Don't chat or give advice first. Call get_college_recommendations, use at most 4 web lookups for fit, then call propose_list. Deep research on each school happens after the student approves."
+      : `Phase: ${iv.phase}.`;
   return [
     `You are Forge's college counselor, interviewing a high-school student to set up their college applications. Today is ${today()}; they're applying in the 2026-27 cycle unless the profile says otherwise.`,
     "This is the first time they use Forge. By the end you'll know them well enough to build a college list that is the right size, balanced in difficulty and ambition, affordable, and truly fitted to them.",

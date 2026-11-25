@@ -60,7 +60,7 @@ async function counselorTurn(history, mode = 'onboarding') {
     tokens, instructions: mode === 'onboarding' ? buildInterviewPrompt(ws) : `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`,
     turns: history.slice(-16), emit: noop, tools: [...hub.tools, ...iv.tools],
     executeTool: async (n, a) => { calls.push(n); return exec(n, a); },
-    shouldEndTurn: iv.endTurn, ...(mode === 'research' ? { maxRounds: 14 } : {}),
+    shouldEndTurn: iv.endTurn, ...(mode === 'research' || ws.onboarding.interview?.phase === 'list' ? { maxRounds: 14 } : {}),
   });
   if (mode === 'onboarding') await mutate((w) => recordTurn(recordTurn(w, { role: 'user', content: history.at(-1).content, at: Date.now() }), { role: 'assistant', content: result.text, at: Date.now() }));
   return { text: result.text, events, calls, finish: result.finishReason };
@@ -88,6 +88,8 @@ try {
     if (!r.text.trim() && !ui && !list) problems.push(`turn ${turnCount}: empty reply`);
     history.push({ role: 'assistant', content: r.text });
     if (list) { listShown = list.schools; break; }
+    const nowIv = (await read()).onboarding.interview;
+    if (nowIv.phase === 'list' && !(nowIv.listDraft || []).length) { history.push({ role: 'user', content: 'Show me my draft college list.' }); log('  (client) Show me my draft college list.'); continue; }
     const answer = await studentReply(history, ui);
     log('  Maya:', answer.slice(0, 200));
     history.push({ role: 'user', content: answer });

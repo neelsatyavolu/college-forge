@@ -7,8 +7,9 @@ const OC_SECTIONS = [["basics", "Basics"], ["school", "Grades"], ["testing", "Te
 const OC_KICKOFF = "Hi! I'm ready to set up Forge.";
 const OC_RESEARCH_DONE = "Research is done. Recommend my early application plan.";
 const OC_CONFIRM = "Yes, that plan sounds right. Save my Early Decision and Early Action choices.";
+const OC_SHOW_LIST = "Show me my draft college list.";
 /** Messages Forge sends on the student's behalf: kept in the AI's history, not shown as theirs. */
-const OC_HIDDEN = new Set([OC_KICKOFF, OC_RESEARCH_DONE, OC_CONFIRM]);
+const OC_HIDDEN = new Set([OC_KICKOFF, OC_RESEARCH_DONE, OC_CONFIRM, OC_SHOW_LIST]);
 const OC_RESEARCH_CONCURRENCY = 3;
 const OC_HISTORY = 16;
 
@@ -164,7 +165,12 @@ function OnboardingChat({ data, onComplete, onCancel }) {
           setTurns([...history, { role: "assistant", content: reply, ui }]);
         }
       });
-      await reload();
+      const next = await reload();
+      setBusy(false); setStatus("");
+      // The interview is done but the AI ended its turn without a list: ask for it once.
+      const nextIv = next?.onboarding?.interview;
+      if (nextIv?.phase === "list" && !(nextIv.listDraft || []).length && !(ui && ui.list) && text !== OC_SHOW_LIST) return send(OC_SHOW_LIST);
+      return;
     } catch (e) {
       setError(e.message || "Something went wrong. Try again.");
       setTurns(history);

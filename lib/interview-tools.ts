@@ -272,6 +272,7 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
     }
     switch (name) {
       case "ask_question": {
+        if (ended) return "You already asked a question this turn. Stop now and wait for the student's answer.";
         const q = parseQuestion(a);
         if (typeof q === "string") return q;
         emit({ type: "question", question: q });
