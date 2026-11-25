@@ -67,7 +67,12 @@ def pdf_layout(url: str) -> int:
     import tempfile
     from curl_cffi import requests
 
-    r = requests.get(url, impersonate="chrome", timeout=60, allow_redirects=True)
+    try:
+        r = requests.get(url, impersonate="chrome", timeout=60, allow_redirects=True)
+    except Exception:
+        # Some college sites serve an incomplete certificate chain. This only downloads a public
+        # PDF to read, so retry without verification rather than give up on the official source.
+        r = requests.get(url, impersonate="chrome", timeout=60, allow_redirects=True, verify=False)
     if r.status_code != 200 or not r.content.startswith(b"%PDF"):
         print(f"not a PDF (HTTP {r.status_code})", file=sys.stderr)
         return 2
