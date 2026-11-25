@@ -1,0 +1,213 @@
+{
+  "slug": "carnegie-mellon-university",
+  "name": "Carnegie Mellon University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "12.3% (4,071 of 33,083; Class of 2030, CDS 2026-27 section C)",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "ED: 23.1% (559 of 2,422; Fall 2026 entrants, CDS 2026-27 C21)",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1500-1560 (enrolled Fall 2026, CDS 2026-27 C9)",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-36 (enrolled Fall 2026, CDS 2026-27 C9)",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.97 (CDS 2026-27 C12)",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Varies by college: School of Computer Science requires SAT or ACT; Engineering, Dietrich, Heinz IS, Mellon College of Science and Tepper are test-flexible (some test required: SAT, ACT, AP or IB); College of Fine Arts test-optional. SAT superscored; ACT not superscored",
+      "sourceUrl": "https://www.cmu.edu/admission/admission/standardized-testing",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for U.S. citizens and permanent residents. Under $75K income: tuition-free; under $100K: no federal loans in the offer. Other packages may include loans. No aid for international students",
+      "sourceUrl": "https://www.cmu.edu/student-admission/access-affordability",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA required for CMU aid; preferred deadlines Nov 15 (ED) and Feb 15 (RD)",
+      "sourceUrl": "https://www.cmu.edu/sfs/financial-aid/prospective-student/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Very limited: CDS reports 30 first-years with no need received institutional non-need awards (2025-26); no general merit program found on CMU's aid pages",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2025_26/cds_2025_full_pdf_updated_11jun26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$93,614 COA 2026-27 for resident first-years entering fall 2026 (tuition $69,702; housing $11,700; food $7,950; fees $1,862; books $1,000; personal $1,300; loan fees $100)",
+      "sourceUrl": "https://coursecatalog.web.cmu.edu/aboutcmu/costofattendance/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision (binding) due Nov 2, decisions by Dec 15; ED denials can't reapply RD; not available for Drama, BXA Design or Music. Regular Decision due Jan 4 (Dec 1 for Drama and Music). No EA",
+      "sourceUrl": "https://www.cmu.edu/admission/admission/application-plans-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No admission interviews (CDS C7 interview 'Not Considered'); optional VIVA video about a project for Engineering and Computer Science applicants",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2026-27 C7 'Level of applicant interest')",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply directly to one college/school; Engineering admits to a department unless undecided; Fine Arts schools need portfolios or auditions; CMU does not accept other supplemental materials",
+      "sourceUrl": "https://www.cmu.edu/admission/admission/undergraduate-admission-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "CMU already published its 2026-27 CDS (Fall 2026 class); figures here use it",
+      "sourceUrl": "https://www.cmu.edu/ira/CDS/pdf/cds_2026-27/cds_2026_c-first-year-first-time-admission.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$9,097 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211440",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$6,994 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211440",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$14,468 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211440",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$24,865 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211440",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$51,480 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211440",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-02",
+      "sourceUrl": "https://www.cmu.edu/admission/admission/application-plans-deadlines",
+      "cycle": "2026-27",
+      "note": "Binding; decisions by Dec 15. Aid preferred deadline Nov 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.cmu.edu/admission/admission/application-plans-deadlines",
+      "cycle": "2026-27",
+      "note": "Decisions by Apr 1. Drama and Music RD due Dec 1. Aid preferred deadline Feb 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Passion or inspiration",
+      "prompt": "Most students choose their intended major or area of study based on a passion or inspiration that’s developed over time — what passion or inspiration led you to choose this area of study?",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.cmu.edu/admission/admission/admission-consideration",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Successful college experience",
+      "prompt": "Many students pursue college for a specific degree, career opportunity or personal goal. Whichever it may be, learning will be critical to achieve your ultimate goal. As you think ahead to the process of learning during your college years, how will you define a successful college experience?",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.cmu.edu/admission/admission/admission-consideration",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Emphasize",
+      "prompt": "Consider your application as a whole. What do you personally want to emphasize about your application for the admission committee’s consideration? Highlight something that’s important to you or something you haven’t had a chance to share. Tell us, don’t show us (no websites please).",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.cmu.edu/admission/admission/admission-consideration",
+      "cycle": "2026-27"
+    }
+  ]
+}

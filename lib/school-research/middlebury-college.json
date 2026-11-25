@@ -1,0 +1,207 @@
+{
+  "slug": "middlebury-college",
+  "name": "Middlebury College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "12.8% September entry (1,511 of 11,831; Fall 2025 entering class, Middlebury's Fall 2025 CDS)",
+      "sourceUrl": "https://www.middlebury.edu/sites/default/files/2026-06/Fall%202025%20CDS%20FINAL.pdf?fv=XbZmhGZl",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "39% ED (460 of 1,179; Fall 2025, excludes Feb admits; Middlebury's Fall 2025 CDS)",
+      "sourceUrl": "https://www.middlebury.edu/sites/default/files/2026-06/Fall%202025%20CDS%20FINAL.pdf?fv=XbZmhGZl",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1460-1530 (33% submitted SAT; Fall 2025 CDS)",
+      "sourceUrl": "https://www.middlebury.edu/sites/default/files/2026-06/Fall%202025%20CDS%20FINAL.pdf?fv=XbZmhGZl",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (16% submitted ACT; Fall 2025 CDS)",
+      "sourceUrl": "https://www.middlebury.edu/sites/default/files/2026-06/Fall%202025%20CDS%20FINAL.pdf?fv=XbZmhGZl",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; self-reported scores accepted; ACT science section not required",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need with grants, work, book support and a limited loan ($1,000-$3,500/yr for incoming students, by income); need-aware for international",
+      "sourceUrl": "https://www.middlebury.edu/student-financial-services/affording-middlebury",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile (code 3526) + FAFSA; due Nov 15, 2026 (ED I), Jan 4, 2027 (ED II), Feb 1, 2027 (RD), Nov 1, 2026 (QuestBridge)",
+      "sourceUrl": "https://www.middlebury.edu/student-financial-services/apply-aid/first-year-and-transfer-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid; aid awarded exclusively on the basis of financial need",
+      "sourceUrl": "https://www.middlebury.edu/student-financial-services/affording-middlebury",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$97,386 total cost of attendance 2026-27 ($94,386 direct; tuition $72,924)",
+      "sourceUrl": "https://www.middlebury.edu/student-financial-services/affording-middlebury",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 2) and ED II (Jan 4), binding; no EA; QuestBridge; you can ask for September or February ('Feb') entry",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional alumni interview requested after applying (by Nov 8 ED I, Jan 9 ED II, Jan 16 RD); not guaranteed; Glimpse video as alternative",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'; interview not considered)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/middlebury-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "No admission by major; declare any time after first semester and by end of third semester",
+      "sourceUrl": "https://www.middlebury.edu/college/academics/advising/declaring-major",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Tuition-free from the Class of 2031 (fall 2027 entry) for family income up to $175,000 with typical assets",
+      "sourceUrl": "https://www.middlebury.edu/stories/archive/2026/09/middlebury-will-become-tuition-free-students-family-income-175000",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Two teacher recs; optional arts supplements via SlideRoom; senior grades required before any decision",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essay required (only the Common App/Coalition essay)",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$12,723 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=230959",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$8,229 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=230959",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$17,510 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=230959",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,526 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=230959",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$49,824 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=230959",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "QuestBridge",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.middlebury.edu/student-financial-services/apply-aid/first-year-and-transfer-students",
+      "cycle": "2026-27",
+      "note": "CSS Profile + FAFSA due for QuestBridge applicants"
+    },
+    {
+      "plan": "ED",
+      "date": "2026-11-02",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid due Nov 15; notification mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "cycle": "2026-27",
+      "note": "ED II, binding; aid due Jan 4; notification mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+      "cycle": "2026-27",
+      "note": "Aid due Feb 1; notification late March"
+    }
+  ],
+  "supplements": []
+}

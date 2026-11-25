@@ -1,0 +1,202 @@
+{
+ "slug": "syracuse-university",
+ "name": "Syracuse University",
+ "checkedAt": "2026-11-25",
+ "complete": false,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "48.8% (22,756 of 46,645; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "55.7% ED (1,478 of 2,654; CDS 2025-26 C21)",
+   "sourceUrl": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1300-1410 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "29-33 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "36.1% of enrolled first-years in top tenth of class (of the 19.7% with rank; CDS 2025-26 C10)",
+   "sourceUrl": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for Spring 2027, Fall 2027 and Spring 2028; non-submitters not disadvantaged and still eligible for merit. Higher of SAT or ACT considered; Score Choice users must send all scores",
+   "sourceUrl": "https://www.syracuse.edu/admissions/undergraduate/apply/what-we-look-for/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No full-need guarantee stated; avg 96% of need met for first-years with need (CDS 2025-26 H2)",
+   "sourceUrl": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Required with FAFSA (CDS 2025-26 H8). Due Nov 1 (EA/ED I), Jan 5 (ED II/RD)",
+   "sourceUrl": "https://financialaid.syr.edu/dates-and-deadlines/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; academic merit scholarships awarded from the admission application by the Admissions Committee, no separate application or FAFSA needed; tuition-only, up to 8 semesters",
+   "sourceUrl": "https://financialaid.syr.edu/scholarships/su/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$95,676 total COA, 2026-27, on campus ($98,544 with health insurance)",
+   "sourceUrl": "https://financialaid.syr.edu/costofattendance/undergraduate",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "EA (non-binding, Nov 1, decisions early Feb), ED I (binding, Nov 1), ED II (binding, Jan 5), RD (Jan 5). ED binding applies to your first-choice school/college",
+   "sourceUrl": "https://www.syracuse.edu/admissions-aid/application-process/apply/dates-deadlines/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Apply to a specific school/college with a first and alternate choice. VPA Art, Design, Film & Media Arts need portfolios; Drama and Music need portfolio/audition (not available EA for acting/musical theater); Architecture needs a portfolio; SU/SUNY Upstate B.S.-M.D. program follows the same deadlines",
+   "sourceUrl": "https://www.syracuse.edu/admissions-aid/application-process/apply/dates-deadlines/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Gaps: CDS 2025-26 C7 ratings (interview, demonstrated interest) did not extract from the PDF, and Syracuse's site doesn't state an interview policy; Syracuse's supplement prompt isn't published on its site (third-party source used)",
+   "sourceUrl": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS data; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$21,872 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196413&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$21,339 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196413&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$25,499 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196413&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$33,983 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196413&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$60,127 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196413&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://www.syracuse.edu/admissions-aid/application-process/apply/dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "Non-binding; FAFSA/CSS Nov 1; notification early February"
+  },
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://www.syracuse.edu/admissions-aid/application-process/apply/dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "ED I, binding; FAFSA/CSS Nov 1; notification late December"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-05",
+   "sourceUrl": "https://www.syracuse.edu/admissions-aid/application-process/apply/dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "Binding; FAFSA/CSS Jan 5; notification mid-January"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-05",
+   "sourceUrl": "https://www.syracuse.edu/admissions-aid/application-process/apply/dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "FAFSA/CSS Jan 5; notification mid-March"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Why Syracuse",
+   "prompt": "Why is Syracuse University a good match for your interests and goals?",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://www.collegeadvisor.com/essay-guides/syracuse-supplemental-essays/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  }
+ ]
+}

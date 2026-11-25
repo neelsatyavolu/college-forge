@@ -1,0 +1,176 @@
+{
+  "slug": "bates-college",
+  "name": "Bates College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "14.8% (1,433 of 9,660; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.bates.edu/research/files/2026/06/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "33.5% ED (318 of 949; CDS 2025-26)",
+      "sourceUrl": "https://www.bates.edu/research/files/2026/06/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1325-1510 (enrolled Fall 2025; 13% submitted SAT)",
+      "sourceUrl": "https://www.bates.edu/research/files/2026/06/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "31-34 (enrolled Fall 2025; 8% submitted ACT)",
+      "sourceUrl": "https://www.bates.edu/research/files/2026/06/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all applicants (since 1984); superscores SAT and ACT; self-reported scores accepted",
+      "sourceUrl": "https://www.bates.edu/admission/apply/optional-testing/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for admitted students regardless of citizenship (CDS 2025-26: 100% of need met on average)",
+      "sourceUrl": "https://www.bates.edu/admission/apply/frequently-asked-questions/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (with FAFSA and noncustodial Profile per CDS H8); aid deadlines Nov 15 ED I, Jan 10 ED II and RD",
+      "sourceUrl": "https://www.bates.edu/financial-services/financial-aid/deadlines/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid: the entire financial aid budget goes to students with demonstrated need",
+      "sourceUrl": "https://www.bates.edu/financial-services/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$2,397 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=160977",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$8,958 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=160977",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$11,336 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=160977",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$19,468 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=160977",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$45,886 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=160977",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$94,560 comprehensive fee (tuition, room, board, fees) for 2026-27",
+      "sourceUrl": "https://www.bates.edu/financial-services/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 10), both binding; RD Jan 10; QuestBridge Match; no EA",
+      "sourceUrl": "https://www.bates.edu/admission/apply/application-options/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews; optional alumni conversations are informational and not evaluative",
+      "sourceUrl": "https://www.bates.edu/admission/apply/frequently-asked-questions/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essay required; optional arts supplement",
+      "sourceUrl": "https://www.bates.edu/admission/apply/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: CDS C7 checkboxes did not render, so the demonstrated-interest rating was not found; no major/program admission notes found",
+      "sourceUrl": "https://www.bates.edu/research/files/2026/06/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.bates.edu/admission/apply/application-options/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid forms due Nov 15; decision by Dec 12"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.bates.edu/admission/apply/application-options/",
+      "cycle": "2026-27",
+      "note": "Binding; aid forms due Jan 10; decision by Feb 6"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.bates.edu/admission/apply/application-options/",
+      "cycle": "2026-27",
+      "note": "Aid forms due Jan 10; decision by Mar 20"
+    }
+  ],
+  "supplements": []
+}

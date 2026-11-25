@@ -1,0 +1,203 @@
+{
+  "slug": "bowdoin-college",
+  "name": "Bowdoin College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "6.8% (957 of 14,045; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "15% (296 of 1,985 ED applicants, ED I and II combined; CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1470-1540 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional (for 50+ years); applicants choose yes/no for using each SAT/ACT; choice can change until the deadline. Homeschoolers submit a graded paper or test scores",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Yes: need-blind and meets full calculated need for domestic and international applicants, with grants/scholarships and campus employment, not loans",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/costs-and-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (CSS Profile code 3089; plus IDOC tax documents). Aid deadlines: ED1 Nov 15, ED2 Jan 5, RD Feb 1. International applicants (not Canadians) apply for aid only if admitted",
+      "sourceUrl": "https://www.bowdoin.edu/student-aid/apply-for-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Essentially none: aid is need-based; CDS 2025-26 reports 17 first-year institutional non-need grants averaging $1,000",
+      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$97,900+ total cost of attendance (2026-27: tuition $74,268, fees $700, housing $10,106, food $10,326; books/personal $2,500+)",
+      "sourceUrl": "https://www.bowdoin.edu/student-aid/cost-of-attendance/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision 1 Nov 15 (mid-December notification) and Early Decision 2 Jan 5 (early February), both binding; Regular Decision Jan 5 (mid-March). No EA",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/dates-deadlines/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional in-person or virtual interviews with admissions staff, students or alumni, open to all first-year applicants; independent interviews (InitialView, Vericant) accepted. Considered in CDS 2025-26 C7",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/bowdoin-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission; optional arts supplement (due ED1 Nov 15, ED2/RD Jan 13) and optional video response",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/dates-deadlines/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Three recommendations required (counselor and teacher recs). Optional video response deadlines: ED1 Nov 24, ED2/RD Jan 20",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$3,318 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?161004",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$5,634 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?161004",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$8,694 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?161004",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$16,219 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?161004",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$40,929 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?161004",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/dates-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "ED1; binding; CSS Profile also due"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/dates-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "Binding; aid due same day; early February notification"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/dates-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "Aid application due Feb 1; mid-March notification"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "The Offer of the College (optional)",
+      "prompt": "Generations of students have found connection and meaning in Bowdoin’s “The Offer of the College,” written in 1906 by Bowdoin President William DeWitt Hyde. To be at home in all lands and all ages; To count Nature a familiar acquaintance, and Art an intimate friend; To gain a standard for the appreciation of others' work And the criticism of your own; To carry the keys of the world's library in your pocket, And feel its resources behind you in whatever task you undertake; To make hosts of friends...who are to be leaders in all walks of life; To lose yourself in generous enthusiasms and cooperate with others for common ends – This is the offer of the college for the best four years of your life. Which line from The Offer resonates most with you?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/index.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Navigating through Differences (optional)",
+      "prompt": "Bowdoin believes that its broadly diverse and inclusive campus community prepares graduates to be contributing and useful citizens of the world. Every graduate of this institution should be confident in their preparation to be able to navigate through differences and in all sorts of situations. A Bowdoin education does not guarantee these skills, but it does impart a set of tools necessary to bravely enter unfamiliar conditions with the confidence to deal effectively with ambiguity. If you wish, you may share anything about the unique experiences and perspectives that you would bring with you to the Bowdoin campus and community or an experience you have had that required you to navigate across or through difference.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.bowdoin.edu/admissions/apply/index.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

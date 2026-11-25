@@ -1,0 +1,218 @@
+{
+  "slug": "united-states-military-academy-at-west-point",
+  "name": "United States Military Academy at West Point",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "12.5% (1,534 admitted of 12,316; Fall 2024, CDS 2024-25 as parsed by collegedata.fyi; West Point's PDF omits the admit count)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/united-states-military-academy/2024-25",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1210-1420 (68% submitted SAT; Fall 2024, CDS 2024-25)",
+      "sourceUrl": "https://s3.amazonaws.com/usma-media/inline-images/about/g5/G5OIR_CDS_2024-2025.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "27-33 (32% submitted ACT; Fall 2024, CDS 2024-25)",
+      "sourceUrl": "https://s3.amazonaws.com/usma-media/inline-images/about/g5/G5OIR_CDS_2024-2025.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 4.1; 43% top 10%, 67% top quarter of HS class (Fall 2024, CDS 2024-25)",
+      "sourceUrl": "https://s3.amazonaws.com/usma-media/inline-images/about/g5/G5OIR_CDS_2024-2025.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "SAT, ACT or CLT required, superscored; official scores due by Jan 31 of senior year",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "No ED or EA; single application for the Class of 2031 open until Jan 31, 2027",
+      "sourceUrl": "https://apply.westpoint.edu/portal/candidate",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No admissions interview listed among West Point's application steps (candidate checklist: transcripts, 3 teacher evaluations, essays, activities, scores)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not applicable: whole-candidate score of academics (55%), leadership/character (30%) and fitness (15%), plus a required nomination",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major at entry; cadets select a major in the spring of plebe year; a few majors cap enrollment (caps vary by year)",
+      "sourceUrl": "https://www.westpoint.edu/academics/majors-and-minors/choosing-major",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Eligibility: U.S. citizen, age 17-22 on July 1 of entry year, unmarried, no legal obligation to support children; needs trigonometry/pre-calculus and physics or chemistry",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Nomination required (both Senators, your Representative, the Vice President, or service-connected sources); each may nominate up to 15 per vacancy; most nomination deadlines fall September-October of senior year",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission/start-nomination-planning",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Medical: DoDMERB exam (no cost), scheduled after you become an official candidate",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Candidate Fitness Assessment required: basketball throw, pull-ups (or flexed-arm hang), shuttle run, modified sit-ups, push-ups, one-mile run; can be retaken",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Service obligation: at least 5 years active duty as an Army officer plus 3 years reserve/IRR",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Timeline: application opens Feb 15 of junior year; apply for nominations and take the CFA in fall of senior year; candidate checklist (incl. essays) due Jan 31; Class of 2031 enters July 2027",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: essays are part of the candidate checklist but the prompts are only in the candidate portal and were not reviewed",
+      "sourceUrl": "https://www.westpoint.edu/admissions/steps-to-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "Not applicable: tuition, room and board are covered (no-cost education); no financial aid process. Service obligation applies (see notes)",
+      "sourceUrl": "https://www.westpoint.edu/admissions/tuition-and-service-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "Application",
+      "date": "2027-01-31",
+      "sourceUrl": "https://apply.westpoint.edu/portal/candidate",
+      "cycle": "2026-27",
+      "note": "Class of 2031 application and candidate checklist (scores, transcripts, essays, teacher evaluations) due; nomination deadlines are set by each office, mostly Sept-Oct"
+    }
+  ],
+  "supplements": []
+}

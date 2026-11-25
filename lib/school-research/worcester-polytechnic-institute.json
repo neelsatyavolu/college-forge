@@ -1,0 +1,36 @@
+{
+  "slug": "worcester-polytechnic-institute",
+  "name": "Worcester Polytechnic Institute",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "61.9% (7,647 of 12,355; Fall 2025 entry, CDS 2025-26)", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "ED: 78.1% (310 of 397); EA: 69.3% (6,151 of 8,882); Fall 2025 entry, CDS 2025-26", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "Not reported: WPI left CDS 2025-26 C9 blank", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "Not reported: CDS 2025-26 C9 left blank", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "Average HS GPA 3.9; 60% of Fall 2025 enrollees had a 4.0, 19% 3.75-3.99 (CDS C11-C12). Rigor and GPA very important; class rank and recommendations important", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional (considered if submitted) for Fall 2027; WPI ran a test-blind pilot 2021-2024 and returned to test-optional", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/how-to/test-optional-admissions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No; average 80.8% of need met for first-year aid recipients, 232 with need fully met (CDS 2025-26 H2)", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "css_profile", "value": "Required with FAFSA (plus Noncustodial PROFILE); ED applicants must file by Nov 1; priority date March 1", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/application-options", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; all applicants automatically considered (FIRST and VEX scholarships need an application). Every ED admit gets at least $25,000/year merit (not combinable with Innovation Award). Program scholarships (BizTech, Biology, ChemE) automatic by intended major", "sourceUrl": "https://www.wpi.edu/admissions/tuition-aid/types-of-aid/scholarships-grants/wpi-merit", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "sticker_cost", "value": "2026-27: tuition $63,936 + fees $1,502 + room & board $19,252 = $84,690; plus books $1,200 and other $1,200 (travel varies)", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Binding ED I (Nov 1) and ED II (Jan 5); non-binding, non-restrictive EA I (Nov 1, decision mid-Dec) and EA II (Jan 5, mid-Feb); RD Feb 1 (mid-March). Non-binding applicants may switch to ED", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/application-options", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Interview not considered (CDS 2025-26 C7)", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Level of applicant's interest: Considered (CDS 2025-26 C7)", "sourceUrl": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "No capped-major or separate-college admission stated; requirements are the same for all applicants (Common App only, counselor and teacher letter required). Intended major drives automatic program scholarships (BizTech, Biology/Biotech, ChemE)", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/how-to", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No supplemental essay for 2026-27: WPI's Common App portal lists no writing questions or supplement; the Common App personal essay is the only essay", "sourceUrl": "https://www.gradgpt.com/blog/wpi-supplemental-essays", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": true },
+    { "key": "net_price_lt30k", "value": "$24,018 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168421", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$24,452 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168421", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$32,350 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168421", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$37,753 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168421", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$49,716 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168421", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-01", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/application-options", "cycle": "2026-27", "note": "Binding; decision mid-December; FAFSA and CSS Profile due Nov 1; min $25k/yr merit if admitted" },
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/application-options", "cycle": "2026-27", "note": "EA I, non-binding; decision mid-December" },
+    { "plan": "ED2", "date": "2027-01-05", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/application-options", "cycle": "2026-27", "note": "Binding; decision mid-February" },
+    { "plan": "EA", "date": "2027-01-05", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/application-options", "cycle": "2026-27", "note": "EA II, non-binding; decision mid-February" },
+    { "plan": "RD", "date": "2027-02-01", "sourceUrl": "https://www.wpi.edu/admissions/undergraduate/apply/application-options", "cycle": "2026-27", "note": "Decision mid-March" }
+  ],
+  "supplements": []
+}

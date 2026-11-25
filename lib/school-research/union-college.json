@@ -1,0 +1,36 @@
+{
+  "slug": "union-college",
+  "name": "Union College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "43.9% (3,606 of 8,210; Fall 2024 entering class, CDS 2024-25). 2025-26 CDS is posted but could not be read", "sourceUrl": "https://www.union.edu/sites/default/files/institutional-research/202505/common-data-set-2024-2025-final-website-march-2025.pdf", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "42.2% ED I + ED II combined (164 of 389; Fall 2024, CDS 2024-25)", "sourceUrl": "https://www.collegedata.fyi/schools/union-college/2024-25", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": true },
+    { "key": "sat_mid50", "value": "1310-1480 (32% of enrollees submitted SAT; CDS 2024-25)", "sourceUrl": "https://www.union.edu/sites/default/files/institutional-research/202505/common-data-set-2024-2025-final-website-march-2025.pdf", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "act_mid50", "value": "29-33 (11% of enrollees submitted ACT; CDS 2024-25)", "sourceUrl": "https://www.union.edu/sites/default/files/institutional-research/202505/common-data-set-2024-2025-final-website-march-2025.pdf", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "gpa_note", "value": "52% of rank-reporting enrollees in top 10% of class (CDS 2024-25)", "sourceUrl": "https://www.collegedata.fyi/schools/union-college/2024-25", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": true },
+    { "key": "test_policy", "value": "'No-harm' test-optional; self-reported scores accepted. SAT/ACT required for the Leadership in Medicine and 3+3 Accelerated Law combined-degree programs", "sourceUrl": "https://www.union.edu/admissions/apply/test-policy", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "Meets full demonstrated need of admitted students who file all aid forms on time; admission is need-aware; packages include grant, loan and work. ED applicants are packaged first", "sourceUrl": "https://www.union.edu/admissions/finaid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "CSS Profile and FAFSA required for need-based aid; due Nov 15 (ED I) or Jan 15 (ED II/RD)", "sourceUrl": "https://www.union.edu/admissions/finaid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; automatic consideration for $5,000-$40,000/yr scholarships, renewable 4 years; apply by Dec 1 for priority scholarship consideration; ED applicants considered for top tiers", "sourceUrl": "https://www.union.edu/admissions/finaid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$11,776 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196866", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$16,415 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196866", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$23,941 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196866", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$34,100 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196866", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$45,017 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196866", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$92,610 comprehensive fee 2026-27 (tuition, room, board, fees) plus ~$2,000 books and personal", "sourceUrl": "https://www.union.edu/admissions/finaid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "ED I (Nov 15) and ED II (Jan 15), both binding; no EA; RD Jan 15. RD applicants can switch to ED II until Feb 15. ED applicants are favored and admitted at a higher rate", "sourceUrl": "https://www.union.edu/admissions/apply/first-year", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Strongly encouraged (counselor or senior intern); complete by Nov 15 (ED I, LIM) or Jan 31 (ED II/RD). Union says it shows interest", "sourceUrl": "https://www.union.edu/admissions/visit/interviews", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Considered (CDS 2024-25 C7)", "sourceUrl": "https://www.union.edu/sites/default/files/institutional-research/202505/common-data-set-2024-2025-final-website-march-2025.pdf", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "major_notes", "value": "Combined-degree programs need extra steps and earlier deadlines: 8-year Leadership in Medicine (all materials by Nov 15, tests required), 3+3 Accelerated Law (tests required), 4+1 Business Master's Pathway. Binding ED still applies if not admitted to the program. Optional arts portfolio via SlideRoom", "sourceUrl": "https://www.union.edu/admissions/apply/first-year", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No application fee and no Union-specific supplemental essay: only the Common App/Coalition personal essay, transcript, counselor and one teacher rec.", "sourceUrl": "https://www.union.edu/admissions/apply/first-year", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Gap: Union's 2025-26 CDS PDF is blocked to automated readers, so admissions stats use CDS 2024-25.", "sourceUrl": "https://www.union.edu/institutional-research/common-data-set-cds", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-15", "sourceUrl": "https://www.union.edu/admissions/apply", "cycle": "2026-27", "note": "ED I, binding; documents by Nov 20; aid forms Nov 15; decision mid-December" },
+    { "plan": "Priority (scholarships)", "date": "2026-12-01", "sourceUrl": "https://www.union.edu/admissions/apply", "cycle": "2026-27", "note": "Apply by Dec 1 for priority merit consideration" },
+    { "plan": "ED2", "date": "2027-01-15", "sourceUrl": "https://www.union.edu/admissions/apply", "cycle": "2026-27", "note": "Binding; documents by Jan 20; decisions weekly from January" },
+    { "plan": "RD", "date": "2027-01-15", "sourceUrl": "https://www.union.edu/admissions/apply", "cycle": "2026-27", "note": "Documents by Jan 20; decision mid-March" }
+  ],
+  "supplements": []
+}

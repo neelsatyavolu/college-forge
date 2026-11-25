@@ -1,0 +1,247 @@
+{
+  "slug": "yale-university",
+  "name": "Yale University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "4.7% (2,387 of 50,264; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://oir.yale.edu/sites/default/files/yale_cds_2025-26_md_20260616.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1480-1560 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://oir.yale.edu/sites/default/files/yale_cds_2025-26_md_20260616.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://oir.yale.edu/sites/default/files/yale_cds_2025-26_md_20260616.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: ACT or SAT for 2026-27 (replaces the test-flexible policy that also allowed AP/IB). Self-reporting allowed; superscoring allowed; ACT Science and Writing optional",
+      "sourceUrl": "https://admissions.yale.edu/standardized-testing",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Need-blind; meets 100% of demonstrated need for all students regardless of citizenship, without requiring loans. Under $100K income with typical assets often 'zero parent share'",
+      "sourceUrl": "https://finaid.yale.edu/affordability",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA (U.S.) required, documents via IDOC. Priority deadlines: Nov 1, 2026 (EA/QuestBridge), Feb 15, 2027 (RD)",
+      "sourceUrl": "https://finaid.yale.edu/apply/prospective",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit scholarships from Yale; every dollar of aid is need-based",
+      "sourceUrl": "https://finaid.yale.edu/affordability",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$17,633 (2023-24; NCES figure, far above Yale's zero-parent-share policy for low incomes)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130794",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$15,626 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130794",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$17,943 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130794",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$12,558 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130794",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$45,951 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130794",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$97,985 COA 2026-27 (tuition $72,500; activity fee $185; housing $12,080; food $9,520; books $1,000; personal $2,700)",
+      "sourceUrl": "https://finaid.yale.edu/coa",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Single-Choice Early Action (non-binding, restrictive) due Nov 1, decisions mid-December; other private EA/ED barred except rolling, public non-binding, post-Jan 1 rounds and non-U.S. schools. QuestBridge Match (binding) Nov 1. Regular Decision due Jan 2",
+      "sourceUrl": "https://admissions.yale.edu/timelines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Evaluative interviews with alumni or current students, by invitation only. CDS C7: 'Considered'",
+      "sourceUrl": "https://admissions.yale.edu/interviews",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://oir.yale.edu/sites/default/files/yale_cds_2025-26_md_20260616.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major declared on entry; applicants list up to three academic interests, and students explore before committing",
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Policy change: SAT/ACT now required for 2026-27 (announced May 2026). Optional supplements in art, dance, music, film or STEM research. NCES net prices for Yale look inconsistent with its aid policy; use Yale's net price estimator",
+      "sourceUrl": "https://admissions.yale.edu/posts/2026-05-27-undergraduate-admissions-updates-testing-policy",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "REA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.yale.edu/timelines",
+      "cycle": "2026-27",
+      "note": "Single-Choice Early Action; restrictive, non-binding; decisions mid-December. Aid priority deadline Nov 1"
+    },
+    {
+      "plan": "QuestBridge",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.yale.edu/timelines",
+      "cycle": "2026-27",
+      "note": "QuestBridge National College Match; binding"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-02",
+      "sourceUrl": "https://admissions.yale.edu/timelines",
+      "cycle": "2026-27",
+      "note": "Decisions late March. Aid priority deadline Feb 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Academic areas",
+      "prompt": "Students at Yale have time to explore their academic interests before committing to one or more major fields of study. Many students either modify their original academic direction or change their minds entirely. As of this moment, what academic areas seem to fit your interests or goals most comfortably? Please indicate up to three from the list provided.",
+      "required": true,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Topic or idea",
+      "prompt": "Tell us about a topic or idea that excites you and is related to one or more academic areas you selected above. Why are you drawn to it?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short take: course, book or art",
+      "prompt": "If you could teach any college course, write a book, or create an original piece of art of any kind, what would it be?",
+      "limit": 200,
+      "unit": "characters",
+      "required": true,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short take: growth",
+      "prompt": "What is one aspect of yourself that you hope to grow or develop during college?",
+      "limit": 200,
+      "unit": "characters",
+      "required": true,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short take: not elsewhere",
+      "prompt": "What is something about you that is not included anywhere else in your application?",
+      "limit": 200,
+      "unit": "characters",
+      "required": true,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Essay (choose one): opposing view",
+      "prompt": "Reflect on a time you discussed an issue important to you with someone holding an opposing view. Why did you find the experience meaningful?",
+      "limit": 400,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Essay (choose one): community",
+      "prompt": "Reflect on your membership in a community to which you feel connected. Why is this community meaningful to you? You may define community however you like.",
+      "limit": 400,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Essay (choose one): personal experience",
+      "prompt": "Reflect on an element of your personal experience that you feel will enrich your college. How has it shaped you?",
+      "limit": 400,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.yale.edu/essay-topics",
+      "cycle": "2026-27"
+    }
+  ]
+}

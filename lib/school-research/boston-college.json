@@ -1,0 +1,226 @@
+{
+  "slug": "boston-college",
+  "name": "Boston College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "14.2% (5,497 admitted of 38,658 applicants; Fall 2025 entry, Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.bc.edu/content/dam/bc1/offices/irp/ir/cds/CDS_2025-2026-PDF_FINAL.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "32.5% (1,596 admitted of 4,911 Early Decision applicants; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.bc.edu/content/dam/bc1/offices/irp/ir/cds/CDS_2025-2026-PDF_FINAL.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1440-1520 (enrolled Fall 2025; EBRW 710-760, Math 720-780; 41% submitted SAT)",
+      "sourceUrl": "https://www.bc.edu/content/dam/bc1/offices/irp/ir/cds/CDS_2025-2026-PDF_FINAL.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025; 19% submitted ACT)",
+      "sourceUrl": "https://www.bc.edu/content/dam/bc1/offices/irp/ir/cds/CDS_2025-2026-PDF_FINAL.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for 2026-27; superscores SAT and ACT; self-reported scores accepted, official scores required on enrollment",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all domestic students; need-blind admission; avg need-based package projected over $65,000 in 2026-27",
+      "sourceUrl": "https://www.bc.edu/bc-web/sites/bc-news/articles/2026/spring/trustees-set-tuition-for-2026-2027.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for institutional aid (2027-28 CSS Profile for fall 2027 entrants) plus FAFSA; priority filing dates: ED I Nov 1, ED II Jan 3, RD Feb 1",
+      "sourceUrl": "https://www.bc.edu/bc-web/offices/student-services/financial-aid/undergraduate/applying-for-aid.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "One merit award only: Gabelli Presidential Scholarship, full tuition for 18 first-years; no separate application, but the application must be submitted by the Nov 1 priority scholarship deadline (ED or RD)",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/financial-aid.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,258 total cost of attendance 2026-27 (tuition $75,070)",
+      "sourceUrl": "https://www.bc.edu/bc-web/sites/bc-news/articles/2026/spring/trustees-set-tuition-for-2026-2027.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision I (Nov 1) and Early Decision II (Jan 4), both binding; no Early Action; Regular Decision Jan 4",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No admission interviews; optional InitialView interview suggested only for students at Chinese national schools",
+      "sourceUrl": "https://www.bc.edu/content/bc-web/admission/faq.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS C7 'Level of applicant's interest': Not Considered); admissions FAQ says BC does not track demonstrated interest",
+      "sourceUrl": "https://www.bc.edu/content/dam/bc1/offices/irp/ir/cds/CDS_2025-2026-PDF_FINAL.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to one of four divisions (Morrissey Arts & Sciences, Carroll Management, Lynch Education, Connell Nursing) and are considered only for that division; a major must be declared only for Human-Centered Engineering and Nursing; HCE applicants may name a second-choice Morrissey major and answer supplement prompt #5",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$4,284 (2023-2024, family income $0-$30,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164924",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$7,304 (2023-2024, family income $30,001-$48,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164924",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$13,112 (2023-2024, family income $48,001-$75,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164924",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$19,999 (2023-2024, family income $75,001-$110,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164924",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$60,308 (2023-2024, family income $110,001 and more; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164924",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Studio Art majors may submit portfolios via SlideRoom (Nov 1 for ED I/QuestBridge, Jan 4 for ED II/RD); mid-year report required for RD and deferred ED applicants",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27",
+      "note": "Early Decision I, binding; also the Presidential Scholarship priority deadline; CSS Profile/FAFSA priority Nov 1"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27",
+      "note": "Early Decision II, binding; aid priority Jan 3"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27",
+      "note": "Non-binding; notification by Apr 1; aid priority Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Writing Supplement option 1 (required: answer one of prompts 1-4)",
+      "prompt": "Strong communities are sustained by traditions. Boston College's annual calendar is marked with both long-standing and newer traditions that help shape our community. Tell us about a meaningful tradition in your family or community. Why is it important to you, and how does it bring people together or strengthen the bonds of those who participate?",
+      "limit": 400,
+      "unit": "words",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement option 2 (required: answer one of prompts 1-4)",
+      "prompt": "The late BC theology professor, Father Michael Himes, argued that a university is not a place to which you go, but instead, a \"rigorous and sustained conversation about the great questions of human existence, among the widest possible circle of the best possible conversation partners.” Who has been your most meaningful conversation partner, and what profound questions have you considered together?",
+      "limit": 400,
+      "unit": "words",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement option 3 (required: answer one of prompts 1-4)",
+      "prompt": "In her July 2009 Ted Talk, “The Danger of a Single Story,” Chimamanda Ngozi Adichie warned viewers against assigning people a “single story” through assumptions about their nationality, appearance, or background. Discuss a time when someone defined you by a single story. What challenges did this present and how did you overcome them?",
+      "limit": 400,
+      "unit": "words",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement option 4 (required: answer one of prompts 1-4)",
+      "prompt": "Boston College’s Jesuit mission highlights “the three Be’s”: be attentive, be reflective, be loving – core to Jesuit education (see A Pocket Guide to Jesuit Education). If you could add a fourth “Be,” what would it be and why? How would this new value support your personal development and enrich the BC community?",
+      "limit": 400,
+      "unit": "words",
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement prompt 5 (Human-Centered Engineering applicants only, instead of 1-4)",
+      "prompt": "Human-Centered Engineering (HCE) Applicants only: One goal of a Jesuit education is to prepare students to serve the Common Good. Human-Centered Engineering at Boston College integrates technical knowledge, creativity, and a humanistic perspective to address societal challenges and opportunities. What societal problems are important to you and how will you use your HCE education to solve them?",
+      "limit": 400,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.bc.edu/bc-web/admission/apply.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

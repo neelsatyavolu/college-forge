@@ -1,0 +1,253 @@
+{
+ "slug": "emory-university",
+ "name": "Emory University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "10.3% (3,869 of 37,561; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/emory/2025-26/35ef3959fe94f4919a608e829125d330a6d7e39cfa1be219127a4dfa6396f314.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "22.2% ED I + ED II combined (1,049 of 4,728; CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/emory/2025-26/35ef3959fe94f4919a608e829125d330a6d7e39cfa1be219127a4dfa6396f314.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1480-1540 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/emory/2025-26/35ef3959fe94f4919a608e829125d330a6d7e39cfa1be219127a4dfa6396f314.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "33-35 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/emory/2025-26/35ef3959fe94f4919a608e829125d330a6d7e39cfa1be219127a4dfa6396f314.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average HS GPA 3.80; 76% of enrollees who reported rank in top 10% (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/emory/2025-26/35ef3959fe94f4919a608e829125d330a6d7e39cfa1be219127a4dfa6396f314.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for fall 2027 entry (2026-27 cycle); self-reporting allowed; writing section not required",
+   "sourceUrl": "https://apply.emory.edu/apply/requirements/exams",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of demonstrated need for domestic students; need-based loans replaced by grants. Emory Advantage Plus: tuition-free for families earning up to $200,000 with typical assets",
+   "sourceUrl": "https://apply.emory.edu/financial-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile + FAFSA + tax records required for Emory College, Oxford, Goizueta and Nursing; aid deadlines Dec 2 (ED I), Jan 6 (ED II), Feb 10 (RD)",
+   "sourceUrl": "https://studentaid.emory.edu/undergraduate/apply/index.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Financial aid deadlines: Dec 2 (ED I), Jan 6 (ED II), Feb 10 (RD)",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Emory University Scholar Programs (incl. Woodruff Scholars): partial to full merit scholarships; separate application due Nov 15, decisions by March 1",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$7,363 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139658",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$9,220 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139658",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$11,237 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139658",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$13,821 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139658",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$53,018 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139658",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$93,128 tuition, fees, room and board for 2026-27 (tuition $70,300); excludes books and personal costs",
+   "sourceUrl": "https://news.emory.edu/stories/2026/03/emory-sets-undergraduate-tuition-2026-27-academic-year-affirms-commitment-expanding",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED I (Nov 1) and ED II (Jan 1), both binding; apply ED to Emory College, Oxford College or both (or ED to one, RD to the other). No EA.",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No evaluative interviews with admission staff or alumni",
+   "sourceUrl": "https://apply.emory.edu/apply/faqs",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 level of applicant's interest); interview 'Considered' in C7",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/emory/2025-26/35ef3959fe94f4919a608e829125d330a6d7e39cfa1be219127a4dfa6396f314.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "One application can go to Emory College (Atlanta) and/or Oxford College (Covington campus). Oxford Launch: London option for select Oxford students.",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Decisions by Dec 15 (ED I), Feb 15 (ED II), Apr 1 (RD). FAQ mentions 'feedback from the Alumni Interview program' in test-optional context, conflicting with its no-interview answer.",
+   "sourceUrl": "https://apply.emory.edu/apply/faqs",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "cycle": "2026-27",
+   "note": "ED I, binding; aid docs due Dec 2; decision by Dec 15"
+  },
+  {
+   "plan": "Priority",
+   "date": "2026-11-15",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "cycle": "2026-27",
+   "note": "Emory University Scholar Programs deadline"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-01",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "cycle": "2026-27",
+   "note": "Binding; aid docs due Jan 6; decision by Feb 15"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-01",
+   "sourceUrl": "https://apply.emory.edu/apply/plans-deadlines",
+   "cycle": "2026-27",
+   "note": "Aid docs due Feb 10; decision by Apr 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Academic interests",
+   "prompt": "What academic areas are you interested in exploring at Emory University and why?",
+   "limit": 200,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://blog.emoryadmission.com/2026/08/emorys-short-answer-questions-2026-27/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Getting to know you (choose 1 of 4): Community",
+   "prompt": "Emory University has a strong commitment to building community. Tell us about a community that you have been part of where your personal participation helped to change or shape the community for the better.",
+   "limit": 150,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://blog.emoryadmission.com/2026/08/emorys-short-answer-questions-2026-27/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Getting to know you (choose 1 of 4): Cultural awareness",
+   "prompt": "Reflect on a personal experience where you intentionally expanded your cultural awareness.",
+   "limit": 150,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://blog.emoryadmission.com/2026/08/emorys-short-answer-questions-2026-27/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Getting to know you (choose 1 of 4): Service",
+   "prompt": "Emory University’s unique mission calls for service to humanity. Share how you might personally contribute to this mission of service to humanity.",
+   "limit": 150,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://blog.emoryadmission.com/2026/08/emorys-short-answer-questions-2026-27/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Getting to know you (choose 1 of 4): Disagreement",
+   "prompt": "In a scholarly community, differing ideas often collide before they converge. How do you personally navigate disagreement in a way that promotes progress and deepens meaningful dialogue?",
+   "limit": 150,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://blog.emoryadmission.com/2026/08/emorys-short-answer-questions-2026-27/",
+   "cycle": "2026-27"
+  }
+ ]
+}

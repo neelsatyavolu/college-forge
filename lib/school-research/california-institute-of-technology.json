@@ -1,0 +1,240 @@
+{
+  "slug": "california-institute-of-technology",
+  "name": "California Institute of Technology",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "3.8% (428 of 11,285; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://iro.caltech.edu/documents/35129/Caltech_CDS_2025-26_August_2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Composite not reported; sections 760-780 EBRW, 790-800 Math (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://iro.caltech.edu/documents/35129/Caltech_CDS_2025-26_August_2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "35-36 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://iro.caltech.edu/documents/35129/Caltech_CDS_2025-26_August_2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT or ACT. Superscored by section; ACT composite not used (subscores only; Science/Writing optional). Scores shown to readers in 'buckets' (A: 780-800 SAT / 35-36 ACT; B: 750-770 / 33-34)",
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/standardized-tests",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets full demonstrated need of all admitted students; need-aware for international applicants. Families under $100K typically get no-loan aid; under $200K tuition covered",
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/international-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA due Nov 15, 2026 for REA (U.S.); tax docs via IDOC by Dec 15 priority deadline. RD priority deadline Mar 16, 2027",
+      "sourceUrl": "https://www.finaid.caltech.edu/applying/how/newdomesticea",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No institutional non-need (merit) scholarships reported (CDS H2A: 0 students)",
+      "sourceUrl": "https://iro.caltech.edu/documents/35129/Caltech_CDS_2025-26_August_2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$1,667 (2022-23; NCES shows no figure for 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110404",
+      "checkedAt": "2026-11-25",
+      "cycle": "2022-23",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$1,023 (2022-23; NCES shows no figure for 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110404",
+      "checkedAt": "2026-11-25",
+      "cycle": "2022-23",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$431 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110404",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,753 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110404",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$54,157 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110404",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$98,622 COA 2026-27 on campus (direct $93,225: tuition $68,574, fees $2,655, housing $12,711, food $9,285; indirect $5,397: books $1,428, personal $3,969). New students also pay a one-time $600 orientation fee",
+      "sourceUrl": "https://www.finaid.caltech.edu/costs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Restrictive Early Action (non-binding) due Nov 1, decisions mid-December; no other EA/ED except non-U.S., public non-binding, rolling, military academies; ED II allowed only after a deferral. REA denials are final. Regular Decision due Jan 4 (materials by Jan 10)",
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major declared until the end of first year; all students take the core curriculum (calculus, chemistry and physics required for admission)",
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews: Caltech has no interview process; the supplemental essays are where applicants speak to admissions",
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays/essay-writing-advice",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered: Caltech does not consider or track demonstrated interest, including visits or info sessions",
+      "sourceUrl": "https://www.admissions.caltech.edu/visit/connect-virtually",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Optional STEM/non-STEM portfolio and research papers accepted. REA denials are final for the cycle. CDS C7 table is garbled in the published PDF, so interview/interest come from Caltech's admissions pages",
+      "sourceUrl": "https://iro.caltech.edu/documents/35129/Caltech_CDS_2025-26_August_2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "REA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/deadlines",
+      "cycle": "2026-27",
+      "note": "Restrictive Early Action; non-binding; decisions mid-December. CSS Profile/FAFSA due Nov 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/deadlines",
+      "cycle": "2026-27",
+      "note": "Decisions mid-March; supporting materials accepted to Jan 10"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "STEM academic interest",
+      "prompt": "If you had to choose an area of interest or two today, what would you choose? Why did you choose your proposed area of interest? If you selected 'other', what topics are you interested in pursuing? (Min: 150 / Max: 200 words)",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Scholarly Character (choose one): Collaboration",
+      "prompt": "Tell us about a time your learning in STEM was shaped by another person or group — either because you needed help, offered help, changed your thinking through collaboration, or contributed to someone else's understanding. What did that experience teach you about learning and working with others?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Scholarly Character (choose one): Process",
+      "prompt": "Tell us about a time your approach to a STEM problem, concept, or project mattered as much as the outcome. How did you work through uncertainty or persist creatively in tackling the problem? What would you still defend about your process, regardless of the outcome?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Scientific Drive (choose two): Learning",
+      "prompt": "Regardless of your STEM interest listed above, take this opportunity to nerd out and talk to us about whatever STEM rabbit hole you have found yourself falling into. Be as specific or broad as you would like.",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Scientific Drive (choose two): Pursuing",
+      "prompt": "Tell us about a STEM question, problem, idea, or project that has held your attention over time. What drew you to it, how have you pursued it, and what do you still want to understand?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Scientific Drive (choose two): Making",
+      "prompt": "Tell us about something you created, tested, repaired, modeled, coded, built, or redesigned. What problem were you trying to solve and what did the process reveal to you?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Fun question",
+      "prompt": "Caltech students bring more than academic ability to the communities they join. What is something you would be excited to do, share, teach, make, start, or contribute as part of the Caltech community? (Min: 100 / Max: 150 words)",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional academic context",
+      "prompt": "Caltech cares about context. Is there anything about your academic preparation, coursework, school context, or learning experiences that would help us better understand your readiness for Caltech?",
+      "required": false,
+      "sourceUrl": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+      "cycle": "2026-27"
+    }
+  ]
+}

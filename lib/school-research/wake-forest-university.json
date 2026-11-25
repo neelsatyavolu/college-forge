@@ -1,0 +1,187 @@
+{
+  "slug": "wake-forest-university",
+  "name": "Wake Forest University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "20.8% (4,068 of 19,600 first-year applicants admitted, Fall 2025 entry / Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://prod.wp.cdn.aws.wfu.edu/sites/202/2026/06/CDS_2025-2026-PDF_Template_WFU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1420-1490 (24% of enrolled first-years submitted SAT, CDS 2025-26)",
+      "sourceUrl": "https://prod.wp.cdn.aws.wfu.edu/sites/202/2026/06/CDS_2025-2026-PDF_Template_WFU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-34 (22% of enrolled first-years submitted ACT, CDS 2025-26)",
+      "sourceUrl": "https://prod.wp.cdn.aws.wfu.edu/sites/202/2026/06/CDS_2025-2026-PDF_Template_WFU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional (since Fall 2009 entry); scores considered only if you ask for them in the application; self-reported scores accepted, report all sittings",
+      "sourceUrl": "https://admissions.wfu.edu/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated financial need",
+      "sourceUrl": "https://admissions.wfu.edu/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for Wake Forest need-based funds (2027-28 CSS Profile, code 5885): due Dec 1, 2026 for ED I/EA, Jan 1, 2027 for ED II/RD; FAFSA by the same dates. Free for family income up to $100,000",
+      "sourceUrl": "https://financialaid.wfu.edu/applying-for-aid/first-year/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Merit scholarships go to fewer than 3% of first-year applicants; most (incl. full-cost Signature Scholarships) need only a completed admission application by Nov 15. Some need extra materials",
+      "sourceUrl": "https://financialaid.wfu.edu/types-of-aid/scholarships/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Presidential Scholarship for Distinguished Achievement (art, dance, theatre, music, debate): renewable $25,000/yr; separate application in the applicant portal, priority Nov 15, closes Jan 4, 2027",
+      "sourceUrl": "https://admissions.wfu.edu/2026/11/the-presidential-scholarship-for-distinguished-achievement-112026/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$98,730 total estimated cost of attendance on campus, 2026-27 (tuition $71,894, fees $1,276, housing $12,900, food $7,396, plus books, personal, transport)",
+      "sourceUrl": "https://financialaid.wfu.edu/cost-of-attendance/undergraduate/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    { "key": "net_price_lt30k", "value": "$6,525 (2023-24, family income $0-30k, federal-aid recipients)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199847", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$6,331 (2023-24, family income $30-48k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199847", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$7,647 (2023-24, family income $48-75k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199847", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$12,771 (2023-24, family income $75-110k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199847", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$58,081 (2023-24, family income over $110k; overall average net price $24,401)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199847", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I Nov 15 (binding, rolling decisions); Early Action Nov 15 for first-generation students only (non-binding, decision by Jan 15); ED II Jan 1 (binding, decision by Feb 15); RD Jan 1 (decision around Apr 1)",
+      "sourceUrl": "https://admissions.wfu.edu/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional 20-25 min virtual (Zoom) interview: request within 5 days of applying, by Nov 18, 2026; or an optional 2-3 min video. Not required, and Wake says they give no advantage",
+      "sourceUrl": "https://admissions.wfu.edu/connect/interviews/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7: level of applicant's interest 'Considered'; interview marked 'Important')",
+      "sourceUrl": "https://www.collegedata.fyi/schools/wake-forest/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission is to the university; Accountancy, Business and Enterprise Management, Decision Analytics and Finance require a separate School of Business application in the fall of sophomore year after prerequisites",
+      "sourceUrl": "https://wfuogb.com/28737/features/why-are-school-of-business-decisions-released-so-late/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "notes",
+      "value": "One letter of recommendation (teacher or counselor) is required. Written supplement, video and interview are all optional; only the 100-word Why Wake? answer is required. Optional written supplement is now one prompt (was several)",
+      "sourceUrl": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gaps: the official CDS PDF text doesn't show the C7 check marks (C7 read from collegedata.fyi's parse of the same PDF); CDS leaves ED applicant/admit counts blank, so no ED admit rate",
+      "sourceUrl": "https://prod.wp.cdn.aws.wfu.edu/sites/202/2026/06/CDS_2025-2026-PDF_Template_WFU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-15", "sourceUrl": "https://admissions.wfu.edu/apply/", "cycle": "2026-27", "note": "Binding; CSS Profile and FAFSA due Dec 1" },
+    { "plan": "EA", "date": "2026-11-15", "sourceUrl": "https://admissions.wfu.edu/apply/", "cycle": "2026-27", "note": "First-generation college students only; non-binding; CSS Profile and FAFSA due Dec 1" },
+    { "plan": "ED2", "date": "2027-01-01", "sourceUrl": "https://admissions.wfu.edu/apply/", "cycle": "2026-27", "note": "Binding; CSS Profile and FAFSA due Jan 1" },
+    { "plan": "RD", "date": "2027-01-01", "sourceUrl": "https://admissions.wfu.edu/apply/", "cycle": "2026-27", "note": "CSS Profile and FAFSA due Jan 1" }
+  ],
+  "supplements": [
+    {
+      "label": "Why Wake?",
+      "prompt": "Why have you decided to apply to Wake Forest? Share with us anything that has made you interested in our institution.",
+      "limit": 100,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/wake-forest-university-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Optional written supplement (choose one of four): Books",
+      "prompt": "List five books you've read that have intrigued you. (150 character limit per book title)",
+      "limit": 150,
+      "unit": "characters",
+      "required": false,
+      "sourceUrl": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional written supplement (choose one of four): Intellectual curiosity",
+      "prompt": "Tell us what piques your intellectual curiosity or has helped you understand the world's complexity. This can include a work you've read, a project you've completed for a class, and even co-curricular activities in which you have been involved.",
+      "limit": 150,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional written supplement (choose one of four): Maya Angelou",
+      "prompt": "Dr. Maya Angelou, renowned author, poet, civil-rights activist, and former Wake Forest University Reynolds Professor of American Studies, inspired others to celebrate their identities and to honor each person's dignity. Choose one of Dr. Angelou's powerful quotes. How does this quote relate to your lived experience or reflect how you plan to contribute to the Wake Forest community?",
+      "limit": 300,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional written supplement (choose one of four): Top Ten List",
+      "prompt": "Give us your Top Ten List. (The choice of theme is yours.) (100 character limit per line)",
+      "limit": 100,
+      "unit": "characters",
+      "required": false,
+      "sourceUrl": "https://admissions.wfu.edu/2026/07/wake-forest-applications-open-august-1-heres-whats-new/",
+      "cycle": "2026-27"
+    }
+  ]
+}

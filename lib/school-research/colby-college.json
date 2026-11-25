@@ -1,0 +1,176 @@
+{
+  "slug": "colby-college",
+  "name": "Colby College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "7% (19,187 applicants, Fall 2024, IPEDS via College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "SAT ERW 720-760, Math 740-790 (enrolled Fall 2024; 36% submitted SAT)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-34 (enrolled Fall 2024; 16% submitted ACT)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; self-reported scores accepted; superscores all exams including ACT section retests",
+      "sourceUrl": "https://afa.colby.edu/apply/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all admitted students with no loans; $0 parent contribution under $75K income (typical assets)",
+      "sourceUrl": "https://afa.colby.edu/apply/faq/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (with FAFSA for US citizens/PRs and 2025 tax returns); due Nov 15 ED I, Jan 4 ED II, Jan 15 RD",
+      "sourceUrl": "https://afa.colby.edu/apply/dates-and-deadlines/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit scholarships (academic, athletic or talent); aid is need-based only",
+      "sourceUrl": "https://afa.colby.edu/apply/faq/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$4,049 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$1,251 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$3,666 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$12,106 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$46,511 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=161086",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "Estimated cost of attendance $97,020-$98,270 for 2026-27 (tuition and fees $75,790, food and housing $19,480)",
+      "sourceUrl": "https://afa.colby.edu/cost-and-aid/tuition-and-fees/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 4), both binding; RD Jan 4; no EA. RD applicants can convert to ED",
+      "sourceUrl": "https://afa.colby.edu/apply/dates-and-deadlines/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews offered; optional InitialView, Vericant or Duolingo videos accepted",
+      "sourceUrl": "https://afa.colby.edu/apply/faq/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Scholar programs (Presidential, Bunche, Pulver Science) need no separate application; all first-year applicants are considered",
+      "sourceUrl": "https://afa.colby.edu/apply/faq/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No application fee; no writing supplement required beyond the main application essay",
+      "sourceUrl": "https://afa.colby.edu/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: Colby does not post a current Common Data Set, so no ED admit rate or CDS C7 demonstrated-interest rating was found; admit rate and scores come from IPEDS Fall 2024",
+      "sourceUrl": "https://gradpilot.com/news/demonstrated-interest-top-colleges-common-data-set",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://afa.colby.edu/apply/dates-and-deadlines/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; CSS Profile and FAFSA due Nov 15; decision by Dec 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-04",
+      "sourceUrl": "https://afa.colby.edu/apply/dates-and-deadlines/",
+      "cycle": "2026-27",
+      "note": "Binding; aid forms due Jan 4; decision by Feb 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://afa.colby.edu/apply/dates-and-deadlines/",
+      "cycle": "2026-27",
+      "note": "Aid forms due Jan 15; decision by Apr 1"
+    }
+  ],
+  "supplements": []
+}

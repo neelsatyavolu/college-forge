@@ -1,0 +1,177 @@
+{
+  "slug": "marquette-university",
+  "name": "Marquette University",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "78% (15,606 of 20,000; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1230-1360 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "act_mid50",
+      "value": "26-30 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.60 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for domestic and international applicants; equal consideration for admission and scholarships without scores",
+      "sourceUrl": "https://www.marquette.edu/apply/test-optional.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No guarantee of full need; average 86% of need met for first-year aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; CDS 2025-26 lists FAFSA as the only aid form. Marquette urges filing the FAFSA for full aid consideration",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: automatic merit consideration from the admission application (e.g. Pere Marquette Award, amount set at admission); scholars programs such as the full-ride Lovell Presidential Scholarship need extra materials",
+      "sourceUrl": "https://www.marquette.edu/tuition-financial-aid/scholarships-overview.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$69,470-$73,880 direct costs (2026-27: tuition $53,890, fees $1,200, housing and food $14,380-$18,790); books, travel and personal costs extra",
+      "sourceUrl": "https://www.marquette.edu/tuition-financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action (non-binding) Nov 15, decision late December; Regular Decision Feb 1, decision by March 1. No Early Decision. Honors Program applicants should apply EA",
+      "sourceUrl": "https://www.marquette.edu/apply/apply.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interview listed in application materials; CDS 2025-26 C7 rates interview as Considered",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/marquette-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Doctor of Physical Therapy offers direct freshman admission (Early Assurance), competitive; complete application by the Regular Decision deadline. Strong candidates rank in top quarter with strong math and science",
+      "sourceUrl": "https://www.marquette.edu/physical-therapy/apply.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No school-specific supplements: required items are the transcript, one essay/personal statement and activities list; additional personal statements and recommendations are optional but reviewed. Apply via Marquette application or Common App (no preference)",
+      "sourceUrl": "https://www.marquette.edu/admissions/undergraduate/first-year-application.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$20,708 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$20,217 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$23,377 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$30,314 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$37,187 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?239105",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.marquette.edu/admissions/undergraduate/first-year-application.php",
+      "cycle": "2026-27",
+      "note": "Non-binding; decision late December"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://www.marquette.edu/admissions/undergraduate/first-year-application.php",
+      "cycle": "2026-27",
+      "note": "Decision by March 1; later apps reviewed rolling, space available"
+    }
+  ],
+  "supplements": []
+}

@@ -1,0 +1,185 @@
+{
+ "slug": "stony-brook-university-suny",
+ "name": "Stony Brook University--SUNY",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "48.2% (30,930 of 64,197; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1350-1470 (enrolled Fall 2025; 38% submitted SAT; CDS 2025-26 C9)",
+   "sourceUrl": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "30-34 (enrolled Fall 2025; 4% submitted ACT; CDS 2025-26 C9)",
+   "sourceUrl": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Avg HS GPA 94.48 (100-point scale); 59% in top tenth of class (CDS 2025-26 C11/C10)",
+   "sourceUrl": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional; SAT/ACT scores must be sent officially by the testing agency if submitted",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No; avg 59% of need met for first-years with need (CDS 2025-26 H2)",
+   "sourceUrl": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA is the only form required (CDS 2025-26 H8)",
+   "sourceUrl": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; all incoming first-year applicants considered for merit scholarships, most need no separate application",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/cost-and-aid/scholarships.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 est. on-campus COA: $34,819 NY resident / $58,799 out-of-state (direct $30,671 / $54,651 plus $4,148 indirect)",
+   "sourceUrl": "https://www.stonybrook.edu/commcms/finaid/newstudents/COA.php",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "EA (non-binding, Nov 1) and RD (Jan 15). No ED. Deadlines are completion deadlines: all materials due by the date",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No general admissions interview; Scholars for Medicine/Dental Medicine invite qualified applicants to interview. CDS 2025-26 C7 marks interview as Considered",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Restricted majors with extra requirements: all CEAS majors incl. Computer Science, Data Science, AMS, engineering (need calculus/physics), Business (Accounting, Business Management), Creative Writing, Music, Nursing, Social Work, Respiratory Care, Clinical Lab Sciences. Undeclared applicants are admitted to the University, not a major",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No school-specific supplements for general admission: one essay of choice via SUNY or Common App. Honors programs (Honors College, WISE, University Scholars, Scholars for Medicine/Dental, Simons STEM, Yardi) need a separate Honors Program Interest Form in the StartSBU portal; priority deadline Nov 1, final Jan 15 (Simons STEM Nov 1 only)",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$13,938 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196097&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$14,754 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196097&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$20,285 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196097&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$24,140 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196097&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$28,664 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196097&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/first-year/",
+   "cycle": "2026-27",
+   "note": "Non-binding; all documents must be received by Nov 1; honors priority deadline"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-15",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/first-year/",
+   "cycle": "2026-27",
+   "note": "All documents should be received by Jan 15; final honors deadline (not Simons STEM)"
+  }
+ ],
+ "supplements": []
+}

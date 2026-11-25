@@ -1,0 +1,148 @@
+{
+  "slug": "northeastern-university",
+  "name": "Northeastern University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "5.6% (5,920 of 105,257 first-year applicants admitted, Fall 2025 entry / Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://uds.northeastern.edu/university-facts/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "35.3% ED (1,910 of 5,404 ED applicants admitted, Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://uds.northeastern.edu/university-facts/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1440-1510 (22% of enrolled first-years submitted SAT, CDS 2025-26)",
+      "sourceUrl": "https://uds.northeastern.edu/university-facts/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-34 (8% of enrolled first-years submitted ACT, CDS 2025-26)",
+      "sourceUrl": "https://uds.northeastern.edu/university-facts/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional, no penalty for applying without scores; superscores and uses only the better of SAT or ACT",
+      "sourceUrl": "https://admissions.northeastern.edu/application-information/required-materials/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets full demonstrated need for admitted students eligible for federal aid (CDS 2025-26: first-years' average need met 100%)",
+      "sourceUrl": "https://admissions.northeastern.edu/cost-financial-aid/applying-for-financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for institutional need-based aid (code 3667), plus FAFSA. Priority dates: ED I Nov 15, EA Dec 1, ED II Jan 15, RD Feb 15",
+      "sourceUrl": "https://admissions.northeastern.edu/cost-financial-aid/applying-for-financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Merit scholarships for select students; all first-year applicants who apply by the Jan 1 RD deadline are considered, no separate application. National Merit Finalists/National Recognition Scholars get a merit award",
+      "sourceUrl": "https://admissions.northeastern.edu/cost-financial-aid/merit-scholarships/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "About $98,382 for 2026-27: tuition $71,050, fees $1,650, food and housing $22,882, books $1,000, transport $900, other $900 (CDS G1)",
+      "sourceUrl": "https://uds.northeastern.edu/university-facts/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    { "key": "net_price_lt30k", "value": "$2,264 (2023-24, family income $0-30k, federal-aid recipients)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167358", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$2,436 (2023-24, family income $30-48k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167358", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$5,301 (2023-24, family income $48-75k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167358", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$16,241 (2023-24, family income $75-110k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167358", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$47,696 (2023-24, family income over $110k; overall average net price $34,207)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167358", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I Nov 1 (binding, decision by Jan 1); EA Nov 1 (non-binding, by Feb 15); ED II Jan 1 (binding, by Mar 1); RD Jan 1 (by Apr 1). ED binds you to your top-choice Signature Program (or any program if you chose 'open to all')",
+      "sourceUrl": "https://admissions.northeastern.edu/application-information/admissions-deadlines-decisions/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No alumni or on-campus interviews; CDS lists interview as not considered. Third-party unscripted video interviews (InitialView, Vericant) are considered, listed under international English-proficiency options",
+      "sourceUrl": "https://admissions.northeastern.edu/application-information/required-materials/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7: level of applicant's interest 'Considered')",
+      "sourceUrl": "https://uds.northeastern.edu/university-facts/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to a major and choose Signature Program preferences (Boston, Oakland, London Scholars, NYC Scholars, N.U.in) or a Campus Exclusive Offering; Signature applicants are considered for all first-year programs regardless of preference. ED binds to the top-choice program",
+      "sourceUrl": "https://admissions.northeastern.edu/academics/enrollment-opportunities/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "College of Arts, Media and Design applicants are encouraged (not required) to submit a portfolio with a 500-word personal statement via Application Status Check; NYC Performing Arts applicants must audition or submit materials",
+      "sourceUrl": "https://admissions.northeastern.edu/application-information/required-materials/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No Northeastern supplemental essay prompts for the 2026-27 cycle (Class of 2031); only the Common App/Coalition essay, plus the optional CAMD portfolio statement",
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/northeastern-university-supplemental-essay-prompts/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "key": "notes",
+      "value": "ED applicants get a $75 fee waiver and an early aid review (ED I form due Oct 18; ED II form opens Nov 24, due Dec 11). Supporting materials deadlines: ED I Nov 15, EA Dec 15, ED II Jan 15, RD Feb 1",
+      "sourceUrl": "https://admissions.northeastern.edu/application-information/early-decision-benefits/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-01", "sourceUrl": "https://admissions.northeastern.edu/application-information/admissions-deadlines-decisions/", "cycle": "2026-27", "note": "Binding; supporting materials by Nov 15; CSS Profile priority Nov 15" },
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://admissions.northeastern.edu/application-information/admissions-deadlines-decisions/", "cycle": "2026-27", "note": "Non-binding; supporting materials by Dec 15; CSS Profile priority Dec 1" },
+    { "plan": "ED2", "date": "2027-01-01", "sourceUrl": "https://admissions.northeastern.edu/application-information/admissions-deadlines-decisions/", "cycle": "2026-27", "note": "Binding; supporting materials by Jan 15; CSS Profile priority Jan 15" },
+    { "plan": "RD", "date": "2027-01-01", "sourceUrl": "https://admissions.northeastern.edu/application-information/admissions-deadlines-decisions/", "cycle": "2026-27", "note": "Supporting materials by Feb 1; CSS Profile priority Feb 15; merit consideration requires applying by Jan 1" }
+  ],
+  "supplements": []
+}

@@ -1,0 +1,187 @@
+{
+  "slug": "yeshiva-university",
+  "name": "Yeshiva University",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "63.7% (1,092 of 1,713; Fall 2023 entry, CDS 2023-24, latest posted)",
+      "sourceUrl": "https://www.yu.edu/sites/default/files/inline-files/CDS_2023_2024.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1330-1470 (enrolled Fall 2023, CDS 2023-24)",
+      "sourceUrl": "https://www.yu.edu/sites/default/files/inline-files/CDS_2023_2024.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "28-33 (enrolled Fall 2023, CDS 2023-24)",
+      "sourceUrl": "https://www.yu.edu/sites/default/files/inline-files/CDS_2023_2024.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.5 (Fall 2023, CDS 2023-24); typical applicant has a GPA of 85+ (solid B average)",
+      "sourceUrl": "https://apply.yu.edu/freshman",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional except Honors Program applicants, who must submit SAT or ACT; no writing section needed",
+      "sourceUrl": "https://apply.yu.edu/freshman",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No guarantee of full need; average 91% of need met for first-year aid recipients (CDS 2023-24 H2)",
+      "sourceUrl": "https://www.yu.edu/sites/default/files/inline-files/CDS_2023_2024.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; domestic first-years file the FAFSA (CDS 2023-24 H8). Priority FAFSA deadline Feb 1",
+      "sourceUrl": "https://www.yu.edu/sites/default/files/inline-files/CDS_2023_2024.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: honors and merit scholarships, e.g. Straus Scholars and Honors Leadership awards up to $25,000/yr, require acceptance to YU Honors (separate honors application)",
+      "sourceUrl": "https://go.yu.edu/merit-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$54,500 tuition and fees (2026-27: tuition $49,550, mandatory fees $4,950; total includes non-resident meal plan and health insurance) plus housing $9,900-$12,100+ per year",
+      "sourceUrl": "https://www.yu.edu/osf/tuition-fees/undergraduate",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision Honors (binding) Nov 2, 2026, decision Dec 15, deposit Jan 15 (now closed); general admission Feb 1, 2027 with rolling decisions from Dec 16. No EA",
+      "sourceUrl": "https://apply.yu.edu/deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Required of all applicants with an admissions officer; Very Important in CDS 2023-24 C7",
+      "sourceUrl": "https://apply.yu.edu/freshman",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2023-24 C7)",
+      "sourceUrl": "https://www.yu.edu/sites/default/files/inline-files/CDS_2023_2024.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Honors Program (and its scholarships) is a separate track with its own deadline and required test scores; no capped-major rules found",
+      "sourceUrl": "https://apply.yu.edu/freshman",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Applies via YU Application or Common App, then uploads supplemental materials in the portal. Latest CDS posted is 2023-24, so admit/score data are older than other schools. Late applications are waitlisted",
+      "sourceUrl": "https://apply.yu.edu/deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$31,255 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$27,653 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$32,813 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$41,814 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$72,673 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?197708",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-02",
+      "sourceUrl": "https://apply.yu.edu/deadlines",
+      "cycle": "2026-27",
+      "note": "Early Decision Honors only; binding; application closed"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://apply.yu.edu/deadlines",
+      "cycle": "2026-27",
+      "note": "Rolling decisions from Dec 16; deposit May 3; FAFSA priority Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Personal Statement",
+      "prompt": "How do you see Yeshiva University supporting your academic goals while helping you grow personally and within your values?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://apply.yu.edu/freshman",
+      "cycle": "2026-27"
+    }
+  ]
+}

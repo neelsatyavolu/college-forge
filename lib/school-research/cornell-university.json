@@ -1,0 +1,331 @@
+{
+  "slug": "cornell-university",
+  "name": "Cornell University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "8.4% (6,077 of 72,523; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "http://irp.cornell.edu/wp-content/uploads/2026/09/Cornell-Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "ED: 18.8% (1,889 of 10,057; CDS 2025-26 C21)",
+      "sourceUrl": "http://irp.cornell.edu/wp-content/uploads/2026/09/Cornell-Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1490-1550 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "http://irp.cornell.edu/wp-content/uploads/2026/09/Cornell-Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "http://irp.cornell.edu/wp-content/uploads/2026/09/Cornell-Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT or ACT for first-year applicants; self-reporting allowed; highest SAT sections used (Score Choice); ACT superscore considered",
+      "sourceUrl": "https://admissions.cornell.edu/node/1423",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Need-blind for U.S. students; meets 100% of demonstrated need with grants, work-study and (depending on income) reasonable loans",
+      "sourceUrl": "https://finaid.cornell.edu/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile (plus FAFSA) required; U.S. aid deadlines Nov 15, 2026 (ED) and Feb 15, 2027 (RD); internationals by the application deadline",
+      "sourceUrl": "https://finaid.cornell.edu/first-year-and-transfer-students-us",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit or athletic scholarships; all grant aid is need-based",
+      "sourceUrl": "https://finaid.cornell.edu/grants-and-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$99,734 COA 2026-27 (tuition $73,946; fees $1,024; housing $13,744; food $7,604; books $1,234; personal $2,182)",
+      "sourceUrl": "https://finaid.cornell.edu/cost-to-attend",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision (binding) due Nov 1 (other materials Nov 13); Regular Decision due Jan 2 (other materials Jan 19). No EA",
+      "sourceUrl": "https://admissions.cornell.edu/how-to-apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews, except required video interviews for the B.Arch program (AAP); optional informal alumni (CAAAN) conversations are not interviews",
+      "sourceUrl": "https://faq.enrollment.cornell.edu/kb/article/179-does-cornell-require-personal-interviews/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered: Cornell does not track or consider demonstrated interest",
+      "sourceUrl": "https://faq.enrollment.cornell.edu/kb/article/348-does-cornell-give-preference-to-applicants-who-have-demonstrated-their-interest-by-calling-emailing-or-visiting-the-university/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply directly to one of nine colleges/schools, each with its own essay; CALS admits directly to a major; Engineering has its own essays; AAP needs portfolios (B.Arch video interview); Arts & Sciences majors declared by end of sophomore year",
+      "sourceUrl": "https://admissions.cornell.edu/how-to-apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Supplement essays depend on the college you apply to (one set per school); all are listed here",
+      "sourceUrl": "https://admissions.cornell.edu/how-to-apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$1,776 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190415",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$4,070 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190415",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$6,796 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190415",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$14,311 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190415",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$49,992 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190415",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.cornell.edu/how-to-apply/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Binding; other materials by Nov 13; aid priority Nov 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-02",
+      "sourceUrl": "https://admissions.cornell.edu/how-to-apply/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Other materials by Jan 19; aid by Feb 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Arts & Sciences: Intellectual passion",
+      "prompt": "At the College of Arts and Sciences, your education is yours to shape. Describe an intellectual passion, question, or idea that has captured your attention—whether it emerges from your studies or extends beyond your coursework. What specific aspects of our liberal arts curriculum would you draw on to explore and connect your varied interests?",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-arts-sciences-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "CALS: Major",
+      "prompt": "What interests you about the major you selected? Tell us about experiences (both in and outside of the classroom), questions, and goals that influenced your choice.",
+      "limit": 350,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-cals-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "CALS: Why CALS",
+      "prompt": "What draws you to Cornell’s College of Agriculture and Life Sciences (CALS)? Reflect on the learning, community, or impact opportunities that matter most to you, and share how they align with Cornell CALS (as you understand it currently).",
+      "limit": 350,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-cals-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Engineering: Why engineering",
+      "prompt": "Fundamentally, engineering is the application of math, science, and technology to solve complex problems. Why do you want to study engineering?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-duffield-engineering-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Engineering: Why Duffield",
+      "prompt": "Why do you think you would love to study at Duffield Engineering?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-duffield-engineering-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Engineering: Joy",
+      "prompt": "What brings you joy?",
+      "limit": 100,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-duffield-engineering-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Engineering: Contribution",
+      "prompt": "What do you believe you will contribute to the Duffield Engineering community beyond what you've already detailed in your application? What unique voice will you bring?",
+      "limit": 100,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-duffield-engineering-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Engineering: Meaningful activity",
+      "prompt": "What is one activity, club, team, organization, work/volunteer experience or family responsibility that is especially meaningful to you? Please briefly tell us about its significance for you.",
+      "limit": 100,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-duffield-engineering-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Engineering: Award",
+      "prompt": "What is one award you have received or achievement you have attained that has meant the most to you? Please briefly describe its importance to you.",
+      "limit": 100,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-duffield-engineering-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "AAP Architecture (B.Arch): Architecture",
+      "prompt": "Describe how your interests connect to architecture. Include an example of a creative project, design experience, or personal passion that sparked your interest in pursuing a 5-year professional degree in architecture. Reflect on how this experience shaped your understanding of the field and your motivation to study architecture.",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-cornell-aap-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "AAP Fine Arts (BFA): Artist statement",
+      "prompt": "Submit an artist statement describing your creative interests and practice. Address how your work reflects your artistic voice, influences, and process, and how studying art at Cornell AAP would support and expand your practice. (You will also be prompted to upload a copy to your Slideroom portal.)",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-cornell-aap-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "AAP Urban and Regional Studies: URS",
+      "prompt": "Describe your interest in urban and regional studies. Discuss experiences, ideas, or issues that have shaped your interest in cities, communities, and regional systems, and explain how URS at Cornell aligns with your academic and career goals.",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-cornell-aap-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Human Ecology: CHE mission",
+      "prompt": "The College of Human Ecology prepares students to respond to human needs through an education organized around the interconnected issues that profoundly affect individuals, communities, and the institutions that shape our lives. Think about an extracurricular/community engagement/work experience that most closely connects you to the CHE mission and your intended choice of major. Tell us what that experience taught you about your broader community and its needs, and the impact you can make. How will your intended CHE major help you make that impact?",
+      "limit": 550,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-human-ecology-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Brooks School of Public Policy: Policy",
+      "prompt": "Discuss your interest in pursuing a major in policy at the Cornell Jeb E. Brooks School of Public Policy and what draws you to this field of study. You are encouraged to consider including details related to your personal experiences, values, academic influences, or extracurricular activities that have shaped your perspective and future goals.",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-brooks-school-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Brooks School (DC Start applicants only): DC Start",
+      "prompt": "Please describe why you are interested in being considered for the Brooks School DC Start program.",
+      "limit": 350,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-brooks-school-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "SC Johnson College (Dyson or Nolan): Business student",
+      "prompt": "What kind of business student are you? Using your personal, academic, or volunteer/work experiences, describe the topics or issues that you care about and why they are important to you. Your response should convey how your interests align with the school to which you are applying within the Cornell SC Johnson College of Business (the Dyson School or the Nolan School).",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-sc-johnson-college-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "ILR School: Issues you care about",
+      "prompt": "Using your personal, academic, or volunteer/work experiences, describe the topics or issues that you care about and why they are important to you. Your response should show us that your interests align with the ILR School.",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.cornell.edu/first-year-ilr-applicants",
+      "cycle": "2026-27"
+    }
+  ]
+}

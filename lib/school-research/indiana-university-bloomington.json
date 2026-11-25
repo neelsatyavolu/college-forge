@@ -1,0 +1,185 @@
+{
+ "slug": "indiana-university-bloomington",
+ "name": "Indiana University--Bloomington",
+ "checkedAt": "2026-11-25",
+ "complete": false,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "75.9% (56,218 of 74,077; Fall 2025 entry, IU's IPEDS Admissions report)",
+   "sourceUrl": "https://iuia.iu.edu/doc/compliance/ipeds/admissions/2025_BL_IPEDS_Admissions.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "Composite not reported; enrolled Fall 2025 middle 50%: SAT ERW 610-700, Math 590-710 (IPEDS Admissions report)",
+   "sourceUrl": "https://iuia.iu.edu/doc/compliance/ipeds/admissions/2025_BL_IPEDS_Admissions.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "28-33 (enrolled Fall 2025, IPEDS Admissions report)",
+   "sourceUrl": "https://iuia.iu.edu/doc/compliance/ipeds/admissions/2025_BL_IPEDS_Admissions.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional, though IU prefers available scores; you choose on the application and can change the choice later in the portal. Merit (OEM Excellence) awards don't consider test scores",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/apply/freshman/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No full-need guarantee stated; aid depends on merit and need via the FAFSA. % of need met not found (no CDS available)",
+   "sourceUrl": "https://bloomington.iu.edu/cost-aid/financial-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not mentioned; IU aid starts with the FAFSA, priority deadline Apr 15",
+   "sourceUrl": "https://bloomington.iu.edu/cost-aid/financial-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; OEM Excellence Scholarships based on coursework (GPA, required courses, rigor), not test scores. Submit a complete application by Nov 1 for consideration",
+   "sourceUrl": "https://scholarships.indiana.edu/future-scholars/iu-academic-scholarships.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 COA: $30,574 Indiana resident / $62,956 non-resident (full-time domestic undergraduate)",
+   "sourceUrl": "https://bloomington.iu.edu/cost-aid/cost-attendance/undergraduate.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "EA (non-binding, Nov 1, response by Jan 15; highest admission and scholarship consideration) and RD (Feb 1, response by Mar 15). Later applications space-available. No ED",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/apply/freshman/deadlines.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Direct admission paths vary by school; Kelley School of Business and School of Nursing cap enrollment and are more competitive, so applicants must list a first- and second-choice major. Jacobs School of Music requires auditions. Exploratory options available",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/apply/application-faqs.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Essay required: any Common App prompt, or the IU-specific essay on Apply IU (below). No other supplements",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/apply/application-faqs.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Gaps: IU Bloomington's Common Data Set app (iuia.iu.edu/apps/cds) blocked automated reads, so C7 interview/demonstrated-interest ratings, GPA/rank and % need met are missing. Admissions numbers come from IU's own Fall 2025 IPEDS report",
+   "sourceUrl": "https://iuia.iu.edu/doc/compliance/ipeds/admissions/2025_BL_IPEDS_Admissions.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$6,683 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=151351&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$6,890 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=151351&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$10,091 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=151351&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$18,227 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=151351&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$27,092 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=151351&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/apply/freshman/deadlines.html",
+   "cycle": "2026-27",
+   "note": "Non-binding; complete application; response Jan 15; best scholarship consideration"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-02-01",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/apply/freshman/deadlines.html",
+   "cycle": "2026-27",
+   "note": "Complete application; response Mar 15"
+  },
+  {
+   "plan": "FAFSA",
+   "date": "2027-04-15",
+   "sourceUrl": "https://bloomington.iu.edu/cost-aid/financial-aid",
+   "cycle": "2026-27",
+   "note": "FAFSA priority deadline"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "IU-specific essay (Apply IU applicants only; Common App users pick any Common App prompt)",
+   "prompt": "In 200–400 words, describe your academic and career plans and any special interest (for example, undergraduate research, academic interests, leadership opportunities, etc.) that you are eager to pursue as an undergraduate at Indiana University. Also, if you encountered any unusual circumstances, challenges, or obstacles in pursuit of your education, you may share those experiences and how you overcame them.",
+   "limit": 400,
+   "unit": "words",
+   "sourceUrl": "https://bloomington.iu.edu/admissions/apply/application-faqs.html",
+   "cycle": "2026-27"
+  }
+ ]
+}

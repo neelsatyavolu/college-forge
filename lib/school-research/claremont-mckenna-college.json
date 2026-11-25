@@ -1,0 +1,234 @@
+{
+  "slug": "claremont-mckenna-college",
+  "name": "Claremont McKenna College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "9.4% (655 of 6,939; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "22% (216 of 978 ED applicants, ED I and II combined; CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1480-1540 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional through Fall 2027 entry (provisional); CMC returns to test-required for the Fall 2028 cycle. Non-submitters not disadvantaged for admission or merit; superscores within a test type",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Yes: average 100% of need met for first-year aid recipients (CDS 2025-26 H2); need-blind admission",
+      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA for need-based aid: due Nov 8 (ED I), Jan 17 (ED II and RD)",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: merit scholarships decided in admission review (e.g. McKenna Achievement Award $15,000; Seaver Leadership Scholarship full tuition). Apply by Dec 1 for priority, credentials by Jan 10",
+      "sourceUrl": "https://www.cmc.edu/admission/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$101,990 cost of attendance (2026-27: tuition $75,300, fees $420, housing $12,490, food $10,780, indirect $3,000); one-time $500 first-year orientation fee",
+      "sourceUrl": "https://www.cmc.edu/financial-aid/college-costs-and-payments",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision I Nov 1 (decision by Dec 15); Early Decision II Jan 10 (by Feb 15), both binding with ED agreement; Regular Decision Jan 10 (by April 1). No EA",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not required but highly recommended and evaluative (required for homeschoolers). Virtual or alumni interviews May through mid-December; ED I applicants interview by mid-November. Optional 2-minute video response if no interview. Important in CDS 2025-26 C7",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/claremont-mckenna-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission. CMC is one of The Claremont Colleges; students can take courses across the consortium",
+      "sourceUrl": "https://catalog.claremontmckenna.edu/content.php?catoid=40&navoid=8414",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Two required supplemental essays on the Common App/Coalition. One teacher recommendation required",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$5,423 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?112260",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$4,205 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?112260",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$19,127 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?112260",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$31,487 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?112260",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$52,425 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?112260",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27",
+      "note": "ED I; binding; CSS/FAFSA by Nov 8; decision by Dec 15"
+    },
+    {
+      "plan": "Priority",
+      "date": "2026-12-01",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27",
+      "note": "Merit scholarship priority; credentials by Jan 10"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27",
+      "note": "Binding; CSS/FAFSA Jan 17; decision by Feb 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27",
+      "note": "CSS/FAFSA Jan 17; decision by April 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why CMC",
+      "prompt": "CMC’s mission is to prepare students for thoughtful and productive lives and responsible leadership in business, government, and the professions. With this mission in mind, please explain why you want to attend Claremont McKenna College.",
+      "required": true,
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Open Academy",
+      "prompt": "A critical part of fulfilling our mission is living out the commitments of CMC’s Open Academy: Freedom of Expression, Viewpoint Diversity, and Constructive Dialogue. We want to learn more about your commitment to listening and learning from others with different viewpoints, perspectives, and life experiences from your own. Describe a time when engaging with someone about a specific topic resulted in you changing your attitude, belief, or behavior, or you changed the belief or behavior of someone else. What was the change that occurred for you, and what facilitated that change? What did you learn from that experience, and how has it informed how you engage with others?",
+      "required": true,
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional video response, option 1",
+      "prompt": "An important part of Claremont McKenna College's mission is preparing students for responsible leadership. How do you define \"responsible leadership,\" and how have you demonstrated responsible leadership in your family, community, or school?",
+      "required": false,
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional video response, option 2",
+      "prompt": "At CMC, we promote the understanding of public policy issues as it makes our students and alumni more effective leaders in their respective career fields. What is a public policy issue (whether locally, nationally, or globally) that you feel passionately about, and how do you hope to address it either in the present or the future? How can CMC assist you with addressing the issue?",
+      "required": false,
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional video response, option 3",
+      "prompt": "The Marian Miner Cook Athenaeum is the heart of intellectual and social engagement at Claremont McKenna College, bringing students, faculty, and staff closer together through active discussion on a daily basis. If you could invite someone to speak at the Athenaeum, who would they be, what questions would you ask them, or what topic would you want to discuss with them at the Athenaeum dinner?",
+      "required": false,
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional video response, option 4",
+      "prompt": "Collaboration involves working with people towards a common goal or project. It is a challenging skill that develops with time and experience. We want to learn more about the challenges you have encountered with collaboration. Tell us about when a collaborative effort you were involved in was challenging or even failed. What did your experience teach you about collaboration, and share how it has informed your leadership style?",
+      "required": false,
+      "sourceUrl": "https://www.cmc.edu/admission/first-year-application-instructions",
+      "cycle": "2026-27"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "slug": "colorado-school-of-mines",
+  "name": "Colorado School of Mines",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "57.6% (7,230 of 12,557; Fall 2025 entry, CDS 2025-26)", "sourceUrl": "https://ir.mines.edu/wp-content/uploads/sites/66/2026/11/CDS-PDF-2025-2026_CSM_V2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1115-1425 composite (EBRW 575-725, Math 590-730); 43% of enrollees submitted SAT (CDS 2025-26)", "sourceUrl": "https://ir.mines.edu/wp-content/uploads/sites/66/2026/11/CDS-PDF-2025-2026_CSM_V2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "25-33 composite; 16% of enrollees submitted ACT (CDS 2025-26)", "sourceUrl": "https://ir.mines.edu/wp-content/uploads/sites/66/2026/11/CDS-PDF-2025-2026_CSM_V2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "Admissions page cites 3.84 average unweighted GPA for competitive applicants; CDS 2024-25: 75% of enrollees had a 3.75+ GPA", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional for admission and merit scholarships; superscores SAT and ACT", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No; average 65% of need met, 125 of 690 needy degree-seeking first-years fully met (CDS 2024-25 H2)", "sourceUrl": "https://ir.mines.edu/wp-content/uploads/sites/66/2026/11/CSM-CDS-2024_v3.xlsx", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; aid is based on the FAFSA (school code 001348). FAFSA priority deadline for incoming students March 1", "sourceUrl": "https://www.mines.edu/financial-aid/applying-for-aid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; all applicants automatically considered for merit scholarships (mainly unweighted GPA plus test score if submitted). Separate General Scholarship Application (priority March 1) for named awards like Harvey and Grewcock", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$16,849 (2023-24, in-state aided students)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=126775", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$18,162 (2023-24, in-state aided students)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=126775", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$22,192 (2023-24, in-state aided students)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=126775", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$28,183 (2023-24, in-state aided students)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=126775", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$35,112 (2023-24, in-state aided students)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=126775", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "2026-27 first-year COA: $46,480 Colorado resident, $71,470 non-resident (tuition $19,770 resident after COF, $44,760 non-resident)", "sourceUrl": "https://www.mines.edu/financial-aid/undergraduates/estimated-first-year-cost-of-attendance", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Non-binding Early Action: apply by Nov 1 (priority deadline) and select Early Action, decision by Dec 15. Regular by Jan 15, decision by Feb 15. Some EA applicants are moved to Regular and must submit an interest form by Feb 15. No ED on the admissions pages (the CDS lists a Nov 1 'ED' date, which matches the EA deadline)", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Not offered or required", "sourceUrl": "https://undergraduate-admissions.mines.edu/frequently-asked-questions/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Considered (CDS 2024-25 C7); 'Move to Regular' EA applicants are asked to show greater interest via an interest form", "sourceUrl": "https://ir.mines.edu/wp-content/uploads/sites/66/2026/11/CSM-CDS-2024_v3.xlsx", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "major_notes", "value": "Admission is to the university; first-year and undeclared students register through central advising (CASA) before declaring a major. No major-specific admission described on the admissions pages", "sourceUrl": "https://casa.mines.edu/major-advising/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Colorado residents at Colorado high schools can get guaranteed admission plus at least $2,000/yr merit via the Mines Golden Guarantee if they meet benchmarks and apply by Nov 1. Applications via Golden App or Common App; 1-2 recommendation letters", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "C7 checkboxes don't render in the 2025-26 CDS PDF, so the demonstrated-interest rating is from the 2024-25 CDS spreadsheet", "sourceUrl": "https://ir.mines.edu/common-data-set/", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "cycle": "2026-27", "note": "Priority deadline; select Early Action; non-binding; decision by Dec 15" },
+    { "plan": "RD", "date": "2027-01-15", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "cycle": "2026-27", "note": "Decision by Feb 15; later applications accepted space permitting" },
+    { "plan": "Priority", "date": "2027-03-01", "sourceUrl": "https://undergraduate-admissions.mines.edu/first-year/", "cycle": "2026-27", "note": "General Scholarship Application priority deadline; FAFSA priority deadline also March 1" }
+  ],
+  "supplements": [
+    { "label": "Short response 1 (optional, strongly encouraged)", "prompt": "What element on the periodic table best represents you and why?", "required": false, "sourceUrl": "https://www.mines.edu/undergraduate-admissions/future-students/admissions-considerations/", "cycle": "2026-27" },
+    { "label": "Short response 2 (optional, strongly encouraged)", "prompt": "Why do you want to be an Oredigger? You can share what you want to study, your future involvement and activities, or anything else about the Mines experience that excites you.", "required": false, "sourceUrl": "https://www.mines.edu/undergraduate-admissions/future-students/admissions-considerations/", "cycle": "2026-27" }
+  ]
+}

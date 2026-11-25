@@ -1,0 +1,215 @@
+{
+ "slug": "tulane-university-of-louisiana",
+ "name": "Tulane University of Louisiana",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "14.5% (4,763 of 32,942; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "58.2% ED (1,209 of 2,077; CDS 2025-26 C21)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1430-1500 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "act_mid50",
+   "value": "32-34 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "gpa_note",
+   "value": "Avg HS GPA 3.67; 53% in top tenth of class (CDS 2025-26 C11/C10)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for Fall 2027; now required for the invitation-only Pathways to Medicine program, and scores/AP/IB results are a preferred credential for merit scholarships",
+   "sourceUrl": "https://admission.tulane.edu/apply/instructions/standardized-tests",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No full-need guarantee; avg 94.3% of need met for first-years (CDS 2025-26 H2). No Loan Assistance (NOLA) Scholarship for families with AGI under $75,000",
+   "sourceUrl": "https://admission.tulane.edu/tuition-aid/need-based-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Required (code 6832) plus FAFSA for Tulane need-based aid. Due Nov 15 (ED), Dec 15 (EA); all aid applicants by Feb 15 for full consideration",
+   "sourceUrl": "https://admission.tulane.edu/apply/deadlines-forms",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; all Common App applicants considered for partial merit (up to $32,000/yr, no separate application). Full-tuition awards need CSS Profile, FAFSA and test scores if available",
+   "sourceUrl": "https://admission.tulane.edu/tuition-aid/merit-scholarships",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$98,708 total COA, 2026-27 first-year (tuition $70,296; direct costs $95,672)",
+   "sourceUrl": "https://financialaid.tulane.edu/sites/default/files/2026-04/COA2627ProspFresh.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED (binding, Nov 1), EA (non-binding, Nov 10), ED II (binding, Jan 15), RD (Jan 15)",
+   "sourceUrl": "https://admission.tulane.edu/apply/deadlines-forms",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No admissions interview listed in requirements; CDS 2025-26 C7 marks interview Not Considered",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Important (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "major_notes",
+   "value": "Altman Program in International Studies & Business needs a separate application (early deadline Jan 15 for ED, Feb 15 for EA; regular Mar 10). Pathways to Medicine is invitation-only and test-required. Portfolios/auditions optional",
+   "sourceUrl": "https://admission.tulane.edu/apply/deadlines-forms",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No Tulane supplements for 2026-27: the 'Why Tulane' essay was removed. Application = Common App personal statement and activities",
+   "sourceUrl": "https://www.instagram.com/p/DYpMUdbA8qr/?hl=en",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "key": "notes",
+   "value": "CDS 2025-26 numbers read from collegedata.fyi's render of Tulane's CDS (official files are on tulane.box.com via https://oair.tulane.edu/common-data-set)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/tulane-university/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS data; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$23,823 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=160755&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$27,524 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=160755&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$27,708 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=160755&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$30,737 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=160755&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$59,766 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=160755&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.tulane.edu/apply/deadlines-forms",
+   "cycle": "2026-27",
+   "note": "Binding; ED agreement; CSS Profile Nov 15; decision by Dec 15; deposit Jan 15"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-11-10",
+   "sourceUrl": "https://admission.tulane.edu/apply/deadlines-forms",
+   "cycle": "2026-27",
+   "note": "CSS Profile Dec 15; decision by Jan 10"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-15",
+   "sourceUrl": "https://admission.tulane.edu/apply/deadlines-forms",
+   "cycle": "2026-27",
+   "note": "Binding; ED agreement"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-15",
+   "sourceUrl": "https://admission.tulane.edu/apply/deadlines-forms",
+   "cycle": "2026-27",
+   "note": "FAFSA/CSS by Feb 15 for full aid consideration"
+  }
+ ],
+ "supplements": []
+}

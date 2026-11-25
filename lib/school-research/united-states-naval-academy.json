@@ -1,0 +1,232 @@
+{
+  "slug": "united-states-naval-academy",
+  "name": "United States Naval Academy",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "8.7% offers of appointment (1,471 of 16,814 applications; Class of 2030, entering 2026)",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/Class-Portrait.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "SAT ERW 620-720, Math 620-730 (Class of 2030 middle 50%)",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/Class-Portrait.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "No ACT composite published; ACT Math 26-32 and English+Reading 52-67 (USNA-reported equivalents, Class of 2030)",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/Class-Portrait.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "64% of Class of 2030 were in the top 10% of their high school class; 90% varsity athletes",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/Class-Portrait.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "SAT, ACT or CLT required; tests taken before Jan 31 accepted; PSAT OK for preliminary application only; scores from accommodated tests not accepted",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "No ED or EA: rolling admissions; most candidates notified by April 15",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Required: official interview with a Blue and Gold Officer (contact them as soon as you get a candidate number)",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not applicable: offers based on the Whole Person Multiple (academics, fitness, extracurriculars) plus a nomination",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major at entry; choose during plebe (first) year; most get first choice but Navy needs come first; at least 65% of Navy-commissioned grads must major in STEM",
+      "sourceUrl": "https://www.usna.edu/Academics/Majors-and-Courses/Major-Selection.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Eligibility: U.S. citizen, age 17-22 on July 1 of entry year, unmarried, not pregnant, no dependents",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Nomination required (U.S. Representative, Senators, Vice President, or service-connected sources); apply to nominators right after the preliminary application; each office sets its own deadline, many notify in early-mid January",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Medical: DoDMERB exam scheduled through DoDMETS after you become a candidate; waivers are considered automatically if you're competitive",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Candidate Fitness Assessment required: 1-mile run, shuttle run, kneeling basketball throw, crunches, push-ups, pull-ups (or flexed-arm hang)",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Service obligation: 5 years of active duty after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Timeline: preliminary application (15-30 min, not savable) opens for rising seniors; a Summer Seminar application counts as the preliminary application; no new applications after Dec 31; full application due Jan 31, 2027",
+      "sourceUrl": "https://www.usna.edu/Admissions/Preliminary-Application-Instructions.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: any essays or written statements are completed in the USNA candidate portal after the preliminary application and were not reviewed",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "Not applicable: no tuition or financial aid process. The Navy pays 100% of tuition, room and board, medical and dental care, in return for 5 years of active-duty service after graduation",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "Preliminary application cutoff",
+      "date": "2026-12-31",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "cycle": "2026-27",
+      "note": "No new applications to the Class of 2031 accepted after Dec 31"
+    },
+    {
+      "plan": "Application",
+      "date": "2027-01-31",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "cycle": "2026-27",
+      "note": "Full application must be complete; also last SAT/ACT test date; nomination deadlines vary by nominating office (often earlier)"
+    },
+    {
+      "plan": "Notification",
+      "date": "2027-04-15",
+      "sourceUrl": "https://www.usna.edu/Admissions/Apply/index.php",
+      "cycle": "2026-27",
+      "note": "Rolling; most candidates notified of final status by April 15"
+    }
+  ],
+  "supplements": []
+}

@@ -1,0 +1,185 @@
+{
+ "slug": "university-of-north-carolina-chapel-hill",
+ "name": "University of North Carolina--Chapel Hill",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "16.7% (12,751 of 76,247; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/unc/2025-26/faab453ba03d65f687ad684f80c466db8e16799d665703897b722d85231ecc88.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1400-1530 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/unc/2025-26/faab453ba03d65f687ad684f80c466db8e16799d665703897b722d85231ecc88.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "29-34 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/unc/2025-26/faab453ba03d65f687ad684f80c466db8e16799d665703897b722d85231ecc88.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average weighted HS GPA 4.47; 76% of enrollees who reported rank in top 10% (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/unc/2025-26/faab453ba03d65f687ad684f80c466db8e16799d665703897b722d85231ecc88.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional with weighted GPA 2.8+ (UNC System rule); below 2.8 needs ACT 17+ or SAT 930+. Superscores; self-report accepted.",
+   "sourceUrl": "https://admissions.unc.edu/apply/types-of-applications/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of financial need; Carolina Covenant offers debt-free aid to the highest-need students",
+   "sourceUrl": "https://admissions.unc.edu/afford/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile + FAFSA required; due Dec 1 (EA) or March 1 (RD)",
+   "sourceUrl": "https://admissions.unc.edu/apply/types-of-applications/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Applicants automatically considered for University scholarships when they apply",
+   "sourceUrl": "https://admissions.unc.edu/afford/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$2,004 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199120",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$3,918 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199120",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$8,538 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199120",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$16,415 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199120",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$24,396 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=199120",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 on campus: $29,050 in-state ($7,230 tuition); $70,264 out-of-state ($47,472 tuition)",
+   "sourceUrl": "https://studentaid.unc.edu/cost-of-attendance/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "Non-binding Early Action (Oct 15) and Regular Decision (Jan 15); no ED. EA decisions by Dec 20 for NC residents, by Feb 15 for others.",
+   "sourceUrl": "https://admissions.unc.edu/apply/types-of-applications/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interviews: interview 'Not considered' (CDS 2025-26 C7)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/unc/2025-26/faab453ba03d65f687ad684f80c466db8e16799d665703897b722d85231ecc88.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "All first-years start in the College of Arts and Sciences and declare a major by end of second year; intended major does not affect admission. Assured enrollment programs and Honors Carolina via optional application sections.",
+   "sourceUrl": "https://admissions.unc.edu/faqs/how-does-my-intended-major-affect-my-application/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "UNC removed its two short-answer supplemental questions for 2026-27 (announced June 19, 2026); only the Common App essay, activities and optional additional info remain. No UNC-specific essays.",
+   "sourceUrl": "https://www.collegetransitions.com/blog/unc-chapel-hill-supplemental-essay-prompts-3",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "key": "notes",
+   "value": "Supporting materials and test scores due Nov 7 (EA) / Feb 21 (RD); NC residency determination by Oct 15 (EA) / Feb 21 (RD).",
+   "sourceUrl": "https://admissions.unc.edu/apply/types-of-applications/first-year/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 level of applicant's interest, as parsed by collegedata.fyi; row is garbled in the PDF text)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/unc/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-10-15",
+   "sourceUrl": "https://admissions.unc.edu/apply/types-of-applications/first-year/",
+   "cycle": "2026-27",
+   "note": "Non-binding; materials by Nov 7; FAFSA/CSS by Dec 1"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-15",
+   "sourceUrl": "https://admissions.unc.edu/apply/types-of-applications/first-year/",
+   "cycle": "2026-27",
+   "note": "Materials by Feb 21; FAFSA/CSS by Mar 1; decision Mar 31"
+  }
+ ],
+ "supplements": []
+}

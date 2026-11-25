@@ -1,0 +1,258 @@
+{
+  "slug": "university-of-california-davis",
+  "name": "University of California, Davis",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "45.8% (48,015 of 104,864; Fall 2026 admits, UC admit data). CDS 2025-26 (Fall 2025): 44.3% (45,674 of 102,988)",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/campuses-majors/davis/first-year-admit-data.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "admit_rate",
+      "value": "Fall 2025 by residency (CDS 2025-26): California 37.1% (25,473/68,593); out-of-state 63.2% (8,315/13,149); international 55.9% (11,886/21,246)",
+      "sourceUrl": "https://aggiedata.ucdavis.edu/sites/g/files/dgvnsk1841/files/media/documents/CDS_UCD_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Not reported: UC does not consider SAT/ACT, and CDS 2025-26 C9 lists no scores",
+      "sourceUrl": "https://aggiedata.ucdavis.edu/sites/g/files/dgvnsk1841/files/media/documents/CDS_UCD_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "Not reported: UC does not consider SAT/ACT, and CDS 2025-26 C9 lists no scores",
+      "sourceUrl": "https://aggiedata.ucdavis.edu/sites/g/files/dgvnsk1841/files/media/documents/CDS_UCD_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Fall 2026 admits middle 50% HS GPA 4.00-4.25 (UC admit data). Enrolled Fall 2025 average HS GPA 4.03; 66% had 4.0 (CDS C11/C12)",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/campuses-majors/davis/first-year-admit-data.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-blind: SAT/ACT not considered for admission or scholarships; may only be self-reported after submitting, for eligibility or course placement",
+      "sourceUrl": "https://www.ucdavis.edu/admissions/undergraduate/first-year/requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No full-need pledge. Average 81.7% of need met for first-year students with need-based aid (CDS 2025-26 H2). Blue and Gold: most CA families earning up to $100,000 get grants covering full UC tuition",
+      "sourceUrl": "https://aggiedata.ucdavis.edu/sites/g/files/dgvnsk1841/files/media/documents/CDS_UCD_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; UC uses the FAFSA or California Dream Act Application (plus Cal Grant GPA Verification), priority deadline March 2",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/tuition-financial-aid/types-of-aid/blue-and-gold-opportunity-plan.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes, limited: the UC application doubles as the UC Davis scholarship application (min 3.25 GPA, no extra form unless asked). Regents Scholarship $7,500 for selected entering first-years, plus stipend if need",
+      "sourceUrl": "https://financialaid.ucdavis.edu/scholarships/campus/apply-prospective",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 COA, residence hall: California resident $49,009; nonresident $88,279 (adds $39,270 nonresident supplemental tuition). Tuition flat for 6 years",
+      "sourceUrl": "https://www.ucdavis.edu/admissions/cost",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "None. One UC application (all campuses), single deadline Nov 30; decisions by March 31",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews; interview not considered (CDS 2025-26 C7, as parsed by collegedata.fyi)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/uc-davis/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7, as parsed by collegedata.fyi)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/uc-davis/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Applicants apply to a major; UC Davis advises picking a genuine interest and listing an alternate major in case the first choice is full",
+      "sourceUrl": "https://www.ucdavis.edu/admissions/undergraduate/first-year/application-tips",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$9,211 (2023-2024, family income $0-$30,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110644",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$9,966 (2023-2024, family income $30,001-$48,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110644",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$11,951 (2023-2024, family income $48,001-$75,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110644",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$16,294 (2023-2024, family income $75,001-$110,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110644",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$31,272 (2023-2024, family income $110,001 and more; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110644",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "UC system page lists the Fall 2027 filing period as Nov 1-30, 2026; UC Davis's own timeline still says Oct 1-Nov 30. Deadline Nov 30 either way",
+      "sourceUrl": "https://www.ucdavis.edu/admissions/undergraduate/first-year/timeline",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "RD",
+      "date": "2026-11-30",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+      "cycle": "2026-27",
+      "note": "Single UC application deadline; filing period Nov 1-30. No ED/EA"
+    },
+    {
+      "plan": "Financial aid",
+      "date": "2027-03-02",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+      "cycle": "2026-27",
+      "note": "FAFSA/CA Dream Act Application and Cal Grant GPA Verification Form due"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "UC PIQ 1 (choose 4 of 8)",
+      "prompt": "Describe an example of your leadership experience in which you have positively influenced others, helped resolve disputes or contributed to group efforts over time.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 2 (choose 4 of 8)",
+      "prompt": "Every person has a creative side, and it can be expressed in many ways: problem solving, original and innovative thinking, and artistically, to name a few. Describe how you express your creative side.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 3 (choose 4 of 8)",
+      "prompt": "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 4 (choose 4 of 8)",
+      "prompt": "Describe how you have taken advantage of a significant educational opportunity or worked to overcome an educational barrier you have faced.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 5 (choose 4 of 8)",
+      "prompt": "Describe the most significant challenge you have faced and the steps you have taken to overcome this challenge. How has this challenge affected your academic achievement?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 6 (choose 4 of 8)",
+      "prompt": "Think about an academic subject that inspires you. Describe how you have furthered this interest inside and/or outside of the classroom.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 7 (choose 4 of 8)",
+      "prompt": "What have you done to make your school or your community a better place?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 8 (choose 4 of 8)",
+      "prompt": "Beyond what has already been shared in your application, what do you believe makes you a strong candidate for admissions to the University of California?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

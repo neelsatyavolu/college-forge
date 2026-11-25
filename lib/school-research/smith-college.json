@@ -1,0 +1,195 @@
+{
+  "slug": "smith-college",
+  "name": "Smith College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "21.0% (1,820 of 8,666; Class of 2028, CDS 2024-25)",
+      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "38.2% ED (353 of 924; CDS 2024-25)",
+      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1450-1520 (enrolled Fall 2024, CDS 2024-25)",
+      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-35 (enrolled Fall 2024, CDS 2024-25)",
+      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional since 2009, for all applicants; English proficiency test required for some international applicants",
+      "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/standardized-testing-policy",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need with loan-free packages; Next 150 Pledge: free tuition and no loans for families up to $150,000 (typical assets) from fall 2026",
+      "sourceUrl": "https://www.smith.edu/admission-aid/tuition-aid-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (plus noncustodial Profile and tax returns via IDOC) for institutional aid; due Nov 15 ED I, Jan 6 ED II, Jan 25 RD",
+      "sourceUrl": "https://www.smith.edu/admission-aid/tuition-aid-applicants/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Limited merit awards; all applicants automatically considered, offered only at admission",
+      "sourceUrl": "https://www.smith.edu/admission-aid/tuition-aid-applicants/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$1,363 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167835",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$3,737 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167835",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$6,559 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167835",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$11,750 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167835",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$40,477 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=167835",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,288 billed for 2026-27 (tuition $70,460, food & housing $24,520, activities fee $308); plus health insurance $4,030 if not waived and about $3,350 books, travel and personal",
+      "sourceUrl": "https://www.smith.edu/admission-aid/tuition-aid-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 5), both binding; RD Jan 15; no EA",
+      "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional alumnae interviews, requested through the applicant portal after applying; CDS 2024-25 rates interview Important",
+      "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2024-25 C7)",
+      "sourceUrl": "https://www1.smith.edu/sites/default/files/2025-02/2024-2025-CDS-Smith-PUB19Dec24%20v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Women's college: considers applicants who self-identify as women (cis, trans and nonbinary women)",
+      "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: newest CDS found is 2024-25 (2025-26 not located); no major/program admission notes found",
+      "sourceUrl": "https://www.smith.edu/your-campus/offices-services/institutional-research/data-about-smith",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "ED I, binding; CSS Profile due Nov 15; decisions mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile due Jan 6; decisions late January"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "CSS Profile due Jan 25; decisions late March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Residential community essay",
+      "prompt": "Smith has a unique housing system, where students of all class years live together in 41 different houses. With our Residential Curriculum, students will become critically aware global neighbors, exploring their self-identity by living in community, engaging in reflection and challenging their own beliefs. What personal experiences, background or abilities would you bring to this residential environment to share with your neighbors and what would you hope your neighbors would share with you?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/smith-college-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

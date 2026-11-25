@@ -1,0 +1,202 @@
+{
+  "slug": "johns-hopkins-university",
+  "name": "Johns Hopkins University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "6.1% (3,072 of 50,259; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "ED (I and II combined): 10.9% (835 of 7,639; CDS 2025-26 C21)",
+      "sourceUrl": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1530-1565 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "35-35 (25th and 75th percentile both 35; enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.93; 95.86% submitted GPA (CDS C12, Fall 2025)",
+      "sourceUrl": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT or ACT. Self-reporting accepted; superscored (highest section scores across dates)",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements/standardized-testing",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need with no loans; need-blind for domestic applicants. Families up to $200K pay no tuition; up to $100K $0 parent cost",
+      "sourceUrl": "https://apply.jhu.edu/tuition-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA required; aid deadlines Nov 15, 2026 (ED I), Jan 15, 2027 (ED II/RD)",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: some merit scholarships for academic and personal achievement; all applicants automatically considered (no separate application)",
+      "sourceUrl": "https://apply.jhu.edu/tuition-aid/types-of-financial-aid/merit-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "About $95,000 estimated total COA 2026-27 (billed tuition, fees, housing, meals plus books, travel, personal)",
+      "sourceUrl": "https://apply.jhu.edu/tuition-aid/estimate-your-college-costs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision I (binding) due Nov 1; Early Decision II (binding) and Regular Decision due Jan 2. No EA. Signed ED Agreement required",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not part of the evaluation: CDS C7 rates interview 'Not Considered'",
+      "sourceUrl": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Biomedical Engineering is selective within admission: list BME as first-choice major (no separate application); you can be admitted to Hopkins but not to BME. Direct Matriculation Programs (master's) need an extra essay; apply to one at most",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "QuestBridge accepted. Common App or Coalition on Scoir plus the Hopkins supplement essay",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$428 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=162928",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$2,708 (2022-23; NCES shows no figure for 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=162928",
+      "checkedAt": "2026-11-25",
+      "cycle": "2022-23",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$4,179 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=162928",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$14,591 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=162928",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$37,774 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=162928",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid deadline Nov 15; reply by Jan 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-02",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "cycle": "2026-27",
+      "note": "ED II, binding; aid deadline Jan 15; reply by Feb 26"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-02",
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "cycle": "2026-27",
+      "note": "Aid deadline Jan 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Supplemental essay",
+      "prompt": "At Johns Hopkins, community is built through dialogue, collaboration, and a willingness to engage across differences. Whether on campus or in the broader world, community depends on bridge builders who can listen to differing perspectives, challenge their own assumptions, or work together toward shared goals. Drawing on your own experiences, what have you learned about engaging across differences and how has it shaped the way you think about building bridges, enhancing community, and working with others?",
+      "limit": 350,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements",
+      "cycle": "2026-27"
+    }
+  ]
+}

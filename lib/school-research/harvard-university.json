@@ -1,0 +1,223 @@
+{
+  "slug": "harvard-university",
+  "name": "Harvard University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "3.7% (2,037 admitted of 55,104; Class of 2030). CDS 2025-26: 4.2% (2,003 of 47,893; Class of 2029)",
+      "sourceUrl": "https://college.harvard.edu/admissions/admissions-statistics",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Composite not reported in CDS; sections 720-770 EBRW, 730-790 Math (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://bpb-us-e1.wpmucdn.com/sites.harvard.edu/dist/6/210/files/2026/07/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://bpb-us-e1.wpmucdn.com/sites.harvard.edu/dist/6/210/files/2026/07/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 4.22 (weighted scale not stated; CDS C12, Fall 2025)",
+      "sourceUrl": "https://bpb-us-e1.wpmucdn.com/sites.harvard.edu/dist/6/210/files/2026/07/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT or ACT (AP/IB/A-level only in exceptional cases when tests aren't accessible). Score Choice allowed; highest ACT composite evaluated. Self-reporting allowed",
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/application-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Need-blind; meets 100% of demonstrated need. Families under $100K: expected parent contribution zero; under $200K: aid covers at least full tuition",
+      "sourceUrl": "https://college.harvard.edu/financial-aid/how-aid-works",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile, FAFSA and IDOC required; due Nov 1 (REA) and Feb 1 (RD)",
+      "sourceUrl": "https://college.harvard.edu/financial-aid/apply-financial-aid/prospective-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit-based awards; aid is 100% need-based",
+      "sourceUrl": "https://college.harvard.edu/financial-aid/how-aid-works",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$8,697 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166027",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$2,991 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166027",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$2,091 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166027",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$9,941 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166027",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$53,337 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166027",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,134-$100,134 COA 2026-27 (tuition $62,226; fees $6,216; housing $14,250; food $8,942; personal $2,500; books $1,000; travel $0-5,000)",
+      "sourceUrl": "https://college.harvard.edu/financial-aid/how-aid-works",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Restrictive Early Action (non-binding) due Nov 1, decisions mid-December; no other private ED/EA/REA or public binding early plan allowed. Regular Decision due Jan 1, decisions end of March. No ED",
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Alumni interview possible after you submit the Common App (it sets up a possible interview); not guaranteed",
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://bpb-us-e1.wpmucdn.com/sites.harvard.edu/dist/6/210/files/2026/07/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major declared on entry; concentrations are declared in fall of sophomore year. 50 concentrations plus Special Concentrations",
+      "sourceUrl": "https://college.harvard.edu/student-life/student-stories/how-do-i-choose-major-harvard",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Common App plus five required 150-word Harvard questions. Optional supplementary materials (art, music, etc.) via SlideRoom. REA applicants should test by end of October (November series accepted)",
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/application-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "REA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Restrictive Early Action, non-binding; decisions mid-December. CSS Profile/FAFSA/IDOC due Nov 1"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Decisions end of March. Financial aid forms due Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Life experiences",
+      "prompt": "Harvard has long recognized the importance of enrolling a student body with a diversity of perspectives and experiences. How will the life experiences that shaped who you are today enable you to contribute to Harvard?",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/application-requirements",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Disagreement",
+      "prompt": "Describe a time when you strongly disagreed with someone about an idea or issue. How did you communicate or engage with this person? What did you learn from this experience?",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/application-requirements",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Activities",
+      "prompt": "Briefly describe any of your extracurricular activities, employment experience, travel, or family responsibilities that have shaped who you are.",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/application-requirements",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Future",
+      "prompt": "How do you hope to use your Harvard education in the future?",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/application-requirements",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Roommates",
+      "prompt": "Top 3 things your roommates might like to know about you.",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://college.harvard.edu/admissions/apply/application-requirements",
+      "cycle": "2026-27"
+    }
+  ]
+}

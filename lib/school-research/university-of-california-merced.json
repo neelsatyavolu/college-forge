@@ -1,0 +1,242 @@
+{
+ "slug": "university-of-california-merced",
+ "name": "University of California, Merced",
+ "checkedAt": "2026-11-25",
+ "complete": false,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "90.5% (Fall 2024 entry, IPEDS via College Scorecard). No current UC Merced CDS found",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=id,latest.admissions.admission_rate.overall,2024.admissions.admission_rate.overall,2023.admissions.admission_rate.overall",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "Not applicable: UC does not use SAT/ACT in admission (no scores required for fall 2027)",
+   "sourceUrl": "https://www.universityofcalifornia.edu/academic-senate-review-admissions",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "Not applicable: UC does not use SAT/ACT in admission (no scores required for fall 2027)",
+   "sourceUrl": "https://www.universityofcalifornia.edu/academic-senate-review-admissions",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-free: no SAT/ACT required for any fall 2027 applicant. UC's Academic Senate is reviewing testing (BOARS report due Feb 12, 2027); any change would come later",
+   "sourceUrl": "https://www.universityofcalifornia.edu/academic-senate-review-admissions",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No stated full-need guarantee. UC Blue and Gold: most California families earning up to $100,000 get grants covering UC tuition; tuition fixed up to six years",
+   "sourceUrl": "https://www.universityofcalifornia.edu/blueandgold/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not used by UC; apply with FAFSA or California Dream Act Application plus Cal Grant GPA Verification Form by Mar 2, 2027",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 COA, on campus: $48,654 California resident / $87,924 nonresident (+$39,270 nonresident tuition). Amounts vary slightly by entry cohort",
+   "sourceUrl": "https://financialaid.ucmerced.edu/node/61",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; all incoming students automatically considered for the UC Merced Regents' Scholarship (4 years; $7,000 honorarium regardless of need; keep 3.25 GPA), based on the admission application",
+   "sourceUrl": "https://financialaid.ucmerced.edu/regents",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Merced Automatic Admission Program (MAAP): guaranteed admission for eligible students at partner California districts/schools who select Merced and a major on the UC application by Oct 7; not for selective programs with supplemental applications (Fiat Lux, Honors, San Joaquin Valley PRIME+)",
+   "sourceUrl": "https://admissions.ucmerced.edu/MAAP",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "No ED or EA. Single UC application filing period Nov 1-30, 2026 for fall 2027; decisions March 1-31 (some campuses earlier)",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Supplements are the UC Personal Insight Questions: answer 4 of 8, max 350 words each; all questions weighted equally",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Gaps: no UC Merced Common Data Set newer than 2022-23 found, and the admissions 'Paying for College' page blocked automated reads. Missing: interview and demonstrated-interest policy, % of need met, impacted-major rules",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=id,latest.admissions.admission_rate.overall,2024.admissions.admission_rate.overall,2023.admissions.admission_rate.overall",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$7,387 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$7,141 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$10,285 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$14,069 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$30,779 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=445188&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "RD",
+   "date": "2026-11-30",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "cycle": "2026-27",
+   "note": "UC application filing period Nov 1-30 (single deadline for all UC campuses)"
+  },
+  {
+   "plan": "FAFSA",
+   "date": "2027-03-02",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "cycle": "2026-27",
+   "note": "FAFSA / CA Dream Act Application and Cal Grant GPA Verification Form"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "UC PIQ 1 (choose 4 of 8)",
+   "prompt": "Describe an example of your leadership experience in which you have positively influenced others, helped resolve disputes or contributed to group efforts over time.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "UC PIQ 2 (choose 4 of 8)",
+   "prompt": "Every person has a creative side, and it can be expressed in many ways: problem solving, original and innovative thinking, and artistically, to name a few. Describe how you express your creative side.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "UC PIQ 3 (choose 4 of 8)",
+   "prompt": "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "UC PIQ 4 (choose 4 of 8)",
+   "prompt": "Describe how you have taken advantage of a significant educational opportunity or worked to overcome an educational barrier you have faced.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "UC PIQ 5 (choose 4 of 8)",
+   "prompt": "Describe the most significant challenge you have faced and the steps you have taken to overcome this challenge. How has this challenge affected your academic achievement?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "UC PIQ 6 (choose 4 of 8)",
+   "prompt": "Think about an academic subject that inspires you. Describe how you have furthered this interest inside and/or outside of the classroom.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "UC PIQ 7 (choose 4 of 8)",
+   "prompt": "What have you done to make your school or your community a better place?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "UC PIQ 8 (choose 4 of 8)",
+   "prompt": "Beyond what has already been shared in your application, what do you believe makes you a strong candidate for admissions to the University of California?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  }
+ ]
+}

@@ -1,0 +1,186 @@
+{
+  "slug": "lafayette-college",
+  "name": "Lafayette College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "31.2% (3,289 of 10,556; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "38.0% ED (356 of 937; CDS 2025-26)",
+      "sourceUrl": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1360-1490 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "30.5-33 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for fall 2027 and fall 2028 entry; self-reported scores accepted; superscores SAT and ACT; official scores required on enrollment",
+      "sourceUrl": "https://admissions.lafayette.edu/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Guarantees 100% of demonstrated need for all applicants who meet deadlines (CDS 2025-26: 100% of need met on average)",
+      "sourceUrl": "https://admissions.lafayette.edu/financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA and tax returns via IDOC; due Nov 15 ED I, Jan 15 ED II and RD",
+      "sourceUrl": "https://admissions.lafayette.edu/financial-aid-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: Marquis Fellowship (full tuition) and Marquis Scholarship (half tuition), plus Cur Non Scholarships; all first-time applicants considered, no separate application; ED applicants also considered",
+      "sourceUrl": "https://admissions.lafayette.edu/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$12,716 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$7,445 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$10,881 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$12,581 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$52,608 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$92,492 billed for 2026-27 (tuition $70,486, fees $1,110, housing $12,968, food $7,928)",
+      "sourceUrl": "https://admissions.lafayette.edu/college-costs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 15), both binding; RD Jan 15 (RD applicants may switch to ED II by Feb 1); no EA",
+      "sourceUrl": "https://admissions.lafayette.edu/deadlines-and-forms",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional but recommended alumni or campus interview, informational and evaluative; considerable weight given",
+      "sourceUrl": "https://admissions.lafayette.edu/admissions-visits/admissions-interview-faqs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Application review focuses on the top six activities listed",
+      "sourceUrl": "https://admissions.lafayette.edu/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: CDS C7 table did not parse cleanly, so the demonstrated-interest rating was not confirmed; no major/program admission notes found",
+      "sourceUrl": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://admissions.lafayette.edu/deadlines-and-forms",
+      "cycle": "2026-27",
+      "note": "ED I, binding; CSS Profile/FAFSA due Nov 15; decision mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://admissions.lafayette.edu/deadlines-and-forms",
+      "cycle": "2026-27",
+      "note": "Binding; aid forms due Jan 15; RD applicants may convert by Feb 1"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://admissions.lafayette.edu/deadlines-and-forms",
+      "cycle": "2026-27",
+      "note": "Aid forms due Jan 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why Lafayette? (optional)",
+      "prompt": "Students identify Lafayette as an excellent fit for countless reasons. In your response, be deliberate and specific about your motivation for applying to Lafayette. Why do you see yourself at Lafayette?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.lafayette.edu/apply",
+      "cycle": "2026-27"
+    }
+  ]
+}

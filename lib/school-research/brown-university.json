@@ -1,0 +1,266 @@
+{
+ "slug": "brown-university",
+ "name": "Brown University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "6.3% (2,710 of 42,774; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/brown/2025-26/e45da2405f678ccaf78f36640359c83b4cec8c173a1b2ca93e7aefe3d899291c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "17.9% ED (907 of 5,062; CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/brown/2025-26/e45da2405f678ccaf78f36640359c83b4cec8c173a1b2ca93e7aefe3d899291c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1470-1550 (CDS 2025-26; 77% submitted SAT)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/brown/2025-26/e45da2405f678ccaf78f36640359c83b4cec8c173a1b2ca93e7aefe3d899291c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "33-35 (CDS 2025-26; 28% submitted ACT)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/brown/2025-26/e45da2405f678ccaf78f36640359c83b4cec8c173a1b2ca93e7aefe3d899291c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "93% of enrollees who reported rank were top 10% of class (29% reported rank); no average GPA reported (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/brown/2025-26/e45da2405f678ccaf78f36640359c83b4cec8c173a1b2ca93e7aefe3d899291c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-required (SAT or ACT) since 2024-25 cycle; superscores both; essay/writing sections optional",
+   "sourceUrl": "https://admission.brown.edu/first-year/standardized-tests",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of demonstrated need with no loans (Brown Promise); need-blind for US applicants",
+   "sourceUrl": "https://finaid.brown.edu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile + FAFSA required; due Nov 2, 2026 (ED) / Feb 1, 2027 (RD); CSS code 3189",
+   "sourceUrl": "https://finaid.brown.edu/apply/first-year-us",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "No merit or athletic scholarships; aid is need-based only",
+   "sourceUrl": "https://finaid.brown.edu/aid-types/grants-scholarships",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$4,741 (2021-22; not reported for later years)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217156",
+   "checkedAt": "2026-11-25",
+   "cycle": "2021-22",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$2,031 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217156",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$5,858 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217156",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$16,219 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217156",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$44,937 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217156",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$99,994 total for 2026-27 ($74,568 tuition, $3,084 fees, $19,464 housing and food, $2,878 personal)",
+   "sourceUrl": "https://finaid.brown.edu/estimate-cost-aid/cost",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED only (binding, Nov 1). No EA. ED applicants may not apply ED/SCEA/REA elsewhere and must withdraw other applications if admitted.",
+   "sourceUrl": "https://admission.brown.edu/first-year/early-decision",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No alumni interviews since 2019-20; optional 90-second video introduction instead",
+   "sourceUrl": "https://admission.brown.edu/ask/admission-process",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Brown says contacting the office is neither required nor an advantage",
+   "sourceUrl": "https://admission.brown.edu/ask/admission-process",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "CDS 2025-26 C7: level of applicant interest and interview both 'Not considered'",
+   "sourceUrl": "https://www.collegedata.fyi/schools/brown/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "major_notes",
+   "value": "No quotas by concentration and no admission by academic interest; PLME (8-year med) and Brown|RISD Dual Degree require extra essays and are separately reviewed",
+   "sourceUrl": "https://admission.brown.edu/first-year/selecting-degree-programs-academic-fields",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Optional arts supplements via SlideRoom: start by Nov 4 (ED/QuestBridge) or Jan 7 (RD). Page lists four required essays though PLME/BRDD text says 'three essays required of all first-year applicants'.",
+   "sourceUrl": "https://admission.brown.edu/first-year/application-checklist",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.brown.edu/first-year/early-decision",
+   "cycle": "2026-27",
+   "note": "Binding; decision mid-December; CSS Profile/FAFSA due Nov 2"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-05",
+   "sourceUrl": "https://admission.brown.edu/first-year/application-checklist",
+   "cycle": "2026-27",
+   "note": "Decision early April; CSS Profile/FAFSA due Feb 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Open Curriculum",
+   "prompt": "\"There is something distinctive about Brown students. It is a blend of intellectual curiosity, creativity, and humility. A commitment to collaboration. An openness to new ideas and perspectives. A desire to make the world better. And it is resilience: the ability to recover and thrive after experiencing difficulties.\" From President Christina Paxson's 2025 Convocation Address. How will you use these characteristics or others to shape your approach to the Open Curriculum?",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Growing up",
+   "prompt": "Students entering Brown often find that making their home on College Hill naturally invites reflection on where they came from. Share how an aspect of your growing up has inspired or challenged you, and what unique contributions this might allow you to make to the Brown community.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Teach a class",
+   "prompt": "If you could teach a class on any one thing, whether academic or otherwise, what would it be?",
+   "limit": 150,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Joy",
+   "prompt": "Brown students care deeply about their work and the world around them. Students find contentment, satisfaction, and meaning in daily interactions and major discoveries. Whether big or small, mundane or spectacular, tell us about something that brings you joy.",
+   "limit": 150,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PLME: Why medicine?",
+   "prompt": "Why medicine?",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PLME: Why PLME?",
+   "prompt": "Why PLME?",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PLME: Beyond medicine",
+   "prompt": "Tell us something about yourself, beyond your interest in medicine, that you think will make you a great doctor.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Brown|RISD Dual Degree",
+   "prompt": "The Brown | RISD Dual Degree Program draws on the complementary strengths of Brown University and Rhode Island School of Design (RISD) to provide students with the opportunity to explore and engage with diverse spheres of academic and creative inquiry. Considering your understanding of the academic programs at Brown and RISD, describe how and why the specific blend of RISD's experimental, immersive art and design program and Brown's wide-ranging courses and curricula could constitute an optimal undergraduate education for you. Reflect on how you might integrate or synthesize content, approaches, and methods from these two distinct learning experiences. Additionally, how might you contribute to the Dual Degree community and its commitment to interdisciplinary work?",
+   "limit": 650,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.brown.edu/apply/how-apply",
+   "cycle": "2026-27"
+  }
+ ]
+}

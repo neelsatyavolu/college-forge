@@ -1,0 +1,214 @@
+{
+  "slug": "rochester-institute-of-technology",
+  "name": "Rochester Institute of Technology",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "71% (22,439 of 31,565; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "73% (1,028 of 1,405 ED applicants, ED I and II combined; CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1310-1440 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "act_mid50",
+      "value": "30-34 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.90 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all programs; superscores SAT and ACT. ACT Science recommended for STEM applicants who send ACT",
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No guarantee of full need; average 92% of need met for first-year aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "css_profile",
+      "value": "Not used; need-based aid is based on the FAFSA. Recommended FAFSA dates: Nov 1 (ED I), Jan 1 (ED II), Jan 15 (EA/RD)",
+      "sourceUrl": "https://www.rit.edu/admissions/financial-aid/first-years",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: all admitted first-years automatically reviewed; merit scholarships $14,000-$30,000/yr. No separate application",
+      "sourceUrl": "https://www.rit.edu/admissions/aid/merit-based-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$84,868 total estimated cost of attendance (2026-27: tuition $63,508, double room $10,090; billed expenses $81,978)",
+      "sourceUrl": "https://www.rit.edu/admissions/tuition-and-fees",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I Nov 1 (binding, mid-December decision, deposit Jan 15); ED II Jan 1 (binding, mid-January, deposit Feb 15); EA Nov 1 (non-binding, late January); RD Jan 15 (mid-March). RIT says ED has higher acceptance rates, especially for competitive majors",
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Considered (CDS 2025-26 C7); no interview listed in the application checklist",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/rochester-institute-of-technology/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply directly to a major, a College Exploration program, or Individualized Study. Portfolio required for School of Art, Design (except New Media Design) and Film and Animation. Some majors have extra course requirements and some fill to capacity; late applications reviewed by space per program",
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essays required unless applying to the Honors Program (short 1-2 paragraph statement; ~5% of undergrads are Honors) or the Individualized Program BS",
+      "sourceUrl": "https://www.rit.edu/honors/admissions-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$24,334 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?195003",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$22,402 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?195003",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$25,463 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?195003",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$32,177 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?195003",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,559 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?195003",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "cycle": "2026-27",
+      "note": "Binding; decision mid-December; deposit Jan 15"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "cycle": "2026-27",
+      "note": "Non-binding; decision late January"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-01",
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "cycle": "2026-27",
+      "note": "Binding; decision mid-January; deposit Feb 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "cycle": "2026-27",
+      "note": "Decision mid-March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Individualized Study BS (required for that program)",
+      "prompt": "RIT is pleased to be able to offer a limited number of students the opportunity to customize a degree pathway. What personal or professional outcome are you hoping to achieve? In what ways have you prepared yourself for this distinctive educational experience?",
+      "required": true,
+      "sourceUrl": "https://www.rit.edu/admissions/first-year-application",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Honors Program (optional)",
+      "prompt": "Short essay response (1-2 paragraphs) for Honors Program consideration; the exact prompt appears in the application and is not published on RIT’s site.",
+      "required": false,
+      "sourceUrl": "https://www.rit.edu/honors/admissions-process",
+      "cycle": "2026-27"
+    }
+  ]
+}

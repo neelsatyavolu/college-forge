@@ -1,0 +1,215 @@
+{
+  "slug": "duke-university",
+  "name": "Duke University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "5.2% (2,910 of 55,541; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://ir.provost.duke.edu/sites/default/files/CDS_PDF_2025-2026-20260622-website-published-version.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1510-1570 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://ir.provost.duke.edu/sites/default/files/CDS_PDF_2025-2026-20260622-website-published-version.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-35 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://ir.provost.duke.edu/sites/default/files/CDS_PDF_2025-2026-20260622-website-published-version.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for 2026-27 first-year applicants; self-reported scores accepted; highest section scores used for SAT and ACT (ACT composite recalculated). If testing: SAT by Nov 7 / ACT by Oct 17 for ED, Dec 5 / Dec 12 for RD",
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for undergraduates",
+      "sourceUrl": "https://financialaid.duke.edu/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA required for institutional aid; priority deadlines Nov 3 (ED) and Feb 1 (RD) (dates from the aid site's current-year page)",
+      "sourceUrl": "https://admissions.duke.edu/financial-support",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: all admitted students are automatically considered for merit scholarships (no application), except the Robertson and Nakayama Scholarships, which need separate applications",
+      "sourceUrl": "https://financialaid.duke.edu/types-aid/merit-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$103,180-$103,975 first-year COA 2026-27 (tuition $73,740; fees $3,019; housing $11,560; food $10,469; books $536; personal $3,274; travel $582-1,318; Pratt dues $60)",
+      "sourceUrl": "https://financialaid.duke.edu/how-aid-calculated/cost-attendance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision (binding) due Nov 2, decisions mid-December; Regular Decision due Jan 4. No EA. ED admits may be released for financial reasons in some cases",
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional alumni interviews (virtual), offered by invitation only, prioritized where more information is needed; cannot be requested; not being offered one doesn't hurt. Optional Glimpse video (U.S. schools). CDS C7: 'Considered'",
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://ir.provost.duke.edu/sites/default/files/CDS_PDF_2025-2026-20260622-website-published-version.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to either Trinity College of Arts & Sciences or the Pratt School of Engineering; Pratt applicants need calculus (physics strongly recommended)",
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "ED applicants' counselors send first-quarter grades by Nov 20. Optional arts supplement via SlideRoom. Duke Embark (fall semester at the Marine Lab) interest takes a 150-word response",
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$735 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198419",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$242 (2022-23; NCES shows no figure for 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198419",
+      "checkedAt": "2026-11-25",
+      "cycle": "2022-23",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$5,706 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198419",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$17,100 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198419",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$54,230 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198419",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-02",
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile/FAFSA priority Nov 3"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "CSS Profile/FAFSA priority Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why Duke",
+      "prompt": "What is your impression of Duke as a university and community, and why do you believe it is a good match for your goals, values, and interests? If there is something specific that attracts you to our academic offerings in Trinity College of Arts and Sciences or the Pratt School of Engineering, or to our co-curricular opportunities, feel free to include that, too.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Communities",
+      "prompt": "We all belong to communities defined by place, faith, family, culture, interests, or shared experience. Tell us about a community that has shaped who you are, any way it has set you apart, and what you’ve learned from being part of it that you hope to bring to Duke.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (choose one): Viewpoints and Experiences",
+      "prompt": "We believe a wide range of viewpoints and experiences is essential to maintaining Duke’s vibrant living and learning community. Please share anything in this context that might help us better understand you and your potential contributions to Duke.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (choose one): Difference of Opinion",
+      "prompt": "Meaningful dialogue often involves respectful disagreement. Provide an example of a difference of opinion you’ve had with someone you care about. What did you learn from it?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (choose one): Something You Are Excited About",
+      "prompt": "What’s the last thing that you’ve been really excited about?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.duke.edu/first-year-applicants",
+      "cycle": "2026-27"
+    }
+  ]
+}

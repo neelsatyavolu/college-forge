@@ -1,0 +1,228 @@
+{
+  "slug": "vassar-college",
+  "name": "Vassar College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "20.9% (2,327 of 11,118; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://offices.vassar.edu/institutional-research/wp-content/uploads/sites/23/2026/03/Vassar_College_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "38.4% ED (402 of 1,046; Fall 2025, CDS 2025-26; ED I and ED II combined)",
+      "sourceUrl": "https://offices.vassar.edu/institutional-research/wp-content/uploads/sites/23/2026/03/Vassar_College_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1460-1520 (32% submitted SAT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://offices.vassar.edu/institutional-research/wp-content/uploads/sites/23/2026/03/Vassar_College_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-34 (14% submitted ACT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://offices.vassar.edu/institutional-research/wp-content/uploads/sites/23/2026/03/Vassar_College_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "79% in top 10% of HS class (29% reported rank); no GPA reported (CDS 2025-26)",
+      "sourceUrl": "https://offices.vassar.edu/institutional-research/wp-content/uploads/sites/23/2026/03/Vassar_College_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; choose in the applicant portal by Nov 22 (ED I) or Jan 8 (ED II/RD); superscores; self-report OK",
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all admitted students, all four years; need-blind for U.S. first-years, need-aware for international and transfer",
+      "sourceUrl": "https://www.vassar.edu/admission/financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile (code 2956) required for all aid applicants, plus FAFSA for U.S.; aid deadlines Nov 15 ED I, Jan 1 ED II, Feb 1 RD",
+      "sourceUrl": "https://www.vassar.edu/admission/financial-aid/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid; aid is awarded exclusively on the basis of need",
+      "sourceUrl": "https://www.vassar.edu/admission/financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$96,960 billed 2026-27 (tuition $76,140, housing and dining $19,800, fees $1,020) + ~$2,250 books, personal, travel",
+      "sourceUrl": "https://www.vassar.edu/admission/financial-aid/tuition/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 1), binding; no EA",
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional informational alumni interview after applying; not evaluative",
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7; interview 'considered')",
+      "sourceUrl": "https://www.collegedata.fyi/schools/vassar-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "No admission by major; all students declare by end of sophomore year",
+      "sourceUrl": "https://offices.vassar.edu/dean-of-studies/faqs/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "One teacher evaluation required; optional 'Your Space' upload and music/art/dance portfolios; $65 fee or waiver",
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$15,953 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197133",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$14,548 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197133",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$14,126 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197133",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$25,773 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197133",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$56,615 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=197133",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; CSS Profile due Nov 15; test-optional form by Nov 22"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-01",
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "cycle": "2026-27",
+      "note": "ED II, binding; CSS Profile due Jan 1; test-optional form by Jan 8"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "cycle": "2026-27",
+      "note": "CSS Profile due Feb 1; test-optional form by Jan 8"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Required essay, option 1 of 2 (identity / engaged pluralism)",
+      "prompt": "We would like to get to know you better, especially on a more individual level. In replying to either prompt below, you are welcome to touch on any unique ability or aspect of your background – be it your race/ethnicity, socio-economic background, religious tradition, gender, geographic area that you have been raised in, personal interests, etc. – that demonstrates how you may contribute to Vassar. Please select one of the following prompts and respond in 300 words or less. At Vassar, we aim to foster an inclusive community through our philosophy of engaged pluralism. Engaged pluralism is rooted in “the conviction that collaborating across differences is necessary for social transformation and critical for the well-being of any community and its members.” In short, we believe it’s our differences that make us stronger. Tell us a little bit about an important part of your identity and how it has shaped your life and/or interactions with others.",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/vassar-college-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Required essay, option 2 of 2 (community)",
+      "prompt": "Vassar is a diverse community that inspires positive change through open inquiry, deep dives into society’s most difficult challenges, and collaborative problem solving. We care deeply about one another, the communities that have forged us, and the community we build together on campus. Tell us about the community (or communities) you come from and how it has shaped your lived experiences and identity.",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/vassar-college-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Optional upload (circumstances or resume)",
+      "prompt": "If you wish to provide details of circumstances not reflected in the application, please upload a file here. Similarly, if you wish to upload your resume, include it here.",
+      "required": false,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/vassar-college-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Your Space (optional)",
+      "prompt": "Your Space is your opportunity to allow the Committee on Admission to learn something about you that you have not addressed in another section of the application. For example, in the past, applicants have shared poetry, short stories, cartoons, digital images of art projects, photography, and collages, and/or links to videos, and short films. It is your space, so if you choose to complete it, send something that is a reflection of you! Your Space is entirely optional.",
+      "required": false,
+      "sourceUrl": "https://www.vassar.edu/admission/apply/requirements/",
+      "cycle": "2026-27"
+    }
+  ]
+}

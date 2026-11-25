@@ -1,0 +1,36 @@
+{
+  "slug": "soka-university-of-america",
+  "name": "Soka University of America",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "43% (634 applicants; Fall 2024, IPEDS via College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "sat_mid50", "value": "No composite published; sections 620-720 reading/writing and 713-790 math (16% of Fall 2024 enrollees submitted SAT)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "act_mid50", "value": "Not reported: only 1 Fall 2024 enrollee (1%) submitted the ACT", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional; SAT/ACT scores accepted only if official and under five years old. English proficiency (TOEFL iBT or Duolingo; no IELTS) required for non-native speakers", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No full-need pledge stated for 2026-27, but the Soka Opportunity Plan guarantees full tuition for family income up to $200,000 and partial tuition up to $300,000. (CDS 2022-23 reported 100% of need met on average.)", "sourceUrl": "https://www.soka.edu/admissions-aid/financial-aid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; domestic students file the FAFSA (code 038144). Priority deadline Feb 15, 2027 for incoming students", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply-financial-aid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; all admitted students receive a merit scholarship, renewable for four years (e.g. Soka Merit, Soka Ikeda scholarships)", "sourceUrl": "https://www.soka.edu/admissions-aid/financial-aid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$12,020 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$10,619 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$12,049 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$12,724 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$30,940 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=399911", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$63,674 on-campus COA 2026-27 (tuition $38,486, living $16,000, books $1,304, transport $1,386, personal incl. ~$2,530 health insurance $6,498)", "sourceUrl": "https://www.soka.edu/admissions-aid/cost-attendance", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Early Action (Nov 1, non-binding; decision by Dec 8) and Regular (Jan 15); no ED. EA applicants may be rolled to Regular; EA denials cannot reapply that term", "sourceUrl": "https://www.soka.edu/admissions-aid/admission-policies-and-faq", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "No interview listed in the application requirements; applicants can schedule a virtual meeting with their counselor via GoSoka!", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Important (CDS 2022-23 C7, the latest year parsed; 2025-26 CDS file could not be opened)", "sourceUrl": "https://www.collegedata.fyi/schools/soka-university-of-america/2022-23", "checkedAt": "2026-11-25", "cycle": "2022-23", "thirdParty": true },
+    { "key": "major_notes", "value": "One undergraduate degree (BA in Liberal Arts); all undergraduate applicants apply as first-years; no major-specific admission", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Required: own Soka essay (500-750 words), two recommendations, activities list, transcripts; apply via Soka Application or Common App ($30 fee). Applications open Aug 1.", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Gap: the 2025-26 CDS link on Soka's site (Box) could not be read, so admit rate and scores use IPEDS Fall 2024 data; no ED/EA admit rate or GPA profile.", "sourceUrl": "https://www.soka.edu/about/institutional-research-assessment/common-data-set", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply", "cycle": "2026-27", "note": "Non-binding; all documents due; decision by Dec 8" },
+    { "plan": "RD", "date": "2027-01-15", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply", "cycle": "2026-27", "note": "Regular Admission; decision by Mar 15" },
+    { "plan": "FAFSA priority", "date": "2027-02-15", "sourceUrl": "https://www.soka.edu/admissions-aid/how-apply-financial-aid", "cycle": "2026-27", "note": "Financial aid priority deadline for incoming students" }
+  ],
+  "supplements": [
+    { "label": "Required essay", "prompt": "The philosophy of education underlying SUA’s BA in Liberal Arts curriculum emphasizes the development of wisdom over the mere accumulation of knowledge. Why does this interest you and how do you see it shaping the work you want to do in the world?", "limit": 750, "unit": "words", "required": true, "sourceUrl": "https://admissions.soka.edu/portal/essays", "cycle": "2026-27" },
+    { "label": "Optional essay (1-2 paragraphs)", "prompt": "Do you have any special circumstances that you would like Soka University to take into consideration when reviewing your application? Please be concise; responses should be 1-2 paragraphs in length.", "required": false, "sourceUrl": "https://admissions.soka.edu/portal/essays", "cycle": "2026-27" }
+  ]
+}

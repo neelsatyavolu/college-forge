@@ -1,0 +1,221 @@
+{
+  "slug": "lehigh-university",
+  "name": "Lehigh University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "27.1% (5,545 admitted of 20,444 applicants; Class of 2030, fall 2026 entry). CDS 2025-26: 29.0% (5,601 of 19,342; Class of 2029)",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/admission-statistics",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1380-1480 (enrolled Fall 2025; EBRW 680-740, Math 690-760; 33% submitted SAT, CDS 2025-26)",
+      "sourceUrl": "https://data.lehigh.edu/sites/data.lehigh.edu/files/682026_CDS-2025-26_Revised_Published.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "31-34 (enrolled Fall 2025; 10% submitted ACT, CDS 2025-26)",
+      "sourceUrl": "https://data.lehigh.edu/sites/data.lehigh.edu/files/682026_CDS-2025-26_Revised_Published.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional indefinitely; superscores SAT and ACT; ACT science section considered if taken",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Nearly: on average 97% of need met for aided first-years in 2025-26, and 431 of 687 had need fully met (CDS H2). Lehigh pledged in 2015 to meet 100% of demonstrated need",
+      "sourceUrl": "https://data.lehigh.edu/sites/data.lehigh.edu/files/682026_CDS-2025-26_Revised_Published.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (2027-28 CSS Profile) for institutional need-based aid, with FAFSA; due by your application deadline: Nov 1 for ED I, Jan 15 for ED II and RD; fee waived for U.S. families earning under $100,000",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/tuition-affording-college/how-apply-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: Dean's Scholarship $15,000-$25,000/yr; Founder's and Trustees' Scholarships at full or half tuition; some awards need an extra application, others consider all applicants; ED and RD considered equally",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/tuition-affording-college/merit-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$89,820 direct cost 2026-27 (tuition $69,420, housing $11,470, meals $7,760, fees); aid budget adds $1,000 books and $1,500 personal",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/tuition-affording-college",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision I (Nov 1) and Early Decision II (Jan 1), both binding; no Early Action; Regular Decision Jan 1",
+      "sourceUrl": "https://csb.lehigh.edu/curriculum/how-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional and evaluative: not required, but interviews become part of the application",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered, marked in the Very Important/Important columns of CDS C7 'Level of applicant's interest' (columns merged in the PDF text)",
+      "sourceUrl": "https://data.lehigh.edu/sites/data.lehigh.edu/files/682026_CDS-2025-26_Revised_Published.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Applicants pick an intended college or program (Arts & Sciences, Rossin Engineering, Business, Health, or intercollegiate programs such as Computer Science and Business); 7-year BA/DMD with Penn Dental needs a separate supplement by Jan 1 and cannot be combined with Early Decision",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/admissions-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Lehigh Commitment: full-tuition grant for families with income under $75,000 and typical assets (under $500,000), offered automatically if aid forms are filed on time",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/tuition-affording-college/lehigh-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Supplement prompts taken from third-party guides (two agree on wording); Lehigh posts them only in the Common App. One guide says two essays are required and marks the college/program essay with an asterisk, so its requirement may depend on the program chosen",
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/lehigh-university-supplemental-essay-prompt-guide/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$16,917 (2023-2024, family income $0-$30,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213668",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$17,140 (2023-2024, family income $30,001-$48,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213668",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$18,722 (2023-2024, family income $48,001-$75,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213668",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$22,184 (2023-2024, family income $75,001-$110,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213668",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,751 (2023-2024, family income $110,001 and more; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=213668",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://csb.lehigh.edu/curriculum/how-apply",
+      "cycle": "2026-27",
+      "note": "Early Decision I, binding; CSS Profile due Nov 1; decision mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-01",
+      "sourceUrl": "https://csb.lehigh.edu/curriculum/how-apply",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile due Jan 15; decision mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://csb.lehigh.edu/curriculum/how-apply",
+      "cycle": "2026-27",
+      "note": "CSS Profile due Jan 15; decision late March"
+    },
+    {
+      "plan": "7-Yr BA/DMD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://www2.lehigh.edu/admissions/apply",
+      "cycle": "2026-27",
+      "note": "Penn Supplement required; not compatible with ED"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why Lehigh",
+      "prompt": "How did you first learn about Lehigh University and what motivated you to apply?",
+      "limit": 200,
+      "unit": "words",
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/lehigh-university-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true,
+      "required": true
+    },
+    {
+      "label": "Celebrate the good",
+      "prompt": "At Lehigh, we believe in pausing to celebrate the good—meaningful moments that bring joy, pride or motivation. What’s something great happening in your life right now? It could be an accomplishment, a personal win (big or small) or something you’re genuinely excited about. If it matters to you, we’d love to hear about it.",
+      "limit": 200,
+      "unit": "words",
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/lehigh-university-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true,
+      "required": true
+    },
+    {
+      "label": "College/program fit",
+      "prompt": "How will the unique combination of college, program, major and/or 4+1 program that you selected above allow you to achieve your educational or professional goals?",
+      "limit": 200,
+      "unit": "words",
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/lehigh-university-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

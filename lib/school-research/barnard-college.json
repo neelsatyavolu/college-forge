@@ -1,0 +1,204 @@
+{
+  "slug": "barnard-college",
+  "name": "Barnard College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "10.1% (1,048 of 10,426; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://barnard.edu/sites/default/files/2026-09/Barnard_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "33.1% ED (476 of 1,437; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://barnard.edu/sites/default/files/2026-09/Barnard_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1480-1540 (38% submitted SAT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://barnard.edu/sites/default/files/2026-09/Barnard_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-35 (16% submitted ACT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://barnard.edu/sites/default/files/2026-09/Barnard_CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional (SAT/ACT) for 2027 entry; scores accepted until Nov 15 (ED) / Feb 28 (RD); ED deferrals can't change testing status",
+      "sourceUrl": "https://barnard.edu/temporary-test-optional-policy-faq",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Need-blind; meets full demonstrated need for U.S. citizens and permanent residents applying as first-years",
+      "sourceUrl": "https://barnard.edu/fact-sheet",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA + documents for Barnard grant aid; due Nov 1, 2026 (ED/QuestBridge) or Jan 15, 2027 (RD)",
+      "sourceUrl": "https://barnard.edu/finaid/apply-for-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit, athletic or talent scholarships; all institutional aid is need-based",
+      "sourceUrl": "https://barnard.edu/finaid/FAQs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$103,000 total cost of attendance 2026-27 for residents (tuition $73,120, fees $2,472, housing $14,054, meals $9,204, books/personal/travel)",
+      "sourceUrl": "https://barnard.edu/finaid/cost-of-attendance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED only (binding, Nov 1); no EA or ED II; RD Jan 1; QuestBridge; 40-45% of class historically from ED",
+      "sourceUrl": "https://barnard.edu/admissions/application-rounds",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews offered; optional 60-90 second Glimpse video (U.S. and QuestBridge applicants) or InitialView/Vericant (international), due with the application",
+      "sourceUrl": "https://barnard.edu/admissions/the-application-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/barnard/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission is to the college; majors (50+) are declared later via a Major Declaration Form; no portfolio or audition required for any intended major",
+      "sourceUrl": "https://barnard.edu/admissions/the-application-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Columbia relationship: Barnard is a women's college affiliated with Columbia University, with its own trustees, faculty and endowment; students can take 1,500+ Columbia courses and share libraries, and the degree is Columbia's",
+      "sourceUrl": "https://barnard.edu/fact-sheet",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Two core-subject teacher recs + counselor rec; $75 fee or waiver; ED materials (school report, recs, self-reported scores) due Nov 20",
+      "sourceUrl": "https://barnard.edu/admissions/the-application-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$11,600 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=189097",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$15,374 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=189097",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$19,094 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=189097",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$24,753 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=189097",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$51,378 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=189097",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://barnard.edu/admissions/application-rounds",
+      "cycle": "2026-27",
+      "note": "Binding; FAFSA + CSS Profile due Nov 1; notification mid-December"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://barnard.edu/admissions/application-rounds",
+      "cycle": "2026-27",
+      "note": "FAFSA + CSS Profile due Jan 15; notification late March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Short answer: bold question",
+      "prompt": "At Barnard, inquiry starts with asking bold questions about the world. What is one bold question on your mind and what about it piques your curiosity?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://barnard.edu/barnard-short-answer-questions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short answer: trailblazing woman (200-250 words)",
+      "prompt": "Barnard College is shaped by trailblazing women with a multitude of perspectives. Think of a woman - historical, fictional, contemporary, or personally significant - whose views or approach to problem-solving differ from your own, but who excels at bringing people together. What lesson from her approach would shape how you show up at Barnard both inside and outside of the classroom?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://barnard.edu/barnard-short-answer-questions",
+      "cycle": "2026-27"
+    }
+  ]
+}

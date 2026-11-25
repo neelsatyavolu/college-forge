@@ -1,0 +1,235 @@
+{
+  "slug": "fordham-university",
+  "name": "Fordham University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "47% (25,300 of 53,599 completed applications; Fall 2026 entry, Class of 2030)",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/why-fordham/admission-facts/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "51.6% (307 of 595 ED applicants; CDS 2024-25, as transcribed by Esslo)",
+      "sourceUrl": "https://www.esslo.org/colleges/fordham/llms.txt",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1380-1490 (Class of 2030 profile; 60.3% of admits applied without scores). CDS 2024-25 enrolled first-years: 1340-1470",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/why-fordham/admission-facts/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-34 (Class of 2030 profile). CDS 2024-25 enrolled first-years: 30-33",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/why-fordham/admission-facts/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Class of 2030: average high school GPA 3.76; 54.0% in top 10% of class, 86.5% in top 25%",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/why-fordham/admission-facts/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional (since Fall 2021 entry); superscores SAT and ACT, including across the old and new ACT composite",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/testing-policy/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No; average 76% of need met (CDS 2024-25, as transcribed by Esslo)",
+      "sourceUrl": "https://www.esslo.org/colleges/fordham/llms.txt",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": true
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with the FAFSA for full aid consideration (CSS code 2259). Domestic deadlines: Nov 15 (EA/ED I), Jan 15 (ED II), Feb 1 (RD); international applicants file by the application deadline",
+      "sourceUrl": "https://www.fordham.edu/student-financial-services/undergraduate-financial-aid/first-year-students/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes; all applicants are considered for Fordham scholarships through the admission application, no test score needed. Presidential Scholarship (generally top 1-2% of class) covers tuition, fees, average room and meal plan. FAFSA required to disburse merit aid",
+      "sourceUrl": "https://www.fordham.edu/student-financial-services/types-of-financial-aid/undergraduate-scholarships-and-grants/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$32,474 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191241",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$31,657 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191241",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$37,313 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191241",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$42,030 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191241",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$52,228 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191241",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$102,188 COA for Fordham College at Rose Hill on-campus residents, 2026-27 (tuition $68,886); Lincoln Center and Gabelli have separate breakdowns",
+      "sourceUrl": "https://www.fordham.edu/student-financial-services/tuition-and-payments/undergraduate-tuition/fordham-college-at-rose-hill/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "EA (non-binding) and ED I (binding) due Nov 1 with decisions Dec 20; ED II (binding) Jan 3, decision Feb 15; RD Jan 3, decision Apr 1. ED requires a signed ED Agreement. For 2026-27 the EA and ED I deadlines were extended to Nov 8",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Interview rated 'Not Considered' (CDS 2024-25 C7, as transcribed by Esslo). Theatre non-performance tracks interview as part of creative review",
+      "sourceUrl": "https://www.esslo.org/colleges/fordham/llms.txt",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": true
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2024-25 C7, as transcribed by Esslo)",
+      "sourceUrl": "https://www.esslo.org/colleges/fordham/llms.txt",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Choose a campus (Rose Hill or Lincoln Center) and a major area when applying. Ailey/Fordham BFA Dance and Theatre applicants must apply by EA, pick an alternate major, and complete an audition or creative review (Dance also needs the Ailey application). Visual Arts portfolio recommended",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Required: Common App essay, transcript, one recommendation, $80 fee. Optional: one of three Fordham short responses (300 words max), Challenges and Circumstances, Additional Information. Spring first-year entry also offered (Nov 1)",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Fordham's current CDS (2024-25) is posted only as a SharePoint spreadsheet that couldn't be read, so need-met, ED and C7 figures come from a third-party transcription",
+      "sourceUrl": "https://www.fordham.edu/about/leadership-and-administration/administrative-offices/office-of-the-provost/provost-office-units/institutional-research-and-assessment/consumer-information/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/",
+      "cycle": "2026-27",
+      "note": "Non-binding; extended to Nov 8; CSS Profile/FAFSA by Nov 15 (domestic); decision Dec 20"
+    },
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; extended to Nov 8; CSS Profile/FAFSA by Nov 15 (domestic); decision Dec 20; deposit Jan 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-03",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile/FAFSA by Jan 15 (domestic); decision Feb 15; deposit Mar 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-03",
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/",
+      "cycle": "2026-27",
+      "note": "CSS Profile/FAFSA by Feb 1 (domestic); decision Apr 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Optional short response, option A (choose one of three)",
+      "prompt": "At Fordham, we expect students to care for and engage with their communities and be active citizens for positive change. Please share an experience you had that caused you to develop a new perspective, change your point of view, and/or empower you to take an action or be courageous. Your response should include examples of your personal growth (e.g., what did you learn, did your point of view change, did you develop new skills or strengths?).",
+      "limit": 300,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/writing-for-the-common-application/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional short response, option B (choose one of three)",
+      "prompt": "Our motto is “New York is my campus, Fordham is my school.” New York City is a diverse and global city that provides Fordham students with a special kind of educational experience, full of both challenge and opportunity. What has prepared you to embrace the unique opportunity of living and learning in New York City?",
+      "limit": 300,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/writing-for-the-common-application/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional short response, option C (choose one of three)",
+      "prompt": "At Fordham, we have a tradition of having our graduating seniors send a message to their younger selves. What will the future “you” tell the “you” of today about what you accomplished as a Fordham student?",
+      "limit": 300,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/writing-for-the-common-application/",
+      "cycle": "2026-27"
+    }
+  ]
+}

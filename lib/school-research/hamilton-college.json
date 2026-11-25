@@ -1,0 +1,213 @@
+{
+  "slug": "hamilton-college",
+  "name": "Hamilton College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "13.6% (1,210 of 8,904; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://www.hamilton.edu/offices/oir/common-data-sets/cds-2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "28.1% ED (315 of 1,120; Fall 2025, CDS 2025-26; ED I and II combined)",
+      "sourceUrl": "https://www.hamilton.edu/offices/oir/common-data-sets/cds-2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1440-1510 (35% submitted SAT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.hamilton.edu/offices/oir/common-data-sets/cds-2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (13% submitted ACT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.hamilton.edu/offices/oir/common-data-sets/cds-2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "86% of rank-reporting first-years in top tenth of HS class (CDS 2025-26 C10)",
+      "sourceUrl": "https://www.hamilton.edu/offices/oir/common-data-sets/cds-2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; self-reported SAT/ACT accepted",
+      "sourceUrl": "https://www.hamilton.edu/admission/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets full demonstrated need of all accepted students for four years, with grants, loans and work-study (not no-loan)",
+      "sourceUrl": "https://www.hamilton.edu/admission/finaid/prospective-timeline-before-applying",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA (U.S.); CSS only for international; aid due Nov 19, 2026 (ED I), Jan 15, 2027 (ED II/RD), Nov 2, 2026 (QuestBridge)",
+      "sourceUrl": "https://www.hamilton.edu/admission/finaid/prospective-timeline-before-applying",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid; all Hamilton scholarships are need-based",
+      "sourceUrl": "https://www.hamilton.edu/admission/finaid/types-of-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,250 comprehensive fee 2026-27 (tuition $75,210) + up to ~$3,600 books, personal, travel",
+      "sourceUrl": "https://www.hamilton.edu/admission/tuition",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 4), both binding; no EA; RD applicants can switch to ED II by Feb 1, 2027; QuestBridge; January (spring) admission option",
+      "sourceUrl": "https://www.hamilton.edu/admission/apply/early-decision",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional, mostly video interviews with admission officers or trained seniors; complete by Nov 19, 2026 (ED I) or Jan 10, 2027 (ED II/RD)",
+      "sourceUrl": "https://www.hamilton.edu/admission/interviews",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'; interview also 'considered')",
+      "sourceUrl": "https://www.collegedata.fyi/schools/hamilton-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Open curriculum; no admission by major; concentration declared spring of sophomore year; dual-degree Early Assurance pathways need an extra essay",
+      "sourceUrl": "https://www.hamilton.edu/academics/open-curriculum/advising/declaring-your-concentration",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Only one teacher rec required (second optional); optional Supplemental Short Answer, 60-second 'Hamilton Hello' video and arts supplement via Applicant Portal; $65 fee",
+      "sourceUrl": "https://www.hamilton.edu/admission/apply/first-year",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$8,028 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191515",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$9,489 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191515",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$10,863 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191515",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$20,614 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191515",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$46,907 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=191515",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.hamilton.edu/admission/apply/early-decision",
+      "cycle": "2026-27",
+      "note": "ED I, binding; notification by Dec 19; aid application due Nov 19"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.hamilton.edu/admission/apply/early-decision",
+      "cycle": "2026-27",
+      "note": "ED II, binding; notification by Feb 15; aid due Jan 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.hamilton.edu/admission/apply/first-year",
+      "cycle": "2026-27",
+      "note": "Notification late March; aid due Jan 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Supplemental Short Answer (optional)",
+      "prompt": "At Hamilton, we each bring different backgrounds and perspectives, and we teach one another about the world through our individual and shared experiences. What would you like us to know about you and your interest in Hamilton?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/hamilton-college-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Early Assurance Pathway essay (required only for dual-degree pathway applicants)",
+      "prompt": "Why are you interested in this pathway and how does Hamilton’s liberal arts environment prepare you to pursue this opportunity?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/hamilton-college-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

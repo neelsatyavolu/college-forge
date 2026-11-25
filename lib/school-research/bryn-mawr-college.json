@@ -1,0 +1,186 @@
+{
+  "slug": "bryn-mawr-college",
+  "name": "Bryn Mawr College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "29.4% (1,205 of 4,094; Class of 2028, CDS 2024-25)",
+      "sourceUrl": "https://www.brynmawr.edu/sites/default/files/media/documents/2024-12/CDS-2024-2025-Bryn%20Mawr%20Read%20Only.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "36.6% ED (167 of 456; CDS 2024-25)",
+      "sourceUrl": "https://www.brynmawr.edu/sites/default/files/media/documents/2024-12/CDS-2024-2025-Bryn%20Mawr%20Read%20Only.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1290-1490 (enrolled Fall 2024, CDS 2024-25)",
+      "sourceUrl": "https://www.brynmawr.edu/sites/default/files/media/documents/2024-12/CDS-2024-2025-Bryn%20Mawr%20Read%20Only.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "29-33 (enrolled Fall 2024, CDS 2024-25)",
+      "sourceUrl": "https://www.brynmawr.edu/sites/default/files/media/documents/2024-12/CDS-2024-2025-Bryn%20Mawr%20Read%20Only.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all applicants; international applicants still submit English proficiency results",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of calculated need for admitted students; Beacon Initiative: tuition-free from fall 2026 for US families under $175,000 with typical assets",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/tuition-financial-aid/tuition-fees-costs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (both parent households if separated) with FAFSA and tax returns via IDOC; must apply for aid when applying for admission to be eligible later",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/tuition-financial-aid/apply-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Limited merit scholarships awarded by Admissions without regard to need; no separate application",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/tuition-financial-aid/grants-scholarships-loans",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$11,017 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211273",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$18,457 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211273",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$17,262 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211273",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$19,330 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211273",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$40,085 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211273",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$94,291 billed for 2026-27 (tuition $71,290, food & housing $21,440, college fee $1,120, SGA dues $441); plus about $2,000 books and miscellaneous",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/tuition-financial-aid/tuition-fees-costs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 1), both binding; RD Jan 15; no EA",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not required but strongly recommended; June-December of senior year, limited slots; InitialView or a Slate video accepted",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Bryn Mawr Writing Supplement (250-500 words) is required of all first-year applicants",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: the 2025-26 CDS PDF's form fields did not render, so figures come from CDS 2024-25; C7 demonstrated-interest rating not readable; no major/program admission notes found",
+      "sourceUrl": "https://www.brynmawr.edu/sites/default/files/media/documents/2026-04/CDS%202025-26%20Bryn%20Mawr%20Read%20Only.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "cycle": "2026-27",
+      "note": "ED I, binding"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-01",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "cycle": "2026-27",
+      "note": "Binding"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "cycle": "2026-27",
+      "note": "Mid-year report due Feb 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Bryn Mawr Writing Supplement",
+      "prompt": "Bryn Mawr students bring their authentic selves to campus. What do you know about yourself to be true—and what in your background or experience led you to that truth?",
+      "limit": 500,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.brynmawr.edu/admissions-aid/apply",
+      "cycle": "2026-27"
+    }
+  ]
+}

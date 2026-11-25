@@ -1,0 +1,243 @@
+{
+ "slug": "university-of-california-san-diego",
+ "name": "University of California San Diego",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "28.6% (39,054 of 136,750; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/uc-san-diego/2025-26/4480df3c34df2e7daf3ccff09ac4141e44db26d0fa6d96c0204b9b0a6e211700.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "Not reported: UC San Diego does not consider SAT/ACT",
+   "sourceUrl": "https://admissions.ucsd.edu/first-year/application-review.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "Not reported: UC San Diego does not consider SAT/ACT",
+   "sourceUrl": "https://admissions.ucsd.edu/first-year/application-review.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Review uses 10th-11th grade A-G GPA with honors/AP/IB weighting; ELC (top 9% of a CA high school) recognized",
+   "sourceUrl": "https://admissions.ucsd.edu/first-year/application-review.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-free: SAT/ACT not considered for admission or scholarships",
+   "sourceUrl": "https://admissions.ucsd.edu/first-year/application-review.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No 100%-of-need pledge. UC Blue and Gold: most California families earning up to $100,000 get enough gift aid to cover UC tuition",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/tuition-financial-aid/types-of-aid/blue-and-gold-opportunity-plan.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA (or California Dream Act Application) by March 2 for priority aid",
+   "sourceUrl": "https://students.ucsd.edu/finances/financial-aid/applying/timelines/undergrad-entering.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Scholarships exist (merit, excellence, need, leadership criteria); see Financial Aid and Scholarships Office",
+   "sourceUrl": "https://students.ucsd.edu/finances/financial-aid/types/index.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$7,525 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110680",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$8,155 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110680",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$9,942 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110680",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$15,199 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110680",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$28,785 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110680",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 (2026 cohort), on campus: $47,283 California residents; $86,553 nonresidents (adds $39,270 supplemental tuition)",
+   "sourceUrl": "https://fas.ucsd.edu/cost-of-attendance/undergraduates/index.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "No ED or EA. Single UC application filing period Oct 1-Nov 30, 2026",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Selective (capacity-limited) majors: Data Science, Engineering, Public Health; list a non-selective alternate major. Nanoengineering and Structural Engineering are screened majors. Applicants rank their top four of the undergraduate colleges.",
+   "sourceUrl": "https://admissions.ucsd.edu/first-year/application-requirements.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "UC Personal Insight Questions: answer any 4 of the 8, max 350 words each. Optional portfolio/audition for Music, Theatre & Dance, Visual Arts.",
+   "sourceUrl": "https://admissions.ucsd.edu/first-year/application-requirements.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Not considered (CDS 2025-26 C7 as parsed by collegedata.fyi; the PDF marks are ambiguous); UC application has no interview step on UC San Diego's review page",
+   "sourceUrl": "https://www.collegedata.fyi/schools/uc-san-diego/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 level of applicant's interest, as parsed by collegedata.fyi)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/uc-san-diego/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "RD",
+   "date": "2026-11-30",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "cycle": "2026-27",
+   "note": "UC application filing period Oct 1-Nov 30; no ED/EA"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "PIQ 1: Leadership",
+   "prompt": "Describe an example of your leadership experience in which you have positively influenced others, helped resolve disputes or contributed to group efforts over time.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 2: Creativity",
+   "prompt": "Every person has a creative side, and it can be expressed in many ways: problem solving, original and innovative thinking, and artistically, to name a few. Describe how you express your creative side.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 3: Talent",
+   "prompt": "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 4: Educational opportunity or barrier",
+   "prompt": "Describe how you have taken advantage of a significant educational opportunity or worked to overcome an educational barrier you have faced.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 5: Challenge",
+   "prompt": "Describe the most significant challenge you have faced and the steps you have taken to overcome this challenge. How has this challenge affected your academic achievement?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 6: Academic subject",
+   "prompt": "Think about an academic subject that inspires you. Describe how you have furthered this interest inside and/or outside of the classroom.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 7: Community",
+   "prompt": "What have you done to make your school or your community a better place?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 8: Strong candidate",
+   "prompt": "Beyond what has already been shared in your application, what do you believe makes you a strong candidate for admissions to the University of California?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  }
+ ]
+}

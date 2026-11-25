@@ -1,0 +1,197 @@
+{
+  "slug": "pomona-college",
+  "name": "Pomona College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "7.1% (890 of 12,470; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1490-1550 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-34 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; scores self-reported if chosen. ACT submitters must take the Core ACT plus the Science section",
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Yes: meets full demonstrated need of every admitted student who enrolls, with no loans in the aid offer; need-blind for domestic students",
+      "sourceUrl": "https://www.pomona.edu/financial-aid/access-my-financial-aid/understanding-your-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required: institutional aid eligibility is based on the CSS Profile (code 4607), plus FAFSA or California Dream Act Application; noncustodial parent Profile also required",
+      "sourceUrl": "https://www.pomona.edu/financial-aid/policies",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Essentially none: aid is need-based; CDS 2025-26 H1 reports only $36,902 in institutional non-need aid college-wide",
+      "sourceUrl": "https://www.collegedata.fyi/schools/pomona-college/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,670 on campus (2026-27: tuition $71,660, fees $420, housing and food $23,590); plus travel/personal $1,500-$2,600 and medical insurance $3,312 if not waived. Books provided free from fall 2026 (ACE program)",
+      "sourceUrl": "https://www.pomona.edu/financial-aid/cost-attendance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision I Nov 8 (decision by Dec 15, reply Jan 1); Early Decision II Jan 8 (by Feb 15, reply Mar 1); both binding. Regular Decision Jan 8 (by April 1). No EA",
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not offered: Pomona does not offer staff or alumni interviews (international applicants may use an alumni interviewer or private service)",
+      "sourceUrl": "https://catalog.pomona.edu/information/admissionsandfinancialaid/admissions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission; Academic Interest Statement asks about intended major(s). Pomona is one of The Claremont Colleges (cross-registration across the consortium); optional arts supplements",
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$5,297 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?121345",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$5,418 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?121345",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$5,790 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?121345",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$16,466 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?121345",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,928 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?121345",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-08",
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "cycle": "2026-27",
+      "note": "ED I; binding; decision by Dec 15; arts supplement due Nov 11"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-08",
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "cycle": "2026-27",
+      "note": "Binding; decision by Feb 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-08",
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "cycle": "2026-27",
+      "note": "Decision by April 1; midyear grades by Feb 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Academic Interest Statement",
+      "prompt": "What draws you to the subject(s) you selected as potential major(s)? If undecided, share more about one of your academic passions or interests.",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short-Response Essay, option 1",
+      "prompt": "Pomona is home to a diverse community of faculty, staff and students who, through close ties and collaboration, enable each other to identify and explore their greatest passions. Considering this, respond to one of the following: Reflecting on a community that you are a part of, what values or perspectives from that community would you bring to Pomona?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short-Response Essay, option 2",
+      "prompt": "Pomona is home to a diverse community of faculty, staff and students who, through close ties and collaboration, enable each other to identify and explore their greatest passions. Considering this, respond to one of the following: Describe an experience you had outside the classroom that changed the way you think and/or how you engage with your peers. What was that experience and what did you learn from it?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short-Response Essay, option 3",
+      "prompt": "Pomona is home to a diverse community of faculty, staff and students who, through close ties and collaboration, enable each other to identify and explore their greatest passions. Considering this, respond to one of the following: Choose any person or group of people in your life and share how they would describe you.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.pomona.edu/admissions/paths-apply",
+      "cycle": "2026-27"
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "slug": "case-western-reserve-university",
+  "name": "Case Western Reserve University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "35.3% (13,890 admitted of 39,332 applicants; Fall 2025 entry, Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://case.edu/ir/sites/default/files/2026-02/CDS%202025-26%20Adjusted%20Final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "25.0% (263 admitted of 1,053 Early Decision applicants; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://case.edu/ir/sites/default/files/2026-02/CDS%202025-26%20Adjusted%20Final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1440-1530 (enrolled Fall 2025; EBRW 710-760, Math 730-780; 52% submitted SAT)",
+      "sourceUrl": "https://case.edu/ir/sites/default/files/2026-02/CDS%202025-26%20Adjusted%20Final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-34 (enrolled Fall 2025)",
+      "sourceUrl": "https://case.edu/ir/sites/default/files/2026-02/CDS%202025-26%20Adjusted%20Final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; superscores SAT and ACT by section; no minimum GPA or score",
+      "sourceUrl": "https://case.edu/admission/apply/application-tips",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for admitted students; packages mix scholarships, grants, work-study and loans",
+      "sourceUrl": "https://case.edu/admission/cost-and-aid/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA for U.S. citizens/permanent residents (CSS code 1105); aid documents due Nov 15 (EA/ED I), Dec 15 (PPSP), Jan 22 (ED II), Feb 1 (RD)",
+      "sourceUrl": "https://case.edu/admission/cost-and-aid/apply-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: all first-year applicants automatically considered for merit scholarships; separate scholarship competitions (incl. full-tuition awards) need an extra application and essay, due Feb 15",
+      "sourceUrl": "https://case.edu/admission/cost-and-aid/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,704 total cost on campus 2026-27 (tuition $71,410); plus up to $2,000 transportation allowance; nursing adds $1,450 in fees",
+      "sourceUrl": "https://case.edu/admission/cost-and-aid/tuition-and-costs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action Nov 1 (non-restrictive), Early Decision I Nov 1 (binding), Early Decision II Jan 15 (binding), Regular Decision Jan 15; Pre-Professional Scholars Program Dec 1",
+      "sourceUrl": "https://case.edu/admission/apply/deadlines-and-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not part of the standard first-year requirements; Pre-Professional Scholars finalists must interview in late March. CDS C7 lists interview as a considered factor",
+      "sourceUrl": "https://case.edu/admission/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS C7 marks 'Level of applicant's interest' in the considered-or-higher columns; exact level not legible in the PDF text)",
+      "sourceUrl": "https://case.edu/ir/sites/default/files/2026-02/CDS%202025-26%20Adjusted%20Final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Pre-Professional Scholars Program (conditional admission to CWRU medicine or dental school) needs two extra essays, a Dec 1 deadline and a finalist interview; music and music education majors must submit an Arts Supplement (due 15 days after the application deadline), optional for others",
+      "sourceUrl": "https://case.edu/admission/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essays for general applicants: the first-year checklist lists only extra essays for Pre-Professional Scholars applicants",
+      "sourceUrl": "https://case.edu/admission/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Deadline page does not print a year; dates assumed to be for the 2026-27 cycle (Early Decision Agreement form posted 2026-07)",
+      "sourceUrl": "https://case.edu/admission/apply/deadlines-and-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$19,025 (2023-2024, family income $0-$30,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=201645",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$18,506 (2023-2024, family income $30,001-$48,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=201645",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$20,849 (2023-2024, family income $48,001-$75,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=201645",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$26,159 (2023-2024, family income $75,001-$110,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=201645",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$53,061 (2023-2024, family income $110,001 and more; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=201645",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://case.edu/admission/apply/deadlines-and-requirements",
+      "cycle": "2026-27",
+      "note": "Non-restrictive; aid documents due Nov 15; decision Dec 19"
+    },
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://case.edu/admission/apply/deadlines-and-requirements",
+      "cycle": "2026-27",
+      "note": "Early Decision I, binding; aid documents Nov 15; decision Dec 5"
+    },
+    {
+      "plan": "PPSP",
+      "date": "2026-12-01",
+      "sourceUrl": "https://case.edu/admission/apply/deadlines-and-requirements",
+      "cycle": "2026-27",
+      "note": "Pre-Professional Scholars Program; aid documents Dec 15; decision Jan 30"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://case.edu/admission/apply/deadlines-and-requirements",
+      "cycle": "2026-27",
+      "note": "Binding; aid documents Jan 22; decision Feb 6"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://case.edu/admission/apply/deadlines-and-requirements",
+      "cycle": "2026-27",
+      "note": "Aid documents Feb 1; decision Mar 20"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Pre-Professional Scholars Program essay 1 (PPSP applicants only)",
+      "prompt": "By applying to the Pre-Professional Scholars Program, you are applying to gain admission to professional school earlier than students who apply in the traditional way. Please indicate why you’re interested in your chosen profession. How do you see yourself being particularly suited to this field? What events and/or experiences have led you to your choice? This essay should be between 250 and 500 words in length.",
+      "limit": 500,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/case-western-reserve-university-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Pre-Professional Scholars Program essay 2 (PPSP applicants only)",
+      "prompt": "In the college application process, you are constantly prompted for a list of your achievements, awards, and accomplishments. While this information is useful to us, we are interested in hearing more about you. Describe an event, achievement, or experience of which you are particularly proud but that will not show up on a resume, may not garner any recognition, and does not appear anywhere else on your admission application. This essay should not exceed 750 words in length.",
+      "limit": 750,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/case-western-reserve-university-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

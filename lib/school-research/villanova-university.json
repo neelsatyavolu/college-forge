@@ -1,0 +1,178 @@
+{
+  "slug": "villanova-university",
+  "name": "Villanova University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "28.1% (7,272 of 25,841 first-year applicants admitted, Fall 2025 entry / Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.villanova.edu/content/dam/villanova/provost/decision_support/CDS-2025-2026-v3.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "59.8% ED (1,005 of 1,680 ED applicants admitted, Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.villanova.edu/content/dam/villanova/provost/decision_support/CDS-2025-2026-v3.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1420-1490 (19% of enrolled first-years submitted SAT, CDS 2025-26)",
+      "sourceUrl": "https://www.villanova.edu/content/dam/villanova/provost/decision_support/CDS-2025-2026-v3.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-34 (9% of enrolled first-years submitted ACT, CDS 2025-26)",
+      "sourceUrl": "https://www.villanova.edu/content/dam/villanova/provost/decision_support/CDS-2025-2026-v3.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional through the 2026-27 cycle (Class of 2031); superscores SAT/ACT; self-reported scores OK. Scores count if reported by Nov 10 (ED I/EA) or Jan 31 (ED II/RD)",
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/first-year-applicants.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No: Villanova does not currently meet 100% of demonstrated need (CDS 2025-26: average 83.5% of need met for first-years)",
+      "sourceUrl": "https://www.villanova.edu/university/office-of-financial-assistance/financial-aid-process/first-year-students.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for institutional need-based aid, plus FAFSA. Deadlines: ED I and EA Nov 1; ED II and RD Jan 15. Late applicants aided only if funds remain",
+      "sourceUrl": "https://www.villanova.edu/university/office-of-financial-assistance/financial-aid-process/first-year-students.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Limited merit aid via Admission: Presidential Scholarship (25/yr; tuition, housing, meals, fees, books) and St. Martin de Porres Scholarship (full cost; FAFSA and CSS Profile required). All eligible applicants considered",
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/Financial-Assistance-and-scholarship/merit-based-scholarships.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$96,886 estimated cost of attendance on campus, 2026-27 (tuition $72,990, fee $1,024, housing $10,314, food $9,040, plus books, supplies, personal, transport)",
+      "sourceUrl": "https://www.villanova.edu/university/office-of-financial-assistance/financial-aid-process/cost-of-attendance.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    { "key": "net_price_lt30k", "value": "$17,823 (2023-24, family income $0-30k, federal-aid recipients)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=216597", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$16,496 (2023-24, family income $30-48k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=216597", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$20,923 (2023-24, family income $48-75k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=216597", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$33,389 (2023-24, family income $75-110k)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=216597", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$58,741 (2023-24, family income over $110k; overall average net price $37,201)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=216597", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    {
+      "key": "ed_ea_options",
+      "value": "EA Nov 1 (non-binding, not restrictive, decision by Jan 20); ED I Nov 1 (binding, by Dec 1); ED II Jan 15 (binding, by Feb 15); RD Jan 15 (by Apr 1). Switch EA to ED I by Nov 10; deferred EA/RD to ED II by Jan 31",
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/dates-and-deadlines.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No admission interviews offered",
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/faqs.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not tracked; visiting has zero bearing on the decision (CDS 2024-25 C7 also lists applicant interest as Not Considered)",
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/faqs.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to a college or major: Liberal Arts only as Exploratory Arts (declare by end of year 2); Sciences to a named major or Exploratory Science (first choice not guaranteed); Business applies to VSB generally (major chosen sophomore year); Engineering to a named major with optional second choice; Nursing is direct-admit for four years",
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/faqs.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Requires one teacher recommendation (counselor letter optional) and updated senior-year grades. All first-year applicants are considered for the Honors Program, notified by end of March",
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/first-year-applicants.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/dates-and-deadlines.html", "cycle": "2026-27", "note": "Non-binding; financial aid priority Nov 1" },
+    { "plan": "ED", "date": "2026-11-01", "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/dates-and-deadlines.html", "cycle": "2026-27", "note": "Binding; financial aid (CSS Profile, FAFSA) due Nov 1" },
+    { "plan": "ED2", "date": "2027-01-15", "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/dates-and-deadlines.html", "cycle": "2026-27", "note": "Binding; financial aid due Jan 15" },
+    { "plan": "RD", "date": "2027-01-15", "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/dates-and-deadlines.html", "cycle": "2026-27", "note": "Financial aid priority Jan 15" }
+  ],
+  "supplements": [
+    {
+      "label": "Villanova Writing Supplement (choose one of five, about 250 words): Prompt One",
+      "prompt": "As Pope Leo XIV (Villanova Class of 1977) has said, \"no one can single-handedly bear the weight of the challenges the world is facing, just as no one is so weak that they cannot play their part.\" What have you done to play your part in advancing equity and justice in your community?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/application-essays.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Villanova Writing Supplement (choose one of five, about 250 words): Prompt Two",
+      "prompt": "What is a lesson in life that you have learned that you would want to share with others at Villanova?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/application-essays.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Villanova Writing Supplement (choose one of five, about 250 words): Prompt Three",
+      "prompt": "\"Villanova\" means \"new home.\" Why do you want to call Villanova your new home?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/application-essays.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Villanova Writing Supplement (choose one of five, about 250 words): Prompt Four",
+      "prompt": "Villanova embraces Artificial Intelligence (AI) with a commitment to thoughtful, ethical use rooted in our Augustinian mission and values. How do you see technology helping you to lead, serve, and contribute to the common good?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/application-essays.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Villanova Writing Supplement (choose one of five, about 250 words): Prompt Five",
+      "prompt": "At Villanova, we often say \"each of us strengthens all of us.\" Please detail a time when someone has borrowed some of your strength in their time of need.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/applying-to-villanova/application-essays.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

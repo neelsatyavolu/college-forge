@@ -1,0 +1,169 @@
+{
+  "slug": "rutgers-university-camden",
+  "name": "Rutgers University--Camden",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "67.5% (24,918 of 36,917; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Composite not readable in the CDS PDF; section ranges: EBRW 520-650, Math 505-630 (enrolled Fall 2025; 29% submitted SAT)",
+      "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "23-32 (enrolled Fall 2025; 2% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional at Rutgers-Camden (Rutgers keeps test-optional/test-blind policies through 2027); BS/DO applicants must submit SAT or ACT",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No full-need guarantee found. Bridging the Gap: for eligible New Jersey students, covers remaining in-state tuition and fees after other need-based aid (up to 100%); automatic with FAFSA/NJAFAA",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/bridging-the-gap",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; aid (incl. Bridging the Gap) is based on the FAFSA or NJ Alternative Financial Aid Application",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/bridging-the-gap",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: all applicants considered for merit scholarships, no separate application; priority to those applying by the priority date. One Tuition Grant lets domestic non-NJ residents pay in-state tuition",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/costs-and-aid/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 on campus: $40,599 NJ resident, $62,049 non-resident (tuition $15,381 in-state); commuter $24,716 / $46,166. Eligible out-of-state domestic students get the One Tuition Grant (in-state tuition rate)",
+      "sourceUrl": "https://admissions.rutgers.edu/costs-and-aid/tuition-fees",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action Nov 1 (non-binding, non-restrictive; decision by Jan 31); Regular Decision Dec 1 (decision by Feb 28). Due dates are not hard deadlines; late files reviewed if space remains. No ED",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/dates-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interview in the first-year application requirements",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to a specific school: Camden College of Arts & Sciences, School of Business-Camden or School of Nursing-Camden. Joint BS/DO program requires a test score. Optional honors statement for honors consideration",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "One Rutgers application (Rutgers App or Common App) covers Camden, Newark and New Brunswick. Gaps: CDS C7 (incl. demonstrated interest), C9 SAT composite and H2 % of need met did not extract from the PDF; College Navigator net price not retrieved",
+      "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essays for Common App applicants; one essay required (Rutgers App: 3,800 characters; Common App 250-650 words). A short statement is required only to be considered for honors",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$7,480 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?186371",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$11,862 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?186371",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$13,932 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?186371",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$19,419 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?186371",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$24,651 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?186371",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Non-binding; decision by Jan 31; credentials due two weeks later"
+    },
+    {
+      "plan": "RD",
+      "date": "2026-12-01",
+      "sourceUrl": "https://admissions.camden.rutgers.edu/apply/dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Decision by Feb 28; reply by May 1"
+    }
+  ],
+  "supplements": []
+}

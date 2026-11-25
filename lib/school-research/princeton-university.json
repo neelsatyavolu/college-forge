@@ -1,0 +1,241 @@
+{
+  "slug": "princeton-university",
+  "name": "Princeton University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "4.4% (1,868 of 42,303; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://ir.princeton.edu/document/606",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1490-1560 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://ir.princeton.edu/document/606",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-35 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://ir.princeton.edu/document/606",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "72% of enrolled first-years had a 4.0 and 24% had 3.75-3.99 (CDS C11, Fall 2025)",
+      "sourceUrl": "https://ir.princeton.edu/document/606",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for 2026-27 (fall 2027 entry); SAT/ACT required again from the 2027-28 cycle. Score Choice allowed for SAT; highest ACT composite used. If submitting, test by October (SCEA) or December (RD)",
+      "sourceUrl": "https://admission.princeton.edu/apply/standardized-testing",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need; no-loan policy (need met with grants)",
+      "sourceUrl": "https://finaid.princeton.edu/apply-aid-prospective-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile not used. Apply with the Princeton Financial Aid Application (plus FAFSA for U.S. students); due Nov 9 for SCEA, Feb 1 for RD",
+      "sourceUrl": "https://finaid.princeton.edu/apply-aid-prospective-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No institutional merit or athletic scholarships reported (CDS H2A non-need awards blank); Princeton grants listed on the aid site are need-based",
+      "sourceUrl": "https://ir.princeton.edu/document/606",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$41 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186131",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$352 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186131",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$1,217 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186131",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$4,478 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186131",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$36,094 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186131",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$94,624 first-year budget (tuition $68,140; housing $13,010; food $9,110; books $1,050; personal $3,000; fees $314; travel extra)",
+      "sourceUrl": "https://finaid.princeton.edu/how-aid-works/student-budget",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Single-Choice Early Action (non-binding, restrictive: no other early program at a U.S. private college) due Nov 1; Regular Decision due Jan 1. No ED",
+      "sourceUrl": "https://admission.princeton.edu/apply/first-year-application-dates-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional alumni interview offered after you apply when available; you may opt out in the Princeton questions with no disadvantage. CDS C7 rates it 'Considered'",
+      "sourceUrl": "https://admission.princeton.edu/apply/application-checklist",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://ir.princeton.edu/document/606",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply as A.B. (or undecided) or B.S.E. (engineering) degree candidate; each answers a different academic essay",
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Graded written paper required (preferably English or history), due with the application. Optional Arts Supplement due Nov 6 (SCEA) / Jan 8 (RD). Common App or QuestBridge plus Princeton-specific questions",
+      "sourceUrl": "https://admission.princeton.edu/apply/application-checklist",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "REA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admission.princeton.edu/apply/first-year-application-dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Single-Choice Early Action; restrictive, non-binding; decisions mid-December. Aid application due Nov 9"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://admission.princeton.edu/apply/first-year-application-dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Decisions late March. Aid application due Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Academic interests (A.B. or undecided)",
+      "prompt": "As a research institution that also prides itself on its liberal arts curriculum, Princeton allows students to explore areas across the humanities and the arts, the natural sciences, and the social sciences. What academic areas most pique your curiosity, and how do the programs offered at Princeton suit your particular interests?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Engineering (B.S.E.)",
+      "prompt": "Please describe why you are interested in studying engineering at Princeton. Include any of your experiences in or exposure to engineering, and how you think the programs offered at the University suit your particular interests.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Your Voice: lived experience",
+      "prompt": "Princeton values community and encourages students, faculty, staff and leadership to engage in respectful conversations that can expand their perspectives and challenge their ideas and beliefs. As a prospective member of this community, reflect on how your lived experiences will impact the conversations you will have in the classroom, the dining hall or other campus spaces. What lessons have you learned in life thus far? What will your classmates learn from you? In short, how has your lived experience shaped you? (400-500 words)",
+      "limit": 500,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Your Voice: service",
+      "prompt": "Princeton has a longstanding commitment to understanding our responsibility to society through service and civic engagement. How does your own story intersect with these ideals?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "More About You: new skill",
+      "prompt": "What is a new skill you would like to learn in college?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "More About You: joy",
+      "prompt": "What brings you joy?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "More About You: song",
+      "prompt": "What song represents the soundtrack of your life at this moment?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.princeton.edu/apply/princeton-specific-questions",
+      "cycle": "2026-27"
+    }
+  ]
+}

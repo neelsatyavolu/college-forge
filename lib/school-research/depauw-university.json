@@ -1,0 +1,190 @@
+{
+  "slug": "depauw-university",
+  "name": "DePauw University",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "56.0% (3,794 of 6,772; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1170-1390 (53% of enrollees submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "26-32 (19% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.90; 35% of rank-reporting enrollees in top 10% (CDS 2025-26)",
+      "sourceUrl": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all first-year applicants; self-reported scores accepted; non-submitters still considered for merit",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "DePauw Promise: meets 100% of calculated need for every incoming first-year (grants, work-study, federal loans). Up to $50k income: full direct costs; up to $100k: full tuition; up to $200k: at least half tuition (typical assets). CDS 2025-26 average need met was 91% for first-years, before the Promise",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/scholarships-aid/the-depauw-promise",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; FAFSA only (code 001792). Aid priority dates: Nov 1 (ED I), Dec 1 (EA I), Dec 15 (ED II/EA II), Feb 1 (RD)",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/scholarships-aid/apply-for-aid/prospective-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes; all applicants automatically considered (no separate application); awards up to half the cost of attendance, typical $30,000-$45,000; Rector and Distinguished scholarships; earlier applicants get more options",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/scholarships-aid/types-of-aid/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$83,690 est. COA 2026-27: direct $80,120 (tuition $62,710, housing & meals $16,240, fees $1,170) plus books $800, transport $1,000, personal $1,700, loan fees $70",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/scholarships-aid/tuition-and-fees",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Five rounds: ED I and EA I (Nov 1), ED II and EA II (Dec 15), RD (Feb 1). ED binding; EA non-binding. Early applicants get more scholarship options and earlier access to Honor Scholar and Fellows programs",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not listed in application requirements; CDS 2025-26 rates interview 'Considered'",
+      "sourceUrl": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission; Honor Scholar and Fellows programs (Management, Media, Science Research, Environmental, Global Studies, ITAP) have separate applications, with early applicants getting more time",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No application fee; requirements are transcript, school report and one recommendation (teacher, counselor or community leader). No DePauw-specific supplemental essay listed.",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$13,331 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?150400",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$10,550 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?150400",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$13,219 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?150400",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$17,484 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?150400",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$30,988 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?150400",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "cycle": "2026-27",
+      "note": "ED I, binding; materials by Nov 8; decision Dec 15; deposit Jan 15. Page undated."
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "cycle": "2026-27",
+      "note": "EA I, non-binding; materials by Nov 8; decision Dec 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2026-12-15",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "cycle": "2026-27",
+      "note": "Binding; decision Jan 15; deposit Feb 15"
+    },
+    {
+      "plan": "EA2",
+      "date": "2026-12-15",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "cycle": "2026-27",
+      "note": "Non-binding; decision Jan 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://www.depauw.edu/admission-aid/apply",
+      "cycle": "2026-27",
+      "note": "Decision Mar 1"
+    }
+  ],
+  "supplements": []
+}

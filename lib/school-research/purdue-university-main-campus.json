@@ -1,0 +1,263 @@
+{
+  "slug": "purdue-university-main-campus",
+  "name": "Purdue University--Main Campus",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "43.4% (37,881 of 87,220; Class of 2029, CDS 2025-26, West Lafayette)",
+      "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1220-1470 enrolled (84% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "act_mid50",
+      "value": "28-34 enrolled (23% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.81 (92.8% submitted); 52% top tenth, 80% top quarter. Rigor, GPA and essay 'very important'; tests 'important' (CDS 2025-26 C7/C10/C12). Grades in courses related to the intended major weigh heavily",
+      "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "test_policy",
+      "value": "Expects SAT, ACT or CLT (self-reported; section superscore within a test; scores from last 5 years). Applications without a score accepted only in exceptional cases; 98.3% of 2026 admits sent a score",
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No; average 65.3% of need met for first-years, 549 of 3,311 with need fully met (CDS 2025-26 H2). Boiler Gold Grant covers tuition, fees and books for Indiana students with family income under $80,000 or Pell-eligible",
+      "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; FAFSA (code 001825), priority filing date April 15",
+      "sourceUrl": "https://admissions.purdue.edu/deadlines/financial-aid-scholarship-deadlines/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes; firm Nov 1 deadline (complete admission application) for all university merit scholarships, awarded by holistic review. Presidential Scholarship amounts differ by residency (e.g. up to $16,000/yr non-residents, $10,000/yr Indiana residents). Purdue Scholarship Application priority Dec 15",
+      "sourceUrl": "https://admissions.purdue.edu/cost-financial-aid/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$5,098 (in-state, 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243780",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$6,241 (in-state, 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243780",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$9,438 (in-state, 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243780",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,177 (in-state, 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243780",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$22,742 (in-state, 2023-24); NCES net price covers in-state students only",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243780",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2024-25 on-campus COA: Indiana resident $26,172; out-of-state $44,974 (latest year on College Navigator). Purdue's own 2026-27 cost pages were blocked by a bot check",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243780",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Nonbinding, non-restrictive EA Nov 1 (also the merit, Honors College and competitive-major priority deadline); RD Jan 15. No ED. Admission is much more competitive after Nov 1",
+      "sourceUrl": "https://admissions.purdue.edu/deadlines/first-year-college-student/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No admission interview; interview 'not considered' (CDS 2025-26 C7)",
+      "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
+      "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/purdue-university/2025-26/dde921d3374f139366a3fe19d23023454f1511ed9dc83e6ba39b3e1c8c2c8d1b.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Admits to a specific major and location (West Lafayette or Indianapolis); optional alternate major/location with its own essay. Nov 1 is a priority deadline for competitive majors (First-Year Engineering, Computer Science, professional flight, Nursing, Veterinary technology; several Indianapolis engineering majors); after that only if space allows (see Closed Programs). Engineering applicants need chemistry; nursing/pharmacy need chemistry and biology. Changing majors is not guaranteed",
+      "sourceUrl": "https://admissions.purdue.edu/deadlines/first-year-college-student/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "CDS figures come from collegedata.fyi's copy of Purdue's official 2025-26 CDS workbook (https://www.purdue.edu/idata/wp-content/uploads/2026/04/CDS-2025-2026.xlsx), which purdue.edu blocked behind a bot check. Purdue's deadline pages give no year; dates read as recurring for the 2026-27 cycle. App fee $60. Honors College applicants answer four extra 200-word prompts",
+      "sourceUrl": "https://www.purdue.edu/idata/products-services/common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Purdue advertises 14 years of frozen tuition",
+      "sourceUrl": "https://admissions.purdue.edu/cost-financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.purdue.edu/deadlines/first-year-college-student/",
+      "cycle": "2026-27",
+      "note": "Nonbinding; merit, Honors College and competitive-major priority deadline"
+    },
+    {
+      "plan": "Scholarship",
+      "date": "2026-12-15",
+      "sourceUrl": "https://admissions.purdue.edu/deadlines/financial-aid-scholarship-deadlines/",
+      "cycle": "2026-27",
+      "note": "Purdue Scholarship Application priority deadline"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://admissions.purdue.edu/deadlines/first-year-college-student/",
+      "cycle": "2026-27",
+      "note": "Application closes"
+    },
+    {
+      "plan": "Financial aid",
+      "date": "2027-04-15",
+      "sourceUrl": "https://admissions.purdue.edu/deadlines/financial-aid-scholarship-deadlines/",
+      "cycle": "2026-27",
+      "note": "FAFSA priority filing date (required for Indiana state aid)"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why Purdue 1",
+      "prompt": "How will opportunities at Purdue support your interests, both in and out of the classroom?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Why Purdue 2",
+      "prompt": "Briefly discuss your reasons for choosing your major and your interest in studying at this campus location (Indianapolis or West Lafayette).",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Alternate major (if selected)",
+      "prompt": "Briefly discuss your reasons for pursuing the alternate major and campus location (Indianapolis or West Lafayette) you have selected.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Honors College 1",
+      "prompt": "Tell us about an experience you had which connected ideas from more than one discipline or subject. How did it impact you?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Honors College 2",
+      "prompt": "Tell us about a time you were able to get involved with or explore a topic you are passionate about. What did you take away from that experience?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Honors College 3",
+      "prompt": "Share about a destination you would like to travel to, why it interests you, and how you would engage with the culture while there.",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Honors College 4",
+      "prompt": "Describe a leadership experience you have had in your school or community. How did this shape your approach to leadership?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.purdue.edu/become-student/guide/",
+      "cycle": "2026-27"
+    }
+  ]
+}

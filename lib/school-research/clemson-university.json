@@ -1,0 +1,33 @@
+{
+  "slug": "clemson-university",
+  "name": "Clemson University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "42.4% (27,498 of 64,805; Fall 2025 entry, CDS 2025-26). In-state 52.9% (5,661/10,697), out-of-state 40.4% (21,277/52,651)", "sourceUrl": "https://open.clemson.edu/cgi/viewcontent.cgi?article=1017&context=cds", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1250-1400 (38% of Fall 2025 enrollees submitted SAT; CDS 2025-26)", "sourceUrl": "https://open.clemson.edu/cgi/viewcontent.cgi?article=1017&context=cds", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "28-32 (19% submitted ACT; CDS 2025-26)", "sourceUrl": "https://open.clemson.edu/cgi/viewcontent.cgi?article=1017&context=cds", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "54.6% of Fall 2025 enrollees in top tenth of class, 92.1% in top quarter. Rigor, class rank, GPA and state residency all very important (CDS C7, C10)", "sourceUrl": "https://open.clemson.edu/cgi/viewcontent.cgi?article=1017&context=cds", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional; official scores only, sent by testing agency; SAT and ACT superscored (ACT science excluded). Can change score preference until materials deadline", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/discover/college-preparation-information.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No; average 49% of need met for first-year aid recipients, 181 with need fully met (CDS 2025-26 H2)", "sourceUrl": "https://open.clemson.edu/cgi/viewcontent.cgi?article=1017&context=cds", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; FAFSA only (CDS H8). File FAFSA by Jan 1 for need-based scholarships", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/apply/first-year.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; automatic consideration, no separate application, if you apply by Jan 1 and complete the file by Jan 10. SC LIFE and Palmetto Fellows for SC residents", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/afford.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$13,607 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217882", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$14,109 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217882", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$18,851 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217882", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$24,833 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217882", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$27,922 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217882", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "2026-27 on campus: $38,198 SC resident (tuition $14,038); $66,180 non-resident (tuition $42,020); plus major enrichment fee $0-$2,500", "sourceUrl": "https://www.clemson.edu/financial-aid/cost/estimated-cost-of-attendance.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Non-binding EA (apply by Oct 15, materials by Nov 1, decision mid-December: admit, deny, or moved to RD) and RD (Jan 1, materials Jan 10, decisions mid-February). No ED", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/apply/early-action.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Interview not considered (CDS 2025-26 C7)", "sourceUrl": "https://open.clemson.edu/cgi/viewcontent.cgi?article=1017&context=cds", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Level of applicant's interest: Not considered (CDS 2025-26 C7)", "sourceUrl": "https://open.clemson.edu/cgi/viewcontent.cgi?article=1017&context=cds", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "Choice of major and residency matter: popular or space-limited majors have higher bars, SC residents get priority. Pick two different majors; second choice considered automatically if not admissible to the first. Music/theatre need an audition", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/discover/college-preparation-information.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No required essays or supplements: personal statements, recommendations and resumes may be uploaded to the portal but Clemson does not require them", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/apply/first-year.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Net prices are College Navigator in-state figures; out-of-state net price not published there. SC residents get priority in review", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=217882", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-10-15", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/apply/first-year.html", "cycle": "2026-27", "note": "Non-binding; required materials by Nov 1; decision mid-December" },
+    { "plan": "RD", "date": "2027-01-01", "sourceUrl": "https://www.clemson.edu/admissions/undergraduate-admissions/apply/first-year.html", "cycle": "2026-27", "note": "Materials by Jan 10; also the scholarship and FAFSA (need-based scholarship) deadline" }
+  ],
+  "supplements": []
+}

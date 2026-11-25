@@ -1,0 +1,202 @@
+{
+  "slug": "boston-university",
+  "name": "Boston University",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "12.8% (9,853 of 76,776; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.bu.edu/asir/files/2026/07/CDS-2025-2026-C-updated.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "31% ED (2,165 of 6,907 ED applications; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.bu.edu/asir/files/2026/07/CDS-2025-2026-C-updated.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1420-1510, median 1470 (enrolled Fall 2025; 36% submitted SAT, CDS 2025-26)",
+      "sourceUrl": "https://www.bu.edu/asir/files/2026/07/CDS-2025-2026-C-updated.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-34, median 34 (enrolled Fall 2025; 10% submitted ACT, CDS 2025-26)",
+      "sourceUrl": "https://www.bu.edu/asir/files/2026/07/CDS-2025-2026-C-updated.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional through fall 2028 and spring 2029, for all schools and scholarship programs; SAT and ACT superscored; you choose on the application whether scores are considered and cannot change it after submitting",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/first-year",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for US first-years, no loans in need-based packages (BU Promise, from 2026-27 entry). Income under $200,000 with typical assets: full tuition covered, family pays at most $20,000/yr; $75,000 or less pays $0. First-years averaged 98% of need met (CDS 2025-26)",
+      "sourceUrl": "https://www.bu.edu/articles/2026/new-financial-aid-program-covers-tuition-for-certain-families/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile and FAFSA required for need-based aid (US citizens/PRs); due Nov 2 (ED), Jan 5 (ED2), Jan 5 (RD). BU need-based aid is applied for only once, in the first year",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Presidential Scholarship: half tuition per year (from Fall 2026 entry); no separate application, but the admission application must be complete by Dec 1",
+      "sourceUrl": "https://www.bu.edu/admissions/tuition-aid/scholarships-financial-aid/first-year-merit/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$98,419 total cost of attendance 2026-27 ($95,334 billed: tuition $73,024, housing $13,170, food $7,570, fees $1,570; plus $3,085 other)",
+      "sourceUrl": "https://www.bu.edu/admissions/tuition-aid/tuition/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED (Nov 2) and ED2 (Jan 5), both binding; RD Jan 5. No EA. ED admits must withdraw other applications and sign a statement with counselor and parent",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No general admissions interview listed; College of Fine Arts programs have their own portfolio, audition or interview requirements",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/first-year",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to a specific BU school or college; you may instead be offered the College of General Studies or another BU program. Kilachand Honors College: check Yes and write its required essay; considered only after admission to your school. Music and theatre prescreens due Dec 1",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/first-year",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$9,500 (2023-2024, family income $0-$30,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164988",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$9,342 (2023-2024, family income $30,001-$48,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164988",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$11,778 (2023-2024, family income $48,001-$75,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164988",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$22,517 (2023-2024, family income $75,001-$110,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164988",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$47,504 (2023-2024, family income $110,001 and more; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=164988",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Dec 1 merit deadline matters for RD applicants: apply by Dec 1 to be considered for the Presidential Scholarship even though RD is Jan 5",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gaps: CDS C7 table (demonstrated interest) is unreadable in the official PDF, so demonstrated_interest is missing; supplement prompt and Kilachand essay prompt not published on BU's site (main prompt from a third party)",
+      "sourceUrl": "https://www.bu.edu/asir/files/2026/07/CDS-2025-2026-C-updated.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-02",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile and FAFSA due Nov 2; decision Dec 14"
+    },
+    {
+      "plan": "Priority",
+      "date": "2026-12-01",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
+      "cycle": "2026-27",
+      "note": "Merit scholarship (Presidential) deadline; music and theatre prescreens"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile and FAFSA due Jan 5; decision Feb 8"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.bu.edu/admissions/apply/deadlines",
+      "cycle": "2026-27",
+      "note": "CSS Profile and FAFSA due Jan 5"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "BU supplemental essay (required, Common App)",
+      "prompt": "What about being a student at BU most excites you? How do you hope to contribute to our campus community?",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/boston-university-bu-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

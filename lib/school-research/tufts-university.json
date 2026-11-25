@@ -1,0 +1,230 @@
+{
+  "slug": "tufts-university",
+  "name": "Tufts University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "10.8% (3,613 of 33,415; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://provost.tufts.edu/institutionalresearch/wp-content/uploads/sites/5/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "32% ED (1,071 admitted of 3,344 ED applications; CDS 2025-26, form section labeled Fall 2024 entering class)",
+      "sourceUrl": "https://provost.tufts.edu/institutionalresearch/wp-content/uploads/sites/5/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1460-1520 (enrolled Fall 2025; 42% submitted SAT, CDS 2025-26)",
+      "sourceUrl": "https://provost.tufts.edu/institutionalresearch/wp-content/uploads/sites/5/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025; 16% submitted ACT, CDS 2025-26)",
+      "sourceUrl": "https://provost.tufts.edu/institutionalresearch/wp-content/uploads/sites/5/CDS_2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all undergraduate applicants; self-reported scores accepted; ACT superscored; no assumption made when scores are not sent",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/sat-and-act-tests",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all admitted students. Tufts Tuition Pact (from fall 2026 entry): US students with family income under $150,000 and typical assets attend tuition-free; no loans in packages for incomes under $60,000",
+      "sourceUrl": "https://admissions.tufts.edu/tuition-and-aid/applying-for-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile required (code 3901), plus FAFSA for US citizens/PRs. Due Nov 16 (ED I), Jan 15 (ED II), Feb 1 (RD), Nov 1 (QuestBridge); 2025 tax forms via IDOC due Dec 1 / Feb 1 / Feb 15",
+      "sourceUrl": "https://admissions.tufts.edu/tuition-and-aid/applying-for-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Need-based only; merit aid only through the Tufts National Merit Scholarship program and ROTC scholarships",
+      "sourceUrl": "https://admissions.tufts.edu/tuition-and-aid/types-of-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$97,152 billed for first-years on campus in 2026-27 (tuition $74,862, housing $11,220, food $9,374, fees $1,696), plus about $2,846 books and personal expenses",
+      "sourceUrl": "https://students.tufts.edu/financial-services/undergrad-aid/award-letter/undergraduate-cost-attendance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 2) and ED II (Jan 4), both binding; RD Jan 4. No EA. Deferred ED applicants are reviewed in RD and are no longer bound",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/early-decision",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews offered as part of the admissions process",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/application-faq",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest', as transcribed by collegedata.fyi; the official PDF's checkboxes did not render). Short answer #1 asks how you engaged with Tufts",
+      "sourceUrl": "https://www.collegedata.fyi/schools/tufts/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to one school/program: Arts and Sciences, Engineering, SMFA BFA, or the BFA+BA/BS combined degree; the second short answer differs by program. BFA programs need a portfolio (due Nov 4 / Jan 6). Switching programs after applying needs admissions approval",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/application-faq",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$11,284 (2023-2024, family income $0-$30,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168148",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$9,811 (2023-2024, family income $30,001-$48,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168148",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$14,923 (2023-2024, family income $48,001-$75,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168148",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$23,311 (2023-2024, family income $75,001-$110,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168148",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$58,570 (2023-2024, family income $110,001 and more; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168148",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Materials deadlines: school report, recommendations and optional self-reported scores due Nov 20 (ED I), Jan 11 (ED II), Jan 17 (RD); 1st-quarter grades required for ED only",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/checklist-and-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-02",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/checklist-and-deadlines",
+      "cycle": "2026-27",
+      "note": "ED I, binding; CSS Profile and FAFSA due Nov 16"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-04",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/checklist-and-deadlines",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile and FAFSA due Jan 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://admissions.tufts.edu/apply/applying-to-tufts/checklist-and-deadlines",
+      "cycle": "2026-27",
+      "note": "CSS Profile and FAFSA due Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Short Answer #1 (all applicants)",
+      "prompt": "Please describe how you have learned about and engaged with Tufts during your college search process (75-150 words).",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.tufts.edu/apply/short-answer-questions/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short Answer #2 (School of Arts and Sciences)",
+      "prompt": "Tell us about one of your favorite school assignments in the past two years. What was the assignment and why did you enjoy it?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.tufts.edu/apply/short-answer-questions/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short Answer #2 (School of Engineering)",
+      "prompt": "Tell us about an engineering or science-related project that you have helped build, design, create, or iterate in the past two years. What was the project and what was your role?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.tufts.edu/apply/short-answer-questions/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short Answer #2 (BFA)",
+      "prompt": "Tell us more about a specific piece in your portfolio. What were the ideas you intended to explore, and how did those ideas inform the process of making the piece?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.tufts.edu/apply/short-answer-questions/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short Answer #2 (Combined Degree BFA+BA/BS)",
+      "prompt": "Tell us more about a specific piece in your portfolio. How did an academic course, project, or interest inspire the ideas that you explored in this piece? Or, how did making this piece influence your academic interests?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.tufts.edu/apply/short-answer-questions/",
+      "cycle": "2026-27"
+    }
+  ]
+}

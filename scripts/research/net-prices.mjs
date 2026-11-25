@@ -30,9 +30,16 @@ async function findSchool(name, website) {
   const host = (website || "").replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
   const data = await scorecard({ "school.name": name, fields });
   const rows = data.results || [];
-  const byHost = host && rows.find((r) => (r["school.school_url"] || "").includes(host));
+  const hostOf = (u) => (u || "").replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0].toLowerCase();
+  const sameHost = (r) => !!host && hostOf(r["school.school_url"]) === host.toLowerCase();
+  const byHost = rows.find(sameHost);
   const exact = rows.find((r) => norm(r["school.name"]) === norm(name));
-  return byHost || exact || (rows.length === 1 ? rows[0] : null);
+  if (byHost || exact) return byHost || exact;
+  if (rows.length === 1) return rows[0];
+  // Official names differ ("University of Missouri-Columbia"): widen the search and match the website.
+  if (!host) return null;
+  const wide = await scorecard({ "school.name": name.replace(/^(the )?university of /i, "").split(/[ ,-]/)[0], per_page: "50", fields });
+  return (wide.results || []).find(sameHost) || null;
 }
 
 const manifest = JSON.parse(fs.readFileSync(path.join(DIR, "manifest.json"), "utf8")).schools;

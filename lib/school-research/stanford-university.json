@@ -1,0 +1,250 @@
+{
+  "slug": "stanford-university",
+  "name": "Stanford University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "3.8% (2,302 of 60,646; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1GIPKgVj1d86dkmLkHI_mZVCk_iY6kiCp/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1520-1570 (enrolled Fall 2025 who submitted, CDS C9; tests were optional for that class)",
+      "sourceUrl": "https://drive.google.com/file/d/1GIPKgVj1d86dkmLkHI_mZVCk_iY6kiCp/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-36 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://drive.google.com/file/d/1GIPKgVj1d86dkmLkHI_mZVCk_iY6kiCp/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "97% of enrolled first-years who reported rank were in the top tenth of their class (CDS C10)",
+      "sourceUrl": "https://drive.google.com/file/d/1GIPKgVj1d86dkmLkHI_mZVCk_iY6kiCp/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT or ACT; self-report highest scores (official scores only if you enroll). Latest sittings: ACT end of Sept / SAT end of Oct for REA; end of Dec for RD",
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/testing.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets full demonstrated need without loans for every admitted undergrad who qualifies",
+      "sourceUrl": "https://financialaid.stanford.edu/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA + IDOC required for Stanford scholarship; priority date Nov 15 (REA), Feb 15 (RD)",
+      "sourceUrl": "https://financialaid.stanford.edu/undergrad/apply/requirements/rea_us.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit scholarships: all university scholarship funds are awarded on financial need",
+      "sourceUrl": "https://financialaid.stanford.edu/undergrad/types/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "Not reported by NCES for 2021-22 through 2023-24 (too few students); see Stanford's own figures in notes",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243744",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "Not reported by NCES for 2021-22 through 2023-24 (too few students); see Stanford's own figures in notes",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243744",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$3,212 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243744",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$11,092 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243744",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$53,882 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=243744",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$97,545 student budget 2026-27 (tuition $67,731; housing & food $22,944; fees $2,610; books $855; personal $3,405; travel varies). New students also pay $525 orientation + $250 document fee",
+      "sourceUrl": "https://financialaid.stanford.edu/undergrad/budget/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Restrictive Early Action (non-binding) due Nov 1, decisions mid-December; no other private EA/REA/ED, and no binding public early plan. REA denials are final. Regular Decision due Jan 5, decisions early April. No ED",
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/decision_process.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional alumni interviews offered in interview areas, depending on volunteer availability; application complete without one. CDS C7: 'Considered'",
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/interview.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered: Stanford does not track demonstrated interest; visits have no bearing on admission",
+      "sourceUrl": "https://apply.stanford.edu/portal/campus-visit",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to the university as a whole, not a major, department or school; listed interests are non-binding",
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Optional Arts Portfolio requires applying by Oct 15 (REA) or Dec 5 (RD). Stanford's own table: families under $75K average net cost $4,414",
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "REA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/index.html",
+      "cycle": "2026-27",
+      "note": "Restrictive Early Action; non-binding; decisions mid-December. Oct 15 if submitting an Arts Portfolio"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-05",
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/index.html",
+      "cycle": "2026-27",
+      "note": "Decisions early April. Dec 5 if submitting an Arts Portfolio"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Short question: society",
+      "prompt": "What is the most significant challenge that society faces today?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short question: summers",
+      "prompt": "How did you spend your last two summers?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short question: historical moment",
+      "prompt": "What historical moment or event do you wish you could have witnessed?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short question: activity",
+      "prompt": "Briefly elaborate on one of your extracurricular activities, a job you hold, or responsibilities you have for your family.",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short question: five things",
+      "prompt": "List five things that are important to you.",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short essay: learning",
+      "prompt": "The Stanford community is deeply curious and driven to learn in and out of the classroom. Reflect on an idea or experience that makes you genuinely excited about learning.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short essay: roommate",
+      "prompt": "Virtually all of Stanford's undergraduates live on campus. Write a note to your future roommate that reveals something about you or that will help your roommate—and us—get to know you better.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short essay: contribution",
+      "prompt": "Please describe what aspects of your life experiences, interests, and character would help you make a distinctive contribution as an undergraduate to Stanford University.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.stanford.edu/apply/first-year/apply.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

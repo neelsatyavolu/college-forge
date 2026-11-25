@@ -1,0 +1,37 @@
+{
+  "slug": "grinnell-college",
+  "name": "Grinnell College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "14.5% (1,416 of 9,758; Fall 2024 entering class, CDS 2024-25; 2025-26 CDS not yet posted)", "sourceUrl": "https://www.grinnell.edu/doc/grinnell-college-common-data-set-2024-2025", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "34.2% ED (283 of 828; Fall 2024, CDS 2024-25; ED I and II combined)", "sourceUrl": "https://www.grinnell.edu/doc/grinnell-college-common-data-set-2024-2025", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1430-1520 (29% submitted SAT; Fall 2024, CDS 2024-25)", "sourceUrl": "https://www.grinnell.edu/doc/grinnell-college-common-data-set-2024-2025", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "act_mid50", "value": "31-34 (21% submitted ACT; Fall 2024, CDS 2024-25)", "sourceUrl": "https://www.grinnell.edu/doc/grinnell-college-common-data-set-2024-2025", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "gpa_note", "value": "56% of rank-reporting first-years in top tenth of HS class (CDS 2024-25 C10)", "sourceUrl": "https://www.grinnell.edu/doc/grinnell-college-common-data-set-2024-2025", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional; you must tell Grinnell whether you'll submit a score by your application deadline and can't change it after", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "Meets 100% of need with grants, scholarships and student employment (no loans); need-blind for U.S. citizens and eligible noncitizens", "sourceUrl": "https://www.grinnell.edu/admission/financial-aid/apply-aid/prospective-students", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "CSS Profile (code 6252) required for need-based aid; due Nov 1 (QuestBridge), Nov 15 (ED I), Jan 5 (ED II), Jan 15 (RD)", "sourceUrl": "https://www.grinnell.edu/admission/financial-aid/apply-aid/prospective-students", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes: all domestic first-years considered for merit scholarships up to $30,000 (international up to $28,000); no separate application; priority if you apply by Dec 1", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$9,970 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=153384", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$7,789 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=153384", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$9,669 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=153384", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$19,348 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=153384", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$37,725 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=153384", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$93,338+ cost of attendance 2026-27 on campus (tuition $73,582; plus travel)", "sourceUrl": "https://www.grinnell.edu/admission/financial-aid/cost-attendance", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "ED I (Nov 15) and ED II (Jan 5), binding; no EA; RD Jan 15; QuestBridge; no application fee", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Optional interview available on request; listed as a way to show interest", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Yes, Grinnell tracks demonstrated interest (visits, meeting a counselor, interview, optional Preliminary Application)", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/faqs-domestic", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "major_notes", "value": "No admission by major; individually advised curriculum; major declaration due by April of the second year", "sourceUrl": "https://www.grinnell.edu/academics/advising/adviser-resources/handbook/planning", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No required supplement; two teacher evaluations + counselor rec; optional art/music portfolios via applicant portal", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-15", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "cycle": "2026-27", "note": "ED I, binding; CSS Profile due Nov 15; notification mid-late December" },
+    { "plan": "Merit priority", "date": "2026-12-01", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "cycle": "2026-27", "note": "Apply by Dec 1 for priority merit scholarship consideration (domestic)" },
+    { "plan": "ED2", "date": "2027-01-05", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "cycle": "2026-27", "note": "ED II, binding; CSS Profile due Jan 5; notification early February" },
+    { "plan": "RD", "date": "2027-01-15", "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "cycle": "2026-27", "note": "CSS Profile due Jan 15; notification late March/early April" }
+  ],
+  "supplements": [
+    { "label": "Short Answer Supplement (optional, recommended; 200-450 words)", "prompt": "Grinnell’s core values include supporting a diverse community that is respectful, egalitarian, and committed to the common good. How might your background, respect for the lived experiences of others, and/or eagerness to be exposed to new perspectives equip you to thrive at Grinnell and serve the common good?", "limit": 450, "unit": "words", "required": false, "sourceUrl": "https://www.grinnell.edu/admission/apply/first-year/requirements", "cycle": "2026-27" }
+  ]
+}

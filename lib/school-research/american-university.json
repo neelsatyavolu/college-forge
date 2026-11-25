@@ -1,0 +1,191 @@
+{
+  "slug": "american-university",
+  "name": "American University",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "66% (13,741 of 20,960; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "81% (316 of 392 ED applicants, ED I and II combined; CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1320-1440 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "act_mid50",
+      "value": "30-33 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; self-reported scores accepted (official required if enrolling). Superscores ACT English/Math/Reading for tests after March 2026; Science not required",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/checklist.cfm",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No guarantee of full need; average 88% of need met for first-year aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (with FAFSA) for need-based aid. Due Nov 15 for EA/ED I, Feb 1 for ED II, Feb 15 for RD",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/decision-plans-and-deadlines.cfm",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: automatic consideration via the admission application; $6,000-$35,000/yr (Presidential, Deans', Leadership), renewable 8 semesters; aimed at top 10-15% of admits",
+      "sourceUrl": "https://www.american.edu/financialaid/freshman-scholarships.cfm",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$87,374 total cost of attendance (2026-27: tuition $62,680, fees $1,700, housing $13,112, food $6,584, U-Pass $272, plus books/personal)",
+      "sourceUrl": "https://www.american.edu/financialaid/cost-of-attendance/upload/20260716-Investing-in-Your-Future_27-28.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action Nov 1 (non-binding; admit/deny/defer by Jan 31); ED I Nov 1 (binding, mid-December); ED II Jan 15 (binding, mid-February); RD Jan 15 (by Apr 1). ED requires signed ED Agreement",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/decision-plans-and-deadlines.cfm",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not considered (CDS 2025-26 C7); no interview listed in the application checklist",
+      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Very important (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.collegedata.fyi/schools/american-university/2025-26",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": true
+    },
+    {
+      "key": "major_notes",
+      "value": "Special Academic Programs (scholars/three-year programs) need a separate application by Dec 1 via the applicant portal. Performing arts majors strongly encouraged to audition via SlideRoom; optional portfolios for film/photo, studio art, audio programs",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/checklist.cfm",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$28,397 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$19,487 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$27,150 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$31,984 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$53,571 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?131159",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/decision-plans-and-deadlines.cfm",
+      "cycle": "2026-27",
+      "note": "Non-binding; CSS Profile and FAFSA by Nov 15; decision by Jan 31"
+    },
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/decision-plans-and-deadlines.cfm",
+      "cycle": "2026-27",
+      "note": "Binding; CSS/FAFSA Nov 15; decision mid-December; deposit Jan 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/decision-plans-and-deadlines.cfm",
+      "cycle": "2026-27",
+      "note": "Binding; CSS/FAFSA Feb 1; decision mid-February; deposit Mar 1"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.american.edu/admissions/first-year/decision-plans-and-deadlines.cfm",
+      "cycle": "2026-27",
+      "note": "CSS/FAFSA Feb 15; decision Apr 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "AU Supplemental Short Answer (optional)",
+      "prompt": "American University students identify as changemakers and describe themselves as passionate. Describe a belief, hobby, idea, issue, or topic about which you’re excited.",
+      "required": false,
+      "sourceUrl": "https://www.american.edu/admissions/first-year/checklist.cfm",
+      "cycle": "2026-27"
+    }
+  ]
+}

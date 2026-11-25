@@ -1,0 +1,194 @@
+{
+  "slug": "bucknell-university",
+  "name": "Bucknell University",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "32.2% (3,723 of 11,561; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "54.7% ED (656 of 1,200; CDS 2025-26)",
+      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Score submitters, Class of 2028: ERW 670-740, Math 670-760. CDS 2025-26 reports 1170-1360 for all enrolled (enrolling students must send scores)",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "Score submitters, Class of 2028: 31-34. CDS 2025-26 (all enrolled): 25-32",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional pilot extended through the current cycle; applicants choose whether scores are reviewed; enrolling students must send official scores",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No full-need guarantee stated; first-years with need had 93% of need met on average (CDS 2025-26)",
+      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA (and noncustodial parent info); due Nov 1 ED I, Jan 10 ED II and RD",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/admissions-dates-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: merit scholarships awarded only at admission; most need the Bucknell scholarship application (or a program application) by the admission deadline",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/tuition-fees-financial-aid/scholarship-programs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$20,980 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211291",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$12,276 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211291",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$23,679 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211291",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$28,165 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211291",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$55,724 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=211291",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$91,880 direct charges for 2026-27 (tuition $72,600, housing $11,400, meals $6,980, fee $900); full cost of attendance budget $95,648",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/tuition-fees-financial-aid/information-about-tuition-fees",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1) and ED II (Jan 10), both binding; RD Jan 10; no EA",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/admissions-dates-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews offered; campus visits encouraged",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply directly to one of three colleges (Arts & Sciences, Engineering, Freeman College of Management); transfer into Engineering is quite limited and Management is open only to students admitted to it directly",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/apply-bucknell/undergraduate-admission-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Supplement asks about intended first- and second-choice majors and why Bucknell (250 words); third-party sources disagree on whether it is labelled required or optional",
+      "sourceUrl": "https://draftl.com/schools/bucknell-university",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "key": "notes",
+      "value": "Gap: CDS C7 table did not parse cleanly, so the demonstrated-interest rating was not confirmed",
+      "sourceUrl": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/admissions-dates-deadlines",
+      "cycle": "2026-27",
+      "note": "ED I, binding; scholarship application, CSS Profile and FAFSA due Nov 1"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/admissions-dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Binding; scholarship application, CSS Profile and FAFSA due Jan 10"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.bucknell.edu/admissions-aid/admissions-dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Scholarship application, CSS Profile and FAFSA due Jan 10; decisions mid-March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Major choice / Why Bucknell",
+      "prompt": "Please explain your interest in your first-choice major/undecided status and your second-choice major (should you opt to list one) and why you would choose Bucknell University to pursue your interest(s).",
+      "limit": 250,
+      "unit": "words",
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/bucknell-university-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

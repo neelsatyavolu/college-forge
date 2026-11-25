@@ -1,0 +1,177 @@
+{
+ "slug": "binghamton-university-suny",
+ "name": "Binghamton University--SUNY",
+ "checkedAt": "2026-11-25",
+ "complete": false,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "37.3% (22,835 of 61,197; latest posted CDS, titled 2024-25 but reporting the Fall 2025 cohort in C1)",
+   "sourceUrl": "https://drive.google.com/file/d/1Dcby2MF3MGue7PRpH2nOCbSCtwmgPPUG/view?usp=sharing",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1320-1480 (enrolled, latest posted CDS C9)",
+   "sourceUrl": "https://drive.google.com/file/d/1Dcby2MF3MGue7PRpH2nOCbSCtwmgPPUG/view?usp=sharing",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "31-34 (enrolled, latest posted CDS C9)",
+   "sourceUrl": "https://drive.google.com/file/d/1Dcby2MF3MGue7PRpH2nOCbSCtwmgPPUG/view?usp=sharing",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Avg HS GPA 3.88 (100% submitted); 51% in top tenth of class (latest posted CDS C10/C12)",
+   "sourceUrl": "https://drive.google.com/file/d/1Dcby2MF3MGue7PRpH2nOCbSCtwmgPPUG/view?usp=sharing",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional (SUNY suspended SAT/ACT requirements); indicate on the application whether you want scores considered",
+   "sourceUrl": "https://www.binghamton.edu/admissions/undergraduate/apply/freshman/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No full-need guarantee found; CDS H2 % of need met could not be read from the posted file",
+   "sourceUrl": "https://drive.google.com/file/d/1Dcby2MF3MGue7PRpH2nOCbSCtwmgPPUG/view?usp=sharing",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA only (CDS H8)",
+   "sourceUrl": "https://drive.google.com/file/d/1Dcby2MF3MGue7PRpH2nOCbSCtwmgPPUG/view?usp=sharing",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; all students considered for scholarships without a separate application (criteria include merit, major, programs and often need); file FAFSA by Jan 1",
+   "sourceUrl": "https://www.binghamton.edu/financial-aid/types-of-aid/scholarships/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 est. COA, on campus: $32,746 NY resident / $55,716 non-resident",
+   "sourceUrl": "https://www.binghamton.edu/financial-aid/cost.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "EA (non-binding) extended through Dec 1 for Fall 2027, decision by Jan 15; Regular Jan 15. No ED (CDS C21: no). EOP applicants can't apply EA",
+   "sourceUrl": "https://www.binghamton.edu/admissions/undergraduate/apply/freshman/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "School of the Arts: BFA Art & Design needs a portfolio; BFA Musical Theatre needs portfolio and audition, with separate materials deadlines (Jan 25 for regular). EOP applicants submit extra materials",
+   "sourceUrl": "https://www.binghamton.edu/admissions/undergraduate/apply/freshman/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No Binghamton-specific supplements listed: application steps are the application, transcript, optional scores and one teacher/counselor recommendation",
+   "sourceUrl": "https://www.binghamton.edu/admissions/undergraduate/apply/freshman/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Gaps: CDS C7 checkbox ratings (interview, demonstrated interest) and H2 need-met % did not extract from the posted CDS; Binghamton's site doesn't state an interview policy. The CDS on the OIR page is labeled 'Common Data Set 2025' but titled 2024-2025 inside",
+   "sourceUrl": "https://www.binghamton.edu/offices/oir/institutional-data/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$11,463 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196079&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$13,445 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196079&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$18,397 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196079&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$22,349 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196079&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$28,293 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=196079&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-12-01",
+   "sourceUrl": "https://www.binghamton.edu/admissions/undergraduate/apply/freshman/",
+   "cycle": "2026-27",
+   "note": "Extended to Dec 1 for Fall 2027 (all materials); decision by Jan 15"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-15",
+   "sourceUrl": "https://www.binghamton.edu/admissions/undergraduate/apply/freshman/",
+   "cycle": "2026-27",
+   "note": "Regular admission"
+  }
+ ],
+ "supplements": []
+}

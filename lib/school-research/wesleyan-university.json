@@ -1,0 +1,38 @@
+{
+  "slug": "wesleyan-university",
+  "name": "Wesleyan University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "16% (2,453 of 14,973; Class of 2029, Wesleyan class profile)", "sourceUrl": "https://www.wesleyan.edu/admission/class-profile.html", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "40.6% ED (512 of 1,262; Class of 2029); 60% of the class admitted ED", "sourceUrl": "https://www.wesleyan.edu/admission/class-profile.html", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1300-1500 enrolled (41% submitted; CDS 2024-25 as parsed by collegedata.fyi); Class of 2029 admits: ERW 730-770, Math 730-790", "sourceUrl": "https://www.collegedata.fyi/schools/wesleyan-university/2024-25", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": true },
+    { "key": "act_mid50", "value": "31-34 enrolled (17% submitted; CDS 2024-25 as parsed by collegedata.fyi); Class of 2029 admits 34-35", "sourceUrl": "https://www.collegedata.fyi/schools/wesleyan-university/2024-25", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": true },
+    { "key": "gpa_note", "value": "Class of 2029 admits: 74% top 10%, 91% top 20% of class; Wesleyan does not compute an average GPA", "sourceUrl": "https://www.wesleyan.edu/admission/class-profile.html", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional for most applicants; 64% of Class of 2029 admits asked to have scores considered", "sourceUrl": "https://www.wesleyan.edu/admission/undergraduate-admission/first-year.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "Meets 100% of demonstrated need without loans for all eligible students", "sourceUrl": "https://www.wesleyan.edu/admission/affordability-and-aid/cost-of-attendance.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "CSS Profile (+ noncustodial parent profile) + FAFSA + IDOC tax returns; aid due Nov 15 (ED I), Jan 1 (ED II), Jan 15 (RD)", "sourceUrl": "https://www.wesleyan.edu/admission/affordability-and-aid/applying-for-aid.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "No merit aid; aid is based strictly on financial need", "sourceUrl": "https://www.wesleyan.edu/finaid/faqs-resources/faqs.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$4,871 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130697", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$3,604 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130697", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$6,175 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130697", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$17,294 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130697", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$51,140 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130697", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$101,080 first-year cost of attendance 2026-27 (tuition $75,916; food and housing $21,660)", "sourceUrl": "https://www.wesleyan.edu/admission/affordability-and-aid/cost-of-attendance.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "ED I (Nov 15) and ED II (Jan 1), binding; no EA; international aid applicants also considered in ED", "sourceUrl": "https://www.wesleyan.edu/admission/undergraduate-admission/first-year.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "No evaluative interviews; InitialView or Vericant interviews accepted (mainly for international applicants)", "sourceUrl": "https://www.wesleyan.edu/admission/undergraduate-admission/international/index.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Not considered (CDS 2024-25 C7, as parsed by collegedata.fyi)", "sourceUrl": "https://www.collegedata.fyi/schools/wesleyan-university/2024-25", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": true },
+    { "key": "major_notes", "value": "No admission by major; declare in spring of sophomore year", "sourceUrl": "https://www.wesleyan.edu/studentaffairs/resources/majordeclaration/timeline.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Wesleyan's own CDS is only posted as SharePoint spreadsheets (not readable here); enrolled score ranges come from the third-party parse of CDS 2024-25", "sourceUrl": "https://www.wesleyan.edu/ir/common-data-sets.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Application fee ($65) waived for all applicants who apply for financial aid; two academic teacher evaluations; arts supplements via SlideRoom", "sourceUrl": "https://www.wesleyan.edu/admission/undergraduate-admission/first-year.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Supplement not confirmed on Wesleyan's site: one third-party source lists a 250-word 'recent news story' prompt for 2026-27 and does not say whether it is required; check the Common App member questions", "sourceUrl": "https://www.esslo.org/college-essay-grader/wesleyan", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": true }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-15", "sourceUrl": "https://www.wesleyan.edu/admission/undergraduate-admission/first-year.html", "cycle": "2026-27", "note": "ED I, binding; financial aid due Nov 15; notification mid-December" },
+    { "plan": "ED2", "date": "2027-01-01", "sourceUrl": "https://www.wesleyan.edu/admission/undergraduate-admission/first-year.html", "cycle": "2026-27", "note": "ED II, binding; financial aid due Jan 1; notification mid-February" },
+    { "plan": "RD", "date": "2027-01-01", "sourceUrl": "https://www.wesleyan.edu/admission/undergraduate-admission/first-year.html", "cycle": "2026-27", "note": "Financial aid due Jan 15; notification late March" }
+  ],
+  "supplements": [
+    { "label": "Recent news story (requirement status unconfirmed)", "prompt": "What recent news story—local or global—has resonated with you personally? Share the story and tell us why it had that impact on you.", "limit": 250, "unit": "words", "sourceUrl": "https://www.esslo.org/college-essay-grader/wesleyan", "cycle": "2026-27", "thirdParty": true }
+  ]
+}

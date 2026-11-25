@@ -1,0 +1,192 @@
+{
+  "slug": "college-of-the-holy-cross",
+  "name": "College of the Holy Cross",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "18% (1,954 of 10,600; Class of 2030, Holy Cross at a Glance). Latest posted CDS (2023-24): 21.1%",
+      "sourceUrl": "https://www.holycross.edu/about-holy-cross/at-a-glance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "67% ED (511 of 761; Fall 2023, CDS 2023-24)",
+      "sourceUrl": "https://www.holycross.edu/media/2068",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "SAT ERW 663-748, Math 630-720 (Class of 2030); CDS 2023-24 composite 1270-1420",
+      "sourceUrl": "https://www.holycross.edu/about-holy-cross/at-a-glance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "28-33 (Class of 2030)",
+      "sourceUrl": "https://www.holycross.edu/about-holy-cross/at-a-glance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional, no disadvantage for not submitting; superscores SAT and ACT",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need at time of admission (FAFSA + CSS Profile)",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/tuition-financial-aid/financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for Holy Cross need-based grants; due Nov 15 ED I, Jan 15 ED II and RD, with tax forms to IDOC",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/tuition-financial-aid/financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Primarily need-based; a limited number of merit tuition scholarships chosen by Admissions, plus music, theatre and classics scholarships",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/tuition-financial-aid/scholarships-grants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$14,343 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166124",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$16,179 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166124",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$12,682 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166124",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$27,711 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166124",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$56,284 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166124",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$91,740 billed for 2026-27 (tuition $70,220, housing $11,500, food $9,090, fees $930)",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/tuition-financial-aid/tuition-fees",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 15), both binding; RD Jan 15; no EA",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional but strongly recommended; by Nov 15 for ED I, Dec 5 for ED II and RD; no off-campus alumni interviews for ED. CDS 2023-24 rates interview Very Important",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2023-24 C7)",
+      "sourceUrl": "https://www.holycross.edu/media/2068",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No school-specific supplemental essay listed among required items (Common App/Coalition, transcript, two recommendations, $65 fee, ED form)",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Third-party check also reports no supplemental essays for 2026-27",
+      "sourceUrl": "https://draftl.com/schools/college-of-the-holy-cross",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "key": "notes",
+      "value": "Gap: newest posted CDS is 2023-24; no major/program admission notes found",
+      "sourceUrl": "https://www.holycross.edu/about-holy-cross/offices-services/office-of-institutional-research-analytics",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
+      "cycle": "2026-27",
+      "note": "ED I, binding; interview by Nov 15; CSS Profile due Nov 15; decision Dec 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
+      "cycle": "2026-27",
+      "note": "Binding; interview by Dec 5; CSS Profile due Jan 15; decision Feb 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.holycross.edu/admissions-aid/how-to-apply",
+      "cycle": "2026-27",
+      "note": "Interview by Dec 5; CSS Profile due Jan 15; decision mid-March"
+    }
+  ],
+  "supplements": []
+}

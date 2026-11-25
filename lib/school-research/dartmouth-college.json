@@ -1,0 +1,259 @@
+{
+  "slug": "dartmouth-college",
+  "name": "Dartmouth College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "6.0% (1,699 of 28,230; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.dartmouth.edu/oir/pdfs/cds_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "ED: 21.6% (768 of 3,552; CDS 2025-26 C21)",
+      "sourceUrl": "https://www.dartmouth.edu/oir/pdfs/cds_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1440-1550 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://www.dartmouth.edu/oir/pdfs/cds_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-35 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://www.dartmouth.edu/oir/pdfs/cds_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT or ACT for students at U.S. high schools (international students have other options); automatically superscored; self-reporting allowed",
+      "sourceUrl": "https://admissions.dartmouth.edu/apply/testing-policy",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Need-blind for all applicants including international; meets 100% of demonstrated need with scholarships and work, no required loans. Under $125K income (typical assets): zero parent contribution; $125K-$175K: full tuition covered",
+      "sourceUrl": "https://admissions.dartmouth.edu/estimate-your-cost/how-aid-works",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile (or ISFAA for internationals) plus FAFSA for U.S. students; aid deadlines Nov 1 (ED), Feb 1 (RD)",
+      "sourceUrl": "https://admissions.dartmouth.edu/estimate-your-cost/apply-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid: no aid for academic merit, artistic talent, athletics or other criteria; need-based only",
+      "sourceUrl": "https://admissions.dartmouth.edu/estimate-your-cost/types-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$98,946 COA 2026-27 (tuition $71,697; fees $2,426; housing $13,032; food $8,746; books $1,005; misc $2,040; includes $519 first-year orientation fees). Health plan $5,216 unless waived",
+      "sourceUrl": "https://admissions.dartmouth.edu/estimate-your-cost/cost-attendance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision (binding) due Nov 1, decisions mid-December; Regular Decision due Jan 2. No EA. QuestBridge Match also offered",
+      "sourceUrl": "https://admissions.dartmouth.edu/apply-dartmouth",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional alumni interview may be offered after you apply (virtual or in person; you don't schedule it); informative and evaluative, not required. CDS C7: 'Considered'",
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/alumni-interview",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://www.dartmouth.edu/oir/pdfs/cds_2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major on admission; students declare in sophomore year",
+      "sourceUrl": "https://admissions.dartmouth.edu/majors-minors",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Some older Dartmouth glossary pages still list Jan 1 for RD; the current Apply page says Jan 2. Writing supplement: one 100-word prompt and two 250-word choices",
+      "sourceUrl": "https://admissions.dartmouth.edu/apply-dartmouth",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$41 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=182670",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$489 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=182670",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$2,695 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=182670",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$8,534 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=182670",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$52,036 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=182670",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.dartmouth.edu/apply-dartmouth",
+      "cycle": "2026-27",
+      "note": "Binding; decisions mid-December. Aid due Nov 1"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-02",
+      "sourceUrl": "https://admissions.dartmouth.edu/apply-dartmouth",
+      "cycle": "2026-27",
+      "note": "Decisions late March/early April. Aid due Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why Dartmouth",
+      "prompt": "As you seek admission to Dartmouth's Class of 2031, what aspects of the college's academic program, community, and/or campus environment attract your interest? How is Dartmouth a good fit for you?",
+      "limit": 100,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 2 (choose one): Let your life speak",
+      "prompt": "There is a Quaker saying: Let your life speak. Describe the environment in which you were raised and the impact it has had on the person you are today.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 2 (choose one): Be yourself",
+      "prompt": "\"Be yourself,\" Oscar Wilde advised. \"Everyone else is taken.\" Introduce yourself.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 3 (choose one): What excites you",
+      "prompt": "What excites you?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 3 (choose one): Impact",
+      "prompt": "Labor leader and civil rights activist Dolores Huerta recommended a life of purpose. \"We must use our lives to make the world a better place to live, not just to acquire things,\" she said. \"That is what we are put on the earth for.\" In what ways do you hope to make—or are you already making—an impact? Why? How?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 3 (choose one): Reading",
+      "prompt": "In an Instagram post, best-selling British author Matt Haig cheered the impact of reading. \"A good novel is the best invention humans have ever created for imagining other lives,\" he wrote. How have you experienced such insight from reading? What did you read and how did it alter the way you understand yourself and others?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 3 (choose one): Difficult conversation",
+      "prompt": "The social and family interactions of wild chimpanzees have been the focus of Dame Jane Goodall's research for decades. Her understanding of animal behavior prompted the English primatologist to see a lesson for human communities as well: \"Change happens by listening and then starting a dialogue with the people who are doing something you don't believe is right.\" Channel Dame Goodall: Tell us about a moment when you engaged in a difficult conversation or encountered someone with an opinion or perspective that was different from your own. How did you find common ground?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 3 (choose one): Nerdy side",
+      "prompt": "Celebrate your nerdy side.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Prompt 3 (choose one): Difference",
+      "prompt": "\"It's not easy being green…\" was the frequent refrain of Kermit the Frog. How has difference been a part of your life, and how have you embraced it as part of your identity, outlook, or sense of purpose?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+      "cycle": "2026-27"
+    }
+  ]
+}

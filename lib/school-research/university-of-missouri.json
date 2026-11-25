@@ -1,0 +1,121 @@
+{
+  "slug": "university-of-missouri",
+  "name": "University of Missouri",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "test_policy",
+      "value": "Test-optional for Fall 2027: choose review with or without scores. Scores meeting traditional requirements give automatic admission; test-optional files get holistic committee review (transcript, resume/activities, one short essay). Homeschooled and non-accredited-school applicants must submit ACT/SAT. Superscores both",
+      "sourceUrl": "https://admissions.missouri.edu/apply/freshmen/test-optional",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; Mizzou asks for the FAFSA (priority deadline Feb 1)",
+      "sourceUrl": "https://admissions.missouri.edu/apply/freshmen/how-to-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: complete application by Dec 1 for merit consideration. Fall 2027 Missouri residents: $3,500-$11,000/yr (Mizzou Scholars $11,000); non-residents: Mark Twain Level 1 $21,500/yr or Level 2 $8,500/yr, +$3,000 Border State Award; full tuition for National Merit finalists/semifinalists",
+      "sourceUrl": "https://admissions.missouri.edu/costs-aid/scholarships/freshman-scholarships/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 billed costs: Missouri resident $31,942-$36,070; non-resident $55,104-$59,232 (tuition/fees by major $16,162-$20,290 vs $39,324-$43,452; housing/dining $15,780). Books and personal costs extra",
+      "sourceUrl": "https://admissions.missouri.edu/costs-aid/costs/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Rolling admission: decisions from Oct 1; Dec 1 priority date for merit scholarships; final application deadline July 1. No ED or EA",
+      "sourceUrl": "https://admissions.missouri.edu/dates-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Honors College has its own application (scholarships deadline Dec 1); official test scores and transcript must be on file. Tuition varies by major",
+      "sourceUrl": "https://admissions.missouri.edu/dates-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essays for applicants submitting test scores; test-optional applicants answer one short essay question in the application",
+      "sourceUrl": "https://admissions.missouri.edu/apply/freshmen/test-optional",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$15,038 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?178396",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$14,754 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?178396",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$15,464 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?178396",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,672 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?178396",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$27,755 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?178396",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "Priority",
+      "date": "2026-12-01",
+      "sourceUrl": "https://admissions.missouri.edu/dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Apply by this date for priority merit scholarship consideration"
+    },
+    {
+      "plan": "Rolling",
+      "date": "2027-07-01",
+      "sourceUrl": "https://admissions.missouri.edu/dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Final application deadline; FAFSA by Feb 1"
+    }
+  ],
+  "supplements": []
+}

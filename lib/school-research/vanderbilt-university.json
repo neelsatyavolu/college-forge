@@ -1,0 +1,217 @@
+{
+ "slug": "vanderbilt-university",
+ "name": "Vanderbilt University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "5.4% (2,593 of 48,196; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/vanderbilt/2025-26/37b70162d0e9e9d27bdb00fd01b0a618e4da8ce11d6948453c71e73c0af83637.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "14.1% ED I + ED II combined (874 of 6,202; CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/vanderbilt/2025-26/37b70162d0e9e9d27bdb00fd01b0a618e4da8ce11d6948453c71e73c0af83637.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1510-1560 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/vanderbilt/2025-26/37b70162d0e9e9d27bdb00fd01b0a618e4da8ce11d6948453c71e73c0af83637.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "34-35 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/vanderbilt/2025-26/37b70162d0e9e9d27bdb00fd01b0a618e4da8ce11d6948453c71e73c0af83637.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average HS GPA 3.90; 91% of enrollees who reported rank in top 10% (20% reported rank) (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/vanderbilt/2025-26/37b70162d0e9e9d27bdb00fd01b0a618e4da8ce11d6948453c71e73c0af83637.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for fall 2027 and 2028 entry; SAT/ACT required from fall 2029 entry. Superscores both.",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/testing-policies/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of demonstrated need with grants and work, no loans; need-blind. Full-tuition award for household income of $200K or less (typical assets)",
+   "sourceUrl": "https://admissions.vanderbilt.edu/affordability/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Opportunity Vanderbilt: full-tuition scholarship for households with income $200K or less; most under $200K get more than tuition",
+   "sourceUrl": "https://admissions.vanderbilt.edu/affordability/opportunity-vanderbilt/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile + FAFSA required. Priority deadlines: Nov 1 (ED I), Jan 1 (ED II), Feb 1 (RD)",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "About 300 merit scholarships (partial to full tuition); separate scholarship application due Dec 1, 2026",
+   "sourceUrl": "https://admissions.vanderbilt.edu/affordability/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$3,414 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221999",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$1,876 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221999",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$4,498 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221999",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$12,153 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221999",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$45,145 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221999",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$99,994 for 2026-27 ($96,896 direct: $69,822 tuition, $15,170 housing, $8,520 food, $3,384 fee; plus $3,098 books/personal)",
+   "sourceUrl": "https://admissions.vanderbilt.edu/affordability/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED I (Nov 1) and ED II (Jan 1), both binding with signed ED agreement; no EA. Plan changes allowed up to 2 weeks after deadline.",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interviews offered; optional Glimpse video (US students) or InitialView interview (international)",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/first-year-process/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS C7 level of applicant's interest); interview listed as 'Considered'",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/vanderbilt/2025-26/37b70162d0e9e9d27bdb00fd01b0a618e4da8ce11d6948453c71e73c0af83637.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Blair School of Music requires separate Blair application and audition (Nov 1 for ED I, Dec 1 priority otherwise). Peabody education majors answer an extra short answer.",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/first-year-process/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Testing becomes required for fall 2029 entry. Decision release: mid-Dec (ED I), mid-Feb (ED II), late March (RD).",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/",
+   "cycle": "2026-27",
+   "note": "ED I, binding; CSS/FAFSA priority Nov 1; merit application Dec 1"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-01",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/",
+   "cycle": "2026-27",
+   "note": "Binding; CSS/FAFSA priority Jan 1"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-01",
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/",
+   "cycle": "2026-27",
+   "note": "CSS/FAFSA priority Feb 1; merit application Dec 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Short answer",
+   "prompt": "Vanderbilt University’s motto, Crescere aude, is Latin for “dare to grow.” In your response, reflect on how one or more aspects of your identity, culture, or background has played a role in your personal growth, and how it will contribute to our campus community as you dare to grow at Vanderbilt.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/personal-essay-and-short-answer-prompts/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Peabody education majors",
+   "prompt": "What prior experience with and enthusiasm for the field of education will you bring to Vanderbilt? In your response, reflect on why you want to be an educator.",
+   "required": true,
+   "sourceUrl": "https://admissions.vanderbilt.edu/apply/first-year-process/",
+   "cycle": "2026-27"
+  }
+ ]
+}

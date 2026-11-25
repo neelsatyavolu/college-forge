@@ -1,0 +1,243 @@
+{
+ "slug": "stevens-institute-of-technology",
+ "name": "Stevens Institute of Technology",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "50.7% (5,321 of 10,499; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "69.8% ED (284 of 407; CDS 2025-26 C21)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1370-1470 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "act_mid50",
+   "value": "32-34 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "gpa_note",
+   "value": "Avg HS GPA 3.83; 47.5% in top tenth of class (CDS 2025-26 C11/C10)",
+   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for entry terms through Fall 2029; scores self-reported. Required for Accelerated Pre-Medicine (SAT 1400 / ACT 32 in one sitting) and Pre-Law",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/first-year-students",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No full-need guarantee stated; need-based Castle Point Grant for students with significant need left after other aid. CDS 2025-26 % of need met not reported",
+   "sourceUrl": "https://www.stevens.edu/page-basic/stevens-need-based-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Required for any Stevens need-based aid (code 2819), plus FAFSA. Due Nov 15 (ED I), Dec 15 (EA), Jan 5 (ED II/RD)",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/admissions-timeline",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; automatically considered at admission, $2,000 up to full tuition, renewable 8 semesters. ED applicants get a guaranteed Priority Early Decision Scholarship",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/tuition-financial-aid/stevens-scholarships",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$91,294 total COA, 2026-27, on campus",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/tuition-financial-aid/undergraduate-costs-and-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED I (binding, Nov 15), EA (non-binding, Dec 1), ED II (binding, Jan 5), RD (Jan 5)",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/admissions-timeline",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Optional for most applicants, complete by the application deadline; separate interview rules for Accelerated Pre-Med and Pre-Law. CDS 2025-26 C7: Considered",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/first-year-students",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not published: CDS 2025-26 C7 leaves 'Level of applicant's interest' unmarked",
+   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "major_notes",
+   "value": "Accelerated Pre-Medicine (with NJMS) needs an RD application by Nov 1 with test scores, Stevens contacts applicants for interviews; Pre-Law needs tests; Music and Visual Arts & Technology need a portfolio",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/first-year-students",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "CDS 2025-26 numbers read from collegedata.fyi's render of Stevens' fillable CDS (official PDF form values did not extract): https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf",
+   "sourceUrl": "https://www.collegedata.fyi/schools/stevens-institute-of-technology/2025-26",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "notes",
+   "value": "Stevens doesn't publish its supplement text; prompts below are from a third-party site and are last cycle's (2025-26) wording",
+   "sourceUrl": "https://nudgeessay.com/requirements/stevens-institute-of-technology",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS data; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$28,690 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=186867&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$25,224 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=186867&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$30,982 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=186867&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$34,052 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=186867&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$45,333 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=186867&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-15",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/admissions-timeline",
+   "cycle": "2026-27",
+   "note": "ED I, binding; CSS/FAFSA due Nov 15; decision by Dec 15"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-12-01",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/admissions-timeline",
+   "cycle": "2026-27",
+   "note": "Non-binding; CSS/FAFSA due Dec 15; decision by Feb 1"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-05",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/admissions-timeline",
+   "cycle": "2026-27",
+   "note": "Binding; CSS/FAFSA due Jan 5; decision by Feb 15"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-05",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/admissions-timeline",
+   "cycle": "2026-27",
+   "note": "CSS/FAFSA due Jan 5; decision by Apr 1"
+  },
+  {
+   "plan": "Accelerated Pre-Med",
+   "date": "2026-11-01",
+   "sourceUrl": "https://www.stevens.edu/admission-aid/undergraduate-admissions/admissions-timeline",
+   "cycle": "2026-27",
+   "note": "RD application plus all materials due Nov 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Inspired by / Powered by (fill in the blanks)",
+   "prompt": "Stevens Institute of Technology's motto is \"Inspired by humanity, powered by technology.\" Now it's your turn to let us know what inspires and powers you. First, fill in each blank with a key word: (maximum 24 characters) Inspired by: _______________ Powered by: _______________",
+   "limit": 24,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://nudgeessay.com/requirements/stevens-institute-of-technology",
+   "cycle": "2025-26",
+   "thirdParty": true
+  },
+  {
+   "label": "Explain your choices",
+   "prompt": "Then, explain how your choices reflect who you are today:",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://nudgeessay.com/requirements/stevens-institute-of-technology",
+   "cycle": "2025-26",
+   "thirdParty": true
+  }
+ ]
+}
