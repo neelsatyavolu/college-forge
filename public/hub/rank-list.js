@@ -79,12 +79,38 @@
     return function (rank) { return Math.exp((L.a + L.b * Math.log(rank) - N.a) / N.b); };
   }
 
+  /**
+   * Schools from /data/official-rankings.json in the career file's shape, for
+   * applications the career file doesn't cover. Each U.S. News entry carries its
+   * Forbes and Niche ranks; Forbes and Niche entries add schools off U.S. News.
+   */
+  function officialSchools(data) {
+    var lists = (data && data.lists) || {};
+    var out = [];
+    function add(e, usn, lac, niche, forbes) {
+      out.push({ name: e.name, full: e.name, usn: usn ? { rank: usn, lac: lac } : null, niche: niche ? { rank: niche } : null, forbes: forbes || null });
+    }
+    ["usn", "lac"].forEach(function (k) {
+      (lists[k] || []).forEach(function (e) { var o = e.elsewhere || {}; add(e, e.rank, k === "lac", o.niche, o.forbes); });
+    });
+    (lists.forbes || []).forEach(function (e) {
+      var o = e.elsewhere || {};
+      if (!o.usn && !o.lac) add(e, null, false, o.niche, e.rank);
+    });
+    (lists.niche || []).forEach(function (e) {
+      var o = e.elsewhere || {};
+      if (!o.usn && !o.lac && !o.forbes) add(e, null, false, e.rank, null);
+    });
+    return out;
+  }
+
   /** Every app with its ranks and their average, best first; schools with no rank go last.
-   * A liberal arts college's U.S. News rank counts as its linked national rank. */
-  function rankList(apps, schools) {
+   * A liberal arts college's U.S. News rank counts as its linked national rank.
+   * Apps the career file doesn't cover are looked up in `fallback` (officialSchools). */
+  function rankList(apps, schools, fallback) {
     var toNational = lacLink(schools);
     var rows = apps.map(function (app) {
-      var school = matchSchool(app.name, schools);
+      var school = matchSchool(app.name, schools) || (fallback ? matchSchool(app.name, fallback) : null);
       var ranks = school ? ranksOf(school, toNational) : { usn: null, lac: false, usnNational: null, niche: null, forbes: null };
       var have = [ranks.usnNational, ranks.niche, ranks.forbes].filter(function (r) { return r != null; });
       var avg = have.length ? have.reduce(function (a, b) { return a + b; }, 0) / have.length : null;
@@ -108,7 +134,7 @@
     }).join("\n");
   }
 
-  var api = { matchSchool: matchSchool, rankList: rankList, copyText: copyText, lacLink: lacLink };
+  var api = { matchSchool: matchSchool, rankList: rankList, officialSchools: officialSchools, copyText: copyText, lacLink: lacLink };
   root.cfRankList = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

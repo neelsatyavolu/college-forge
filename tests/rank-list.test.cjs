@@ -88,3 +88,25 @@ test('copy text is one "Full name - round" line per school, in list order', () =
     'Rice University',
   ].join('\n'));
 });
+
+test('schools outside the career file fall back to the official rankings', () => {
+  const { officialSchools } = require('../public/hub/rank-list.js');
+  const official = officialSchools(require('../public/data/official-rankings.json'));
+  const apps = [
+    { id: 'nw', name: 'Northwestern University' },
+    { id: 'ut', name: 'University of Texas at Austin' },
+    { id: 'wi', name: 'Williams College' },
+    { id: 'x', name: 'Nowhere Testing College' },
+  ];
+  const byId = Object.fromEntries(rankList(apps, schools, official).map((r) => [r.app.id, r]));
+  assert.deepEqual([byId.nw.ranks.usn, byId.nw.ranks.niche, byId.nw.ranks.forbes], [9, 27, 15]);
+  assert.equal(byId.ut.ranks.usn, 34);
+  assert.equal(byId.wi.ranks.lac, true);
+  assert.equal(byId.wi.ranks.usn, 1);
+  assert.ok(byId.wi.ranks.usnNational > 1);
+  assert.equal(byId.x.avg, null);
+  // A school in the career file keeps the career file's ranks.
+  const [mich] = rankList([{ id: 'm', name: 'University of Michigan' }], schools, official);
+  const m = schools.find((s) => s.name === 'Michigan');
+  assert.equal(mich.ranks.niche, m.niche.rank);
+});

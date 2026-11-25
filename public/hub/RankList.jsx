@@ -1,13 +1,15 @@
 // The List tab: every application in one compact list, best average rank first.
 
 function useRankingSchools() {
-  const [state, setState] = React.useState({ schools: null, error: false });
+  const [state, setState] = React.useState({ schools: null, official: [], error: false });
   React.useEffect(() => {
     let live = true;
-    fetch("/data/career-ranking.json")
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then((j) => { if (live) setState({ schools: Array.isArray(j.schools) ? j.schools : [], error: false }); })
-      .catch(() => { if (live) setState({ schools: null, error: true }); });
+    const load = (url) => fetch(url).then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
+    // The official lists only fill in schools the career file doesn't cover, so the list still shows without them.
+    const official = load("/data/official-rankings.json").then(window.cfRankList.officialSchools).catch(() => []);
+    Promise.all([load("/data/career-ranking.json"), official])
+      .then(([j, o]) => { if (live) setState({ schools: Array.isArray(j.schools) ? j.schools : [], official: o, error: false }); })
+      .catch(() => { if (live) setState({ schools: null, official: [], error: true }); });
     return () => { live = false; };
   }, []);
   return state;
@@ -18,9 +20,9 @@ const rankText = (n) => (n == null ? "—" : `#${n}`);
 function RankList({ tracker }) {
   const { SchoolMark } = window.cfApp;
   const { Button } = window.CollegeForgeDesignSystem_e95e63;
-  const { schools, error } = useRankingSchools();
+  const { schools, official, error } = useRankingSchools();
   const [copied, setCopied] = React.useState("");
-  const rows = schools ? window.cfRankList.rankList(tracker.apps, schools) : [];
+  const rows = schools ? window.cfRankList.rankList(tracker.apps, schools, official) : [];
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(window.cfRankList.copyText(rows));
