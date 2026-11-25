@@ -107,6 +107,7 @@ export const applicantFieldsSchema = z.object({
   satNote: text("SAT note").optional(),
   /** Direction of grades over high school, as the student or transcript shows it. */
   gpaTrend: z.enum(["up", "steady", "down"]).optional(),
+  gpaRecent: stat("10th-11th grade GPA", 0, 4, false).optional(),
 });
 
 export const testingFieldsSchema = z.object({

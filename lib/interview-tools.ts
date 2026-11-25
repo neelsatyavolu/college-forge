@@ -3,7 +3,8 @@
  * recommendation are drawn by the client from streamed events, and each one ends the AI's turn so
  * the student answers before the AI goes on. Profile answers are saved with the regular profile tools.
  */
-import type { ChatEmitter, ToolSpec, UiQuestion, UiSchool, UiStrategy } from "./chat-types";
+import type { ChatEmitter, ToolSpec, UiEdIdea, UiQuestion, UiSchool, UiStrategy } from "./chat-types";
+import { dataTier } from "./college-recommendations";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
 import { SECTIONS, firstIncomplete, missingFields, startInterview } from "./interview-checklist";
@@ -99,7 +100,9 @@ export function parseSchools(raw: unknown): UiSchool[] {
     const tier = TIERS.find((t) => t === r.tier);
     if (!name || !tier) return [];
     const fits = ["yes", "no", "unknown"].find((f) => f === r.fitsBudget) as UiSchool["fitsBudget"];
+    const supp = isUcCampus({ name, slug: text(r.slug, 120) }) ? "yes" : (["yes", "no", "unknown"].find((f) => f === r.supplements) as UiSchool["supplements"]);
     return [{
+      ...(supp ? { supplements: supp } : {}),
       name, tier, reason: text(r.reason, 280) ?? "",
       ...(text(r.slug, 120) ? { slug: text(r.slug, 120) } : {}),
       ...(text(r.estChance, 40) ? { estChance: text(r.estChance, 40) } : {}),
@@ -115,10 +118,35 @@ export function applicationCount(schools: { name: string; slug?: string }[]): nu
   return schools.filter((s) => !isUcCampus(s)).length + (uc ? 1 : 0);
 }
 
+/**
+ * Replaces each school's tier with Forge's data-based tier when Forge has admissions numbers for it.
+ * Returns the adjusted list and a note for the AI naming what changed.
+ */
+export function applyDataTiers(ws: Workspace, schools: UiSchool[]): { schools: UiSchool[]; changed: string[] } {
+  const label = { reach: "reach", target: "target", safety: "likely" } as const;
+  const changed: string[] = [];
+  const out = schools.map((s) => {
+    const t = dataTier(ws, s.name, s.slug);
+    if (!t) return s;
+    const tier = label[t];
+    if (tier === s.tier) return s;
+    changed.push(`${s.name} ${s.tier}→${tier}`);
+    return { ...s, tier, aiTier: s.tier };
+  });
+  return { schools: out, changed };
+}
+
 /** Why a proposed list breaks the balance rules, or null when it is acceptable. */
 export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | null {
   const apps = applicationCount(schools);
-  if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
+  const prefs = ws.onboarding.listPrefs;
+  if (typeof prefs?.suppCount === "number" && typeof prefs?.noSuppCount === "number") {
+    const supp = applicationCount(schools.filter((s) => s.supplements !== "no"));
+    const quick = applicationCount(schools.filter((s) => s.supplements === "no"));
+    if (Math.abs(supp - prefs.suppCount) > 1 || Math.abs(quick - prefs.noSuppCount) > 1) {
+      return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${supp} and ${quick} (all UC campuses count as one supplement application). Mark each school's supplements yes/no from its current requirements.`;
+    }
+  } else if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
   const likely = schools.filter((s) => s.tier === "likely");
   const budget = ws.onboarding.listPrefs?.budget;
   const capped = budget && !NO_PRICE_CAP.has(budget);
@@ -220,7 +248,7 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   {
     name: "propose_list",
     description:
-      "Show the draft college list as school tiles and END YOUR TURN. 8-15 applications (all UC campuses = 1), mix by the student's ambition, at least 2 likely schools whose net price fits the budget (fitsBudget 'yes' only when you know it does). Each school: name, tier (reach|target|likely), a one-line reason specific to this student, estChance and netPrice when known. Include every school already on their list.",
+      "Show the draft college list as school tiles and END YOUR TURN. Match the student's counts: suppCount applications with supplemental essays and noSuppCount without (all UC campuses = one supplement application). Mix tiers by their ambition, at least 2 likely schools whose net price fits the budget (fitsBudget 'yes' only when you know it does). Each school: name, tier, supplements (yes/no), a one-line reason specific to this student, estChance and netPrice when known. Forge replaces your tier with its data-based tier where it has admissions numbers. Include every school already on their list, and an edIdea.",
     parameters: {
       type: "object",
       properties: {
@@ -228,11 +256,12 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
           type: "array",
           items: {
             type: "object",
-            properties: { slug: str, name: str, tier: { type: "string", enum: TIERS }, reason: str, estChance: str, netPrice: str, fitsBudget: { type: "string", enum: ["yes", "no", "unknown"] } },
+            properties: { slug: str, name: str, tier: { type: "string", enum: TIERS }, reason: str, estChance: str, netPrice: str, fitsBudget: { type: "string", enum: ["yes", "no", "unknown"] }, supplements: { type: "string", enum: ["yes", "no", "unknown"], description: "Does this application need supplemental essays this cycle? UC = yes (PIQs)." } },
             required: ["name", "tier", "reason"],
             additionalProperties: false,
           },
         },
+        edIdea: { type: "object", properties: { school: str, reason: str }, required: ["reason"], additionalProperties: false, description: "Your early-round idea for now (an ED school, or why none), confirmed after research." },
       },
       required: ["schools"],
       additionalProperties: false,
@@ -344,13 +373,15 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
         const ws = await read();
         const gap = firstIncomplete(ws);
         if (gap) return `Not shown: finish the interview first (${gap} still needs ${missingFields(ws, gap).join(", ")}).`;
-        const schools = markCurrent(ws, parseSchools(a.schools));
+        const { schools, changed } = applyDataTiers(ws, markCurrent(ws, parseSchools(a.schools)));
         const problem = checkListProposal(ws, schools);
-        if (problem) return `Not shown: ${problem}`;
-        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools }));
-        emit({ type: "list", schools });
-        stop({ list: schools });
-        return "Shown to the student. Stop now; they will approve, drop or ask for changes.";
+        if (problem) return `Not shown: ${problem}${changed.length ? ` (Forge's data also sets these tiers: ${changed.join(", ")}.)` : ""}`;
+        const ideaRaw = (a.edIdea ?? {}) as Args;
+        const edIdea: UiEdIdea | undefined = text(ideaRaw.reason, 400) ? { ...(text(ideaRaw.school, 120) ? { school: text(ideaRaw.school, 120) } : {}), reason: text(ideaRaw.reason, 400)! } : undefined;
+        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, ...(edIdea ? { edIdea } : {}) }));
+        emit({ type: "list", schools, ...(edIdea ? { edIdea } : {}) });
+        stop({ list: schools, ...(edIdea ? { edIdea } : {}) });
+        return `Shown to the student${changed.length ? `. Forge set these tiers from its admissions data: ${changed.join(", ")}` : ""}. Stop now; they will approve, drop or ask for changes.`;
       }
       case "recommend_strategy": {
         const reasons = text(a.reasons, 1500);

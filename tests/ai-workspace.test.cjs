@@ -165,7 +165,7 @@ test('activity and honor tools merge one entry at a time and keep the caps', asy
   assert.equal((await getWorkspace(id)).profile.honors[0].top,false);
 }));
 test('set_list_preferences validates and rebalance_list keeps the student\'s own schools', async()=>workspace(async(id,before)=>{
-  const {executeTool}=makeHubTools(id);
+  const {executeTool}=makeHubTools(id,{userText:'Make my list more conservative with fewer reaches'});
   assert.match(await executeTool('set_list_preferences',JSON.stringify({budget:'cheap'})),/^Not saved: Budget/);
   await executeTool('set_list_preferences',JSON.stringify({ambition:'conservative',appCount:0,regions:[],budget:'30-50',needAid:true,ed:'maybe',notes:''}));
   const ws=await getWorkspace(id);const prefs=ws.onboarding.listPrefs;

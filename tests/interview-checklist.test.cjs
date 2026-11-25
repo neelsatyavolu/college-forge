@@ -14,7 +14,7 @@ function filled() {
   ws.profile.activities = [{ rank: 1, name: 'Robotics', type: 'Academic' }];
   ws.onboarding = {
     completed: false,
-    listPrefs: { ambition: 'balanced', settings: ['suburban'], size: 'any', regions: ['any'], notes: '', budget: '30-50', needAid: true, ed: 'maybe' },
+    listPrefs: { ambition: 'balanced', settings: ['suburban'], size: 'any', regions: ['any'], notes: '', budget: '30-50', needAid: true, ed: 'maybe', ambitionChosen: true, suppCount: 6, noSuppCount: 2 },
     interview: { ...startInterview(1), deep: [1, 2, 3].map((i) => ({ prompt: `q${i}`, answer: `a${i}` })) },
   };
   return ws;
@@ -77,4 +77,12 @@ test('deep needs three answers', () => {
   ws.onboarding.interview = { ...ws.onboarding.interview, deep: [{ prompt: 'q', answer: 'a' }] };
   assert.equal(firstIncomplete(ws), 'deep');
   assert.deepEqual(missingFields(ws, 'deep'), ['2 more deeper answers']);
+});
+
+test('the list plan needs the mix, both counts and the ED stance; zero quick schools is an answer', () => {
+  const ws = filled();
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, ambitionChosen: undefined, suppCount: undefined, noSuppCount: undefined, ed: undefined };
+  assert.deepEqual(missingFields(ws, 'early'), ['reach / target / likely mix', 'how many schools with supplements', 'how many schools without supplements', 'Early Decision stance']);
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, ambitionChosen: true, suppCount: 7, noSuppCount: 0, ed: 'no' };
+  assert.deepEqual(missingFields(ws, 'early'), []);
 });

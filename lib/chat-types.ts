@@ -40,14 +40,20 @@ export type UiSchool = {
   fitsBudget?: "yes" | "no" | "unknown";
   /** Already on the student's list before this draft. */
   current?: boolean;
+  /** Whether the application needs supplemental essays ("yes" for UC: the Personal Insight Questions). */
+  supplements?: "yes" | "no" | "unknown";
+  /** The AI's tier, kept when Forge's data put the school in a different one. */
+  aiTier?: "reach" | "target" | "likely";
 };
+/** An early-round idea shown with the draft list; the final plan comes after research. */
+export type UiEdIdea = { school?: string; reason: string };
 export type UiStrategy = { ed?: string; ea: string[]; reasons: string };
 export type ResearchStage = "searching" | "reading" | "saved" | "done" | "needs_review";
 
 export type ChatEvent =
   | { type: "status"; stage: ChatStage; message: string; round?: number }
   | { type: "question"; question: UiQuestion }
-  | { type: "list"; schools: UiSchool[] }
+  | { type: "list"; schools: UiSchool[]; edIdea?: UiEdIdea }
   | { type: "strategy"; strategy: UiStrategy }
   | { type: "research"; slug: string; name: string; stage: ResearchStage; facts?: number }
   | { type: "tool"; name: string; path?: string; round: number }

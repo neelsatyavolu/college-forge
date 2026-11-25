@@ -51,3 +51,15 @@ test('portal settings and school research save through the copilot', async () =>
   const reply = await h.executeTool('set_school_research', JSON.stringify({ college: 'Rice University', complete: false, facts: [{ key: 'admit_rate', value: '7.5%', sourceUrl: 'https://ir.rice.edu/cds', cycle: '2025-26', thirdParty: false }] }));
   assert.match(reply, /Saved 1 facts on Rice University/);
 });
+
+test('the mix only changes when the student\'s own message is about it', async () => {
+  const save = (userText, args) => makeHubTools('copilot-mix', { userText }).executeTool('set_list_preferences', JSON.stringify(args));
+  await save('Open to any region', { regions: ['any'], ambition: 'balanced' });
+  let prefs = (await getWorkspace('copilot-mix')).onboarding.listPrefs;
+  assert.deepEqual(prefs.regions, ['any']);
+  assert.notEqual(prefs.ambitionChosen, true, 'ambition passed along with other prefs is ignored');
+  await save('More reach schools', { ambition: 'ambitious' });
+  prefs = (await getWorkspace('copilot-mix')).onboarding.listPrefs;
+  assert.equal(prefs.ambition, 'ambitious');
+  assert.equal(prefs.ambitionChosen, true);
+});

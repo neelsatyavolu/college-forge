@@ -28,6 +28,8 @@ type Args = Record<string, unknown>;
  * confirmation the model relays to the user. The hub UI re-fetches the
  * workspace after each turn, so these writes show up on the page immediately.
  */
+const MIX_WORDS = /\b(reach|reaches|balanced|likely|safer|safety|safeties|ambitious|conservative|mix|target)\b/i;
+
 export function makeHubTools(
   workspaceId: string,
   opts?: { userText?: string; draftStorageKey?: string }
@@ -412,6 +414,12 @@ export function makeHubTools(
     }
 
     try {
+      // A model saving other list preferences tends to pass the current ambition along. Only the student's
+      // own answer about their mix (reach / balanced / likely) changes it, so the interview really asks.
+      if (name === "set_list_preferences" && a.ambition !== undefined && !MIX_WORDS.test(userText)) {
+        const { ambition: _ignored, ...rest } = a;
+        a = rest;
+      }
       const profileReply = await runProfileTool(name, a, mutate);
       if (profileReply !== null) return profileReply;
       const extraReply = await runExtraTool(workspaceId, mutate, name, a);

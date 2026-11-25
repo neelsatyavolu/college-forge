@@ -131,7 +131,8 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
       return { ok: false, error: "needAid must be true or false." };
     }
     if (mode === "tool") {
-      const kept = Object.entries(lp).filter(([, v]) => !blank(v) && v !== 0 && !(Array.isArray(v) && v.length === 0));
+      // Counts arrive from tools as text, so a 0 there is the student's answer, not a filled-in default.
+      const kept = Object.entries(lp).filter(([k, v]) => !blank(v) && (v !== 0 || k === "suppCount" || k === "noSuppCount") && !(Array.isArray(v) && v.length === 0));
       next = { ...next, listPrefs: Object.fromEntries(kept) as Partial<OnboardingListPrefs> };
     }
   }
@@ -166,7 +167,12 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       ambition: "balanced", settings: [], size: "any", regions: [], notes: "",
       ...next.onboarding.listPrefs,
     };
-    if (["balanced", "ambitious", "conservative"].includes(p.ambition as string)) listPrefs.ambition = p.ambition!;
+    if (["balanced", "ambitious", "conservative"].includes(p.ambition as string)) { listPrefs.ambition = p.ambition!; listPrefs.ambitionChosen = true; }
+    const count = (v: unknown) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? Math.min(15, Math.round(v)) : null);
+    const supp = count(p.suppCount), quick = count(p.noSuppCount);
+    if (supp !== null) listPrefs.suppCount = supp;
+    if (quick !== null) listPrefs.noSuppCount = quick;
+    if (supp !== null || quick !== null) listPrefs.appCount = Math.max(1, (listPrefs.suppCount ?? 0) + (listPrefs.noSuppCount ?? 0));
     if (["small", "medium", "large", "any"].includes(p.size as string)) listPrefs.size = p.size!;
     if (Array.isArray(p.settings)) listPrefs.settings = [...new Set(p.settings.filter(s => ["urban", "suburban", "rural", "college-town", "any"].includes(s)))];
     if (Array.isArray(p.regions)) listPrefs.regions = [...new Set(p.regions.filter(r => ["northeast", "mid-atlantic", "south", "midwest", "west", "any"].includes(r)))];
@@ -174,7 +180,8 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     if ((LIST_BUDGETS as readonly unknown[]).includes(p.budget)) listPrefs.budget = p.budget;
     if ((ED_CHOICES as readonly unknown[]).includes(p.ed)) listPrefs.ed = p.ed;
     if (typeof p.needAid === "boolean") listPrefs.needAid = p.needAid;
-    if (p.appCount === null) listPrefs.appCount = null;
+    if (supp !== null || quick !== null) { /* appCount follows the two counts */ }
+    else if (p.appCount === null) listPrefs.appCount = null;
     else if (typeof p.appCount === "number" && Number.isFinite(p.appCount)) listPrefs.appCount = Math.max(8, Math.min(15, Math.round(p.appCount)));
     next = { ...next, onboarding: { ...next.onboarding, listPrefs } };
   }

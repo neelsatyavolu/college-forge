@@ -42,7 +42,7 @@ const tokens = { accessToken: auth.access_token, refreshToken: auth.refresh_toke
 const MAX_TURNS = Number(process.argv[2] || 40);
 const RESEARCH_N = Number(process.argv[3] || 2);
 const WS = 'live-onboarding';
-const PERSONA = `You are Maya, a synthetic high-school senior (class of 2027) from Columbus, Ohio, at Westland High School (public). Unweighted GPA 3.86, weighted 4.31, 7 APs. SAT 1460 (one sitting). Activities: robotics team build lead (10 hrs/wk, 3 years), part-time at a bike repair shop (8 hrs/wk), tutors middle schoolers in math. Honors: AP Scholar with Distinction, regional science fair 2nd place. Wants to study mechanical engineering, maybe product design. Prefers suburban or college-town campuses, medium size, Midwest or Northeast. Family budget about $25k a year, will apply for need-based aid, interested in merit money. Would apply ED only if the aid works out ("maybe"). Balanced ambition. No transcript file handy. Answer the counselor naturally in 1-3 sentences, like a real teenager; if shown options, pick one by its label.`;
+const PERSONA = process.env.PERSONA || `You are Maya, a synthetic high-school senior (class of 2027) from Columbus, Ohio, at Westland High School (public). Unweighted GPA 3.86, weighted 4.31, 7 APs. SAT 1460 (one sitting). Activities: robotics team build lead (10 hrs/wk, 3 years), part-time at a bike repair shop (8 hrs/wk), tutors middle schoolers in math. Honors: AP Scholar with Distinction, regional science fair 2nd place. Wants to study mechanical engineering, maybe product design. Prefers suburban or college-town campuses, medium size, Midwest or Northeast. Family budget about $25k a year, will apply for need-based aid, interested in merit money. Would apply ED only if the aid works out ("maybe"). Balanced ambition. No transcript file handy. Answer the counselor naturally in 1-3 sentences, like a real teenager; if shown options, pick one by its label.`;
 
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
 const mutate = (fn) => store.updateWorkspace(WS, fn);
@@ -60,7 +60,7 @@ async function counselorTurn(history, mode = 'onboarding') {
     tokens, instructions: mode === 'onboarding' ? buildInterviewPrompt(ws) : `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`,
     turns: history.slice(-16), emit: noop, tools: [...hub.tools, ...iv.tools],
     executeTool: async (n, a) => { calls.push(n); return exec(n, a); },
-    shouldEndTurn: iv.endTurn, ...(mode === 'research' || ws.onboarding.interview?.phase === 'list' ? { maxRounds: 14 } : {}),
+    shouldEndTurn: iv.endTurn, maxRounds: 14, effort: mode === 'onboarding' ? 'low' : 'medium',
   });
   if (mode === 'onboarding') await mutate((w) => recordTurn(recordTurn(w, { role: 'user', content: history.at(-1).content, at: Date.now() }), { role: 'assistant', content: result.text, at: Date.now() }));
   return { text: result.text, events, calls, finish: result.finishReason };
@@ -98,7 +98,10 @@ try {
   log('checklist first gap:', firstIncomplete(ws), '| deep answers:', ws.onboarding.interview.deep.length, '| activities:', ws.profile.activities.length);
   log('profile:', JSON.stringify({ name: ws.applicant.name, gpa: ws.applicant.gpaUnweighted, sat: ws.profile.testing.sat, intended: ws.profile.intended, residency: ws.profile.residency, prefs: ws.onboarding.listPrefs }));
   if (!listShown) { console.error('No list was proposed within', MAX_TURNS, 'turns.', problems); process.exit(1); }
-  log('LIST:', listShown.map((s) => `${s.tier}: ${s.name} (${s.netPrice || '?'}, fits ${s.fitsBudget || '?'})`).join(' | '));
+  log('LIST:', listShown.map((s) => `${s.tier}${s.aiTier ? `(ai:${s.aiTier})` : ''}/${s.supplements || '?'}: ${s.name}`).join(' | '));
+  const idea = (await read()).onboarding.interview.edIdea;
+  log('ED IDEA:', idea ? `${idea.school || 'none'}: ${idea.reason.slice(0, 200)}` : '(none)');
+  log('PREFS:', JSON.stringify((await read()).onboarding.listPrefs), 'gpaRecent', (await read()).applicant.gpaRecent, 'trend', (await read()).applicant.gpaTrend);
 
   // Approve the whole list, then research the first few schools for real.
   const approved = applyApprovedList(await read(), listShown.map((s) => s.name), []);

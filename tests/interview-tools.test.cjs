@@ -74,7 +74,7 @@ test('propose_list waits for the interview to be complete', async () => {
 function complete(ws) {
   ws.applicant = { ...ws.applicant, name: 'Sam', gpaUnweighted: '3.8', sat: '1400' };
   ws.profile = { ...ws.profile, hs: 'HS', gradYear: 2027, intended: 'Biology', residency: 'OH', activities: [{ rank: 1, name: 'Robotics', type: 'Academic' }] };
-  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, settings: ['any'], regions: ['any'], budget: 'unsure', needAid: false, ed: 'no' };
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, settings: ['any'], regions: ['any'], budget: 'unsure', needAid: false, ed: 'no', ambitionChosen: true, suppCount: 10, noSuppCount: 0 };
   ws.onboarding.interview = { phase: 'interview', section: 'deep', transcript: [], notes: {}, deep: [1, 2, 3].map((i) => ({ prompt: 'q', answer: 'a' })), startedAt: 1 };
   return ws;
 }
@@ -144,4 +144,34 @@ test('a paragraph repeated later in the same reply is dropped', () => {
   assert.equal(T.dedupeParagraphs(`${a}\n\n${b}`), a);
   assert.equal(T.dedupeParagraphs('Nice to meet you!\n\nWhat high school do you attend?'), 'Nice to meet you!\n\nWhat high school do you attend?', 'different paragraphs stay');
   assert.equal(T.dedupeParagraphs('Got it.\n\nGot it.'), 'Got it.\n\nGot it.', 'very short lines are left alone');
+});
+
+test('a list must match the student\'s supplement and no-supplement counts (±1); UC counts once and always has supplements', () => {
+  const ws = wsWith({ budget: 'unsure', suppCount: 4, noSuppCount: 2 });
+  const parsed = T.parseSchools([
+    { name: 'University of California, Los Angeles', tier: 'reach', reason: 'r', supplements: 'no' },
+    { name: 'University of California, San Diego', tier: 'target', reason: 'r' },
+    { name: 'Northwestern University', tier: 'reach', reason: 'r', supplements: 'yes' },
+    { name: 'Syracuse University', tier: 'target', reason: 'r', supplements: 'yes' },
+    { name: 'Boston University', tier: 'target', reason: 'r', supplements: 'yes' },
+    { name: 'University of Missouri', tier: 'likely', reason: 'r', supplements: 'no' },
+    { name: 'Arizona State University', tier: 'likely', reason: 'r', supplements: 'no' },
+  ]);
+  assert.equal(parsed[0].supplements, 'yes', 'UC is always a supplement application');
+  assert.equal(T.checkListProposal(ws, parsed), null, '4 supplement apps (UC once) and 2 without');
+  const tooFew = parsed.filter((s) => s.supplements !== 'no').slice(0, 2);
+  assert.match(T.checkListProposal(ws, tooFew), /asked for 4 applications with supplements and 2 without; this list has 1 and 0/);
+});
+
+test('Forge resets tiers from its admissions data and remembers the AI\'s guess', () => {
+  const ws = wsWith();
+  ws.applicant = { ...ws.applicant, gpaUnweighted: '3.95', sat: '1560' };
+  const { schools, changed } = T.applyDataTiers(ws, [
+    { name: 'Massachusetts Institute of Technology', tier: 'target', reason: 'r' },
+    { name: 'A College Forge Has No Data For', tier: 'target', reason: 'r' },
+  ]);
+  assert.equal(schools[0].tier, 'reach');
+  assert.equal(schools[0].aiTier, 'target');
+  assert.equal(schools[1].tier, 'target', 'unknown colleges keep the AI tier');
+  assert.deepEqual(changed, ['Massachusetts Institute of Technology target→reach']);
 });
