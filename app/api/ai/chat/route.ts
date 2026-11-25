@@ -4,7 +4,7 @@ import type { ChatEvent, ChatTurn, ProviderName } from "@/lib/chat-types";
 import { getWorkspace, updateWorkspace } from "@/lib/store";
 import { buildHubSystemPrompt } from "@/lib/hub-context";
 import { makeHubTools } from "@/lib/hub-tools";
-import { makeInterviewTools, recordTurn } from "@/lib/interview-tools";
+import { dedupeParagraphs, makeInterviewTools, recordTurn } from "@/lib/interview-tools";
 import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
 import { sensitiveRefusal, toolAllowed } from "@/lib/tool-policy";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
@@ -145,10 +145,12 @@ export async function POST(req: NextRequest) {
           ...(setup ? { requireTools: true, shouldEndTurn: interview.endTurn } : {}),
           // Setup turns can move into the list step mid-turn, and research needs many reads; interview questions end early anyway.
           ...(setup ? { maxRounds: 14 } : {}),
+          // Interview questions should come back fast; research and the copilot benefit from more thought.
+          effort: mode === "onboarding" ? "low" : "medium",
         });
         if (mode === "onboarding") {
           const ui = interview.shown();
-          await mutate((w) => recordTurn(w, { role: "assistant", content: result.text.slice(0, 4000), ...(ui ? { ui } : {}), at: Date.now() }));
+          await mutate((w) => recordTurn(w, { role: "assistant", content: dedupeParagraphs(result.text).slice(0, 4000), ...(ui ? { ui } : {}), at: Date.now() }));
         }
 
         // Reads and answers do not authorize implicit changes to saved choices.

@@ -28,6 +28,25 @@ export function interviewOf(ws: Workspace): InterviewState {
 }
 const withInterview = (ws: Workspace, iv: InterviewState): Workspace => ({ ...ws, onboarding: { ...ws.onboarding, interview: iv } });
 
+const words = (p: string) => new Set(p.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length > 2));
+
+/**
+ * Drops a paragraph that repeats an earlier one in the same reply. A model sometimes writes its
+ * lead-in, saves the answer with a tool, then writes the lead-in again; both reach the student.
+ */
+export function dedupeParagraphs(text: string): string {
+  const kept: { text: string; w: Set<string> }[] = [];
+  for (const para of text.split(/\n{2,}/)) {
+    const w = words(para);
+    const repeat = w.size > 3 && kept.some((k) => {
+      const shared = [...w].filter((x) => k.w.has(x)).length;
+      return shared / Math.min(w.size, k.w.size) >= 0.7;
+    });
+    if (!repeat && para.trim()) kept.push({ text: para, w });
+  }
+  return kept.map((k) => k.text).join("\n\n");
+}
+
 /** Appends one chat turn (typed or tapped) to the stored transcript, keeping the newest TRANSCRIPT_CAP. */
 export function recordTurn(ws: Workspace, turn: InterviewTurn): Workspace {
   const iv = interviewOf(ws);

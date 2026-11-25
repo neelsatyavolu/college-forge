@@ -104,6 +104,8 @@ export async function runChat(params: {
   executeTool?: ToolExecutor;
   shouldEndTurn?: () => boolean;
   maxRounds?: number;
+  /** ChatGPT reasoning effort; other providers ignore it. */
+  effort?: "low" | "medium";
   /** Onboarding writes the hub through tools, which only the Codex and Grok clients take. */
   requireTools?: boolean;
 }): Promise<RunChatResult> {
@@ -144,6 +146,7 @@ export async function runChat(params: {
       executeTool: params.executeTool,
       shouldEndTurn: params.shouldEndTurn,
       maxRounds: params.maxRounds,
+      effort: params.effort,
     });
     return {
       text: result.text,

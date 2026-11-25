@@ -166,6 +166,16 @@ try {
   assert.match(state.chats.at(-1).messages.at(-1).content, /Suburban, College town/, 'Multi-choice answers are sent as text');
   await shoot('03-upload');
 
+  // The answer box starts two lines tall and grows with a long answer.
+  const boxHeight = () => page.$eval('.oc-composer-box', (el) => el.getBoundingClientRect().height);
+  const before = await boxHeight();
+  await page.type('.oc-composer-box', 'I lead the robotics build team and also run a small tutoring group for middle schoolers on weekends. '.repeat(4));
+  const grown = await boxHeight();
+  assert.ok(before >= 56, `starts at least two lines tall (${before}px)`);
+  assert.ok(grown > before + 40 && grown <= 222, `grows with the text, up to a cap (${before} -> ${grown}px)`);
+  await page.screenshot({ path: path.join(shots, '03b-composer-1440.png') });
+  await page.$eval('.oc-composer-box', (el) => { Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(el, ''); el.dispatchEvent(new Event('input', { bubbles: true })); });
+
   // Resume: reload mid-interview and the last question is still answerable.
   await new Promise((r) => setTimeout(r, 300));
   await page.reload();
