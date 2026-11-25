@@ -205,6 +205,8 @@ export type Workspace = {
   applicant: {
     name: string; cycle: string; year: string;
     gpaWeighted: string; gpaUnweighted: string; sat: string; satNote: string; awards: number;
+    /** Grades rising, steady or falling across high school (lib/college-recommendations.ts uses "up"). */
+    gpaTrend?: "up" | "steady" | "down";
   };
   profile: {
     intended: string; hs: string; gradYear: number | string; location: string;

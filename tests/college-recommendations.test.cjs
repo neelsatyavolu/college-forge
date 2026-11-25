@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const ts = require('typescript');
 // Compile local TypeScript on demand without a second build or test dependency.
 require.extensions['.ts'] = (mod, file) => mod._compile(ts.transpileModule(fs.readFileSync(file, 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS, target:ts.ScriptTarget.ES2021, esModuleInterop:true, resolveJsonModule:true}}).outputText,file);
-const { recommendColleges, assessAcademicFit, seedRecommendedColleges } = require('../lib/college-recommendations.ts');
+const { recommendColleges, assessAcademicFit, seedRecommendedColleges, realismGate, studentAcademics, GATE } = require('../lib/college-recommendations.ts');
 const { emptyWorkspace } = require('../lib/store.ts');
 const data = require('../public/data/rankings/top250.json');
 const { US_NEWS_TOP_250 } = require('../lib/us-news-rankings.ts');
@@ -36,12 +36,56 @@ test('missing academic profile does not create personal admission tiers', () => 
  assert.ok(result.profileGaps.length);
  assert.ok(result.recommendations.every(x=>x.fit.tier===null));
 });
-test('a weighted-only GPA is capped at 4.0 and says so', () => {
+test('a weighted-only GPA is not compared with unweighted averages, and says so', () => {
  const ws=emptyWorkspace();ws.applicant.gpaWeighted='4.8';
  const result=recommendColleges(ws);
- assert.ok(result.recommendations.some(x=>x.fit.tier!==null));
- assert.ok(result.recommendations.every(x=>x.fit.cautions.some(c=>/weighted GPA \(4\.8\).*capped at 4\.0/.test(c))));
+ assert.equal(studentAcademics(ws).gpa,null);
+ assert.ok(result.recommendations.every(x=>x.fit.tier===null), 'no academic categories from a weighted GPA alone');
  assert.ok(result.profileGaps.some(x=>/unweighted GPA/.test(x)));
+});
+const selective=(admitRate)=>({ slug:'x', admitRate, sat25:1450, sat75:1550, gpa:3.9, gpaWeighted:false });
+const academics=(gpa,sat,trendUp=false)=>({ gpa, sat, trendUp, gpaFromWeighted:false, satFromAct:false, testOptional:sat===null, cautions:[] });
+test('the realism gate keeps out-of-range students away from very selective colleges', () => {
+ assert.equal(realismGate(selective(0.08),academics(3.4,1300),true).ok,false);
+ assert.equal(realismGate(selective(0.08),academics(3.85,1440),true).ok,false,'SAT below the 25th percentile');
+ assert.equal(realismGate(selective(0.08),academics(3.85,1450),false).ok,true,'inside the range');
+ assert.equal(realismGate(selective(0.08),academics(3.75,1500),false).ok,false,'GPA 0.15 under the average');
+ assert.equal(realismGate(selective(0.25),academics(3.7,1400),false).ok,true,'15-35%: half a width below p25 and 0.25 under the GPA average');
+ assert.equal(realismGate(selective(0.25),academics(3.6,1400),false).ok,false);
+ assert.equal(realismGate(selective(0.5),academics(2.0,900),false).ok,true,'less selective colleges use the other checks');
+});
+test('the gate is monotonic: better academics never fail where worse ones pass', () => {
+ for (const admit of [0.05,0.2]) for (let gpa=3.0;gpa<=4.0;gpa+=0.05) for (let sat=1200;sat<=1600;sat+=20) {
+  const ok=realismGate(selective(admit),academics(gpa,sat),false).ok;
+  if (ok) assert.equal(realismGate(selective(admit),academics(Math.min(4,gpa+0.05),Math.min(1600,sat+20)),false).ok,true);
+ }
+});
+test('missing comparisons never pass the gate', () => {
+ assert.equal(realismGate({...selective(0.1),gpa:null},academics(4.0,null),true).ok,false,'test-optional with no comparable GPA');
+ assert.equal(realismGate({...selective(0.1),gpa:3.9,gpaWeighted:true},academics(4.0,null),true).ok,false,'weighted college average');
+ assert.equal(realismGate({...selective(0.1),gpa:null},academics(3.0,1500),true).ok,true,'SAT alone can qualify');
+});
+test('an upward trend helps only ambitious students, and only on the GPA test', () => {
+ const s=selective(0.08);
+ assert.equal(realismGate(s,academics(3.72,1500,true),false).ok,false,'not ambitious');
+ assert.equal(realismGate(s,academics(3.72,1500,true),true).ok,true,'ambitious + upward trend');
+ assert.equal(realismGate(s,academics(3.72,1440,true),true).ok,false,'SAT test unchanged');
+ assert.equal(GATE.trendRelief,0.1);
+});
+test('low academics are never seeded with colleges admitting under 15%', () => {
+ const ws=profile();ws.applicant.gpaUnweighted='3.2';ws.applicant.sat='1150';ws.onboarding.listPrefs={ambition:'ambitious',settings:[],size:'any',regions:[],notes:''};
+ const {colleges}=seedRecommendedColleges(ws);
+ const rate=(c)=>US_NEWS_TOP_250.find(x=>x.scorecardId===c.scorecardId)?.admitRate;
+ assert.ok(colleges.length>0);
+ assert.ok(colleges.every(c=>!(rate(c)<0.15)), colleges.filter(c=>rate(c)<0.15).map(c=>c.name).join(', '));
+});
+test('saved schools do not use up a category before it is filled', () => {
+ const ws=profile();ws.onboarding.listPrefs={ambition:'balanced',settings:[],size:'any',regions:[],notes:''};
+ const first=seedRecommendedColleges(ws);
+ const saved={...first.colleges.find(c=>c.tier==='target'),origin:'user'};
+ const again=seedRecommendedColleges({...ws,colleges:[saved]});
+ assert.equal(again.colleges.filter(c=>c.slug===saved.slug).length,1);
+ assert.deepEqual(again.gaps,first.gaps);
 });
 test('very selective schools remain reaches even with perfect academics', () => {
  const ws=profile();ws.applicant.gpaUnweighted='4.0';ws.applicant.sat='1600';

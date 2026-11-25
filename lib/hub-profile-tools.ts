@@ -41,6 +41,7 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
         year: { type: "string", description: "e.g. 'Junior — May 2027'" },
         gpaWeighted: { type: "string", description: "0 to 6" }, gpaUnweighted: { type: "string", description: "0 to 4" },
         sat: { type: "string", description: "Whole number 400-1600" }, satNote: { type: "string", description: "Superscore or sections, or 'Test optional'" },
+        gpaTrend: { type: "string", enum: ["up", "steady", "down"], description: "Grades across high school: 'up' only for a clear upward trend (e.g. 3.3 in 9th grade to 3.9 in 11th), from the transcript or the student's own account." },
       },
       additionalProperties: false,
     },
@@ -219,7 +220,7 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
   if (!PROFILE_TOOL_NAMES.has(name)) return null;
   switch (name) {
     case "set_applicant_snapshot":
-      return savePatch(mutate, { applicant: pick(a, ["name", "cycle", "year", "gpaWeighted", "gpaUnweighted", "sat", "satNote"]) }, "Updated the applicant snapshot.");
+      return savePatch(mutate, { applicant: pick(a, ["name", "cycle", "year", "gpaWeighted", "gpaUnweighted", "sat", "satNote", "gpaTrend"]) }, "Updated the applicant snapshot.");
     case "set_profile_identity":
       return savePatch(mutate, { profile: pick(a, ["intended", "hs", "gradYear", "location", "counselor", "residency"]) }, "Updated profile identity.");
     case "set_testing": {
