@@ -37,7 +37,7 @@ const state = { aiConnected: false, chats: [], researchStarted: false };
 const json = (body, status = 200) => ({ status, contentType: 'application/json', body: JSON.stringify(body) });
 const nd = (...events) => ({ status: 200, contentType: 'application/x-ndjson', body: events.map((e) => JSON.stringify(e)).join('\n') + '\n{"type":"done"}\n' });
 const SCHOOLS = [
-  ...['Ohio State University', 'University of Pittsburgh'].map((name) => ({ name, tier: 'likely', reason: 'Strong biology program and your budget works with in-state aid.', estChance: '75%', netPrice: '$24,000', fitsBudget: 'yes' })),
+  ...['Ohio State University', 'University of Pittsburgh'].map((name) => ({ name, tier: 'likely', supplements: 'no', reason: 'Strong biology program and your budget works with in-state aid.', estChance: '75%', netPrice: '$24,000', fitsBudget: 'yes' })),
   ...['Case Western Reserve University', 'University of Rochester', 'Tufts University', 'Boston College'].map((name) => ({ name, tier: 'target', reason: 'Undergraduate research in biology from first year.', estChance: '35%', netPrice: '$31,500' })),
   ...['Johns Hopkins University', 'Duke University', 'Brown University', 'Rice University'].map((name) => ({ name, tier: 'reach', reason: 'Top biology research; meets full need.', estChance: '9%' })),
 ];
@@ -77,7 +77,7 @@ async function scripted(body) {
   if (n === 4) return nd({ type: 'delta', text: 'Great list. What did you get on the SAT?' }, { type: 'question', question: { id: 'sat', kind: 'number', prompt: 'SAT total', min: 400, max: 1600 } });
   if (n === 5) {
     await store.updateWorkspace(WS, (w) => ({ ...w, onboarding: { ...w.onboarding, interview: { ...w.onboarding.interview, phase: 'list', listDraft: SCHOOLS } } }));
-    return nd({ type: 'delta', text: "Here's a first list: 10 applications, balanced, with two likely schools that fit your budget." }, { type: 'list', schools: SCHOOLS });
+    return nd({ type: 'delta', text: "Here's a first list: 10 applications, balanced, with two likely schools that fit your budget." }, { type: 'list', schools: SCHOOLS, edIdea: { school: 'Case Western Reserve University', reason: 'Your strongest fit with a net price inside your budget; confirm after research.' } });
   }
   await store.updateWorkspace(WS, (w) => ({ ...w, onboarding: { ...w.onboarding, interview: { ...w.onboarding.interview, phase: 'strategy' } } }));
   return nd({ type: 'delta', text: 'Based on the research, Case Western is the strongest Early Decision fit.' }, { type: 'strategy', strategy: { ed: 'Case Western Reserve University', ea: ['Ohio State University', 'University of Pittsburgh'], reasons: 'ED at Case Western raises your odds most, and its net price fits your budget. Apply EA to Ohio State and Pitt so you have answers by January.' } });
@@ -112,7 +112,7 @@ await store.updateWorkspace(WS, (w) => ({
   ...w,
   applicant: { ...w.applicant, name: 'Sam Rivera', gpaUnweighted: '3.8', sat: '1410' },
   profile: { ...w.profile, hs: 'Sample High', gradYear: 2027, intended: 'Biology', residency: 'OH', activities: [{ rank: 1, name: 'Science Olympiad', type: 'Academic' }] },
-  onboarding: { completed: false, interview: { phase: 'interview', section: 'basics', transcript: [], notes: {}, deep: [1, 2, 3].map((i) => ({ prompt: `q${i}`, answer: `a${i}` })), startedAt: 1 }, listPrefs: { ambition: 'balanced', settings: ['any'], size: 'any', regions: ['any'], notes: '', budget: '30-50', needAid: true, ed: 'maybe' } },
+  onboarding: { completed: false, interview: { phase: 'interview', section: 'basics', transcript: [], notes: {}, deep: [1, 2, 3].map((i) => ({ prompt: `q${i}`, answer: `a${i}` })), startedAt: 1 }, listPrefs: { ambition: 'balanced', settings: ['any'], size: 'any', regions: ['any'], notes: '', budget: '30-50', needAid: true, ed: 'maybe', ambitionChosen: true, suppCount: 8, noSuppCount: 2 } },
 }));
 
 const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
@@ -224,6 +224,9 @@ try {
 
   // Typing instead of tapping works too: the list arrives after a typed message.
   await waitText("Here's a first list");
+  await waitText('Early Decision idea');
+  await waitText('No supplements');
+  assert.match(await page.evaluate(() => document.querySelector('.oc-list-mix').textContent), /10 applications · 4 reach · 4 target · 2 likely/);
   await assertVisible('.oc-list-actions', 'list approval buttons');
   await shoot('04-list');
   await page.evaluate(() => [...document.querySelectorAll('.oc-school')].find((s) => s.textContent.includes('Rice University')).querySelector('button').click());

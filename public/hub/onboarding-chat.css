@@ -122,3 +122,16 @@
   .oc-acts-row, .oc-acts-row--honor { grid-template-columns: 1fr 1fr; padding-bottom: 8px; border-bottom: 1px solid var(--hairline-soft); }
   .oc-acts-row .oc-input:first-child { grid-column: 1 / -1; }
 }
+
+/* Draft list: supplement groups, tier tags, mix line and the ED idea. */
+.oc-list-mix { margin: 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.oc-list-head em { margin-left: 8px; font-style: normal; font-weight: 400; color: var(--muted-soft, var(--muted)); }
+.oc-school-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.oc-tier { padding: 1px 8px; font-size: 11px; font-weight: 600; border-radius: 999px; border: 1px solid var(--hairline); color: var(--body); }
+.oc-tier--reach { border-color: var(--coral); color: var(--coral); }
+.oc-tier--likely { border-color: var(--success); color: var(--success); }
+.oc-tier-note { font-size: 11px; color: var(--muted); }
+.oc-ed-idea { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 1px solid var(--hairline); border-radius: 10px; background: var(--surface-soft); }
+.oc-ed-label { font-size: 12px; color: var(--muted); }
+.oc-ed-idea strong { font-size: 15px; }
+.oc-ed-idea p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--body); }

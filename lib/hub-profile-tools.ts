@@ -41,6 +41,7 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
         year: { type: "string", description: "e.g. 'Junior — May 2027'" },
         gpaWeighted: { type: "string", description: "0 to 6" }, gpaUnweighted: { type: "string", description: "0 to 4" },
         sat: { type: "string", description: "Whole number 400-1600" }, satNote: { type: "string", description: "Superscore or sections, or 'Test optional'" },
+        gpaRecent: { type: "string", description: "Unweighted GPA for 10th and 11th grade only (0-4), when the transcript shows grades by year. The UCs use this, and it shows an upward trend." },
         gpaTrend: { type: "string", enum: ["up", "steady", "down"], description: "Grades across high school: 'up' only for a clear upward trend (e.g. 3.3 in 9th grade to 3.9 in 11th), from the transcript or the student's own account." },
       },
       additionalProperties: false,
@@ -164,6 +165,8 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
         appCount: { type: "number" },
         regions: { type: "array", items: str }, settings: { type: "array", items: str },
         size: { type: "string", enum: ["small", "medium", "large", "any"] },
+        suppCount: { type: "string", description: "How many applications with supplemental essays the student will write, as digits, e.g. '6'. All UC campuses together count as one." },
+        noSuppCount: { type: "string", description: "How many quick applications with no supplements they want, as digits; '0' is a real answer." },
         notes: { type: "string", description: "Free-text constraints. Replaces the saved notes." },
         budget: { type: "string", enum: ["lt15", "15-30", "30-50", "50plus", "unsure"] },
         needAid: yesNo("yes: applying for need-based aid. no: not applying."), ed: { type: "string", enum: ["yes", "no", "maybe"] },
@@ -220,7 +223,7 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
   if (!PROFILE_TOOL_NAMES.has(name)) return null;
   switch (name) {
     case "set_applicant_snapshot":
-      return savePatch(mutate, { applicant: pick(a, ["name", "cycle", "year", "gpaWeighted", "gpaUnweighted", "sat", "satNote", "gpaTrend"]) }, "Updated the applicant snapshot.");
+      return savePatch(mutate, { applicant: pick(a, ["name", "cycle", "year", "gpaWeighted", "gpaUnweighted", "sat", "satNote", "gpaTrend", "gpaRecent"]) }, "Updated the applicant snapshot.");
     case "set_profile_identity":
       return savePatch(mutate, { profile: pick(a, ["intended", "hs", "gradYear", "location", "counselor", "residency"]) }, "Updated profile identity.");
     case "set_testing": {
@@ -279,7 +282,12 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
       }, () => "Removed the honor.");
     }
     case "set_list_preferences": {
-      const listPrefs = { ...pick(a, ["ambition", "appCount", "regions", "settings", "size", "notes", "budget", "ed"]), needAid: toolFlag(a.needAid) };
+      const countOf = (v: unknown) => (typeof v === "string" && /^\d{1,2}$/.test(v.trim()) ? Number(v.trim()) : undefined);
+      const listPrefs = {
+        ...pick(a, ["ambition", "appCount", "regions", "settings", "size", "notes", "budget", "ed"]), needAid: toolFlag(a.needAid),
+        ...(countOf(a.suppCount) !== undefined ? { suppCount: countOf(a.suppCount) } : {}),
+        ...(countOf(a.noSuppCount) !== undefined ? { noSuppCount: countOf(a.noSuppCount) } : {}),
+      };
       return savePatch(mutate, { listPrefs }, "Saved the list preferences. The saved list is unchanged until rebalance_list runs.");
     }
     case "rebalance_list": {

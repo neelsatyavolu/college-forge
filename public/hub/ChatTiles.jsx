@@ -216,48 +216,71 @@ function OcQuestion({ q, lead, profile, revision, disabled, onAnswer }) {
   );
 }
 
-const OC_TIERS = [["reach", "Reach"], ["target", "Target"], ["likely", "Likely"]];
+const OC_TIER_LABEL = { reach: "Reach", target: "Target", likely: "Likely" };
+const OC_TIER_ORDER = { reach: 0, target: 1, likely: 2 };
+const ocIsUc = (s) => /\buniversity of california\b|^uc[ -]/i.test(s.name);
 
-function OcListTiles({ schools, disabled, onApprove, onRevise }) {
+/** Counts applications the way schools are applied to: every UC campus together is one. */
+function ocAppCount(list) {
+  const uc = list.some(ocIsUc);
+  return list.filter((s) => !ocIsUc(s)).length + (uc ? 1 : 0);
+}
+
+function OcSchoolTile({ s, off, disabled, onToggle }) {
+  return (
+    <article className={"oc-school" + (off ? " is-dropped" : "")}>
+      <div className="oc-school-top">
+        <h5>{s.name}</h5>
+        <button type="button" className="oc-link" disabled={disabled} onClick={onToggle}>{off ? "Keep" : "Drop"}</button>
+      </div>
+      <div className="oc-school-tags">
+        <span className={"oc-tier oc-tier--" + s.tier}>{OC_TIER_LABEL[s.tier]}</span>
+        {s.aiTier && s.aiTier !== s.tier && <span className="oc-tier-note" title="Forge sets tiers from published admissions data for your GPA and scores">Forge's data</span>}
+        {s.current && <span className="oc-tier-note">On your list</span>}
+      </div>
+      <p>{s.reason}</p>
+      <div className="oc-school-meta">
+        {s.estChance && <span>Chance {s.estChance}</span>}
+        {s.netPrice && <span>Net {s.netPrice}{s.fitsBudget === "no" ? " · over budget" : ""}</span>}
+      </div>
+    </article>
+  );
+}
+
+function OcListTiles({ schools, edIdea, disabled, onApprove, onRevise }) {
   const [dropped, setDropped] = React.useState([]);
   const [note, setNote] = React.useState("");
   const kept = schools.filter((s) => !dropped.includes(s.name));
   const toggle = (name) => setDropped((d) => (d.includes(name) ? d.filter((x) => x !== name) : [...d, name]));
+  const sorted = (list) => [...list].sort((a, b) => OC_TIER_ORDER[a.tier] - OC_TIER_ORDER[b.tier]);
+  const groups = [
+    ["Write supplements", "Essays for each school (all UC campuses share one set)", sorted(schools.filter((s) => s.supplements !== "no"))],
+    ["No supplements", "Common App or school application only", sorted(schools.filter((s) => s.supplements === "no"))],
+  ];
+  const mix = ["reach", "target", "likely"].map((t) => `${kept.filter((s) => s.tier === t).length} ${OC_TIER_LABEL[t].toLowerCase()}`).join(" · ");
   return (
     <div className="oc-list">
-      {OC_TIERS.map(([tier, label]) => {
-        const group = schools.filter((s) => s.tier === tier);
-        if (!group.length) return null;
-        return (
-          <section key={tier} className="oc-list-group">
-            <h4 className="oc-list-head">{label} <span>{group.filter((s) => !dropped.includes(s.name)).length}</span></h4>
-            <div className="oc-school-grid">
-              {group.map((s) => {
-                const off = dropped.includes(s.name);
-                return (
-                  <article key={s.name} className={"oc-school" + (off ? " is-dropped" : "")}>
-                    <div className="oc-school-top">
-                      <h5>{s.name}</h5>
-                      <button type="button" className="oc-link" disabled={disabled} onClick={() => toggle(s.name)}>{off ? "Keep" : "Drop"}</button>
-                    </div>
-                    <p>{s.reason}</p>
-                    <div className="oc-school-meta">
-                      {s.estChance && <span>Chance {s.estChance}</span>}
-                      {s.netPrice && <span>Net {s.netPrice}{s.fitsBudget === "no" ? " · over budget" : ""}</span>}
-                      {s.current && <span>On your list</span>}
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </section>
-        );
-      })}
+      {edIdea && (
+        <div className="oc-ed-idea">
+          <span className="oc-ed-label">Early Decision idea</span>
+          <strong>{edIdea.school || "None for now"}</strong>
+          <p>{edIdea.reason}</p>
+        </div>
+      )}
+      <p className="oc-list-mix">{ocAppCount(kept)} applications · {mix}</p>
+      {groups.map(([title, hint, group]) => group.length > 0 && (
+        <section key={title} className="oc-list-group">
+          <h4 className="oc-list-head">{title} <span>{ocAppCount(group.filter((s) => !dropped.includes(s.name)))}</span><em>{hint}</em></h4>
+          <div className="oc-school-grid">
+            {group.map((s) => <OcSchoolTile key={s.name} s={s} off={dropped.includes(s.name)} disabled={disabled} onToggle={() => toggle(s.name)} />)}
+          </div>
+        </section>
+      ))}
       <div className="oc-list-actions">
         <OcButton disabled={disabled || kept.length < 1} onClick={() => onApprove(kept.map((s) => s.name), schools.filter((s) => s.current && dropped.includes(s.name)).map((s) => s.name))}>
           Research these {kept.length}
         </OcButton>
-        <input className="oc-input" placeholder="Or ask for changes, e.g. more schools near Boston" value={note} disabled={disabled} onChange={(e) => setNote(e.target.value)}
+        <input className="oc-input" placeholder="Or ask for changes, e.g. more journalism schools on the East Coast" value={note} disabled={disabled} onChange={(e) => setNote(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && note.trim()) { onRevise(note.trim(), dropped); setNote(""); } }} />
       </div>
     </div>

@@ -160,7 +160,7 @@ test('list preference patches normalize fields while preserving onboarding conte
  const {applyWorkspacePatch}=require('../lib/workspace-patch.ts');const ws=profile();
  ws.onboarding={completed:true,completedAt:10,storyNotes:{activities:'a',awards:'b',other:'c'},listPrefs:{ambition:'balanced',size:'large',settings:[],regions:[],notes:'keep'}};
  const next=applyWorkspacePatch(ws,{listPrefs:{ambition:'conservative',regions:['west','invalid','west'],settings:['urban','fake'],appCount:13.7}});
- assert.deepEqual(next.onboarding.listPrefs,{ambition:'conservative',size:'large',settings:['urban'],regions:['west'],notes:'keep',appCount:14});
+ assert.deepEqual(next.onboarding.listPrefs,{ambition:'conservative',ambitionChosen:true,size:'large',settings:['urban'],regions:['west'],notes:'keep',appCount:14});
  assert.equal(next.onboarding.completed,true);assert.equal(next.onboarding.completedAt,10);assert.deepEqual(next.onboarding.storyNotes,ws.onboarding.storyNotes);
  const invalid=applyWorkspacePatch(next,{listPrefs:{ambition:'fake',size:'fake',appCount:Infinity,notes:5}});
  assert.deepEqual(invalid.onboarding.listPrefs,next.onboarding.listPrefs);

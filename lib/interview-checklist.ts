@@ -16,7 +16,7 @@ export const SECTION_LABELS: Record<InterviewSection, string> = {
   activities: "Activities",
   campus: "Campus",
   money: "Money",
-  early: "Early plans",
+  early: "Your list",
   deep: "Deeper",
 };
 
@@ -68,6 +68,9 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
       if (typeof prefs?.needAid !== "boolean") out.push("need-based aid yes/no");
       break;
     case "early":
+      if (!prefs?.ambitionChosen) out.push("reach / target / likely mix");
+      if (typeof prefs?.suppCount !== "number") out.push("how many schools with supplements");
+      if (typeof prefs?.noSuppCount !== "number") out.push("how many schools without supplements");
       if (!prefs?.ed) out.push("Early Decision stance");
       break;
     case "deep": {

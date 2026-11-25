@@ -91,6 +91,12 @@ export type OnboardingListPrefs = {
   needAid?: boolean;
   /** Whether the student would apply Early Decision. */
   ed?: "yes" | "no" | "maybe";
+  /** Set once the student chose an ambition level themselves (not the default). */
+  ambitionChosen?: boolean;
+  /** How many applications with supplemental essays the student will write (UC counts as one). */
+  suppCount?: number;
+  /** How many quick applications with no supplements the student wants. */
+  noSuppCount?: number;
 };
 
 export type ListBudget = "lt15" | "15-30" | "30-50" | "50plus" | "unsure";
@@ -115,6 +121,8 @@ export type InterviewState = {
   strategy?: { ed?: string; ea: string[]; reasons: string; confirmed: boolean };
   /** The last draft list the AI proposed (UiSchool[] from lib/chat-types.ts). */
   listDraft?: import("./chat-types").UiSchool[];
+  /** The early-round idea shown with the draft list. */
+  edIdea?: import("./chat-types").UiEdIdea;
   startedAt: number;
 };
 
@@ -207,6 +215,8 @@ export type Workspace = {
     gpaWeighted: string; gpaUnweighted: string; sat: string; satNote: string; awards: number;
     /** Grades rising, steady or falling across high school (lib/college-recommendations.ts uses "up"). */
     gpaTrend?: "up" | "steady" | "down";
+    /** Unweighted GPA for 10th-11th grade only (what the UCs use), when the transcript shows it. */
+    gpaRecent?: string;
   };
   profile: {
     intended: string; hs: string; gradYear: number | string; location: string;
