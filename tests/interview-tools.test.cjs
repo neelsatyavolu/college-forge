@@ -65,8 +65,22 @@ test('UC campuses count as one application', () => {
   assert.equal(T.applicationCount([...ucs, { name: 'Rice University' }]), 2);
 });
 
+test('propose_list waits for the interview to be complete', async () => {
+  const h = harness(wsWith());
+  assert.match(await h.tools.execute('propose_list', JSON.stringify({ schools: list(10) })), /finish the interview first \(basics/);
+  assert.equal(h.events.length, 0);
+});
+
+function complete(ws) {
+  ws.applicant = { ...ws.applicant, name: 'Sam', gpaUnweighted: '3.8', sat: '1400' };
+  ws.profile = { ...ws.profile, hs: 'HS', gradYear: 2027, intended: 'Biology', residency: 'OH', activities: [{ rank: 1, name: 'Robotics', type: 'Academic' }] };
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, settings: ['any'], regions: ['any'], budget: 'unsure', needAid: false, ed: 'no' };
+  ws.onboarding.interview = { phase: 'interview', section: 'deep', transcript: [], notes: {}, deep: [1, 2, 3].map((i) => ({ prompt: 'q', answer: 'a' })), startedAt: 1 };
+  return ws;
+}
+
 test('propose_list marks schools already on the list and saves the draft', async () => {
-  const ws = wsWith();
+  const ws = complete(wsWith());
   ws.colleges = [{ slug: 'rice-university', name: 'Rice University', short: 'Rice' }];
   const h = harness(ws);
   const schools = [school('Rice University', 'target'), ...list(9)];

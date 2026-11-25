@@ -320,6 +320,8 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
       }
       case "propose_list": {
         const ws = await read();
+        const gap = firstIncomplete(ws);
+        if (gap) return `Not shown: finish the interview first (${gap} still needs ${missingFields(ws, gap).join(", ")}).`;
         const schools = markCurrent(ws, parseSchools(a.schools));
         const problem = checkListProposal(ws, schools);
         if (problem) return `Not shown: ${problem}`;
