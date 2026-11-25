@@ -7,6 +7,7 @@
 import puppeteer from "@cloudflare/puppeteer";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { isAllowedUrl, tokensMatch } from "./url";
+import { MAX_PDF_BYTES, pdfToText } from "./pdf";
 
 type Env = {
   BROWSER: { fetch: typeof fetch };
@@ -50,13 +51,22 @@ async function fetchChecked(url: string): Promise<Response> {
   throw new Error("too many redirects");
 }
 
-async function plainFetch(url: string): Promise<{ html?: string; finalUrl: string; error?: string }> {
+async function plainFetch(url: string): Promise<{ html?: string; pdf?: ArrayBuffer; finalUrl: string; error?: string }> {
   const res = await fetchChecked(url);
   const type = res.headers.get("content-type") || "";
-  if (!res.ok) return { finalUrl: res.url || url, error: `http ${res.status}` };
-  if (type.includes("pdf")) return { finalUrl: res.url || url, error: "pdf" };
-  if (!type.includes("html")) return { finalUrl: res.url || url, error: "not html" };
-  return { html: await res.text(), finalUrl: res.url || url };
+  const finalUrl = res.url || url;
+  if (!res.ok) return { finalUrl, error: `http ${res.status}` };
+  if (type.includes("pdf") || type.includes("octet-stream") || /\.pdf($|\?)/i.test(finalUrl)) {
+    if (Number(res.headers.get("content-length") || 0) > MAX_PDF_BYTES) return { finalUrl, error: "pdf too large" };
+    const bytes = await res.arrayBuffer();
+    if (bytes.byteLength > MAX_PDF_BYTES) return { finalUrl, error: "pdf too large" };
+    const head = new Uint8Array(bytes.slice(0, 5));
+    if (String.fromCharCode(...head) === "%PDF-") return { pdf: bytes, finalUrl };
+    if (!type.includes("html")) return { finalUrl, error: "not html" };
+    return { html: new TextDecoder().decode(bytes), finalUrl };
+  }
+  if (!type.includes("html")) return { finalUrl, error: "not html" };
+  return { html: await res.text(), finalUrl };
 }
 
 async function browserFetch(env: Env, url: string): Promise<string> {
@@ -83,8 +93,20 @@ async function scrape(env: Env, url: string) {
   } catch {
     plain = { finalUrl: url, error: "fetch failed" };
   }
-  if (plain.error === "pdf" || plain.error === "not html" || plain.error?.startsWith("http 404")) {
+  if (plain.error === "pdf too large" || plain.error === "not html" || plain.error?.startsWith("http 404")) {
     return json({ success: false, error: plain.error }, 422);
+  }
+  if (plain.pdf) {
+    let text = "";
+    try {
+      text = (await pdfToText(plain.pdf)).text.slice(0, MAX_MARKDOWN);
+    } catch {
+      return json({ success: false, error: "The PDF couldn't be read." }, 422);
+    }
+    if (!text.replace(/## Page \d+/g, "").trim()) return json({ success: false, error: "The PDF has no text layer (scanned image)." }, 422);
+    const body = { success: true, data: { markdown: text, metadata: { title: decodeURIComponent(plain.finalUrl.split("/").pop() || "PDF"), url: plain.finalUrl, sourceURL: url } } };
+    await env.PAGES.put(`p:${url}`, JSON.stringify(body), { expirationTtl: CACHE_TTL_S });
+    return json(body);
   }
   let html = plain.html ?? "";
   let markdown = html && !BLOCKED.test(titleOf(html)) ? toMarkdown(html) : "";

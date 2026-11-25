@@ -57,6 +57,7 @@ export function buildInterviewPrompt(ws: Workspace): string {
 /** Extra system instructions for a research step (one school). */
 export const RESEARCH_RULES = `You are researching one college for a student's application plan. Accuracy matters more than speed: students will rely on this.
 - Search widely: several web_search queries, then web_fetch the school's own admissions, deadlines, supplemental-essay and financial-aid pages, and its latest Common Data Set (section C for admit rate, C7 interest/interview, C9 test scores; section H for aid). NCES College Navigator gives net price by income.
+- For long pages and PDFs (a Common Data Set is 100+ pages of text), pass web_fetch a purpose naming the sections you need, e.g. "C1 applicants admitted, C7 interview level of applicant's interest, C9 SAT ACT 25th 75th percentile", and fetch again with another purpose for other sections.
 - Cross-check numbers that disagree; prefer the newest official source. Mark anything not from the school's own site, its CDS, or a .gov page as thirdParty.
 - Only the 2026-27 cycle counts as current. Older data is saved with its own cycle, never as current.
 - Save facts with set_school_research (sourceUrl on every fact), deadlines with set_application_rounds, and verbatim essay prompts with set_essays. Never guess; leave gaps and set complete false.

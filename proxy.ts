@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { APP_GRANT_HEADER, verifyAccess } from "@/lib/oauth";
-import { SESSION_COOKIE, createHandoff, getAccount, signSession } from "@/lib/session";
+import { SESSION_COOKIE, createHandoff, getAccount, readSession, signSession } from "@/lib/session";
 
 /** Forge moved from forge.n3el.dev to forge.xanom.co. Old links keep working and keep the browser's workspace. */
 const OLD_HOSTS = new Set(["forge.n3el.dev"]);
@@ -13,6 +13,10 @@ export async function proxy(req: NextRequest) {
   const host = (req.headers.get("host") ?? "").toLowerCase();
   if (OLD_HOSTS.has(host)) return oldHost(req);
   const path = req.nextUrl.pathname;
+  // Signed-in visitors skip the landing page and go straight to their workspace ("/?home" still shows it).
+  if (path === "/" && req.method === "GET" && !req.nextUrl.searchParams.has("home") && readSession(req.cookies.get(SESSION_COOKIE)?.value)) {
+    return NextResponse.redirect(new URL("/hub/index.html", req.url), 307);
+  }
   if (req.headers.get("x-forge-app") === "ios" && path.startsWith("/api/") && !APP_EXEMPT.test(path)) return appRequest(req);
   if (req.headers.has(APP_GRANT_HEADER)) {
     const headers = new Headers(req.headers);

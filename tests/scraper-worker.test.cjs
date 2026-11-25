@@ -31,3 +31,18 @@ test('token check needs an exact match', () => {
   assert.equal(tokensMatch('', ''), false);
   assert.equal(tokensMatch('abc', 'abcd'), false);
 });
+
+const { layoutPage } = require('../workers/scraper/src/layout.ts');
+test('PDF layout keeps checkbox columns under their headers', () => {
+  const items = [
+    { str: 'Very Important', x: 300, y: 700 }, { str: 'Important', x: 380, y: 700 }, { str: 'Considered', x: 450, y: 700 },
+    { str: 'Interview', x: 40, y: 680 }, { str: 'X', x: 455, y: 680.8 },
+    { str: "Level of applicant's interest", x: 40, y: 660 }, { str: 'X', x: 385, y: 660 },
+  ];
+  const lines = layoutPage(items).split('\n');
+  assert.equal(lines.length, 3);
+  const col = (line, s) => line.indexOf(s);
+  assert.ok(Math.abs(col(lines[1], 'X') - col(lines[0], 'Considered')) <= 2, 'interview X under Considered');
+  const important = lines[0].indexOf('Important', col(lines[0], 'Very Important') + 'Very Important'.length);
+  assert.ok(Math.abs(col(lines[2], 'X') - important) <= 2, 'interest X under Important');
+});
