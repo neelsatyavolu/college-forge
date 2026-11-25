@@ -1,0 +1,194 @@
+{
+  "slug": "new-york-university",
+  "name": "New York University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "9.1% (10,340 of 114,125; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1480-1550, median 1520 (enrolled Fall 2025; EBRW 730-770, Math 750-790; CDS 2025-26)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-35, median 35 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional through the 2027-28 application cycle; SAT/ACT superscored across dates; AP, IB, A-Level and other exams also accepted as testing",
+      "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/standardized-tests.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "NYU Promise: meets 100% of demonstrated need for first-year students admitted to the New York campus, without the expectation of loans; families earning under $100,000 with typical assets pay no tuition",
+      "sourceUrl": "https://www.nyu.edu/admissions/financial-aid-and-scholarships/types-of-aid/scholarships-and-grants.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile required for NYU scholarships (code 2785), plus FAFSA for US citizens/PRs (and NY TAP for NY residents). Due Nov 10 (ED I), Jan 10 (ED II), Feb 1 (RD); noncustodial parent Profile also required",
+      "sourceUrl": "https://www.nyu.edu/admissions/financial-aid-and-scholarships/applying-as-a-prospective-undergraduate-student/first-year-applicants.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Aid is need-based via the CSS Profile; no general merit scholarship application. A few selective named programs exist (e.g. MLK Scholars, Rudin Scholars for NYC public/parochial school students, Stern's Berkley Achievement Scholars)",
+      "sourceUrl": "https://www.nyu.edu/admissions/financial-aid-and-scholarships/types-of-aid/scholarships-and-grants.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$100,998 estimated 2026-27 cost of attendance (tuition and fees $68,576; food and housing $26,438; books $1,492; transportation $2,438; personal $2,054)",
+      "sourceUrl": "https://www.nyu.edu/admissions/financial-aid-and-scholarships/cost-of-attendance.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1) and ED II (Jan 1), both binding; RD Jan 5. No EA. Release from ED only if not admitted to your first-choice school/program/campus or aid is insufficient",
+      "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/all-freshmen-applicants/early-decision.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "One Common App covers New York, Abu Dhabi and Shanghai; you choose campus(es) and program(s) in the application. Tisch and some Steinhardt programs (e.g. Music, Studio Art) require an audition or portfolio, which can replace testing; submit the Common App a month early for these",
+      "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/all-freshmen-applicants.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$16,977 (2023-2024, family income $0-$30,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=193900",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$14,017 (2023-2024, family income $30,001-$48,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=193900",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$16,862 (2023-2024, family income $48,001-$75,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=193900",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$32,766 (2023-2024, family income $75,001-$110,000; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=193900",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$66,876 (2023-2024, family income $110,001 and more; College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=193900",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Interview not considered in general admission (CDS 2025-26 C7: Not Considered); some Tisch/Steinhardt programs use auditions, interviews or portfolios",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest': Considered)",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "One recommendation required (teacher, counselor, coach, supervisor or similar; up to three). Supplemental materials in the portal are usually due 1-2 weeks after the application deadline. $85 fee or waiver",
+      "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/all-freshmen-applicants.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gaps: NYU's CDS 2025-26 C21 leaves ED applicant and admit counts blank, so no ED admit rate is published",
+      "sourceUrl": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/all-freshmen-applicants.html",
+      "cycle": "2026-27",
+      "note": "ED I, binding; decision Dec 15; CSS Profile due Nov 10"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-01",
+      "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/all-freshmen-applicants.html",
+      "cycle": "2026-27",
+      "note": "Binding; decision Feb 15; CSS Profile due Jan 10"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.nyu.edu/admissions/undergraduate-admissions/how-to-apply/all-freshmen-applicants.html",
+      "cycle": "2026-27",
+      "note": "Decision Apr 1; CSS Profile due Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "NYU supplemental essay (optional)",
+      "prompt": "We are looking for students who want to be bridge builders—students who can connect people, groups, and ideas to span divides, foster understanding, and promote collaboration within a dynamic, interconnected, and vibrant global academic community. We are eager for you to tell us how your experiences have helped you understand what qualities and efforts are needed to bridge divides so that people can better learn and work together. Please consider one or more of the following questions in your essay: (1) Tell us about a time you encountered a perspective different from your own. What did you learn—about yourself, the other person, or the world? (2) Tell us about an experience you’ve had working with others who have different perspectives. What role did you try to play in helping people to work together, and what did you learn from your efforts? (3) Tell us about someone you’ve observed who does a particularly good job helping people think or work together. How does this person set the stage for common exploration or work? What qualities do you admire in this person?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://meet.nyu.edu/advice/application-tips/your-guide-to-the-nyu-supplemental-essay/",
+      "cycle": "2026-27"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "slug": "haverford-college",
+  "name": "Haverford College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "13.3% (896 of 6,730; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "32.6% ED (229 of 702; CDS 2025-26)",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1460-1530 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; self-reported or official scores accepted (no preference); students who submit scores must send official scores after enrolling",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-instructions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all admitted students regardless of citizenship; no loans under $60,000 family income, $1,500-$3,000/yr loans above",
+      "sourceUrl": "https://www.haverford.edu/financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA and noncustodial Profile (CDS 2025-26 H8); deadline not found on the pages read",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid: 0 students received institutional non-need scholarships or athletic awards (CDS 2025-26 H2A)",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$7,531 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212911",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$9,388 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212911",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$12,007 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212911",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,171 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212911",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$45,991 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212911",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$96,036 for 2026-27 (tuition $74,930, fees $552, housing $12,458, food $8,096); first-year orientation fee $311",
+      "sourceUrl": "https://www.haverford.edu/admission/tuition-and-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED (Nov 15) and ED II (Jan 5), both binding; RD Jan 10; no EA. No enrollment deposit required",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-timeline",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Recommended for all applicants and evaluative; available spring of junior year through early January of senior year",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-instructions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Students declare a major during their fourth semester; no capped or separately admitted majors found on admissions pages",
+      "sourceUrl": "https://catalog.haverford.edu/majors-minors-concentrations",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Haverford Supplement (two 150-200 word answers) is a required part of the application",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-checklist",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-timeline",
+      "cycle": "2026-27",
+      "note": "Binding; decision Dec 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-timeline",
+      "cycle": "2026-27",
+      "note": "Binding; decision early February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.haverford.edu/admission/applying/application-timeline",
+      "cycle": "2026-27",
+      "note": "Decision late March; reply by May 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Intellectual curiosity",
+      "prompt": "Tell us about a topic or issue that sparks your curiosity and gets you intellectually excited. How do you hope to engage with this topic or issue at Haverford?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.haverford.edu/admission/supplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Values and the Honor Code",
+      "prompt": "We have highlighted for you some of the values that shape the Haverford community. What are some of the values you seek in your next community? How do Haverford’s values, as demonstrated through our Honor Code, resonate with you?\nAs you think about how to answer this question, you might draw from how you have been influenced by other communities you have been a part of, experiences you may have had within your communities, or opportunities you have had to shape or even change your communities.",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.haverford.edu/admission/supplement",
+      "cycle": "2026-27"
+    }
+  ]
+}

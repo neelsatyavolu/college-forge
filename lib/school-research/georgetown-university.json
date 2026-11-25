@@ -1,0 +1,268 @@
+{
+ "slug": "georgetown-university",
+ "name": "Georgetown University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "13.5% (3,618 of 26,822; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgetown-university/2025-26/7166516c352f733179a65dd9af5e266829ff0b09f396fcfd779c007f30bb9571.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1405-1530 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgetown-university/2025-26/7166516c352f733179a65dd9af5e266829ff0b09f396fcfd779c007f30bb9571.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "32-35 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgetown-university/2025-26/7166516c352f733179a65dd9af5e266829ff0b09f396fcfd779c007f30bb9571.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "87% of enrollees who reported rank in top 10% of class (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgetown-university/2025-26/7166516c352f733179a65dd9af5e266829ff0b09f396fcfd779c007f30bb9571.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-required: SAT or ACT, official scores; ACT Science highly recommended for science majors; AP scores highly recommended",
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of demonstrated need for US citizens and permanent residents via grants, scholarships, work and federal loans (loans included)",
+   "sourceUrl": "https://uadmissions.georgetown.edu/financial-aid/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile + FAFSA required, due Feb 1 (both EA and RD)",
+   "sourceUrl": "https://uadmissions.georgetown.edu/financial-aid/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "No academic or merit scholarships; need-based aid only",
+   "sourceUrl": "https://uadmissions.georgetown.edu/financial-aid/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$5,064 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131496",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$12,155 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131496",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$18,329 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131496",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$26,459 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131496",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$57,403 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=131496",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$100,864 first-year cost of attendance for 2026-27 ($74,732 tuition and fees, $13,944 housing, $8,236 food, plus books, travel, personal); Nursing $101,423",
+   "sourceUrl": "https://finaid.georgetown.edu/aid-for-undergrads",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "Early Action (Nov 1), non-binding but restrictive: may not apply to any binding ED program elsewhere; other non-binding EA allowed. No ED.",
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Alumni interview expected for every applicant (required when assigned) and evaluative: interviewer's report goes in the file. Some international applicants may not be assigned one.",
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Apply directly to one of six undergraduate schools (College of Arts & Sciences, Walsh SFS, McDonough Business, Berkley Nursing, School of Health, McCourt Public Policy) plus Earth Commons joint program; each has its own 500-word essay.",
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Georgetown accepts the Common Application as well as its own Georgetown Application. Common App personal statement not required; Georgetown asks its own personal essay.",
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest'; the row falls after a page break, where its mark sits in the right-most column with religious affiliation). Interview rated 'Important'",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgetown-university/2025-26/7166516c352f733179a65dd9af5e266829ff0b09f396fcfd779c007f30bb9571.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/",
+   "cycle": "2026-27",
+   "note": "Restrictive (no binding ED elsewhere); decision by Dec 15; FAFSA/CSS due Feb 1"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-01",
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/",
+   "cycle": "2026-27",
+   "note": "Decision by Apr 1; FAFSA/CSS due Feb 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Short essay 1",
+   "prompt": "Briefly discuss the significance to you of the school or summer activity in which you have been most involved.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Short essay 2",
+   "prompt": "In all our lives, we interact with people who hold different viewpoints than our own. Describe such an event you experienced. What did you learn from the experience?",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 1: Personal",
+   "prompt": "As Georgetown is a diverse community, the Admissions Committee would like to know more about you in your own words. Please submit a brief personal or creative essay which you feel best describes you and reflects on your personal background and individual experiences, skills, and talents.",
+   "limit": 650,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 2: College of Arts & Sciences",
+   "prompt": "Founded in 1789, the Georgetown College of Arts & Sciences is committed to the Jesuit traditions of an integrated education and of productive research in the natural sciences, humanities, social sciences, and fine arts. Describe your interest in studying in the College of Arts & Sciences. Applicants interested in the sciences, mathematics, or languages are encouraged to make specific reference to their choice of major.",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 2: McCourt School of Public Policy",
+   "prompt": "For nearly 50 years, Georgetown University’s McCourt School of Public Policy has equipped leaders and changemakers with the interdisciplinary skills to address local, national and global policy problems. Undergraduate public policy students at Georgetown will have the unique opportunity to live and study on two campuses, spending their first two years immersed on the Hilltop, before completing the second half of their time at Georgetown on the Capitol Campus, immersed in the policy world. Describe your primary motivations for studying public policy at Georgetown University and dedicating your undergraduate studies toward a future related to public service.",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 2: Earth Commons Institute",
+   "prompt": "Through this joint program between the College of Arts & Sciences and the Earth Commons Institute, you’ll explore theories and practical skills in the classroom, in the field, and around the world, and put it all together to make a difference. Describe your primary motivations for studying environment and sustainability at Georgetown University to effect positive change in the world.",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 2: Berkley School of Nursing",
+   "prompt": "Georgetown University’s Berkley School of Nursing is committed to the formation of ethical, empathetic, and transformational nursing leaders. Describe the factors that have influenced your interest in studying Nursing at Georgetown University.",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 2: School of Health",
+   "prompt": "Georgetown University’s School of Health was founded to advance the health and well-being of people locally, nationally, and globally through innovative research, the delivery of interdisciplinary education, and transformative engagement of communities. Describe the factors that influenced your interest in studying health care at Georgetown University, specifically addressing your intended related major: Global Health, Health Care Management & Policy, or Human Science.",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 2: Walsh School of Foreign Service",
+   "prompt": "Georgetown University’s Walsh School of Foreign Service was founded more than a century ago to prepare generations of leaders with the foundational skills to address global issues. Describe your primary motivations for studying international affairs at Georgetown University and dedicating your undergraduate studies toward a future in global service.",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Essay 2: McDonough School of Business",
+   "prompt": "Georgetown University’s McDonough School of Business provides graduates with essential global, ethical, analytical, financial, and diverse perspectives on the economies of our nation and the world. Describe your primary motivations for studying business at Georgetown University.",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/",
+   "cycle": "2026-27"
+  }
+ ]
+}

@@ -1,0 +1,200 @@
+{
+ "slug": "university-of-minnesota-twin-cities",
+ "name": "University of Minnesota--Twin Cities",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "78.9% (34,648 of 43,929; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1310-1460 enrolled (Fall 2025, CDS 2025-26 C9). Fall 2026 admitted middle 50%: 1350-1490",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "26-32 enrolled (Fall 2025, CDS 2025-26 C9). Fall 2026 admitted middle 50%: 27-33",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Fall 2026 admits: middle 50% HS rank percentile 75-95; ranges vary by college (e.g. Biological Sciences unweighted GPA 3.72-4.00). 37.7% of Fall 2025 enrollees in top tenth (CDS 2025-26)",
+   "sourceUrl": "https://admissions.tc.umn.edu/academic-profile-fall-2026-admitted-freshman-applicants-college",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional: ACT/SAT not required for freshman applicants through the fall 2029 term; writing section not required",
+   "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission/act-sat-information",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No; avg 69% of need met for first-years with need (CDS 2025-26 H2)",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA plus the U of M's own aid form (CDS 2025-26 H8)",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; admitted freshmen automatically considered for competitive university-wide scholarships from the admission application (e.g. Gold Scholar up to $10,000/yr; National Merit awards require listing UMN first choice)",
+   "sourceUrl": "https://admissions.tc.umn.edu/cost-aid/scholarships/university-wide-academic-scholarships",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 COA (residence hall): $38,226 resident incl. MN reciprocity (WI, ND, Manitoba) / $63,762 non-resident; $41,236 / $66,772 with Carlson or Science & Engineering surcharge",
+   "sourceUrl": "https://admissions.tc.umn.edu/cost-aid/cost-aid-scholarships/cost-attendance",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "EA I (Nov 1, decision by Jan 31), EA II (Dec 1, by Feb 28), Regular (Jan 1, by Mar 31). All non-binding; no ED",
+   "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission-university-minnesota-twin-cities",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Not part of the application: only the application, $55 fee and self-reported academic record are required; CDS 2025-26 C7: Not Considered",
+   "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission-university-minnesota-twin-cities",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Applicants list freshman-admitting colleges in order and are considered in that order; applicants are then auto-considered for other colleges. Competitiveness varies by college (profiles by college published). Acting (Guthrie BFA) and Music need supplemental applications/auditions. CSOM (business) and CSE (engineering) carry a tuition surcharge",
+   "sourceUrl": "https://admissions.tc.umn.edu/hs-counselor-guidebook/review-process-and-student-profile",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No essays or recommendation letters required for freshman admission. Complete by a deadline for full University Honors Program consideration",
+   "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission-university-minnesota-twin-cities",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Note: collegedata.fyi's 2025-26 page for UMN-TC shows another campus's data; don't use it. C7 ratings here read from the official PDF's layout text",
+   "sourceUrl": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$5,885 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=174066&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$7,188 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=174066&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$9,031 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=174066&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$16,210 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=174066&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$29,424 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=174066&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission-university-minnesota-twin-cities",
+   "cycle": "2026-27",
+   "note": "Early Action I; decision by Jan 31"
+  },
+  {
+   "plan": "EA2",
+   "date": "2026-12-01",
+   "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission-university-minnesota-twin-cities",
+   "cycle": "2026-27",
+   "note": "Early Action II; decision by Feb 28"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-01",
+   "sourceUrl": "https://admissions.tc.umn.edu/admissions/freshman-admission-university-minnesota-twin-cities",
+   "cycle": "2026-27",
+   "note": "Regular deadline; decision by Mar 31"
+  }
+ ],
+ "supplements": []
+}

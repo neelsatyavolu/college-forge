@@ -1,5 +1,6 @@
 const { Button } = window.CollegeForgeDesignSystem_e95e63;
 const Onboarding = window.Onboarding;
+const OnboardingChat = window.OnboardingChat;
 
 const NAV = [
   { id: "applications", label: "Portals", group: "Applications", icon: "inbox" },
@@ -219,7 +220,7 @@ function App() {
   if (loading) return <div className="cf-loading-screen" role="status"><span className="cf-loading-mark">✱</span>Opening your workspace…</div>;
   if (account && !account.signedIn) return <SignIn />;
   if (loadError) return <div className="cf-loading-screen"><div role="alert">{loadError}</div><Button onClick={refresh}>Try again</Button></div>;
-  if (runOnboarding) return <Onboarding data={data} onComplete={completeOnboarding} onCancel={async () => { await refresh(); setRunOnboarding(false); }} />;
+  if (runOnboarding) return <OnboardingChat data={data} onComplete={completeOnboarding} onCancel={async () => { await refresh(); setRunOnboarding(false); }} />;
 
   return (
     <div className="cf-workspace" onClickCapture={e => {

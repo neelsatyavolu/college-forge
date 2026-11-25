@@ -1,0 +1,214 @@
+{
+  "slug": "macalester-college",
+  "name": "Macalester College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "28.1% (2,481 of 8,819; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "42.0% ED (201 of 479; CDS 2025-26)",
+      "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1350-1480 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "29.75-33 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for first-year and transfer applicants; self-reported scores accepted, official scores verified after enrollment",
+      "sourceUrl": "https://www.macalester.edu/admissions/us-admissions/faq/testing-policy/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of every admitted student's demonstrated need; Macalester Tuition Promise: full tuition for admitted US students with family income up to $100,000 (typical assets)",
+      "sourceUrl": "https://www.macalester.edu/admissions/financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA and noncustodial Profile (CDS 2025-26 H8); financial aid priority dates Nov 9 (ED I/EA), Jan 8 (ED II), Jan 22 (RD)",
+      "sourceUrl": "https://www.macalester.edu/admissions/deadlines/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: first-year applicants automatically considered for merit scholarships regardless of need; 160 first-years with no need received merit averaging $19,016 (CDS 2025-26)",
+      "sourceUrl": "https://www.macalester.edu/admissions/financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$13,772 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$11,982 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$11,098 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$20,527 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$44,880 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$92,154 comprehensive fee for 2026-27 (tuition $74,394, residence hall $9,268, meals $8,162, activity fee $230)",
+      "sourceUrl": "https://www.macalester.edu/admissions/financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1, binding), EA (Nov 1, non-binding), ED II (Jan 1, binding), RD (Jan 15)",
+      "sourceUrl": "https://www.macalester.edu/admissions/deadlines/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional virtual interviews with admissions staff for domestic applicants who have started an application; interview becomes part of the file",
+      "sourceUrl": "https://www.macalester.edu/admissions/us-admissions/faq/interviews-overnights/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not rated: the CDS 2025-26 C7 row for level of applicant's interest is left blank",
+      "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major chosen at admission found; students must declare a major before registering for junior year",
+      "sourceUrl": "https://www.macalester.edu/academic-programs/academicadvising-2/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Two optional Macalester essay prompts in the Common App member section; no word limit stated on the page",
+      "sourceUrl": "https://www.macalester.edu/admissions/us-admissions/first-year/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: CDS 2025-26 C7 leaves level of applicant's interest unmarked (checked in the PDF form fields), and no official statement on demonstrated interest was found",
+      "sourceUrl": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.macalester.edu/admissions/deadlines/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid priority Nov 9; decision Dec 6"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.macalester.edu/admissions/deadlines/",
+      "cycle": "2026-27",
+      "note": "Non-binding; aid priority Nov 9; decision Dec 19"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-01",
+      "sourceUrl": "https://www.macalester.edu/admissions/deadlines/",
+      "cycle": "2026-27",
+      "note": "Binding; aid priority Jan 8; decision Jan 31"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.macalester.edu/admissions/deadlines/",
+      "cycle": "2026-27",
+      "note": "Aid priority Jan 22; decision Mar 14"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Twin Cities location (optional)",
+      "prompt": "Macalester is one of the few highly selective liberal arts colleges located in the heart of a metropolitan area. Identify one way Macalester’s location in the Twin Cities of Minneapolis and St. Paul would enhance your academic, social, or community experience.",
+      "required": false,
+      "sourceUrl": "https://www.macalester.edu/admissions/us-admissions/first-year/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Mission and community (optional)",
+      "prompt": "Four values guide Macalester’s mission: academic distinction, internationalism, multiculturalism, and service to society. Guided by these values, Macalester is a learning environment that affirms different identities and experiences and prepares graduates to work toward a more just and peaceful world. In what ways do your lived experiences, perspectives, or hopes for your college education connect with Macalester’s mission and community?",
+      "required": false,
+      "sourceUrl": "https://www.macalester.edu/admissions/us-admissions/first-year/",
+      "cycle": "2026-27"
+    }
+  ]
+}

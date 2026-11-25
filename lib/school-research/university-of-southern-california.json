@@ -1,0 +1,322 @@
+{
+ "slug": "university-of-southern-california",
+ "name": "University of Southern California",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "11.2% (9,345 of 83,488; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/usc/2025-26/899c1316d80eb5709d0212b37ba8500671f987c906499d60a3c9a52b83504a36.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1470-1540 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/usc/2025-26/899c1316d80eb5709d0212b37ba8500671f987c906499d60a3c9a52b83504a36.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "32-35 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/usc/2025-26/899c1316d80eb5709d0212b37ba8500671f987c906499d60a3c9a52b83504a36.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average HS GPA 3.85 (CDS C12); 69% of enrollees who reported rank were in the top 10% (CDS C10, 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/usc/2025-26/899c1316d80eb5709d0212b37ba8500671f987c906499d60a3c9a52b83504a36.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional; if submitting, official scores required (no self-reporting); highest section scores across sittings used",
+   "sourceUrl": "https://admission.usc.edu/test-optional-faq/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Fully meets USC-determined need for eligible undergraduates who meet deadlines (aid can include loans); tuition-free for US families earning $80,000 or less with typical assets",
+   "sourceUrl": "https://admission.usc.edu/cost-and-financial-aid/financial-aid-and-scholarships/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile + FAFSA required for need-based aid; due Nov 1, 2026 (ED), Nov 15, 2026 (EA), Feb 3, 2027 (RD)",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/first-year-students/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "USC Merit Scholarships (few thousand dollars to full tuition) awarded on application; must apply by Nov 1 (ED/EA) or Dec 1 (performing arts) to be considered; $20,000/yr for National Merit Finalists listing USC first",
+   "sourceUrl": "https://admission.usc.edu/cost-and-financial-aid/scholarships/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$13,516 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=123961",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$14,394 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=123961",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$19,539 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=123961",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$24,976 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=123961",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$56,116 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=123961",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$103,162 on campus for 2026-27 ($75,384 tuition, $1,952 fees, $13,510 housing, $8,442 food, plus books, travel, personal)",
+   "sourceUrl": "https://admission.usc.edu/cost-and-financial-aid/financial-aid-and-scholarships/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED (Nov 1, binding and restrictive; decision mid-Dec), EA (Nov 1, non-binding, non-restrictive; decision mid/late Jan), RD (Jan 10). Performing arts: RD only, Dec 1. World Bachelor in Business: Nov 1 only.",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/first-year-students/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No admission interviews (some schools may interview as part of their own extra requirements)",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/what-we-look-for/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not tracked: USC does not track any form of demonstrated interest",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/what-we-look-for/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Admission is by major; ED admits expected to get their first-choice major (not bound otherwise). Portfolios, resumes, writing samples or auditions required for some majors (e.g., Roski, Thornton, Dramatic Arts, Kaufman).",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/first-year-students/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "USC's own site does not publish the 2026-27 writing supplement; prompts below are from a third-party guide (Aug 2026), which also reports a new optional disagreement essay. Verify in the Common App.",
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": true
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/first-year-students/",
+   "cycle": "2026-27",
+   "note": "Binding, restrictive; CSS/FAFSA Nov 1; decision mid-December"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/first-year-students/",
+   "cycle": "2026-27",
+   "note": "Non-binding; CSS/FAFSA Nov 15; decision mid/late January"
+  },
+  {
+   "plan": "RD",
+   "date": "2026-12-01",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/first-year-students/",
+   "cycle": "2026-27",
+   "note": "Performing arts majors (Kaufman, Dramatic Arts, Thornton) only"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-10",
+   "sourceUrl": "https://admission.usc.edu/prospective-students/how-to-apply/first-year-students/",
+   "cycle": "2026-27",
+   "note": "All other majors; CSS/FAFSA Feb 3"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Academic interests",
+   "prompt": "Describe how you plan to pursue your academic interests and why you want to explore them at USC specifically. Please feel free to address your first- and second-choice major selections.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Disagreement (optional)",
+   "prompt": "The USC Student Commitment charges Trojans to “value honest, open communication and robust debate,” and to “champion ideological diversity and embrace freedom of expression.” Describe a time when you disagreed with someone you know about something important to you. Did you change your mind or reach common ground?",
+   "limit": 250,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Gap in education (if applicable)",
+   "prompt": "Starting with the beginning of high school, if you have had a gap where you were not enrolled in school during a fall or spring term, please address this gap in your educational history.",
+   "limit": 250,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer: three words",
+   "prompt": "Describe yourself in three words.",
+   "limit": 25,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "What is your favorite snack?",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "Best movie of all time",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "Dream job",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "If your life had a theme song, what would it be?",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "Dream trip",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "What TV show will you binge watch next?",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "Which well-known person or fictional character would be your ideal roommate?",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "Favorite book",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Short answer",
+   "prompt": "If you could teach a class on any topic, what would it be?",
+   "limit": 100,
+   "unit": "characters",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/usc-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  }
+ ]
+}

@@ -1,0 +1,221 @@
+{
+ "slug": "george-washington-university",
+ "name": "George Washington University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "47.1% (12,741 of 27,034; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1310-1450 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "31-34 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "44.1% of enrolled first-years in top tenth of HS class (CDS 2025-26 C10)",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for most applicants (since 2015); SAT/ACT required for BA/BS-MD, homeschooled and narrative-transcript applicants. Choice can be changed for 2 weeks after submitting",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No full-need guarantee; avg 94.7% of need met for first-years (CDS 2025-26 H2). Full tuition covered for family income <= $100k; at least half tuition up to $150k",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/financial-aid/scholarships-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Required (plus FAFSA) for need-based aid; Noncustodial Profile if applicable. Aid deadlines: Nov 1 (ED I), Jan 5 (ED II/RD)",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/financial-aid/scholarships-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; all first-year applicants automatically considered for merit scholarships at admission",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/financial-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$95,155 est. total COA, 2026-27 (tuition $72,000; housing/food $18,160)",
+   "sourceUrl": "https://financialaid.gwu.edu/how-estimate-your-total-cost-attendance-gw",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED I (binding, Nov 1), ED II (binding, Jan 5), RD (Jan 5). No EA",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Not offered; evaluative interviews are not required or offered; CDS 2025-26 C7: Not Considered",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Apply to a specific GW school/college (can change within 2 weeks of submitting). BA/BS-MD, University Honors and Corcoran Scholars need extra essays; BFA (except Interior Architecture) needs a 12-20 piece portfolio via SlideRoom",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "CDS 2025-26 lists 6,084 offered waitlist spots, 616 admitted from it",
+   "sourceUrl": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price figures come from College Scorecard's API (same IPEDS data as College Navigator, which could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "GW supplement prompts are not on GW's site (only on the Common App); prompts below come from a third-party guide",
+   "sourceUrl": "https://undergraduate.admissions.gwu.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$19,440 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131469&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$17,768 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131469&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$21,338 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131469&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$28,010 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131469&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$52,577 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131469&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://bulletin.gwu.edu/undergraduate-admissions/",
+   "cycle": "2026-27",
+   "note": "ED I, binding; financial aid deadline also Nov 1; decision late December"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-05",
+   "sourceUrl": "https://bulletin.gwu.edu/undergraduate-admissions/",
+   "cycle": "2026-27",
+   "note": "Binding; financial aid deadline Jan 5; decision late February"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-05",
+   "sourceUrl": "https://bulletin.gwu.edu/undergraduate-admissions/",
+   "cycle": "2026-27",
+   "note": "Financial aid deadline Jan 5; decision late March"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Optional essay (choose one of two), Prompt 1",
+   "prompt": "At the George Washington University, our students frequently interact with policymakers and world leaders. These experiences and those of our alumni can shape the future of global affairs. If you had the power to change the course of history in your community or the world, what would you do and why?",
+   "limit": 500,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/george-washington-university-supplemental-essay-guide/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Optional essay (choose one of two), Prompt 2",
+   "prompt": "The George Washington University encourages students to think critically and to challenge the status quo. Thus, civil discourse is a key characteristic of our community. Describe a time when you engaged others in meaningful dialogue around an issue that was important to you. Did this exchange create change, new perspectives, or deeper relationships?",
+   "limit": 500,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/george-washington-university-supplemental-essay-guide/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  }
+ ]
+}

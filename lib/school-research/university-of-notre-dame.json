@@ -1,0 +1,223 @@
+{
+ "slug": "university-of-notre-dame",
+ "name": "University of Notre Dame",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "9.4% (3,320 of 35,401; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-notre-dame/2025-26/8cc4d7972006ee3d6941fc89336a8cba4662437529290d9a5e6e2641b6602d1f.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1460-1540 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-notre-dame/2025-26/8cc4d7972006ee3d6941fc89336a8cba4662437529290d9a5e6e2641b6602d1f.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "33-35 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-notre-dame/2025-26/8cc4d7972006ee3d6941fc89336a8cba4662437529290d9a5e6e2641b6602d1f.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for fall 2027 applicants; SAT/ACT required again from the 2027-28 cycle (fall 2028 entry). Highest section scores used.",
+   "sourceUrl": "https://admissions.nd.edu/apply/standardized-testing-policy/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of demonstrated need with grants and scholarships, no loans; need-blind for all students including international",
+   "sourceUrl": "https://admissions.nd.edu/aid-and-affordability/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Typical-asset families: income up to $60K get tuition, fees, housing and food; up to $150K at least full tuition; up to $200K at least half tuition",
+   "sourceUrl": "https://admissions.nd.edu/aid-and-affordability/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile (code 1841) + FAFSA required; priority dates Nov 15 (REA), Jan 15 (RD); Nov 1 for QuestBridge",
+   "sourceUrl": "https://financialaid.nd.edu/apply-or-renew/first-year-applicants/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "All applicants considered for merit scholarships, no separate application unless named a semi-finalist; REA applicants get priority consideration",
+   "sourceUrl": "https://financialaid.nd.edu/aid-types/merit-based-scholarships/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$7,244 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152080",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$7,254 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152080",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$11,432 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152080",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$18,670 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152080",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$45,321 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152080",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$91,986 average cost of attendance for 2026-27 ($69,280 tuition, $514 fees, $18,992 housing and food, plus books, personal, travel)",
+   "sourceUrl": "https://financialaid.nd.edu/costs-and-affordability/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "Restrictive Early Action (non-binding, Nov 1): may apply EA elsewhere but not to any binding ED I; withdraw if admitted ED II elsewhere. REA denial is final. No ED.",
+   "sourceUrl": "https://admissions.nd.edu/apply/decision-planning/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interviews; optional 60-90 second Glimpse video (US) or InitialView (international)",
+   "sourceUrl": "https://admissions.nd.edu/apply/application-considerations/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not tracked: admissions office states it does not track demonstrated interest",
+   "sourceUrl": "https://admissions.nd.edu/visit-and-connect/contact/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Applicants indicate intended college and major (non-binding). Business: told at admission whether pre-approved for business; otherwise moving into business after first year is extremely limited. STEM, Architecture and Business intents need 4 years of math incl. calculus.",
+   "sourceUrl": "https://admissions.nd.edu/information-for/business-majors/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Testing becomes required again for fall 2028 entry. Optional creative portfolio for art/architecture; music submissions welcome.",
+   "sourceUrl": "https://admissions.nd.edu/apply/standardized-testing-policy/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "REA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admissions.nd.edu/apply/decision-planning/",
+   "cycle": "2026-27",
+   "note": "Restrictive, non-binding; decision mid-December; CSS priority Nov 15"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-04",
+   "sourceUrl": "https://admissions.nd.edu/apply/decision-planning/",
+   "cycle": "2026-27",
+   "note": "CSS Profile/FAFSA priority Jan 15"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Required essay",
+   "prompt": "Everyone has different priorities when considering their higher education options and building their college or university list. Tell us about your “non-negotiable” factor(s) when searching for your future college home.",
+   "limit": 150,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.nd.edu/apply/application-overview/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Short answer (choose 2 of 4): Faith",
+   "prompt": "How does faith influence the decisions you make?",
+   "limit": 100,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admissions.nd.edu/apply/application-overview/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Short answer (choose 2 of 4): Personal experiences",
+   "prompt": "What is distinctive about your personal experiences and development (eg, family support, culture, disability, personal background, community)? Why are these experiences important to you and how will you enrich the Notre Dame community?",
+   "limit": 100,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admissions.nd.edu/apply/application-overview/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Short answer (choose 2 of 4): Service",
+   "prompt": "Notre Dame’s undergraduate experience is characterized by a collective sense of care for every person. How do you foster service to others in your community?",
+   "limit": 100,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admissions.nd.edu/apply/application-overview/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Short answer (choose 2 of 4): Fight for",
+   "prompt": "What would you fight for?",
+   "limit": 100,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admissions.nd.edu/apply/application-overview/",
+   "cycle": "2026-27"
+  }
+ ]
+}

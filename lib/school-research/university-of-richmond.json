@@ -1,0 +1,224 @@
+{
+  "slug": "university-of-richmond",
+  "name": "University of Richmond",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "22.2% (3,683 of 16,560; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://ifx.richmond.edu/pdfs/CDS2025-2026SectionC.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "36.5% ED (421 of 1,154; CDS 2025-26)",
+      "sourceUrl": "https://ifx.richmond.edu/pdfs/CDS2025-2026SectionC.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1420-1490 (enrolled Fall 2025; only 18.6% submitted SAT)",
+      "sourceUrl": "https://ifx.richmond.edu/pdfs/CDS2025-2026SectionC.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-34 (enrolled Fall 2025; 14.5% submitted ACT)",
+      "sourceUrl": "https://ifx.richmond.edu/pdfs/CDS2025-2026SectionC.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.81; 63% in top tenth of class (CDS 2025-26)",
+      "sourceUrl": "https://ifx.richmond.edu/pdfs/CDS2025-2026SectionC.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for fall 2027 entry (described as a temporary change); superscores SAT and ACT; enrolling students must send official scores",
+      "sourceUrl": "https://admission.richmond.edu/process/materials/test-optional.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Need-blind; meets 100% of demonstrated need for traditional undergraduate applicants (avg 99.5% of need met for first-years, CDS 2025-26)",
+      "sourceUrl": "https://financialaid.richmond.edu/prospective/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA (plus noncustodial Profile); due Nov 15 for ED I/EA, Feb 1 for ED II/RD",
+      "sourceUrl": "https://admission.richmond.edu/process/early-decision.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: Richmond Scholars (up to 25, full tuition + housing + food) and Presidential Scholarships; automatic consideration if applied by Dec 1; no test score needed",
+      "sourceUrl": "https://admission.richmond.edu/process/materials/test-optional.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$12,808 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=233374",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$6,507 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=233374",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$15,553 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=233374",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$22,021 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=233374",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$49,892 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=233374",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "Tuition $70,725 + food & housing $18,815 = $89,540 billed, 2026-27 (books and personal costs extra)",
+      "sourceUrl": "https://ifx.richmond.edu/pdfs/CDS2025-2026SectionG.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1, binding), EA (Nov 1, non-restrictive), ED II (Jan 1, binding), RD (Jan 1)",
+      "sourceUrl": "https://admission.richmond.edu/process/early-decision.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional virtual Spider Chats with alumni or students, June 1 to Nov 15 of senior year; CDS lists interview as not considered",
+      "sourceUrl": "https://admission.richmond.edu/contact/alumni-interview.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://ifx.richmond.edu/pdfs/CDS2025-2026SectionC.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admitted to the university, not a major; business (Robins) declared by sophomore year with 2.7 GPA and prerequisites; Jepson leadership applied to in sophomore fall",
+      "sourceUrl": "https://admission.richmond.edu/process/materials/requirements.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Virginia residents with parental income of $75,000 or less get grant aid equal to tuition, housing and meal plan (Richmond's Promise to Virginia)",
+      "sourceUrl": "https://financialaid.richmond.edu/prospective/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Richmond Question supplement essay (350-650 words) is required; can also be submitted in the Spider Portal before the credential deadline",
+      "sourceUrl": "https://admission.richmond.edu/process/materials/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admission.richmond.edu/process/early-decision.html",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid application due Nov 15; decision about Dec 12"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admission.richmond.edu/process/early-action.html",
+      "cycle": "2026-27",
+      "note": "Non-binding; aid application due Nov 15; decision about Jan 23"
+    },
+    {
+      "plan": "Priority",
+      "date": "2026-12-01",
+      "sourceUrl": "https://admission.richmond.edu/process/regular-decision.html",
+      "cycle": "2026-27",
+      "note": "Richmond Scholars deadline: apply by Dec 1 for automatic merit consideration"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-01",
+      "sourceUrl": "https://admission.richmond.edu/process/early-decision.html",
+      "cycle": "2026-27",
+      "note": "Binding; aid application due Feb 1; decision about Feb 13"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://admission.richmond.edu/process/regular-decision.html",
+      "cycle": "2026-27",
+      "note": "Aid application due Feb 1; decision about Mar 13"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Richmond Question (choose 1 of 3)",
+      "prompt": "One essay response is required. Choose from the following prompts:\n1. Richmond is a community that strives to be relentlessly welcoming. Tell us about a time you made a space better for other people by helping them feel welcome, heard, included, or supported.\n2. Richmond students turn ideas into actions. Tell us about a time you learned by doing, making, building, testing, helping, or leading and what that experience taught you about yourself, the world, or the kind of impact you want to have.\n3. Richmond’s mascot is the Spider. Just as you are unique, this singular mascot represents over 52,680 unique species of spiders. Tell us about the communities, experiences, or ambitions that have shaped you into the unique person you are and how you will make your mark as part of a Spider community.",
+      "limit": 650,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admission.richmond.edu/process/materials/index.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

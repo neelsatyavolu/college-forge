@@ -1,0 +1,219 @@
+{
+  "slug": "amherst-college",
+  "name": "Amherst College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "7.7% (1,222 of 15,819; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "22% (216 of 971 ED applicants; CDS 2025-26 C21, which labels these figures \"Fall 2024 entering class\")",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1470-1540 (enrolled Fall 2025; 40% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025; 16% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all first-year applicants; self-reported scores accepted; superscores SAT/ACT; ACT Science optional",
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Yes: 100% of need met on average for first-year aid recipients (CDS 2024-25 H2); need-blind for domestic and international applicants",
+      "sourceUrl": "https://www.amherst.edu/admission/financial_aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required: domestic first-years submit FAFSA, CSS Profile and Noncustodial Profile; international applicants submit CSS Profile (CDS 2025-26 H7-H8)",
+      "sourceUrl": "https://www.amherst.edu/system/files/H.%20Financial%20Aid%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Essentially none: aid is need-based; CDS 2025-26 H2A reports 1 first-year awarded an institutional non-need grant",
+      "sourceUrl": "https://www.amherst.edu/system/files/H.%20Financial%20Aid%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$93,090 tuition, fees, food and housing for 2025-26 (tuition $73,140, fees $690, food/housing $19,260); CDS 2025-26 says 2026-27 costs were not yet available",
+      "sourceUrl": "https://www.amherst.edu/system/files/G.%20Annual%20Expenses_6.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision Nov 9, 2026 (binding; admit/defer/deny by early-to-mid December; ~17% of admits come from ED); Regular Decision Jan 5, 2027 (decisions by late March). No EA",
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not considered (CDS 2025-26 C7); the first-year application page lists no interview",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.amherst.edu/system/files/C.%20First-Time%20First-Year%20Admission%202025-26_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission; optional arts supplement and optional research questions in the Writing Supplement",
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Amherst requires a writing supplement from every applicant (Option A 350-word essay, Option B graded analytical paper, or Option C for A2A applicants). Two teacher recommendations required",
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear/writingsupplement",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$2,424 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?164465",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$3,063 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?164465",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$13,814 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?164465",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$17,999 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?164465",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$49,700 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?164465",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-09",
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear",
+      "cycle": "2026-27",
+      "note": "Binding; decision early-to-mid December"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-05",
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear",
+      "cycle": "2026-27",
+      "note": "Decision by late March; reply by May 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Writing Supplement Option A, Prompt 1",
+      "prompt": "\"Hope and curiosity — these are qualities that are the foundation of what Amherst College means, of everything that we do here. Curiosity is at the core of a liberal arts education — a spirit of inquiry that shapes not only what our students do in the classroom, but also how they learn from and about each other.\" — Michael A. Elliott, 20th President of Amherst College. What does curiosity mean to you? How do you experience curiosity in your own life?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear/writingsupplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement Option A, Prompt 2",
+      "prompt": "\"We seek an Amherst made stronger because it includes those whose experiences can enhance our understanding of our nation and our world. We do so in the faith that our humanity is an identity forged from diversity, and that our different perspectives enrich our inquiry, deepen our knowledge, strengthen our community, and prepare students to engage with an ever-changing world.\" — from the Trustee Statement on Diversity and Community. In what ways could your unique experiences enhance our understanding of our nation and our world?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear/writingsupplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement Option A, Prompt 3",
+      "prompt": "\"We are working together to build a community that makes room for both true disagreement and true connection, one that practices the kind of recognition and robust negotiation that the everyday life of democracy requires, and one that explicitly prepares our students to work for the greater good in their professional and personal endeavors.\" — Presidential Priorities: Serving the Greater Good. Tell us about a time that you engaged with a viewpoint different from your own. How did you enter that engagement, and what did you learn about yourself from it?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear/writingsupplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement Option B",
+      "prompt": "Submit a graded paper from your junior or senior year that best represents your writing skills and analytical abilities. We are particularly interested in your ability to construct a tightly reasoned, persuasive argument that calls upon literary, sociological or historical evidence.",
+      "required": false,
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear/writingsupplement",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Writing Supplement (requirement)",
+      "prompt": "Amherst requires a supplementary essay of all applicants: choose one of Option A (one of three quotation prompts, max 350 words), Option B (graded paper) or Option C (A2A applicants only).",
+      "required": true,
+      "sourceUrl": "https://www.amherst.edu/admission/apply/firstyear/writingsupplement",
+      "cycle": "2026-27"
+    }
+  ]
+}

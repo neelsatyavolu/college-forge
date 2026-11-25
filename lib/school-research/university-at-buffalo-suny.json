@@ -1,0 +1,36 @@
+{
+  "slug": "university-at-buffalo-suny",
+  "name": "University at Buffalo--SUNY",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "80.6% (36,780 of 45,637; Fall 2025 entry, CDS 2025-26)", "sourceUrl": "https://www.buffalo.edu/content/dam/www/oia/Common-Data-Sets/CDS_2025-26_v2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "ERW 610-690, Math 610-700 (Fall 2025 enrolled, CDS 2025-26; composite range not reported)", "sourceUrl": "https://www.buffalo.edu/content/dam/www/oia/Common-Data-Sets/CDS_2025-26_v2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "27-31 (Fall 2025 enrolled, CDS 2025-26)", "sourceUrl": "https://www.buffalo.edu/content/dam/www/oia/Common-Data-Sets/CDS_2025-26_v2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "Average HS GPA 91.6 (100-point scale), 92.7% of enrollees reported GPA (CDS 2025-26 C12)", "sourceUrl": "https://www.buffalo.edu/content/dam/www/oia/Common-Data-Sets/CDS_2025-26_v2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional: SAT/ACT not required for admission or scholarship consideration; applicants choose on the application whether scores are considered", "sourceUrl": "https://www.buffalo.edu/admissions/apply/first-year.standardized-tests.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No. Average 53% of need met for first-year aid recipients (CDS 2025-26 H2)", "sourceUrl": "https://www.buffalo.edu/content/dam/www/oia/Common-Data-Sets/CDS_2025-26_v2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; FAFSA only (CDS 2025-26 H8). UB FAFSA priority date Mar 1", "sourceUrl": "https://www.buffalo.edu/admissions/apply/deadlines.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes. All completed applications are reviewed for merit (Dec 1 priority scholarship date). Provost Scholarship automatic for high-achieving out-of-state students; Pride of New York for NY residents; Presidential Scholarship needs a separate Honors College application", "sourceUrl": "https://www.buffalo.edu/admissions/costs/scholarships.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$14,668 (2023-24, in-state aided first-years)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196088", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$16,585 (2023-24, in-state)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196088", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$21,262 (2023-24, in-state)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196088", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$24,117 (2023-24, in-state)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196088", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$28,079 (2023-24, in-state; out-of-state families pay more)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=196088", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "On campus (2026-27 estimates): NY resident $36,530 (tuition $7,070); out-of-state $58,530 (tuition $29,070); international $61,030", "sourceUrl": "https://www.buffalo.edu/admissions/costs/tuition.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Early Action Nov 1 (nonbinding, not restrictive; decisions on a rolling basis); no Early Decision. Regular Decision Feb 1, then space-available", "sourceUrl": "https://www.buffalo.edu/admissions/apply/deadlines.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Not required and not considered (CDS 2025-26 C7 and UB-3)", "sourceUrl": "https://www.buffalo.edu/content/dam/www/oia/Common-Data-Sets/CDS_2025-26_v2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Not considered (CDS 2025-26 C7). Campus visits recommended but not required", "sourceUrl": "https://www.buffalo.edu/content/dam/www/oia/Common-Data-Sets/CDS_2025-26_v2.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "Indicate an intended major (Common App lets you add a second choice); review is the same for most majors. Music and Theatre & Dance require an audition; Architecture encourages a portfolio. Honors College is applied to in the application's Academics section (priority Dec 15)", "sourceUrl": "https://www.buffalo.edu/admissions/apply/first-year.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No supplemental essays for general admission; the personal essay is the one on your application platform. One recommendation strongly recommended (up to three). STARS self-reported transcript accepted. Only Honors College applicants write the essay below", "sourceUrl": "https://www.buffalo.edu/admissions/apply/first-year.html", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://www.buffalo.edu/admissions/apply/deadlines.html", "cycle": "2026-27", "note": "Nonbinding" },
+    { "plan": "Priority", "date": "2026-12-01", "sourceUrl": "https://www.buffalo.edu/admissions/apply/deadlines.html", "cycle": "2026-27", "note": "Priority scholarship consideration" },
+    { "plan": "Priority", "date": "2026-12-15", "sourceUrl": "https://www.buffalo.edu/admissions/apply/deadlines.html", "cycle": "2026-27", "note": "Honors College priority consideration" },
+    { "plan": "RD", "date": "2027-02-01", "sourceUrl": "https://www.buffalo.edu/admissions/apply/deadlines.html", "cycle": "2026-27", "note": "Completion deadline; later applications reviewed until capacity" }
+  ],
+  "supplements": [
+    { "label": "Honors College essay (Honors applicants only)", "prompt": "UB Honors scholars are characterized by intellectual curiosity, a broad range of interests, and a commitment to a diverse and inclusive society. What experiences have helped to broaden your perspectives academically, socially and culturally? What experiences do you hope to have that will enlarge your understanding of the cultural richness of America and the world? Please be as specific as possible in your answer.", "limit": 650, "unit": "words", "required": false, "sourceUrl": "https://www.esslo.org/college-essay-grader/university-at-buffalo", "cycle": "2026-27", "thirdParty": true }
+  ]
+}

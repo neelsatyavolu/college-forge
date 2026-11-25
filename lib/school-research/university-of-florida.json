@@ -1,0 +1,215 @@
+{
+  "slug": "university-of-florida",
+  "name": "University of Florida",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "20.3% (18,403 of 90,523; Fall 2025 entry, CDS 2025-26). In-state 22.3% (9,387/42,172); out-of-state 20.5% (8,086/39,420); international 10.4% (930/8,931)",
+      "sourceUrl": "https://data-apps.ir.aa.ufl.edu/public/cds/CDS%202025-26_v8_08.14.2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1330-1490 enrolled (CDS 2025-26, Fall 2025; 78% submitted SAT). Admitted Class of 2030 (Fall 2026): 1420-1520",
+      "sourceUrl": "https://data-apps.ir.aa.ufl.edu/public/cds/CDS%202025-26_v8_08.14.2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "29-33 enrolled (CDS 2025-26, Fall 2025; 39% submitted ACT). Admitted Class of 2030 (Fall 2026): 32-35",
+      "sourceUrl": "https://data-apps.ir.aa.ufl.edu/public/cds/CDS%202025-26_v8_08.14.2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Admitted Class of 2030 (Fall 2026) middle 50% GPA 4.5-4.7 (UF recalculated GPA); not minimums",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman/our-decision-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT, ACT and/or CLT. Superscored; ACT composite uses English, Reading, Math only (Science not counted). Self-report allowed; official scores due May 1",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman/requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No published full-need pledge. Average 98.0% of need met for first-year students with need-based aid (CDS 2025-26 H2)",
+      "sourceUrl": "https://data-apps.ir.aa.ufl.edu/public/cds/CDS%202025-26_v8_08.14.2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; UF aid application is the FAFSA (school code 001535)",
+      "sourceUrl": "https://www.sfa.ufl.edu/process/how-to-apply-for-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes, limited: ~10% of admitted freshmen get merit awards, no separate application. Presidential $5k/$8k/$10k per year; out-of-state tuition waivers (Alumni up to $10k, Sunshine up to $16k, Gator Nation up to $20k per year). Notified by mid-March; stacks with Bright Futures/Benacquisto",
+      "sourceUrl": "https://admissions.ufl.edu/cost-and-aid/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 COA: Florida resident $25,830 (tuition/fees $6,440); out-of-state $54,010 (tuition/fees $34,620); on/off campus",
+      "sourceUrl": "https://www.sfa.ufl.edu/cost",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "New for 2026-27: Early Decision (binding) Oct 15, decision Dec 11, must confirm by Jan 8 or admission is cancelled. Early Action (non-binding) Nov 1, decision Jan 22. Regular Decision Jan 15, decision Mar 19. Materials (STARS, scores) due one week after each deadline",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman/deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews; interview not considered (CDS C7)",
+      "sourceUrl": "https://data-apps.ir.aa.ufl.edu/public/cds/CDS%202025-26_v8_08.14.2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS C7)",
+      "sourceUrl": "https://data-apps.ir.aa.ufl.edu/public/cds/CDS%202025-26_v8_08.14.2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Some admits are offered alternate paths: PaCE (start in UF Online, must pick a PaCE major and meet its prerequisites before moving to campus), Innovation Academy (spring/summer schedule), Santa Fe College guaranteed-transfer pathways in select majors, or a Summer B start. Honors Program needs its essay at submission",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$1,982 (2023-2024, family income $0-$30,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=134130",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$2,768 (2023-2024, family income $30,001-$48,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=134130",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$7,151 (2023-2024, family income $48,001-$75,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=134130",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$12,905 (2023-2024, family income $75,001-$110,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=134130",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$16,723 (2023-2024, family income $110,001 and more; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=134130",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Apply only via Common App; STARS self-reported academic record required by the materials deadline. Application fee $30",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-10-15",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman/deadlines",
+      "cycle": "2026-27",
+      "note": "Binding; materials due Oct 22; decision Dec 11; confirm by Jan 8"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman/deadlines",
+      "cycle": "2026-27",
+      "note": "Non-binding; materials due Nov 8; decision Jan 22"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://admissions.ufl.edu/apply/freshman/deadlines",
+      "cycle": "2026-27",
+      "note": "Materials due Jan 22; decision Mar 19; confirm by May 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "UF supplemental essay",
+      "prompt": "Please provide more details on your most meaningful commitment outside of the classroom while in high school and explain why it was meaningful. This could be related to an extracurricular activity, work, volunteering, an academic activity, family responsibility, or any other non-classroom activity.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegetransitions.com/blog/university-of-florida-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Additional information (optional)",
+      "prompt": "Is there any additional information or extenuating circumstances the Admissions Committee should know when reviewing your application? If so, please provide more information in less than 250 words.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.collegetransitions.com/blog/university-of-florida-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "UF Honors Program essay (Honors applicants only)",
+      "prompt": "The UF Honors Program’s mission is to connect, nurture and engage the next generation of scholars who change the world. How do you envision yourself contributing to this mission? Consider the people, experiences, resources, and aspirations that have shaped your journey thus far and your future plans.",
+      "limit": 400,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.collegetransitions.com/blog/university-of-florida-supplemental-essay-prompts/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

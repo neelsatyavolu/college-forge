@@ -1,0 +1,231 @@
+{
+ "slug": "washington-university-in-st-louis",
+ "name": "Washington University in St. Louis",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "11.9% (3,968 of 33,283; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "27.0% ED I + ED II combined (1,333 of 4,934; CDS 2025-26)",
+   "sourceUrl": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1500-1550 (CDS 2025-26)",
+   "sourceUrl": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "33-35 (CDS 2025-26)",
+   "sourceUrl": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "86% of enrollees who reported rank in top 10% of class (CDS 2025-26)",
+   "sourceUrl": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for fall 2027 (no change); SAT or ACT accepted, highest individual scores considered; writing not required",
+   "sourceUrl": "https://admissions.washu.edu/whats-new-at-washu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of demonstrated need without loans; need-blind. WashU Pledge: full rides for qualifying Missouri and Illinois students under $75K income",
+   "sourceUrl": "https://financialaid.washu.edu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile, FAFSA and Noncustodial Parent Statement required; due Nov 17 (EA/ED I), Jan 11 (ED II), Feb 1 (RD)",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/application-dates-deadlines/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes: school scholarships (up to full tuition) awarded automatically from the application; Signature Scholar Programs (Danforth, Ervin, Rodriguez) need application by Dec 16, 2026 plus a 250-word short answer",
+   "sourceUrl": "https://admissions.washu.edu/whats-new-at-washu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$1,716 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=179867",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$1,928 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=179867",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$5,578 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=179867",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$12,603 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=179867",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$42,170 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=179867",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$102,260 estimated for 2026-27 ($96,994 university charges incl. $71,310 tuition and $24,272 housing/food, plus $5,266 books, travel, misc.)",
+   "sourceUrl": "https://financialaid.washu.edu/costs/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "NEW for fall 2027: non-binding Early Action (Nov 2) added alongside binding ED I (Nov 2) and ED II (Jan 4). About 60% of the class is admitted through ED.",
+   "sourceUrl": "https://admissions.washu.edu/whats-new-at-washu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interview listed among first-year application components; optional 90-second video supplement (due Nov 9 for EA/ED I, Jan 13 for ED II/RD)",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/optional-video-supplement/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "NEW: WashU has begun considering demonstrated interest (visits, virtual sessions, Bear Chats, events)",
+   "sourceUrl": "https://admissions.washu.edu/whats-new-at-washu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "CDS 2025-26 C7: level of applicant's interest 'Considered'",
+   "sourceUrl": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Apply to one of five undergraduate schools (Architecture, Art, Arts & Sciences, Business, Engineering); must wait one semester to request a change, not guaranteed. Portfolio required for Art, strongly encouraged for Architecture.",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/commonly-asked-questions/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Optional writing supplement dropped for fall 2027; only the required 250-word 'what you want to study' answer remains.",
+   "sourceUrl": "https://admissions.washu.edu/whats-new-at-washu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-11-02",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/application-dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "New, non-binding; decision by Dec 23; financial aid docs due Nov 17"
+  },
+  {
+   "plan": "ED",
+   "date": "2026-11-02",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/application-dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "ED I, binding; decision by Dec 11; financial aid docs due Nov 17"
+  },
+  {
+   "plan": "Priority",
+   "date": "2026-12-16",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/application-dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "Scholarship application priority deadline (Signature Scholars, Nemerov)"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-04",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/application-dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "Binding; decision by Feb 12; financial aid docs due Jan 11"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-04",
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/application-dates-deadlines/",
+   "cycle": "2026-27",
+   "note": "Decision by Apr 1; financial aid docs due Feb 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Academic interest",
+   "prompt": "Please tell us what you are interested in studying at college and why.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/first-year-us-applicants/",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Optional video",
+   "prompt": "Optional 90-second video supplement (self-recorded or Glimpse). Suggested questions: Do you have a hobby? Show us how you spend your free time. How do you express your most authentic self? Through art, cooking, poetry, stand-up comedy? What do you most want to experience at WashU?",
+   "required": false,
+   "sourceUrl": "https://admissions.washu.edu/how-to-apply/optional-video-supplement/",
+   "cycle": "2026-27"
+  }
+ ]
+}

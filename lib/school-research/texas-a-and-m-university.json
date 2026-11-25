@@ -1,0 +1,256 @@
+{
+ "slug": "texas-a-and-m-university",
+ "name": "Texas A&M University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "51.7% (32,531 of 62,967; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1160-1390 (enrolled Fall 2025; 77% submitted SAT; CDS 2025-26 C9)",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "24-32 (enrolled Fall 2025; 19% submitted ACT; CDS 2025-26 C9)",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "71.6% of enrolled first-years in top tenth of class (CDS 2025-26 C10). Texas top 10% graduates get automatic admission",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for Spring/Fall 2027; highest single-sitting score used. A&M proposes requiring SAT/ACT again from Spring/Fall 2028 (pending Regents approval)",
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No; avg 71% of need met for first-years with need (CDS 2025-26 H2)",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA only (CDS 2025-26 H8)",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; university scholarships for fall freshmen via the Common App/ApplyTexas admission application (consent to use data) by Dec 1; also submit an aid application for need-based scholarships",
+   "sourceUrl": "https://aggie.tamu.edu/paying-for-college/apply-for-scholarships/undergraduate-scholarships.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 tuition, fees, food & housing: $25,800 Texas resident / $53,791 nonresident (tuition $8,886 / $36,877, fees $3,970, food & housing $12,944); excludes books, travel, personal",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "No ED or EA. One fall deadline: Dec 1 application (College Station), Dec 15 for documents. Decisions roll: Top 10% from September, holistic review mostly Jan 1 to late March",
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Not offered; CDS 2025-26 C7 marks interview Not Considered",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not published: CDS 2025-26 C7 leaves 'Level of applicant's interest' unmarked",
+   "sourceUrl": "https://abpa.tamu.edu/accountability-rankings/common-data-set.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Texas residents in top 10% of a Texas high school are automatically admitted (rank on STARS, transcript with numeric rank). All College of Engineering applicants (incl. Computer Science) are reviewed for placement into General Engineering, even Top 10%; Engineering pathway offers from January. Most out-of-state students go through holistic review",
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Apply via Common App or ApplyTexas (ApplyTexas users fill an extra Extracurricular Activities Form). Resume only if you run out of space. Galveston deadline May 1, McAllen Mar 1. Spring 2027 entry deadline was Oct 15",
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$13,226 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=228723&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$13,602 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=228723&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$16,811 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=228723&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$25,126 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=228723&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$30,748 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=228723&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "RD",
+   "date": "2026-12-01",
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27",
+   "note": "College Station fall application deadline (if on a weekend, open until Monday 11:59 pm CT)"
+  },
+  {
+   "plan": "Documents",
+   "date": "2026-12-15",
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27",
+   "note": "Additional required and optional documents due"
+  },
+  {
+   "plan": "Scholarships",
+   "date": "2026-12-01",
+   "sourceUrl": "https://aggie.tamu.edu/paying-for-college/apply-for-scholarships/undergraduate-scholarships.html",
+   "cycle": "2026-27",
+   "note": "University scholarships: apply through admission application by Dec 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Required essay",
+   "prompt": "Tell us your story. What unique opportunities or challenges have you experienced throughout your high school career that have shaped who you are today?",
+   "limit": 750,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Required short answer",
+   "prompt": "Describe a life event which you feel has prepared you to be successful in college.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Required short answer",
+   "prompt": "In a few words, what are some of your life goals and objectives?",
+   "limit": 100,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Required short answer",
+   "prompt": "In a few words, why have you chosen your academic major(s)?",
+   "limit": 100,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Required short answer",
+   "prompt": "We know you have a lot of options. In a few words, why did you choose to apply to Texas A&M?",
+   "limit": 100,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Required short answer",
+   "prompt": "Briefly describe any educational plans you have beyond earning your bachelor’s degree.",
+   "limit": 100,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Optional short answer",
+   "prompt": "Are there experiences or opportunities that have shaped or influenced your abilities or academic record, which you have not already written about?",
+   "limit": 250,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admissions.tamu.edu/apply/freshman/index.html",
+   "cycle": "2026-27"
+  }
+ ]
+}

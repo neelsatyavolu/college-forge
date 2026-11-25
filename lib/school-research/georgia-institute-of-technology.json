@@ -1,0 +1,192 @@
+{
+ "slug": "georgia-institute-of-technology",
+ "name": "Georgia Institute of Technology",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "13.3% (8,921 of 66,881; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgia-tech/2025-26/598830d23246891448e3859e3ae961274984cd31161980280d2293737af25a68.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1370-1530 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgia-tech/2025-26/598830d23246891448e3859e3ae961274984cd31161980280d2293737af25a68.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "31-35 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgia-tech/2025-26/598830d23246891448e3859e3ae961274984cd31161980280d2293737af25a68.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average HS GPA 4.17; 88.7% of enrollees who reported rank in top 10% (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgia-tech/2025-26/598830d23246891448e3859e3ae961274984cd31161980280d2293737af25a68.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-required: at least one SAT or ACT; self-reporting recommended; essay/writing not required",
+   "sourceUrl": "https://admission.gatech.edu/first-year/standardized-tests",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Does not meet full need: average 61.2% of need met for first-years (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgia-tech/2025-26/598830d23246891448e3859e3ae961274984cd31161980280d2293737af25a68.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile (code 5248) required only for institutional need-based aid, due Jan 31 for fall first-years; plus FAFSA and the GT App",
+   "sourceUrl": "https://finaid.gatech.edu/apply/fall-first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Merit scholarships (Stamps President's Scholars, Scheller Dean's, others): must apply by an Early Action deadline; no separate scholarship application",
+   "sourceUrl": "https://admission.gatech.edu/first-year/deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$7,666 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139755",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$7,209 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139755",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$10,818 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139755",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$15,088 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139755",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$17,396 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=139755",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "Estimated 2027-28 first-year on campus: $31,628 Georgia residents; $55,018 out-of-state; $56,194 international",
+   "sourceUrl": "https://finaid.gatech.edu/costs/undergraduate-costs",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "Non-binding EA only, no ED: EA1 (Oct 15) for Georgia students, EA2 (Nov 2) for non-Georgia; RD Jan 6",
+   "sourceUrl": "https://admission.gatech.edu/first-year/deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No alumni or staff interviews; optional third-party interview (InitialView/Vericant) for non-native English speakers",
+   "sourceUrl": "https://admission.gatech.edu/first-year/interview",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "No direct admission to a major or college, but intended major is weighed to balance the class. Music Technology requires portfolio + essay; portfolio recommended for some Design majors. Stamps/Gold scholars locked to listed major through first spring.",
+   "sourceUrl": "https://admission.gatech.edu/first-year/major-selection",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No Georgia Tech-specific essays for 2026-27: only one Common App personal essay (Music Technology adds a required essay with its portfolio).",
+   "sourceUrl": "https://admission.gatech.edu/first-year/personal-essays",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Residency is one of the biggest factors in admit rate; Georgia students are kept the majority.",
+   "sourceUrl": "https://admission.gatech.edu/first-year/institutional-fit",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest'; interview also 'Not Considered')",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/georgia-tech/2025-26/598830d23246891448e3859e3ae961274984cd31161980280d2293737af25a68.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-10-15",
+   "sourceUrl": "https://admission.gatech.edu/first-year/deadlines",
+   "cycle": "2026-27",
+   "note": "EA1 for Georgia students; documents Oct 30; decision Dec 4"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-11-02",
+   "sourceUrl": "https://admission.gatech.edu/first-year/deadlines",
+   "cycle": "2026-27",
+   "note": "EA2 for non-Georgia students; documents Nov 16; decision late January"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-06",
+   "sourceUrl": "https://admission.gatech.edu/first-year/deadlines",
+   "cycle": "2026-27",
+   "note": "Documents and self-reported scores Jan 22; decision mid-March; CSS Profile Jan 31"
+  }
+ ],
+ "supplements": []
+}

@@ -1,0 +1,37 @@
+{
+  "slug": "wellesley-college",
+  "name": "Wellesley College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "14.8% (1,258 of 8,506; Fall 2025 entering class, CDS 2025-26)", "sourceUrl": "https://wellesley-college.files.svdcdn.com/production/administrative-departments/OIR/CDS_2025-2026-FINAL.pdf?dm=1773253066", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "29.4% ED (301 of 1,023; Fall 2025, CDS 2025-26; ED I and ED II combined)", "sourceUrl": "https://wellesley-college.files.svdcdn.com/production/administrative-departments/OIR/CDS_2025-2026-FINAL.pdf?dm=1773253066", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1460-1540 (44% submitted SAT; Fall 2025, CDS 2025-26)", "sourceUrl": "https://wellesley-college.files.svdcdn.com/production/administrative-departments/OIR/CDS_2025-2026-FINAL.pdf?dm=1773253066", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "33-35 (18% submitted ACT; Fall 2025, CDS 2025-26)", "sourceUrl": "https://wellesley-college.files.svdcdn.com/production/administrative-departments/OIR/CDS_2025-2026-FINAL.pdf?dm=1773253066", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "88% of enrolled first-years in top tenth of HS class (CDS 2025-26 C10)", "sourceUrl": "https://wellesley-college.files.svdcdn.com/production/administrative-departments/OIR/CDS_2025-2026-FINAL.pdf?dm=1773253066", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional for fall 2027 entry; about 45% of enrollees applied without testing", "sourceUrl": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "Meets 100% of calculated need for all admitted students, U.S. and international; need-blind for U.S.; aid mixes grants, loans and work (loans kept low)", "sourceUrl": "https://www.wellesley.edu/news/wellesley-free-tuition-income-200k-or-less-fall-2027", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "CSS Profile (code 3957) + FAFSA + IDOC; aid deadline matches the application: Nov 1 ED I, Jan 5 ED II, Jan 8 RD", "sourceUrl": "https://www.wellesley.edu/admission-aid/student-financial-services/understanding-financial-aid/apply-for-aid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Aid is awarded on the basis of calculated financial need; no merit scholarships listed", "sourceUrl": "https://www.wellesley.edu/admission-aid/student-financial-services/understanding-financial-aid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$96,136 billed for 2026-27 (tuition $72,570, housing $12,020, meals $11,186, fee $360) + ~$2,050 books/personal; travel extra", "sourceUrl": "https://www.wellesley.edu/admission-aid/student-financial-services/tuition-cost", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "ED I (Nov 1) and ED II (Jan 5), binding; no EA; QuestBridge accepted; application is free", "sourceUrl": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "No interviews offered in the admission process", "sourceUrl": "https://www.wellesley.edu/admission-aid/faqs", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'; interview 'Not considered')", "sourceUrl": "https://wellesley-college.files.svdcdn.com/production/administrative-departments/OIR/CDS_2025-2026-FINAL.pdf?dm=1773253066", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "No admission by major; declare by end of sophomore year (end of fall if studying away junior year)", "sourceUrl": "https://www.wellesley.edu/about-us/offices-departments/registrar/degree-requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Wellesley Tuition Promise from fall 2027: tuition-free for U.S. families earning $200,000 or less with typical assets; applies automatically", "sourceUrl": "https://www.wellesley.edu/news/wellesley-free-tuition-income-200k-or-less-fall-2027", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Women's college; two teacher recs; optional arts portfolio via applicant portal within a week of the deadline (no dance or creative writing)", "sourceUrl": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$2,546 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168218", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$2,836 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168218", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$6,587 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168218", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$11,551 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168218", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$54,188 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=168218", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-01", "sourceUrl": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants", "cycle": "2026-27", "note": "ED I, binding; financial aid due Nov 1; notification mid-December" },
+    { "plan": "ED2", "date": "2027-01-05", "sourceUrl": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants", "cycle": "2026-27", "note": "ED II, binding; financial aid due Jan 5; notification mid-February" },
+    { "plan": "RD", "date": "2027-01-08", "sourceUrl": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants", "cycle": "2026-27", "note": "Financial aid due Jan 8; notification late March" }
+  ],
+  "supplements": [
+    { "label": "Wellesley essay", "prompt": "Wellesley students actively seek ways to build bridges and to change the world for the better. Tell us about an experience working with and alongside people of different backgrounds and/or perspectives from your own. Why was this important to you, and what lessons from this will you bring with you to Wellesley?", "limit": 400, "unit": "words", "required": true, "sourceUrl": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants", "cycle": "2026-27" }
+  ]
+}

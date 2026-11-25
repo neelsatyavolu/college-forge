@@ -1,0 +1,192 @@
+{
+  "slug": "university-of-illinois-chicago",
+  "name": "University of Illinois Chicago",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "76% (22,674 of 29,929; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1030-1300 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "24-31 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.45 (enrolled Fall 2025, CDS 2025-26 C12)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; ACT/SAT reviewed if sent. About two-thirds of applicants apply without scores",
+      "sourceUrl": "https://admissions.uic.edu/undergraduate/requirements-deadlines/first-year-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No; average 53% of need met for full-time first-year aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; CDS 2025-26 lists FAFSA only. File FAFSA for need-based grants",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: automatic consideration for most university and college scholarships after applying; apply by the Scholarship Priority Date. UIC Merit Tuition Award for high-achieving out-of-state US applicants. Honors College and Business Scholars scholarships need extra applications",
+      "sourceUrl": "https://admissions.uic.edu/undergraduate/tuition-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 in-state, on campus: about $42,016 (tuition $11,652, fees $5,068, housing/food $17,800, books $1,400, transport $1,526, personal $4,500, loan fees $70), plus program tuition differentials. Out-of-state tuition not shown on this page",
+      "sourceUrl": "https://financialaid.uic.edu/cost/cost-attendance-coa",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action (non-binding) and Regular Decision Feb 1, 2027. No ED",
+      "sourceUrl": "https://admissions.uic.edu/undergraduate/requirements-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not considered (CDS 2025-26 C7); Honors College applicants have an additional interview requirement",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission is to a college/major; each college has its own criteria, and STEM majors (engineering, CS, biological sciences, pre-health) weigh math/science more. Honors College and Guaranteed Professional Program Admissions (GPPA) need an essay for each program plus two recommendations",
+      "sourceUrl": "https://admissions.uic.edu/undergraduate/requirements-deadlines/first-year-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Common App only. Gaps: exact UIC member-question essay wording and out-of-state tuition not published on the pages read; College Navigator net price not retrieved",
+      "sourceUrl": "https://admissions.uic.edu/application-tips",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$9,536 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?145600",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$7,327 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?145600",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$8,493 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?145600",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$12,812 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?145600",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$24,150 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?145600",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "UIC Aspire (Fall 2027): $0 tuition and fees for new first-year Illinois residents with family income and assets of $75,000 or less; automatic consideration if admitted and FAFSA filed by Mar 15",
+      "sourceUrl": "https://free.uic.edu/",
+      "cycle": "2026-27",
+      "thirdParty": false,
+      "checkedAt": "2026-11-25"
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-02",
+      "sourceUrl": "https://admissions.uic.edu/undergraduate/requirements-deadlines/deadlines",
+      "cycle": "2026-27",
+      "note": "Non-binding; application and all required documents must be dated by Nov 2. Also Honors College, Business Scholars and scholarship priority date"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://admissions.uic.edu/undergraduate/requirements-deadlines",
+      "cycle": "2026-27"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "UIC Member Profile Essay",
+      "prompt": "UIC applicants will be asked to respond to a short essay regarding their program of choice or the career fields in which applicants are interested. Applicants to the Honors College or GPPA programs will also be prompted to respond to an essay for each of those programs. (Description from UIC; exact question appears in the Common App.)",
+      "required": true,
+      "sourceUrl": "https://admissions.uic.edu/application-tips",
+      "cycle": "2026-27"
+    }
+  ]
+}

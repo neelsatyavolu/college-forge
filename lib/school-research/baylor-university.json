@@ -1,0 +1,202 @@
+{
+  "slug": "baylor-university",
+  "name": "Baylor University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "52.2% (23,459 of 44,924; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "80.0% ED (453 of 566; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1190-1370 (Fall 2025 enrolled, CDS 2025-26)",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "26-32 (Fall 2025 enrolled, CDS 2025-26)",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Academic GPA and test scores rated Very Important, rigor Important (CDS 2025-26 C7). No minimum GPA or score; 68% of 2024 entrants with class rank were in the top quarter",
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/test-optional-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional, but scores are encouraged and valued as a distinguishing factor. Choose a testing plan on the application (final). Superscores across test dates; CLT accepted. Last tests: Oct SAT/ACT for Nov 1 plans, Dec for RD",
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No. Average 70.5% of need met for first-year aid recipients (CDS 2025-26 H2; figure read from a partly garbled PDF table)",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not listed: admissions and aid pages require only the FAFSA (early deadline Nov 15, priority Feb 1)",
+      "sourceUrl": "https://onestop.web.baylor.edu/apply-aid/financial-aid-timelines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes, automatic for all admits including test-optional; final upon admission. 2027-28 awards: President's $32,000, Provost's $28,000, Deans' $25,000, Founders' $20,000, Independence $12,500 per year; renew with 3.0 GPA. ED admits also get a $3,000 one-time scholarship",
+      "sourceUrl": "https://admissions.web.baylor.edu/costs-aid/scholarships-aid/merit-based-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27: tuition $67,756 ($33,878 per semester) plus on-campus food & housing $17,222 = $84,978 before books, travel and personal costs",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED (Nov 1, binding; decision by Dec 15, deposit Feb 15), EA (Nov 1, nonbinding, not restrictive; decision by Feb 1), RD (Feb 1; decision by Apr 10)",
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not offered; interview 'Not considered' (CDS 2025-26 C7)",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7, level of applicant's interest)",
+      "sourceUrl": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Most majors are open to any admit; a few have extra requirements. Music degrees need a separate School of Music application and audition (SoM application Nov 15 for ED, Dec 1 for EA, Feb 1 for RD)",
+      "sourceUrl": "https://music.baylor.edu/admissions/how-to-apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Essay required (in the Common App or in goBAYLOR after submitting the Baylor app). Recommended: STARS self-reported transcript, résumé, two recommendations. RD deadline is Feb 1 per the admissions application-process page (rechecked 2026-11-25); the One Stop aid timeline page still calls the plan 'February 15 Non-Binding (Regular Decision)', which conflicts. Treat Feb 1 as the deadline",
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$45,498 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?223232",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$24,146 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?223232",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$33,908 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?223232",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$38,607 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?223232",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$50,541 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?223232",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+      "cycle": "2026-27",
+      "note": "Binding; short answer required; FAFSA early deadline Nov 15"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+      "cycle": "2026-27",
+      "note": "Nonbinding; FAFSA early deadline Nov 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+      "cycle": "2026-27",
+      "note": "FAFSA priority deadline Feb 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Short answer (required for ED; recommended otherwise)",
+      "prompt": "What are you looking for in a university, why do you want to attend Baylor, and how do you see yourself contributing to the Baylor community?",
+      "limit": 450,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+      "cycle": "2026-27"
+    }
+  ]
+}

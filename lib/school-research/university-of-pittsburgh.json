@@ -1,0 +1,193 @@
+{
+ "slug": "university-of-pittsburgh",
+ "name": "University of Pittsburgh",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "59.4% (38,477 of 64,724; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://www.ir.pitt.edu/sites/default/files/2026-02/CDS_2025-2026_PGH-UA_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "Enrolled range not reported (CDS 2025-26 C9 blank). Fall 2026 admitted middle 50% by school: Arts & Sciences 1300-1440, Engineering 1340-1470, Business 1290-1390, Computing 1320-1470, Nursing 1310-1420, Public Health 1300-1430",
+   "sourceUrl": "https://admissions.pitt.edu/first-year-student/class-profile/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "Enrolled range not reported (CDS 2025-26 C9 blank). Fall 2026 admitted middle 50% by school: Arts & Sciences 30-34, Engineering 31-34, Business 27-31, Computing 25-35, Nursing 30-33, Public Health 28-32",
+   "sourceUrl": "https://admissions.pitt.edu/first-year-student/class-profile/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Fall 2026 admitted weighted GPA middle 50%: Arts & Sciences 3.81-4.40, Engineering 4.00-4.54, Nursing 4.08-4.48",
+   "sourceUrl": "https://admissions.pitt.edu/first-year-student/class-profile/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional through Fall 2028; test-optional applicants must submit the Pitt Personal Statement or Common App essay. Highest SAT superscore and highest ACT composite used (ACT superscore if sent by ACT)",
+   "sourceUrl": "https://admissions.pitt.edu/first-year-student/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No full-need pledge stated; need-based aid via FAFSA. CDS 2025-26 % of need met left blank",
+   "sourceUrl": "https://financialaid.pitt.edu/first-year-students/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA only (CDS 2025-26 H8)",
+   "sourceUrl": "https://www.ir.pitt.edu/sites/default/files/2026-02/CDS_2025-2026_PGH-UA_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; admitted first-years are considered for competitive academic scholarships, but a personal statement or Common App essay is required. Some (e.g. Frederick Honors full-tuition awards) need honors admission by Dec 1; PA Scholars needs a separate application by Nov 15",
+   "sourceUrl": "https://financialaid.pitt.edu/types-of-aid/scholarships/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "Posted Pittsburgh campus COA (page doesn't name the year), Arts & Sciences: ~$44,400 PA resident / ~$66,134 out-of-state (tuition $21,594 / $43,328 + fees $2,152 + est. living $20,654)",
+   "sourceUrl": "https://www.tuition.pitt.edu/undergraduate/tuition/pittsburgh",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "No ED/EA: rolling admission with no set deadline; applying early helps for scholarships and honors",
+   "sourceUrl": "https://admissions.pitt.edu/first-year-student/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Not offered; CDS 2025-26 C7 marks interview Not Considered",
+   "sourceUrl": "https://www.ir.pitt.edu/sites/default/files/2026-02/CDS_2025-2026_PGH-UA_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Important (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://www.ir.pitt.edu/sites/default/files/2026-02/CDS_2025-2026_PGH-UA_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Applicants choose a first-year entry school (Arts & Sciences, Engineering, Business, Computing & Information, Nursing, Public Health), with different admit profiles. Guaranteed Admission Programs (GAP) to graduate/professional programs are requested on the application and may need supplemental materials",
+   "sourceUrl": "https://admissions.pitt.edu/guaranteed-admissions-programs/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No Pitt-specific supplements. The Pitt personal statement (or Common App essay) is optional except for test-optional, scholarship, Frederick Honors College and international applicants. Pitt's prompt page notes it describes the Fall 2026 cycle",
+   "sourceUrl": "https://admissions.pitt.edu/personal-statement/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Gaps: CDS 2025-26 leaves C9 test scores, C10-C12 and H2 blank; no overall enrolled score range or % of need met. (collegedata.fyi shows different C7 and ACT values for this CDS, so it wasn't used.)",
+   "sourceUrl": "https://www.ir.pitt.edu/sites/default/files/2026-02/CDS_2025-2026_PGH-UA_0.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$16,477 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=215293&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$15,485 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=215293&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$19,080 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=215293&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$28,146 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=215293&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$35,864 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=215293&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "Honors",
+   "date": "2026-12-01",
+   "sourceUrl": "https://financialaid.pitt.edu/types-of-aid/scholarships/",
+   "cycle": "2026-27",
+   "note": "Frederick Honors College application deadline (needed for honors full-tuition scholarships)"
+  },
+  {
+   "plan": "PA Scholars",
+   "date": "2026-11-15",
+   "sourceUrl": "https://financialaid.pitt.edu/types-of-aid/scholarships/",
+   "cycle": "2026-27",
+   "note": "PA Scholars application and admission application due"
+  }
+ ],
+ "supplements": []
+}

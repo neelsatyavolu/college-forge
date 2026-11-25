@@ -1,0 +1,219 @@
+{
+ "slug": "howard-university",
+ "name": "Howard University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "42.2% (15,724 of 37,270; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "84.4% ED (363 of 430; CDS 2025-26 C21)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1050-1270 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "20-26 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Avg HS GPA 3.68, 100% submitted (CDS 2025-26 C12)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for 2026-27 (incl. Karsh STEM); NOT for joint-degree programs (BS/MD, BS/DDS, BA/JD). No ACT superscoring. Scores must arrive by the plan's document deadline",
+   "sourceUrl": "https://admission.howard.edu/undergraduate/first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No; avg 58.6% of need met for first-years with need (CDS 2025-26 H2); Howard says its grants may not cover full cost",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA (or Howard ISFAA for non-citizens) by the deadline for your admission plan (CDS 2025-26 H8: FAFSA only)",
+   "sourceUrl": "https://admission.howard.edu/financialsupport",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; competitive institutional scholarships, some merit-based. Scholarships are awarded at decision time to accepted EA/ED applicants who meet requirements",
+   "sourceUrl": "https://admission.howard.edu/undergraduate/first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$66,182 est. COA, 2026-27, undergraduate on campus (tuition $37,996)",
+   "sourceUrl": "https://financialservices.howard.edu/2026-2027-estimated-cost-attendance",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED (binding, Nov 1), EA (non-binding, Nov 1), both decided mid-December; RD Feb 1, decision early April. Incomplete early files after Nov 1 move to RD",
+   "sourceUrl": "https://admission.howard.edu/undergraduate/first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interview in Howard's first-year requirements; interview 'Not considered' (CDS 2025-26 C7)",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Joint-degree programs (BS/MD, BS/DDS, BA/JD) require SAT/ACT. Application asks for first- and second-choice majors. Two recommendations required (counselor and teacher)",
+   "sourceUrl": "https://admission.howard.edu/undergraduate/first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Supplement prompts aren't printed on Howard's site; text below is from a third-party site listing 2026-27 prompts. Whether they are required isn't confirmed (search snippets of Howard's own checklist call them optional)",
+   "sourceUrl": "https://www.esslo.org/college-essay-grader/howard",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS data; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$28,321 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131520&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$28,262 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131520&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$30,273 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131520&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$31,722 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131520&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$41,046 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=131520&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.howard.edu/undergraduate/first-year",
+   "cycle": "2026-27",
+   "note": "Binding; all documents by Nov 1; decision mid-December"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.howard.edu/undergraduate/first-year",
+   "cycle": "2026-27",
+   "note": "Non-binding; all documents by Nov 1; decision mid-December"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-02-01",
+   "sourceUrl": "https://admission.howard.edu/undergraduate/first-year",
+   "cycle": "2026-27",
+   "note": "Decision early April"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Lived experience",
+   "prompt": "Diversity of all kinds is important to enriching the educational experience at Howard University. Please share with us anything in your background or lived experience that has shaped your perspectives and how that would contribute to the classroom and community at Howard.",
+   "limit": 500,
+   "unit": "words",
+   "sourceUrl": "https://www.esslo.org/college-essay-grader/howard",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "label": "Intended major",
+   "prompt": "Please describe the major you intend to study and how you hope to use your Howard education to support you in achieving your passions and goals. Please address your first-choice and second-choice major selections.",
+   "limit": 500,
+   "unit": "words",
+   "sourceUrl": "https://www.esslo.org/college-essay-grader/howard",
+   "cycle": "2026-27",
+   "thirdParty": true
+  }
+ ]
+}

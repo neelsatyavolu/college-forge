@@ -1,0 +1,232 @@
+{
+  "slug": "united-states-air-force-academy",
+  "name": "United States Air Force Academy",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "Admit count not published; Class of 2030 (entered June 2026): about 1,130 appointees in-processed from 10,970 applicants (~10% enrolled)",
+      "sourceUrl": "https://www.usafa.edu/public-affairs/press-releases/i-day-marks-the-arrival-of-the-class-of-2030-at-the-u-s-air-force-academy/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Middle 50% not published; Class of 2030 average SAT composite 1370",
+      "sourceUrl": "https://www.usafa.edu/the-breakdown-class-of-2030-in-processing-stats/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "Middle 50% not published; Class of 2030 average ACT composite 29.6",
+      "sourceUrl": "https://www.usafa.edu/the-breakdown-class-of-2030-in-processing-stats/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Class of 2030: average HS GPA 3.89; 52.8% top 10%, 82.5% top 25% of HS class",
+      "sourceUrl": "https://www.usafa.edu/the-breakdown-class-of-2030-in-processing-stats/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "ACT, SAT or CLT required; take as often as you like, highest scores counted; take by early December (March tests not considered); official scores due Jan 31 of senior year",
+      "sourceUrl": "https://www.usafa.edu/admissions/student-applicant/grades-11-12/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "No ED or EA: rolling, individual checklist deadlines set in the portal; most appointments offered February-April; most candidates know status by April 21",
+      "sourceUrl": "https://www.usafa.edu/admissions/student-applicant/grades-11-12/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Required: 1.5-2 hour virtual interview with an Admissions Liaison Officer, scheduled after key checklist items; part of the holistic review",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not applicable: selection based on academics, fitness, medical qualification, character review, interview and a required nomination",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No admission by major; cadets may declare from day one but must declare by October of their third semester; 26 disciplinary majors plus divisional majors and minors",
+      "sourceUrl": "https://www.usafa.edu/academics/majors-minors/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Eligibility: U.S. citizen, age 17-22 on July 1 of entry year, unmarried with no dependents",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Nomination required: apply to both Senators and your Representative (each office sets its own deadline); Vice Presidential nomination requests due Jan 31; Presidential category reserved for children of career military",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/nominations/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Medical: DoDMERB exam required; must meet Air Force commissioning medical and weight standards; waivers possible for highly qualified candidates",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Candidate Fitness Assessment required (six events); one retest allowed if time remains",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Service commitment: at least 5 years active duty + 3 years inactive reserve; longer for pilots",
+      "sourceUrl": "https://www.usafa.edu/about/faqs/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Application: Pre-Candidate Questionnaire opens March 1 of junior year, due Dec 31 of senior year; candidate checklist opens no earlier than July 1 with an individual deadline; 3 teacher evaluations (English, math, other); 3 essay questions (max 3,000 characters each; 3rd optional but highly recommended)",
+      "sourceUrl": "https://www.usafa.edu/admissions/student-applicant/grades-11-12/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Gap: the three essay questions (choose 2 of 3 per the Grades 11-12 page; max 3,000 characters) appear only in the applicant portal and were not reviewed. No Common Data Set found for USAFA, so CDS-based C7 data does not exist",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "Not applicable: tuition, room and board, and medical and dental care are fully covered; no financial aid process. Service commitment applies (see notes)",
+      "sourceUrl": "https://www.usafa.edu/admissions/parent/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "Pre-Candidate Questionnaire",
+      "date": "2026-12-31",
+      "sourceUrl": "https://www.usafa.edu/admissions/student-applicant/grades-11-12/",
+      "cycle": "2026-27",
+      "note": "Last day to submit the PCQ (first step); full checklist deadline is individual, shown in the portal"
+    },
+    {
+      "plan": "Vice Presidential nomination",
+      "date": "2027-01-31",
+      "sourceUrl": "https://www.usafa.edu/admissions/commitment/nominations/",
+      "cycle": "2026-27",
+      "note": "Deadline to request a VP nomination; congressional deadlines vary by office"
+    },
+    {
+      "plan": "Notification",
+      "date": "2027-04-21",
+      "sourceUrl": "https://www.usafa.edu/admissions/student-applicant/grades-11-12/",
+      "cycle": "2026-27",
+      "note": "Most candidates know their status by April 21"
+    }
+  ],
+  "supplements": []
+}

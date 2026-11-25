@@ -1,0 +1,34 @@
+{
+  "slug": "rutgers-university-new-brunswick",
+  "name": "Rutgers University--New Brunswick",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "58.6% (45,800 of 78,122; Class of 2029, CDS 2025-26). In-state 51.8% (19,093 of 36,871), out-of-state 64.5% (17,496 of 27,106)", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/New%20Brunswick%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "Enrolled SAT sections: EBRW 660-730, Math 660-760 (49% submitted SAT; CDS 2025-26 leaves the SAT composite blank). Admissions site lists an admitted SAS range of 1380-1520 for fall 2026", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/New%20Brunswick%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "29-34 enrolled (5% submitted ACT; CDS 2025-26)", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/New%20Brunswick%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "Admitted middle-50% HS GPA by school, fall 2026: SAS 3.7-4.2, Business 3.8-4.2, Engineering 3.8-4.3, SEBS 3.8-4.2, Nursing 3.9-4.2, Pharmacy 4.0-4.3", "sourceUrl": "https://admissions.rutgers.edu/apply/how-we-make-decisions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional at New Brunswick through 2027; submitted scores are considered, not submitting is no disadvantage", "sourceUrl": "https://admissions.rutgers.edu/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No; need fully met for 179 of 3,536 first-years with need (CDS 2025-26 H2). Scarlet Guarantee covers in-state tuition and fees for eligible NJ students", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/New%20Brunswick%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; FAFSA (code 002629), priority filing date Jan 15", "sourceUrl": "https://admissions.rutgers.edu/costs-and-aid/financial-aid", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; single merit award process for fall first-years, no separate application; must apply by Dec 1 for honors and merit consideration. Mason Gross awards based on talent assessment", "sourceUrl": "https://admissions.rutgers.edu/costs-and-aid/scholarships", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$16,343 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186380", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$16,210 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186380", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$18,282 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186380", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$25,106 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186380", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$35,016 (in-state, 2023-24); NCES net price covers in-state students only", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=186380", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "2026-27 on-campus: NJ resident $41,332 (tuition $15,381 + fees $4,008 + food/housing $21,943); non-resident $62,782 (tuition $36,831). Varies by school", "sourceUrl": "https://admissions.rutgers.edu/costs-and-aid/tuition-fees", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Nonbinding, non-restrictive EA Nov 1 (decision by Jan 31); RD Dec 1 (decision by Feb 28). No ED. Rolling after deadlines for schools still open", "sourceUrl": "https://admissions.rutgers.edu/apply/dates-deadlines/new-brunswick", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "No interview in first-year requirements; Mason Gross School of the Arts requires a portfolio, audition or interview.", "sourceUrl": "https://admissions.rutgers.edu/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest': Not Considered)", "sourceUrl": "https://irds.rutgers.edu/PDFs/CDS/New%20Brunswick%20CDS_2025-2026.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "You apply to a specific school (Arts and Sciences, SEBS, Business, Engineering, Nursing, Pharmacy, Mason Gross); admission and space are set per school, and profiles differ (Pharmacy and Engineering highest). Mason Gross needs a talent assessment via a supplemental application", "sourceUrl": "https://admissions.rutgers.edu/apply/how-we-make-decisions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "First-year applicants self-report grades through STARS; waitlisted students should update STARS with mid-year grades (final decisions by Aug 1). App fee $70. Honors consideration needs a short statement whose prompt Rutgers does not publish online (gap)", "sourceUrl": "https://admissions.rutgers.edu/apply/how-we-make-decisions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No supplemental essays on the Common App; one personal essay required (Common App 250-650 words, or Rutgers Application 3,800 characters, on one of Rutgers' listed topics)", "sourceUrl": "https://admissions.rutgers.edu/apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://admissions.rutgers.edu/apply/dates-deadlines/new-brunswick", "cycle": "2026-27", "note": "Nonbinding, non-restrictive; decision by Jan 31" },
+    { "plan": "RD", "date": "2026-12-01", "sourceUrl": "https://admissions.rutgers.edu/apply/dates-deadlines/new-brunswick", "cycle": "2026-27", "note": "Last date for honors and merit consideration; decision by Feb 28" },
+    { "plan": "Financial aid", "date": "2027-01-15", "sourceUrl": "https://admissions.rutgers.edu/costs-and-aid/financial-aid", "cycle": "2026-27", "note": "FAFSA priority date" }
+  ],
+  "supplements": []
+}

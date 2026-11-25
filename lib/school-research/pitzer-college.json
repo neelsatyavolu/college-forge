@@ -1,0 +1,37 @@
+{
+  "slug": "pitzer-college",
+  "name": "Pitzer College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "26.9% (989 of 3,683; Fall 2025 entering class, CDS 2025-26)", "sourceUrl": "https://www.pitzer.edu/documents/common-data-set-2025-2026", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "43.4% ED I + ED II combined (167 of 385; Fall 2025, CDS 2025-26)", "sourceUrl": "https://www.pitzer.edu/documents/common-data-set-2025-2026", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "None: Pitzer is test-free (does not accept SAT/ACT) through the 2026-27 cycle", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/test-free-test-optional-policy", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "act_mid50", "value": "None: Pitzer is test-free (does not accept SAT/ACT) through the 2026-27 cycle", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/test-free-test-optional-policy", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "gpa_note", "value": "Average HS GPA 3.95; 33% of rank-reporting enrollees in top 10% (CDS 2025-26)", "sourceUrl": "https://www.pitzer.edu/documents/common-data-set-2025-2026", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-free: SAT/ACT not accepted for 2026-27 applicants; plans to return to test-optional for Fall 2028 entry. AP scores not considered in admission", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/test-free-test-optional-policy", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "Meets 100% of demonstrated need for every admitted student; typical package includes a $3,500-$5,500 federal loan and $2,500-$3,000 work-study", "sourceUrl": "https://www.pitzer.edu/offices/financial-aid/how-aid-works", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "CSS Profile and FAFSA plus 2025 tax returns via IDOC; due Nov 15 (ED I) or Jan 10 (ED II/RD)", "sourceUrl": "https://www.pitzer.edu/admission-aid/financial-aid-information", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Very limited: aid is need-based; Pitzer says it offers two merit scholarships but does not publish amounts or criteria", "sourceUrl": "https://www.pitzer.edu/offices/financial-aid/how-aid-works", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$14,535 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=121257", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$7,769 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=121257", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$20,846 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=121257", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$29,452 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=121257", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$46,793 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=121257", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$96,706 on-campus COA 2026-27 (tuition $70,184, fees $312, housing $13,470, food $10,290, books $1,100, personal $1,300, loan fees $50)", "sourceUrl": "https://www.pitzer.edu/offices/financial-aid/cost-attendance", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "ED I (Nov 15) and ED II (Jan 10), both binding; no EA listed; RD Jan 10", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Optional; interview deadline Nov 15 for ED I, Dec 18 for ED II and RD. CDS rates interview 'Considered'", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Very important (CDS 2025-26 C7)", "sourceUrl": "https://www.pitzer.edu/documents/common-data-set-2025-2026", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "Admission to the College; no major-specific applications; part of the Claremont Colleges consortium", "sourceUrl": "https://www.pitzer.edu/admission-aid/financial-aid-information", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Requires Common App, $70 fee or waiver, Pitzer writing supplement, one junior/senior core-subject teacher rec, school report and mid-year report.", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-15", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "cycle": "2026-27", "note": "ED I, binding; interview and aid deadline Nov 15; decision by Dec 18" },
+    { "plan": "ED2", "date": "2027-01-10", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "cycle": "2026-27", "note": "Binding; interview by Dec 18; decision by Feb 15" },
+    { "plan": "RD", "date": "2027-01-10", "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "cycle": "2026-27", "note": "Interview by Dec 18; decision by Apr 1" }
+  ],
+  "supplements": [
+    { "label": "Pitzer Writing Supplement (choose one)", "prompt": "At Pitzer, five core values distinguish our approach to education: social responsibility, intercultural understanding, interdisciplinary learning, student engagement, and environmental sustainability. As agents of change, our students utilize these values to create solutions to our world’s challenges. Reflecting on your involvement throughout high school or within the community, how have you engaged with one of Pitzer’s core values?", "limit": 650, "unit": "words", "required": true, "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "cycle": "2026-27" },
+    { "label": "Pitzer Writing Supplement (choose one)", "prompt": "At Pitzer, five core values distinguish our approach to education: social responsibility, intercultural understanding, interdisciplinary learning, student engagement, and environmental sustainability. As agents of change, our students utilize these values to create solutions to our world’s challenges. Describe what you are looking for from your college experience and why Pitzer would be a good fit for you.", "limit": 650, "unit": "words", "required": true, "sourceUrl": "https://www.pitzer.edu/admission-aid/how-apply/first-year-applicants", "cycle": "2026-27" }
+  ]
+}

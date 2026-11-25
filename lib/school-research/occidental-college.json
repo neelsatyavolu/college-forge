@@ -1,0 +1,209 @@
+{
+  "slug": "occidental-college",
+  "name": "Occidental College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "44.8% (3,359 of 7,490; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://www.oxy.edu/sites/default/files/assets/Institutional_Research/CDS_C_2526_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1400-1510 (25% of enrollees submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.oxy.edu/sites/default/files/assets/Institutional_Research/CDS_C_2526_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "31-34 (8% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.oxy.edu/sites/default/files/assets/Institutional_Research/CDS_C_2526_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.64, median 3.68 (25th-75th from 3.47); 16% of rank-reporting enrollees in top 10% (CDS 2025-26)",
+      "sourceUrl": "https://www.oxy.edu/sites/default/files/assets/Institutional_Research/CDS_C_2526_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all applicants; superscores SAT and ACT (ACT science not required); strongly recommended for fully homeschooled applicants",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/apply/test-optional-admission-policy",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for US citizens/permanent residents; packages may include loans and work-study. Affordability Promise: full tuition covered under $150k income, at least half tuition for $150k-$250k (typical assets)",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/affordability/promise",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile (code 4581) plus FAFSA and IDOC required; noncustodial parent profile too. Aid deadline matches the admission round (Nov 1 or Jan 10)",
+      "sourceUrl": "https://www.oxy.edu/financial-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes, a small number of merit awards; all applicants considered, scores not needed. All ED I/ED II admits get the Occidental Commitment Scholarship: at least $20,000/year for 4 years",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/affordability/scholarship",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$20,705 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=120254",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$17,655 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=120254",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$21,468 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=120254",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$28,033 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=120254",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$54,959 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=120254",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,365 on-campus COA 2026-27 (tuition $70,492, fees $611, housing & meals $21,022, books/personal $3,240); health insurance $4,062 if not waived",
+      "sourceUrl": "https://www.oxy.edu/financial-aid/cost",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1, binding), EA (Nov 1, non-binding, not restrictive), ED II (Jan 10, binding), RD (Jan 10). Switch EA to ED I by Nov 15, RD to ED II by Jan 25; EA deferrals may opt into ED II",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional but encouraged; alumni/student interview or 90-second Glimpse video; evaluated if completed, no penalty without one; complete before your deadline",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/apply/interviews",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.oxy.edu/sites/default/files/assets/Institutional_Research/CDS_C_2526_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission to the College; no major-specific applications listed; optional arts portfolio via SlideRoom",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Requires one core-subject teacher rec, counselor rec and midyear report. Optional 250-word 'Why Oxy' short answer is the only supplement.",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "ED admit rate not legible in the CDS 2025-26 PDF (counts not shown in extracted text).",
+      "sourceUrl": "https://www.oxy.edu/sites/default/files/assets/Institutional_Research/CDS_C_2526_0.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-deadlines",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid forms due same day; decision by mid-December"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-deadlines",
+      "cycle": "2026-27",
+      "note": "Non-binding; aid forms due same day; decision by mid-January"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-deadlines",
+      "cycle": "2026-27",
+      "note": "Binding; decision by mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-10",
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-deadlines",
+      "cycle": "2026-27",
+      "note": "Aid forms due same day; decision by mid-March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Short answer (optional)",
+      "prompt": "Why are you applying to Occidental? Why do you think Occidental is the right place for you to pursue your interests?",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.oxy.edu/admission-aid/first-year/application-requirements",
+      "cycle": "2026-27"
+    }
+  ]
+}

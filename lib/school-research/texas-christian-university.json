@@ -1,0 +1,207 @@
+{
+  "slug": "texas-christian-university",
+  "name": "Texas Christian University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "48.1% (10,906 of 22,680; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "68% (935 of 1,373 ED applicants, ED I and II combined; CDS 2025-26)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1110-1330 (enrolled Fall 2025; 27% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "26-31 (enrolled Fall 2025; 21% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No guarantee of full need; average 78.6% of need met for first-year need-based aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for institutional need-based aid along with FAFSA (or TASFA). ED/EA priority: FAFSA and CSS Profile by Nov 1, 2026 (also TCU for Texans priority deadline)",
+      "sourceUrl": "https://financialaid.tcu.edu/apply-for-aid/prospective-first-year-student.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: admitted students are automatically considered for academic scholarships. Chancellor's Scholarship candidates should apply by Nov 1 and to the Honors College",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$86,090 estimated direct cost on campus (2026-27: tuition $66,520, SGA $90, housing and food $18,780, books $700); travel/personal extra",
+      "sourceUrl": "https://financialaid.tcu.edu/cost/cost-of-attendance/undergraduate.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action Nov 1 (non-binding, decision by Jan 1); Early Decision I Nov 1 (binding, decision by Jan 1, commit by Jan 15); Early Decision II Feb 1 (binding, decision by Mar 1); Regular Decision Feb 1 (decision by Apr 1). ED requires signed ED Agreement",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not considered (CDS 2025-26 C7); no interview in the application",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7, 'Level of applicant's interest')",
+      "sourceUrl": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "John V. Roach Honors College needs a separate application (by Nov 15 or Feb 15). No capped-major rules found on the first-year page",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Accepts TCU App, Common App, Coalition or ApplyTexas, read equally. Optional \"Freedom of Expression\" submission (essay, poem, art or link). TCU-application users choose one of four TCU prompts (300-500 words) instead of the Common App essay",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$17,956 (2023-24, Title IV aid recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=228875",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$16,980 (2023-24, Title IV aid recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=228875",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$17,940 (2023-24, Title IV aid recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=228875",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$34,990 (2023-24, Title IV aid recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=228875",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$53,450 (2023-24, Title IV aid recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=228875",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No school-specific supplemental essay for Common App/Coalition/ApplyTexas applicants: only one essay is required, and those applicants use the prompts within their application",
+      "sourceUrl": "https://admissions.tcu.edu/frequently-asked-questions/what-are-the-essay-questions.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "TCU for Texans: full tuition, food and housing help and guaranteed on-campus housing for 4 years for Pell-eligible Texas residents (family AGI $100,000 or less) entering as fall first-years",
+      "sourceUrl": "https://admissions.tcu.edu/afford/scholarship-aid/tcu-for-texans.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "cycle": "2026-27",
+      "note": "Non-binding; decision by Jan 1"
+    },
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "cycle": "2026-27",
+      "note": "Binding; decision by Jan 1; commit by Jan 15; FAFSA+CSS by Nov 1"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-02-01",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "cycle": "2026-27",
+      "note": "Binding; decision by Mar 1; commit by Mar 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://admissions.tcu.edu/apply/first-year/index.php",
+      "cycle": "2026-27",
+      "note": "Decision by Apr 1"
+    }
+  ],
+  "supplements": []
+}

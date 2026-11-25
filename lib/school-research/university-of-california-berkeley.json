@@ -1,0 +1,259 @@
+{
+ "slug": "university-of-california-berkeley",
+ "name": "University of California, Berkeley",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "11.4% (14,524 of 126,864; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/uc-berkeley/2025-26/a981b6693dcce7a5b8082b64b7b9915265f224a9dba9dfc0fe9b702eac0d6d3a.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "Not reported: test-free, SAT/ACT not used in admission (CDS 2025-26 C9 blank)",
+   "sourceUrl": "https://admissions.berkeley.edu/apply-to-berkeley/first-year-applicants-uc-berkeley/first-year-policy-changes/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "Not reported: test-free, SAT/ACT not used in admission (CDS 2025-26 C9 blank)",
+   "sourceUrl": "https://admissions.berkeley.edu/apply-to-berkeley/first-year-applicants-uc-berkeley/first-year-policy-changes/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average HS GPA 3.90 (CDS 2025-26 C12); class rank not considered",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/uc-berkeley/2025-26/a981b6693dcce7a5b8082b64b7b9915265f224a9dba9dfc0fe9b702eac0d6d3a.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-free: SAT/ACT not used in any part of admission; scores only for placement/credit",
+   "sourceUrl": "https://admissions.berkeley.edu/apply-to-berkeley/first-year-applicants-uc-berkeley/first-year-policy-changes/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "UC systemwide: SAT/ACT not considered for admission or scholarships",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/counselors/preparing-freshman-students/freshman-requirements.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No 100%-of-need pledge. Blue and Gold: most California families earning up to $100,000 get enough gift aid to cover UC tuition. No institutional aid for nonresident supplemental tuition.",
+   "sourceUrl": "https://financialaid.berkeley.edu/types-of-aid-at-berkeley/innovative-berkeley-aid-programs/blue-and-gold-opportunity-plan/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; file FAFSA or California Dream Act Application (deadline March 2); CA residents also need GPA Verification for Cal Grant",
+   "sourceUrl": "https://admissions.berkeley.edu/cost/apply-for-financial-aid/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Admitted students automatically considered for scholarships (e.g., Regents' and Chancellor's, Berkeley Undergraduate Scholarship, Fiat Lux); no separate application",
+   "sourceUrl": "https://admissions.berkeley.edu/cost/apply-for-financial-aid/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$5,311 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110635",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$6,501 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110635",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$9,693 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110635",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$15,074 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110635",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$34,529 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110635",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27, residence hall: $54,674 for California residents ($18,214 tuition/fees, $23,640 living, $5,066 health insurance, plus personal); new out-of-state students add $39,270 nonresident supplemental tuition",
+   "sourceUrl": "https://financialaid.berkeley.edu/how-aid-works/student-budgets-cost-of-attendance/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "No ED or EA. Single UC application filing period Oct 1-Nov 30, 2026; decisions end of March",
+   "sourceUrl": "https://admissions.berkeley.edu/apply-to-berkeley/dates-deadlines/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interviews (CDS 2025-26 C7 interview 'Not considered')",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/uc-berkeley/2025-26/a981b6693dcce7a5b8082b64b7b9915265f224a9dba9dfc0fe9b702eac0d6d3a.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 level of applicant's interest)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/uc-berkeley/2025-26/a981b6693dcce7a5b8082b64b7b9915265f224a9dba9dfc0fe9b702eac0d6d3a.xlsx",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Admission by college/major: only the primary major is guaranteed review; alternate major not reviewed. Engineering and social sciences hard to transfer into later. M.E.T., Global Management and some other programs need supplemental forms via MAP@Berkeley.",
+   "sourceUrl": "https://admissions.berkeley.edu/application-faqs/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "UC Personal Insight Questions: answer any 4 of the 8, max 350 words each; all questions weighted equally.",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Applies through the UC application (one application for all UC campuses). Berkeley mandatory forms (if any) due Jan 31.",
+   "sourceUrl": "https://admissions.berkeley.edu/apply-to-berkeley/dates-deadlines/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "RD",
+   "date": "2026-11-30",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "cycle": "2026-27",
+   "note": "UC application filing period Oct 1-Nov 30; no ED/EA"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "PIQ 1: Leadership",
+   "prompt": "Describe an example of your leadership experience in which you have positively influenced others, helped resolve disputes or contributed to group efforts over time.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 2: Creativity",
+   "prompt": "Every person has a creative side, and it can be expressed in many ways: problem solving, original and innovative thinking, and artistically, to name a few. Describe how you express your creative side.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 3: Talent",
+   "prompt": "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 4: Educational opportunity or barrier",
+   "prompt": "Describe how you have taken advantage of a significant educational opportunity or worked to overcome an educational barrier you have faced.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 5: Challenge",
+   "prompt": "Describe the most significant challenge you have faced and the steps you have taken to overcome this challenge. How has this challenge affected your academic achievement?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 6: Academic subject",
+   "prompt": "Think about an academic subject that inspires you. Describe how you have furthered this interest inside and/or outside of the classroom.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 7: Community",
+   "prompt": "What have you done to make your school or your community a better place?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 8: Strong candidate",
+   "prompt": "Beyond what has already been shared in your application, what do you believe makes you a strong candidate for admissions to the University of California?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  }
+ ]
+}

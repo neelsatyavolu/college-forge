@@ -12,6 +12,8 @@ import {
   type Honor,
 } from "@/lib/store";
 import { rebalanceWorkspace, seedRecommendedColleges, type Rebalance } from "@/lib/college-recommendations";
+import { applyApprovedList, finishOnboarding, setInterviewPhase } from "@/lib/onboarding-list";
+import { startInterview } from "@/lib/interview-checklist";
 import { splitStoryNotes } from "@/lib/story-notes";
 import { syncEssaySupplements } from "@/lib/essay-supplements";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
@@ -53,6 +55,12 @@ export async function GET(req: NextRequest) {
 
 type Body = {
   action?: string;
+  /** apply-list: draft schools the student kept, and current schools they dropped. */
+  keep?: unknown;
+  drop?: unknown;
+  /** set-interview-phase */
+  phase?: unknown;
+  strategyConfirmed?: unknown;
   applicant?: Partial<Workspace["applicant"]>;
   profile?: Partial<{
     intended: string;
@@ -175,6 +183,32 @@ export async function POST(req: NextRequest) {
     const token = str(body.token);
     if (!token) return withCookie({ success: false, error: "token required" }, setCookie, 400);
     return withCookie({ success: true, data: await revokeShareLink(id, token) }, setCookie);
+  }
+
+  if (action === "start-interview") {
+    // A redo keeps `completed`, so the hub stays usable; answers already in the profile count as given.
+    const saved = await updateWorkspace(id, (ws) => ({
+      ...ws,
+      onboarding: { ...ws.onboarding, interview: startInterview(Date.now()) },
+    }));
+    return withCookie({ success: true, data: saved }, setCookie);
+  }
+
+  if (action === "apply-list" || action === "finish-onboarding" || action === "set-interview-phase") {
+    const names = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && !!x.trim()).map((x) => x.slice(0, 160)).slice(0, 40) : []);
+    let error = "";
+    const saved = await updateWorkspace(id, (ws) => {
+      error = ""; // the store can re-run this on a version conflict
+      const r = action === "apply-list"
+        ? applyApprovedList(ws, names(body.keep), names(body.drop))
+        : action === "finish-onboarding"
+          ? finishOnboarding(ws, Date.now())
+          : setInterviewPhase(ws, body.phase, body.strategyConfirmed === true);
+      if ("error" in r) { error = r.error; return ws; }
+      return r;
+    });
+    if (error) return withCookie({ success: false, error }, setCookie, 400);
+    return withCookie({ success: true, data: saved }, setCookie);
   }
 
   if (action === "complete-onboarding") {

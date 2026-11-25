@@ -1,0 +1,194 @@
+{
+  "slug": "trinity-college",
+  "name": "Trinity College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "29.5% (2,148 of 7,273; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "40.6% ED (261 of 643; CDS 2025-26)",
+      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1350-1460 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "30.5-32.5 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional, including for transfers; merit scholarships considered with or without scores",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets full demonstrated need (CDS 2025-26: 100% of need met on average); Hartford admits get a Capital City Grant covering tuition, room and board",
+      "sourceUrl": "https://www.trincoll.edu/admissions/finaid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA and noncustodial Profile (CDS 2025-26 H8); deadline not found on the pages read",
+      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: 1823 Merit Scholarship Program (Presidential full tuition; Bicentennial half-tuition awards) plus regional/affinity scholarships and $10,000-$30,000 awards",
+      "sourceUrl": "https://www.trincoll.edu/admissions/finaid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$11,054 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130590",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$13,599 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130590",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$18,325 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130590",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$24,369 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130590",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,515 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130590",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$96,480 billed for 2026-27 (tuition $72,820, general fee $2,900, activity fee $430, standard room $13,150, first-year meal plan $7,180)",
+      "sourceUrl": "https://www.trincoll.edu/student-accounts/tuition-and-fees/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 15), both binding; RD Jan 15; RD applicants may convert to ED II; no EA",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional but strongly recommended; about 20-30 minutes",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Important (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Students must declare at least one major by the Friday after spring break of sophomore year; no capped or direct-admit majors found on admissions pages",
+      "sourceUrl": "https://www.trincoll.edu/registrar/policy-faq/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Optional Trinity essay (under 300 words) in addition to the Common App essay",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; notification mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "cycle": "2026-27",
+      "note": "Binding; notification mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "cycle": "2026-27",
+      "note": "Notification late March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Optional Trinity essay",
+      "prompt": "The identities you claim, the challenges you face, and the successes you enjoy shape the background for your college experience to come. What is an aspect of your background that you are excited to share and/or explore as a member of the Trinity community and why?",
+      "limit": 300,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.trincoll.edu/admissions/undergraduate-admissions/application-process/",
+      "cycle": "2026-27"
+    }
+  ]
+}

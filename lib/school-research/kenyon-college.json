@@ -1,0 +1,192 @@
+{
+  "slug": "kenyon-college",
+  "name": "Kenyon College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "30.2% (2,138 of 7,091; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://www.kenyon.edu/files/resources/cds-2025-26-kenyon.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "34.8% ED I + ED II combined (231 of 663; Fall 2025, CDS 2025-26); ED fills about 40-45% of the class",
+      "sourceUrl": "https://www.kenyon.edu/files/resources/cds-2025-26-kenyon.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1400-1495 (only 7.5% of enrollees submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.kenyon.edu/files/resources/cds-2025-26-kenyon.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "31-34 (only 8% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.kenyon.edu/files/resources/cds-2025-26-kenyon.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 4.15 (weighted scale; 93.7% reported GPA; CDS 2025-26)",
+      "sourceUrl": "https://www.kenyon.edu/files/resources/cds-2025-26-kenyon.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for all applicants (described as a temporary policy); superscores SAT and ACT; self-reported scores accepted",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/standardized-testing-policy/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for qualifying students for all four years; packages include grants, loans and campus work (CDS 2025-26: all 242 first-year aid recipients had need fully met)",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/financial-aid-scholarships/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile and tax documents required: due Nov 15 (ED I) or Jan 15 (ED II/RD); FAFSA due Jan 15",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/financial-aid-scholarships/apply-for-financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes; all ED and RD applicants automatically considered for merit scholarships up to $35,000/yr (scholarship page says $20k-$35k, aid overview says $15k-$35k). Separate applications for $25,000 writing, music and studio art scholarships",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/financial-aid-scholarships/scholarships-grants/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$18,242 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=203535",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$26,319 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=203535",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$19,156 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=203535",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$23,757 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=203535",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$51,432 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=203535",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$93,090 comprehensive fee 2026-27 (tuition $72,880, housing $9,080, meals $10,780, activities fee $350); books, travel and personal costs extra. 2025-26 average net price for new students was $44,823",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/financial-aid-scholarships/tuition-costs/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 15), both binding; no EA; RD Jan 15",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/early-decision/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Recommended but not required; virtual one-on-one with a student fellow (register for one only). CDS rates interview 'Considered'",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/interviews/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Important (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.kenyon.edu/files/resources/cds-2025-26-kenyon.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission to the College; no major-specific applications. Optional portfolio via the applicant portal",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/deadlines-requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No Kenyon-specific supplemental essay is listed among required materials (Common App or Coalition, school report, counselor rec, one junior-year teacher evaluation, midyear report). A third-party site (draftl) also says no supplements.",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/deadlines-requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/deadlines-requirements/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; CSS Profile due Nov 15; decision mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/deadlines-requirements/",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile and FAFSA due Jan 15; decision mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.kenyon.edu/admissions-aid/apply-to-kenyon/deadlines-requirements/",
+      "cycle": "2026-27",
+      "note": "CSS Profile and FAFSA due Jan 15; decision mid-March"
+    }
+  ],
+  "supplements": []
+}

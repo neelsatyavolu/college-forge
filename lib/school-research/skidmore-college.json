@@ -1,0 +1,192 @@
+{
+  "slug": "skidmore-college",
+  "name": "Skidmore College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "23.8% (2,917 of 12,273; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "42.4% ED I + ED II combined (359 of 847; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1360-1460 (25% of enrollees submitted SAT; about two-thirds of applicants apply without scores; CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "31-34 (8% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "45% of rank-reporting enrollees in top 10%, 70% in top quarter (only 119 of 692 reported rank); no average GPA reported (CDS 2025-26)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional since 2016; self-reported scores accepted, verified scores required on enrollment",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all admitted students, all four years; packages include loans (sample packages show $3,500 student loan) and work-study",
+      "sourceUrl": "https://www.skidmore.edu/admissions/aid/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile required for Skidmore aid: due Nov 8 (ED I) or Jan 15 (ED II/RD); FAFSA only upon enrollment",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Limited: aid is mainly need-based. Two competitive $20,000/yr merit programs: Filene Music Scholarship (separate application by Jan 15, 4-6 awards) and Porter/Wachenheim Presidential Scholarship for science and math (~45 awards; portfolio upload in applicant portal)",
+      "sourceUrl": "https://www.skidmore.edu/admissions/aid/typesofaid.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$9,932 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195526",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$11,454 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195526",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$15,855 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195526",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$22,438 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195526",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$45,136 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195526",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$93,260 billed 2026-27 for a traditional double (tuition & fees $73,590, housing $11,630, food $8,040); plus $150 one-time records fee, optional tuition insurance, books and travel",
+      "sourceUrl": "https://www.skidmore.edu/bursar/cost.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1) and ED II (Jan 8), both binding; no EA; RD Jan 8. Supporting materials due within a week; extensions possible on request",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not offered: Skidmore stopped admissions interviews as of Fall 2024",
+      "sourceUrl": "https://www.skidmore.edu/admissions/faqs.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission to the College; art, music and dance portfolios optional (not required of prospective majors), due within a week of the round's deadline",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essays. Requires two academic teacher recs; ED applicants send quarter grades (Nov 22 / Jan 22); RD midyear grades due Feb 10.",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "cycle": "2026-27",
+      "note": "ED I, binding; CSS Profile due Nov 8; decision mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-08",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile due Jan 15; decision mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-08",
+      "sourceUrl": "https://www.skidmore.edu/admissions/apply/index.php",
+      "cycle": "2026-27",
+      "note": "CSS Profile due Jan 15; midyear grades Feb 10; decision mid-March"
+    }
+  ],
+  "supplements": []
+}

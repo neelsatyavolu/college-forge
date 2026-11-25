@@ -1,0 +1,250 @@
+{
+  "slug": "university-of-california-irvine",
+  "name": "University of California, Irvine",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "30.3% (38,165 of 126,005; Fall 2026 admits, UC admit data). CDS 2025-26 (Fall 2025): 28.9% (35,964 of 124,231)",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/campuses-majors/irvine/first-year-admit-data.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "Not reported: UC Irvine does not consider SAT/ACT for admission or scholarships",
+      "sourceUrl": "https://admissions.uci.edu/apply/first-year-students/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "Not reported: UC Irvine does not consider SAT/ACT for admission or scholarships",
+      "sourceUrl": "https://admissions.uci.edu/apply/first-year-students/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Fall 2026 admits middle 50% HS GPA 4.06-4.27 (UC admit data)",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/campuses-majors/irvine/first-year-admit-data.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-blind: SAT/ACT not considered for admission or scholarships; may be used after enrollment for placement",
+      "sourceUrl": "https://admissions.uci.edu/apply/first-year-students/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No full-need pledge. Average 85.9% of need met for full-time first-years with need-based aid (CDS 2025-26 H2). Blue and Gold: most CA families earning up to $100,000 get grants covering full UC tuition",
+      "sourceUrl": "https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/2/5478/files/2026/05/2025-26-CDS-PDF-Upload.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; UC uses the FAFSA or California Dream Act Application (plus Cal Grant GPA Verification), priority deadline March 2",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/tuition-financial-aid/types-of-aid/blue-and-gold-opportunity-plan.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes, automatic consideration via the UC application (no extra materials): Regents' and Chancellor's Excellence Scholarships for CA residents; Directors' Scholarship for domestic out-of-state students",
+      "sourceUrl": "https://www.ofas.uci.edu/scholarships/applying-for-scholarships.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 new-student budget, on campus: California resident $45,206; nonresident $84,476 (adds $39,270 nonresident tuition/fees). Tuition flat for 6 years",
+      "sourceUrl": "https://www.ofas.uci.edu/cost/undergraduate-costs/new-students.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "None. One UC application (all campuses), single deadline Nov 30; decisions by March 31",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews; interview not considered (CDS 2025-26 C7: Not Considered)",
+      "sourceUrl": "https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/2/5478/files/2026/05/2025-26-CDS-PDF-Upload.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest': Not Considered)",
+      "sourceUrl": "https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/2/5478/files/2026/05/2025-26-CDS-PDF-Upload.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission is by major; if a first-choice major is full, a valid alternate major may be offered. Dance and B.Mus. (piano, vocal, strings) require auditions in late Jan/early Feb. Nursing Science is limited and selective. Computer Science and Engineering expects math through pre-calculus. Undeclared option exists",
+      "sourceUrl": "https://catalogue.uci.edu/informationforprospectivestudents/undergraduateadmissions/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$8,123 (2023-2024, family income $0-$30,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110653",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$9,313 (2023-2024, family income $30,001-$48,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110653",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$11,642 (2023-2024, family income $48,001-$75,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110653",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$15,164 (2023-2024, family income $75,001-$110,000; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110653",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$30,546 (2023-2024, family income $110,001 and more; College Navigator; in-state students)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110653",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Selection criteria include A-G GPA with honors points, courses beyond minimums, senior-year program, ELC (top 9%), and context of opportunities; PIQs: 4 of 8, 350 words each",
+      "sourceUrl": "https://admissions.uci.edu/apply/first-year-students/index.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "RD",
+      "date": "2026-11-30",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+      "cycle": "2026-27",
+      "note": "Single UC application deadline; filing period Nov 1-30. No ED/EA"
+    },
+    {
+      "plan": "Financial aid",
+      "date": "2027-03-02",
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+      "cycle": "2026-27",
+      "note": "FAFSA/CA Dream Act Application and Cal Grant GPA Verification Form due"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "UC PIQ 1 (choose 4 of 8)",
+      "prompt": "Describe an example of your leadership experience in which you have positively influenced others, helped resolve disputes or contributed to group efforts over time.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 2 (choose 4 of 8)",
+      "prompt": "Every person has a creative side, and it can be expressed in many ways: problem solving, original and innovative thinking, and artistically, to name a few. Describe how you express your creative side.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 3 (choose 4 of 8)",
+      "prompt": "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 4 (choose 4 of 8)",
+      "prompt": "Describe how you have taken advantage of a significant educational opportunity or worked to overcome an educational barrier you have faced.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 5 (choose 4 of 8)",
+      "prompt": "Describe the most significant challenge you have faced and the steps you have taken to overcome this challenge. How has this challenge affected your academic achievement?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 6 (choose 4 of 8)",
+      "prompt": "Think about an academic subject that inspires you. Describe how you have furthered this interest inside and/or outside of the classroom.",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 7 (choose 4 of 8)",
+      "prompt": "What have you done to make your school or your community a better place?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "UC PIQ 8 (choose 4 of 8)",
+      "prompt": "Beyond what has already been shared in your application, what do you believe makes you a strong candidate for admissions to the University of California?",
+      "limit": 350,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

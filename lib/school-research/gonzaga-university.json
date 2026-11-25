@@ -1,0 +1,194 @@
+{
+  "slug": "gonzaga-university",
+  "name": "Gonzaga University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "79.6% (7,091 of 8,906; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1230-1383 (enrolled Fall 2025; 19% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "29-32 (enrolled Fall 2025; 6% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.70 (enrolled Fall 2025, CDS 2025-26); 36% in top tenth of class among the 39% reporting rank",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; homeschooled applicants with under 30 semester/45 quarter college credits must submit SAT or ACT. Test-optional applicants still eligible for merit aid, direct nursing admission and Honors",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/apply/how-to-apply/first-year-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No guarantee of full need; average 86% of need met for first-year need-based aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; Gonzaga uses the FAFSA (WASFA or Gonzaga Needs Analysis Form for students who can't file FAFSA). Priority date Dec 1 for EA, Feb 1 for RD",
+      "sourceUrl": "https://www.gonzaga.edu/admission/tuition-scholarships-aid/financial-aid/apply-for-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: automatic consideration for first-year merit scholarships of $23,500-$32,000/yr, guaranteed 4 years; 98% of incoming students receive one. No separate application",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/tuition-aid/scholarship-opportunities",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$20,833 (2023-24, Title IV recipients)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=235316",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$23,112 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=235316",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$25,106 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=235316",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$33,949 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=235316",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$42,668 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=235316",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$82,689 on campus (2026-27: tuition $58,390, fees $1,120, housing $8,940, food $8,220, plus indirect)",
+      "sourceUrl": "https://www.gonzaga.edu/admission/tuition-scholarships-aid/financial-aid/cost-of-attendance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action (non-binding) Nov 15, decisions in December; Regular Decision Feb 1, decisions early March. No Early Decision",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/apply/dates-deadlines",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional admission interview (campus, virtual or local); highly encouraged for unweighted GPA at or below 3.2, SAT at or below 1150, ACT at or below 23, or a record needing explanation. Interview is 'Considered' (CDS C7) and a merit criterion",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/apply/admission-requirements",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Important (CDS 2025-26 C7, 'Level of applicant's interest')",
+      "sourceUrl": "https://www.gonzaga.edu/__data/assets/file/0022/217471/Gonzaga-University-CDS-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Nursing is direct-entry, first-year only: must apply Early Action by Nov 15 and choose nursing; later applications go to the nursing waitlist. No switching into nursing after enrolling. Nursing applicants answer an extra short answer",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/apply/how-to-apply/first-year-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "CDS figures read from the official CDS 2025-26 PDF (values are drawn as graphics, read from rendered pages). Gonzaga Guarantee: Gonzaga-funded scholarships and grants won't decrease over 4 years in good standing",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/tuition-aid/scholarship-opportunities",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/apply/dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Non-binding; also the nursing deadline. Decisions in December. Aid priority date Dec 1"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/apply/dates-deadlines",
+      "cycle": "2026-27",
+      "note": "Decisions early March; aid priority date Feb 1; confirm by May 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Mission short answer",
+      "prompt": "Grounded in this Jesuit, Catholic, and humanistic mission, Gonzaga seeks students who demonstrate these values through their experiences, commitments, and aspirations. You will select all areas where you have personal experience. Then you will share additional information about your experience in one or more of the areas that you selected above (5 – 7 sentences).",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.gonzaga.edu/news-events/stories/admission-writing-prompts-and-requirements",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Nursing short answer (nursing applicants only)",
+      "prompt": "Response should be between five to ten sentences. You will be asked to share about your interest in nursing and experiences you may have in healthcare.",
+      "required": true,
+      "sourceUrl": "https://www.gonzaga.edu/undergraduate-admission/apply/how-to-apply/first-year-students",
+      "cycle": "2026-27"
+    }
+  ]
+}

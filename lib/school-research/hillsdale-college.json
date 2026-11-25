@@ -1,0 +1,246 @@
+{
+  "slug": "hillsdale-college",
+  "name": "Hillsdale College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "21% (3,181 applicants; Fall 2024, IPEDS via College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170286",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1340-1470 (Fall 2024 entering class, per Hillsdale; 32% submitted SAT per IPEDS)",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "30-33 (Fall 2024 entering class, per Hillsdale; 34% submitted ACT per IPEDS)",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Middle-50% GPA 3.95-4.0 (Fall 2024 entering class)",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional: ACT, CLT or SAT accepted but not required; scores and an interview are 'strongly encouraged'",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No full-need pledge; takes no federal or state aid. Need-based grants are privately funded and limited ('a limited number of grants... to students showing exceptional need'); average aid nearly $27,000/yr",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/financial-aid/need-based-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not used. No FAFSA either: need-based aid uses Hillsdale's own Confidential Family Financial Statement, completed after admission",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/financial-aid/apply-for-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes; all applicants automatically considered for merit scholarships from $1,000 to full tuition (mostly 4-year). Leadership Scholarships need a complete app by Nov 15; priority merit by Dec 15; talent awards in athletics, art, music, theater",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/financial-aid/scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "Not published: Hillsdale takes no federal aid, so College Navigator shows no net price by income. Hillsdale says students average nearly $27,000/yr in aid against $49,840 billed costs",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170286",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "Not published: Hillsdale takes no federal aid, so College Navigator shows no net price by income. Hillsdale says students average nearly $27,000/yr in aid against $49,840 billed costs",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170286",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "Not published: Hillsdale takes no federal aid, so College Navigator shows no net price by income. Hillsdale says students average nearly $27,000/yr in aid against $49,840 billed costs",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170286",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "Not published: Hillsdale takes no federal aid, so College Navigator shows no net price by income. Hillsdale says students average nearly $27,000/yr in aid against $49,840 billed costs",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170286",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "Not published: Hillsdale takes no federal aid, so College Navigator shows no net price by income. Hillsdale says students average nearly $27,000/yr in aid against $49,840 billed costs",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170286",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$49,840 billed 2026-27 (tuition $33,710, room $7,040, board $7,630, fees $1,460); books and travel extra",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/financial-aid/tuition-and-costs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED (Nov 1, binding; notification early December, deposit Feb 1) and RD (Mar 15, decisions ~5-6 weeks after completion from early January); no EA. Spring admission Nov 1",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/application-process-2",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Strongly encouraged, not required; on a campus visit or with a regional counselor",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Hillsdale says binding ED shows 'greater interest and initiative' and helps scholarship consideration; no current CDS (latest posted is 2018-19)",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission; everyone takes the classical liberal arts core (nearly half of the four years)",
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/hillsdale-college-supplemental-essay-prompt-guide/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "key": "notes",
+      "value": "Takes no federal or state aid at all (no Pell, no federal loans); aid is privately funded. Apply via Hillsdale's own application or the Common App.",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Application requires one personal essay plus three 250-word short answers, recommendations and an activities resume. AI tools may not be used in short answers. Common App users answer the Common App essay; Hillsdale's own form has its own essay choices (650 words).",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Short-answer wording is from a third-party 2026-27 guide; it matches Hillsdale's official July 2024 prompt sheet.",
+      "sourceUrl": "https://www.hillsdale.edu/wp-content/uploads/2024/07/Undergraduate-Essay-and-Short-Answer-Prompts-7-24.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Hillsdale posts no Common Data Set newer than 2018-19 (none found Nov 2026). Admit rate is IPEDS Fall 2024; College Navigator timed out on re-check, so it was not re-verified this audit. major_notes is still third-party (the catalog core page lists courses but not admission rules)",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/application-process-2",
+      "cycle": "2026-27",
+      "note": "Binding; notification early December; deposit by Feb 1. Page undated."
+    },
+    {
+      "plan": "Leadership scholarship",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/application-process-2",
+      "cycle": "2026-27",
+      "note": "Complete application by Nov 15 for Leadership Scholarship consideration"
+    },
+    {
+      "plan": "Priority (merit)",
+      "date": "2026-12-15",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/application-process-2",
+      "cycle": "2026-27",
+      "note": "Priority merit scholarship consideration"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-03-15",
+      "sourceUrl": "https://www.hillsdale.edu/admissions-aid/admissions-2/application-process-2",
+      "cycle": "2026-27",
+      "note": "Decisions 5-6 weeks after completion, from early January; deposit May 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Short answer 1",
+      "prompt": "Students at Hillsdale College enroll in a multidisciplinary classical liberal arts core curriculum, taking nearly half of their four years. Explain your interest in this educational approach.",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/hillsdale-college-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Short answer 2",
+      "prompt": "As a result of your experiences at Hillsdale, who do you hope to become?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/hillsdale-college-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    },
+    {
+      "label": "Short answer 3",
+      "prompt": "The pursuit of truth leads to eternal questions, including the question of God. What role do you see faith playing in your learning at Hillsdale?",
+      "limit": 250,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.collegeessayadvisors.com/supplemental-essay/hillsdale-college-supplemental-essay-prompt-guide/",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

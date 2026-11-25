@@ -19,8 +19,37 @@ export type ChatStage =
   | "tool"
   | "writing";
 
+/** A question the onboarding AI asked, drawn as tiles (or an upload / number / school picker). */
+export type UiQuestion = {
+  id: string;
+  kind: "single" | "multi" | "upload" | "number" | "school_search" | "confirm";
+  prompt: string;
+  options?: { value: string; label: string; hint?: string }[];
+  min?: number;
+  max?: number;
+  allowOther?: boolean;
+};
+/** A school on the draft list the student approves. "likely" is stored as tier "safety". */
+export type UiSchool = {
+  slug?: string;
+  name: string;
+  tier: "reach" | "target" | "likely";
+  reason: string;
+  estChance?: string;
+  netPrice?: string;
+  fitsBudget?: "yes" | "no" | "unknown";
+  /** Already on the student's list before this draft. */
+  current?: boolean;
+};
+export type UiStrategy = { ed?: string; ea: string[]; reasons: string };
+export type ResearchStage = "searching" | "reading" | "saved" | "done" | "needs_review";
+
 export type ChatEvent =
   | { type: "status"; stage: ChatStage; message: string; round?: number }
+  | { type: "question"; question: UiQuestion }
+  | { type: "list"; schools: UiSchool[] }
+  | { type: "strategy"; strategy: UiStrategy }
+  | { type: "research"; slug: string; name: string; stage: ResearchStage; facts?: number }
   | { type: "tool"; name: string; path?: string; round: number }
   | { type: "delta"; text: string }
   | { type: "error"; message: string; detail?: string }

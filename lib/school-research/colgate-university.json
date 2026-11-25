@@ -1,0 +1,209 @@
+{
+  "slug": "colgate-university",
+  "name": "Colgate University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "17.5% (3,030 of 17,310; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "35.5% ED (477 of 1,342; CDS 2025-26)",
+      "sourceUrl": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1450-1510 (enrolled Fall 2025, CDS 2025-26; 23% submitted SAT)",
+      "sourceUrl": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025, CDS 2025-26; 16% submitted ACT)",
+      "sourceUrl": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Class of 2030: average GPA 3.81; 78% in top 10% of class",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-class-profile",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional, no disadvantage for not submitting; self-reported scores accepted; superscores SAT and ACT",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need; Colgate Commitment: generally tuition-free under $175K family income, no loans in initial offer under $200K",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/financial-aid/colgate-commitment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for the need-based Colgate Grant; due Nov 1 ED I, Jan 15 ED II and RD",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/financial-aid/apply-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No academic merit scholarships; athletic scholarships in some sports",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/financial-aid/types-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$6,086 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190099",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$2,678 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190099",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$13,617 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190099",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$21,831 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190099",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,234 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190099",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$96,646 billed for first-years in 2026-27 (tuition $76,828, housing $9,348, food $10,008, activity fee $462)",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/tuition-fees",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1) and ED II (Jan 15), both binding; RD Jan 15; no EA",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No evaluative interview; optional virtual Colgate Admission Conversations with a senior intern or graduate are non-evaluative",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/visit/virtual-programming",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to the university, not a major; arts portfolio optional and not needed to declare an arts major",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Class of 2030 profile: 16,774 applications, 3,416 admitted (20%), SAT middle 50% 1460-1530, ACT 33-35",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-class-profile",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No written supplemental essay; Colgate-specific questions include optional digital-presence links",
+      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/9/26/how-to-write-the-colgate-supplement-2026-2027",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid forms due Nov 1; decision mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Binding; aid forms due Jan 15; decision mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
+      "cycle": "2026-27",
+      "note": "Aid forms due Jan 15; decision late March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Digital presence (optional)",
+      "prompt": "Some applicants wish to share additional digital materials which showcase their background, talents, or creativity. Some examples include creative works, Instagram accounts, YouTube videos, performances, Etsy shops, etc. If you wish to share any of these links, please use the space below to provide a brief description. Then select how many links you would like to share and enter the URLs.",
+      "required": false,
+      "sourceUrl": "https://www.koppelmangroup.com/blog/2026/9/26/how-to-write-the-colgate-supplement-2026-2027",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

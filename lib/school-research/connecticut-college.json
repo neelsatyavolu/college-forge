@@ -1,0 +1,209 @@
+{
+  "slug": "connecticut-college",
+  "name": "Connecticut College",
+  "checkedAt": "2026-11-25",
+  "complete": false,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "39.2% (2,875 of 7,338; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://www.conncoll.edu/media/Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "40.7% ED (222 of 546; Fall 2025, CDS 2025-26 C21; ED I and ED II not split)",
+      "sourceUrl": "https://www.conncoll.edu/media/Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1160-1370 (52% of enrollees submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.conncoll.edu/media/Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "26-32 (14% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.conncoll.edu/media/Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional with a 'no harm' option: submitters can let the committee drop scores that weaken the file; self-reported scores accepted; scores ideally from the last 36 months",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/standardized-test-policy/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets full demonstrated need of all admitted students; nearly 90% of aid is grants",
+      "sourceUrl": "https://www.conncoll.edu/admission/scholarships-and-grants/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile and FAFSA; aid documents due Nov 16, 2026 (ED I/EA) or Jan 15, 2027 (ED II/RD)",
+      "sourceUrl": "https://www.conncoll.edu/financial-aid/applying-for-financial-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes, limited and competitive: $15,000-$38,000 (Founders, Trustee, Deans, 1911, Shain); chosen by the Admission Committee, no separate application or aid application needed",
+      "sourceUrl": "https://www.conncoll.edu/admission/scholarships-and-grants/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$13,341 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=128902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$16,892 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=128902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$28,961 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=128902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$29,797 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=128902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$47,031 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=128902",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$94,800 student budget 2026-27 (comprehensive fee $92,800 incl. tuition, housing, food; books $1,000, misc $600, travel $400); health insurance required",
+      "sourceUrl": "https://www.conncoll.edu/admission/tuition-fees/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "New for Fall 2027 entry: non-binding Early Action (Nov 1). Also ED I (Nov 1) and ED II (Jan 15), both binding; RD Jan 15. January (spring) admission option Nov 1 for US citizens",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/early-action/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional 30-minute interviews for seniors April to mid-December, or a Glimpse video; InitialView for international students. CDS rates interview 'Important'",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/interviews/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 \"Level of applicant's interest\")",
+      "sourceUrl": "https://www.conncoll.edu/media/Common-Data-Set-2025-26.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission to the College; no major-specific applications; optional arts portfolio",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/first-year-requirements-deadlines/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No application fee. Requires counselor rec, one academic teacher rec (two recommended), school report; items sent after Nov 15 (ED I/EA) or Jan 25 (ED II/RD) may not be considered.",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/first-year-requirements-deadlines/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Supplement: Conn's Fall 2027 checklist requires \"Conn's Common Application Supplemental Application\" but Conn does not publish its questions. Whether it includes an essay (third-party sites disagree; the 150-word community prompt below is from Esslo) is unconfirmed. Check the Common App",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/first-year-requirements-deadlines/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/first-year-requirements-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid docs Nov 16; decision mid-December"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/first-year-requirements-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "New non-binding round; aid docs Nov 16; decision mid-December"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/first-year-requirements-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "Binding; aid docs Jan 15; decision mid-February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.conncoll.edu/admission/apply/first-year-requirements-deadlines/index.html",
+      "cycle": "2026-27",
+      "note": "Aid docs Jan 15; decision late March"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Community short answer (status unconfirmed)",
+      "prompt": "Developing a strong, equitable and inclusive community is important to us at Connecticut College. After all, camels live and work together in herds. In 150 words or less, please tell us a little more about who you are and what you will bring to the Conn community to help us grow into the best version of ourselves. You may choose to include details about how your background, identity, challenges, and lived experiences have shaped your accomplishments and potential contributions. Any format is acceptable. You can write a few sentences, one run-on sentence or even a bullet-point list.",
+      "limit": 150,
+      "unit": "words",
+      "sourceUrl": "https://www.esslo.org/college-essay-grader/connecticut-college",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "slug": "franklin-and-marshall-college",
+  "name": "Franklin & Marshall College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "31.6% (3,047 of 9,634; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "29.5% ED I + ED II combined (254 of 860; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1310-1470 (31% of enrollees submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "29-32 (7% of enrollees submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for 30+ years; 'no harm' review: scores considered only if they strengthen the application",
+      "sourceUrl": "https://www.fandm.edu/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all enrolled students; Commonwealth Commitment: tuition-free for Pennsylvania residents under $75,000 household income",
+      "sourceUrl": "https://www.fandm.edu/financial-aid/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required with FAFSA and tax documents via IDOC for need-based aid; specific CSS deadline not stated on the checklist pages",
+      "sourceUrl": "https://www.fandm.edu/apply/regular-decision-application-checklist.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: all applicants considered for F&M Merit Scholarships at admission, no separate application; some dedicated scholarships need their own application",
+      "sourceUrl": "https://www.fandm.edu/scholarships/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$12,321 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212577",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$16,942 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212577",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$16,245 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212577",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$25,104 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212577",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$49,996 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=212577",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$97,041 cost of attendance for 2026-27 (tuition $74,770, housing $12,080, meals $7,240, fees $346, books/personal/travel/loan fees $2,605)",
+      "sourceUrl": "https://www.fandm.edu/financial-aid/cost-of-attendance.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 15), both binding; RD Jan 15; switch to ED I by Dec 9 or to ED II by Feb 3; no EA",
+      "sourceUrl": "https://www.fandm.edu/apply/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Interviews offered; schedule through the F&M applicant portal. CDS 2025-26 C7 rates interview Important",
+      "sourceUrl": "https://www.fandm.edu/apply/interview-tips.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission to the College; application checklist lists no major- or program-specific applications; optional supplemental materials (e.g., portfolio) via the applicant portal",
+      "sourceUrl": "https://www.fandm.edu/apply/regular-decision-application-checklist.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Application checklists list no F&M-specific supplemental essay; optional supplemental materials can be uploaded to the portal",
+      "sourceUrl": "https://www.fandm.edu/apply/regular-decision-application-checklist.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "CDS 2025-26 (Google Drive file, read 2026-11-25) used for admissions figures; other CDS-based facts still cite CDS 2024-25",
+      "sourceUrl": "https://drive.google.com/file/d/1CpyIXEDF-2bMSlt8qXimtThANg0xsUlw/view",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.fandm.edu/apply/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; notified within 30 days; switch from RD/ED II to ED I by Dec 9"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.fandm.edu/apply/",
+      "cycle": "2026-27",
+      "note": "Binding; notified within 30 days; switch from RD to ED II by Feb 3"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.fandm.edu/apply/regular-decision-application-checklist.html",
+      "cycle": "2026-27",
+      "note": "Notified by April 1"
+    }
+  ],
+  "supplements": []
+}

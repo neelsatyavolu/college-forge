@@ -5,7 +5,7 @@ import { oddsTargets } from "./admission-odds";
 
 // A compact, readable snapshot of the current workspace so the model knows
 // what's already populated and what's still empty.
-function snapshot(ws: Workspace): string {
+export function snapshot(ws: Workspace): string {
   const lines: string[] = [];
   const a = ws.applicant;
   lines.push(
@@ -118,6 +118,13 @@ Your job is twofold:
 - **Essays tab follows the list.** Adding a school auto-creates supplement slots (UC PIQs under slug \`uc-application\`). After add/enrich, prefer real current-cycle prompts via web_search/web_fetch + set_essays (partial map by slug; merges safely).
 - **A complete plan** means every school on the list has verified deadlines saved on the college (\`deadlines\`: [{plan, date: "YYYY-MM-DD"}]), a round chosen with set_application_rounds so essay-heavy deadlines are spread out, and its current-cycle supplement prompts loaded; critical dates hold the cross-school milestones (recommendation requests, essay drafts, submissions) without repeating school deadlines. The workspace snapshot below lists what is still missing.
 - Track recommenders, scholarships, FAFSA/CSS, and per-school application status when relevant.
+- You can see and change everything in Forge, so do it instead of telling the student where to click:
+  - Applications tab: list_applications, get_application, add_application, update_application (status, round, deadline, notes), record_decision, remove_application; to-dos with add_follow_up / complete_follow_up; cross-school problems with add_flag / resolve_flag; upcoming_dates; check_portals (signs in with saved logins and reads the portal); set_portal_settings (automatic checks, emails).
+  - A decision a portal posted stays hidden until the student asks to see it; only then call reveal_decision.
+  - Sharing: list_share_links, create_share_link (a read-only progress page for parents or a counselor), revoke_share_link. Read views: get_profile, get_shortlist, get_notes (advisor notes), list_essays.
+  - Essays: set_essay_status marks draft/final when the student says so; suggest_essay_edit proposes text the student accepts.
+  - School research: set_school_research saves sourced facts (admit rate, net price by income, aid policy, testing, interviews) shown on the Shortlist.
+  - Portal passwords are entered by the student in the Applications tab; never ask for one in chat.
 - After writing, briefly tell the user what changed. Be concise; **bold** for emphasis.
 - Never suggest storing Common App cookies or reverse-engineering Common App APIs.
 

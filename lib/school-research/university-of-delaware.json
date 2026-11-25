@@ -1,0 +1,33 @@
+{
+  "slug": "university-of-delaware",
+  "name": "University of Delaware",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "72.6% (29,745 of 40,943; Fall 2025 entry, CDS 2025-26)", "sourceUrl": "https://ire.udel.edu/files/2026/10/CDS2526_UDelaware.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1240-1390 (Fall 2025 enrolled, CDS 2025-26)", "sourceUrl": "https://ire.udel.edu/files/2026/10/CDS2526_UDelaware.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "27-32 (Fall 2025 enrolled, CDS 2025-26)", "sourceUrl": "https://ire.udel.edu/files/2026/10/CDS2526_UDelaware.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "Average HS GPA 3.90 for enrolled first-years (CDS 2025-26 C12). Admissions page: admitted mid-50% GPA 3.68-4.22; Honors admits 4.24-4.51 GPA, 1350-1460 SAT", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional for all applicants; choose on the application whether scores are considered. Superscores the SAT; takes highest ACT composite. Self-reported scores accepted", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No. Average 67.0% of need met for first-year aid recipients (CDS 2025-26 H2). Delaware residents: First State Promise covers tuition, fees, housing and food under $35k family income; full tuition and fees for $35k-$75k", "sourceUrl": "https://ire.udel.edu/files/2026/10/CDS2526_UDelaware.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; FAFSA only (school code 001431). Need-based aid evaluated through the May 1 decision deadline", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/financing-your-degree/out-of-state-freshmen", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes, no separate application: every freshman application is reviewed for merit (with or without scores) if received by Nov 1 (EA) or Jan 15. Typical awards: Trustee $16-17k, Presidential $14-16k, Provost $10-15k, Delaware Scholar $8-10k per year", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/financing-your-degree/out-of-state-freshmen", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$10,901 (2023-24, in-state aided first-years)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130943", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$10,099 (2023-24, in-state)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130943", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$13,225 (2023-24, in-state)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130943", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$17,401 (2023-24, in-state)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130943", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$25,580 (2023-24, in-state; out-of-state families pay much more)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=130943", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "2026-27 on campus (Newark): in-state $39,154 total ($18,290 tuition & fees); out-of-state $65,884 total ($45,020 tuition & fees)", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/financing-your-degree/out-of-state-freshmen", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Early Action Nov 1 (nonbinding; also the Honors College deadline); no Early Decision. Regular priority deadline Jan 15", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "No interviews in the admissions process", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')", "sourceUrl": "https://ire.udel.edu/files/2026/10/CDS2526_UDelaware.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "Admission is to a major; applicants may be placed in University Studies if the major is full or requirements unmet. Engineering, CS and most Lerner business majors require precalculus by graduation. Nursing has an earlier Dec 1 deadline; School of Music requires an audition (priority Dec 1). Honors College: apply EA by Nov 1, invitations by late January", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No school-specific supplemental essays: the checklist asks only for the Common or Coalition application essay, STARS self-reported grades (required), optional 1-2 recommendations and a $75 fee", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "cycle": "2026-27", "note": "Also Honors College deadline; decisions by Jan 31" },
+    { "plan": "Priority", "date": "2026-12-01", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "cycle": "2026-27", "note": "Nursing deadline and School of Music priority deadline" },
+    { "plan": "RD", "date": "2027-01-15", "sourceUrl": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions", "cycle": "2026-27", "note": "Regular admission priority deadline; decisions by mid-March" }
+  ],
+  "supplements": []
+}

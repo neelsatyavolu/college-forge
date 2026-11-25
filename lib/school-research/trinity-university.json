@@ -1,0 +1,35 @@
+{
+  "slug": "trinity-university",
+  "name": "Trinity University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "25% (11,902 applications; Class of 2029, Fall 2025, per Trinity). IPEDS Fall 2024: 26% of 12,506", "sourceUrl": "https://www.trinity.edu/news/welcome-class-2029", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "No composite range published; Fall 2024 sections 680-750 reading/writing, 660-750 math (29% submitted). Class of 2029 average SAT 1417", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=229267", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "act_mid50", "value": "31-34 (Fall 2024 enrollees, 14% submitted; IPEDS). Class of 2029 mean ACT 32.2", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=229267", "checkedAt": "2026-11-25", "cycle": "2024-25", "thirdParty": false },
+    { "key": "gpa_note", "value": "Class of 2029 average GPA 3.74 unweighted; Trinity recalculates GPA on an unweighted scale", "sourceUrl": "https://www.trinity.edu/news/welcome-class-2029", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional; homeschooled applicants without scores may need an interview", "sourceUrl": "https://trinity.edu/admissions/apply/application-review", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No full-need pledge on Trinity's site; 2025-26 data show 98% of need met on average for first-years, 100% of aid recipients fully met (CollegeData)", "sourceUrl": "https://www.collegedata.com/college-search/trinity-university/money-matters", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": true },
+    { "key": "css_profile", "value": "CSS Profile (code 6831) required for Trinity need-based aid, plus FAFSA; submit by your admission deadline", "sourceUrl": "https://trinity.edu/admissions/aid/application", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; all applicants automatically considered for $12,000-$35,000/yr merit scholarships; up to 25 full-tuition Trinity Tower awards (by invitation) and full-tuition Semmes STEM scholarship; talent awards (music, theatre, art) need extra steps", "sourceUrl": "https://trinity.edu/admissions/aid/types/scholarships", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$10,356 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=229267", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$13,260 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=229267", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$14,305 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=229267", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$22,134 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=229267", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$34,549 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=229267", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$77,846 COA 2026-27 (tuition & fees $59,280, food & housing $16,166, books $1,000, personal/transport $1,400)", "sourceUrl": "https://trinity.edu/admissions/aid/tuition/coa", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "ED I (Nov 1, binding), EA (Nov 1, non-binding), ED II (Feb 1, binding), RD (Feb 1). ED admit rate is nearly twice the overall rate; early aid estimate available before applying ED", "sourceUrl": "https://trinity.edu/admissions/apply/early-decision", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Optional admissions interview (may be required for homeschoolers without scores)", "sourceUrl": "https://trinity.edu/admissions/apply/requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Considered: Trinity says it considers your engagement (visit, interview, counselor conversations), and calls applying ED an important signal", "sourceUrl": "https://trinity.edu/admissions/apply/application-review", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "major_notes", "value": "No major-specific admission described; one application (Common App, ApplyTexas or Coalition) covers admission and merit scholarships", "sourceUrl": "https://trinity.edu/admissions/apply/requirements", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No supplemental essays and no application fee. Requires personal essay, one teacher evaluation and counselor rec; optional activities resume.", "sourceUrl": "https://trinity.edu/admissions/apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Trinity does not publish a Common Data Set on its site, so admit rate and scores come from Trinity news and IPEDS; no ED admit rate count published (32% of the Class of 2029 applied ED).", "sourceUrl": "https://trinity.edu/institutional-research/data", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-01", "sourceUrl": "https://trinity.edu/admissions/apply", "cycle": "2026-27", "note": "ED I, binding; decision Dec 1; deposit Jan 15" },
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://trinity.edu/admissions/apply", "cycle": "2026-27", "note": "Non-binding; decision Dec 15" },
+    { "plan": "ED2", "date": "2027-02-01", "sourceUrl": "https://trinity.edu/admissions/apply", "cycle": "2026-27", "note": "Binding; decision Mar 1; deposit Mar 15" },
+    { "plan": "RD", "date": "2027-02-01", "sourceUrl": "https://trinity.edu/admissions/apply", "cycle": "2026-27", "note": "Decision Mar 15" }
+  ],
+  "supplements": []
+}

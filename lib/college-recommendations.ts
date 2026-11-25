@@ -4,6 +4,27 @@ import type { College, Workspace } from "./store";
 import { US_NEWS_BY_SCORECARD_ID, type UsNewsCollege } from "./us-news-rankings";
 import { slugify, isTestOptionalNote } from "./colleges";
 import { actToSat } from "./act-concordance";
+import careerData from "../public/data/career-ranking.json";
+import { majorKeysOf, SWITCH_LABELS, type CareerData } from "./career-ranking";
+
+const CAREER = careerData as unknown as CareerData;
+const CAREER_BY_ID = new Map(CAREER.schools.map((s) => [s.id, s]));
+const MAJOR_LABEL = new Map(CAREER.meta.majors.map((m) => [m.key, m.label]));
+
+/**
+ * What Forge's career-ranking data says about the intended major at a college: whether it has
+ * graduates in any of the matching majors, and how hard it is to switch in (checked by hand for
+ * some colleges). Null when the college isn't in that data or the major is unrecognized.
+ */
+export function majorAccess(unitid: number, intended: string): { offered: boolean; hardSwitch: string | null } | null {
+  const school = CAREER_BY_ID.get(unitid);
+  const keys = majorKeysOf(intended);
+  if (!school || !keys.length || /^(undecided|exploring|not sure)$/i.test(intended.trim())) return null;
+  const offered = keys.filter((k) => school.tracks[k]);
+  if (!offered.length) return { offered: false, hardSwitch: null };
+  const hard = offered.find((k) => (school.switch?.lv?.[k] ?? 0) >= 3);
+  return { offered: true, hardSwitch: hard ? `${MAJOR_LABEL.get(hard) ?? hard}: ${SWITCH_LABELS[String(school.switch.lv[hard])]}` : null };
+}
 
 export type AcademicFit = {
   tier: College["tier"] | null;
@@ -34,6 +55,8 @@ export type StudentAcademics = {
   sat: number | null;
   satFromAct: boolean;
   testOptional: boolean;
+  /** The student reported a clear upward grade trend. */
+  trendUp: boolean;
   cautions: string[];
 };
 
@@ -42,8 +65,9 @@ export function studentAcademics(ws: Workspace): StudentAcademics {
   const cautions: string[] = [];
   const unweighted = numeric(ws.applicant.gpaUnweighted, 0, 4);
   const weighted = unweighted === null ? numeric(ws.applicant.gpaWeighted, 0, 6) : null;
-  const gpa = unweighted ?? (weighted === null ? null : Math.min(weighted, 4));
-  if (unweighted === null && weighted !== null) cautions.push(`Only a weighted GPA (${weighted}) is on file, so it is capped at 4.0 and compared as if unweighted. Add your unweighted GPA for a closer comparison.`);
+  // Weighted scales differ by school, so a weighted GPA is never compared with unweighted averages.
+  const gpa = unweighted;
+  if (unweighted === null && weighted !== null) cautions.push(`Only a weighted GPA (${weighted}) is on file. Weighted scales differ between high schools, so it isn't compared with colleges' unweighted averages; add your unweighted GPA.`);
   const testOptional = isTestOptionalNote(ws.applicant.satNote) || isTestOptionalNote(ws.profile.testing.satNote);
   if (testOptional) cautions.push("You marked testing as optional/not submitted, so stored SAT and ACT scores are ignored. Verify whether each college permits applying without scores.");
   const sat = numeric(ws.profile.testing.sat, 400, 1600) ?? numeric(ws.applicant.sat, 400, 1600);
@@ -51,8 +75,9 @@ export function studentAcademics(ws: Workspace): StudentAcademics {
   const act = numeric((ws.profile.testing as { act?: string }).act, 1, 36);
   const concorded = sat === null && act !== null ? actToSat(act) : null;
   if (!testOptional && concorded !== null) cautions.push(`Your ACT ${act} is compared as an SAT ${concorded}, using the published ACT/College Board concordance.`);
+  const trendUp = ws.applicant.gpaTrend === "up";
   return {
-    gpa, gpaFromWeighted: unweighted === null && gpa !== null,
+    gpa, gpaFromWeighted: false, trendUp,
     sat: testOptional ? null : sat ?? concorded, satFromAct: !testOptional && sat === null && concorded !== null,
     testOptional, cautions,
   };
@@ -89,6 +114,49 @@ function gpaFactor(school: UsNewsCollege, gpa: number | null): number | null {
   if (gpa === null || average === null) return null;
   if (gpa >= average + GPA_ABOVE_MARGIN) return ABOVE_FACTOR;
   if (gpa < average - GPA_BELOW_MARGIN) return BELOW_FACTOR;
+  return 1;
+}
+
+/**
+ * Whether a college is in realistic range to suggest automatically. A policy screen, fixed before
+ * looking at any list and identical for every college; not a calibrated probability. Colleges that
+ * admit under 15% need the student inside the reported middle 50% (SAT at or above the 25th percentile,
+ * unweighted GPA within 0.10 of the average); 15-35% allows half a middle-50% width below the 25th
+ * percentile and 0.25 below the GPA average. A missing comparison never counts as passing: with
+ * neither available, colleges under 35% aren't suggested. An ambitious student with a clear upward
+ * grade trend gets 0.10 more room on the GPA test only.
+ */
+export const GATE = { verySelective: 0.15, selective: 0.35, gpaMarginVery: 0.1, gpaMarginSelective: 0.25, satWidthsSelective: 0.5, trendRelief: 0.1 } as const;
+
+export function realismGate(school: UsNewsCollege, academics: StudentAcademics, ambitious: boolean): { ok: boolean; reason?: string; passedBecauseOfTrend?: boolean } {
+  const admit = school.admitRate;
+  if (admit === null || admit >= GATE.selective) return { ok: true };
+  const very = admit < GATE.verySelective;
+  const relief = ambitious && academics.trendUp ? GATE.trendRelief : 0;
+  const satComparable = satFactor(school, academics.sat) !== null;
+  const avg = comparableGpa(school);
+  const gpaComparable = academics.gpa !== null && avg !== null;
+  if (!satComparable && !gpaComparable) return { ok: false, reason: "No comparable GPA or test score for a college this selective." };
+  if (satComparable) {
+    const width = school.sat75! - school.sat25!;
+    const floor = very ? school.sat25! : school.sat25! - GATE.satWidthsSelective * width;
+    if (academics.sat! < floor) return { ok: false, reason: `SAT ${academics.sat} is below ${floor}.` };
+  }
+  if (gpaComparable) {
+    const strict = avg! - (very ? GATE.gpaMarginVery : GATE.gpaMarginSelective);
+    const floor = strict - relief;
+    if (academics.gpa! < floor - 1e-9) return { ok: false, reason: `Unweighted GPA ${academics.gpa} is below ${Math.round(floor * 100) / 100}.` };
+    if (academics.gpa! < strict - 1e-9) return { ok: true, passedBecauseOfTrend: true };
+  }
+  return { ok: true };
+}
+
+/** 0 when the student is at or above the middle of the college's reported range, 1 otherwise. */
+function academicBand(school: UsNewsCollege | undefined, academics: StudentAcademics): 0 | 1 {
+  if (!school) return 1;
+  if (satFactor(school, academics.sat) !== null) return academics.sat! >= (school.sat25! + school.sat75!) / 2 ? 0 : 1;
+  const avg = comparableGpa(school);
+  if (academics.gpa !== null && avg !== null) return academics.gpa >= avg ? 0 : 1;
   return 1;
 }
 
@@ -182,7 +250,7 @@ function listQuotas(prefs: Workspace["onboarding"]["listPrefs"]) {
 
 const money = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
 
-export function recommendColleges(ws: Workspace) {
+export function recommendColleges(ws: Workspace, options: { excludeOnList?: boolean } = {}) {
   const prefs = ws.onboarding.listPrefs as PrefsWithBudget | undefined;
   const codes = majorCodes(ws.profile.intended);
   const regions = (prefs?.regions || []).filter(r => r !== "any");
@@ -205,6 +273,12 @@ export function recommendColleges(ws: Workspace) {
     // Too long a shot for this ambition level. Saved choices remain untouched.
     if (hasAcademics && estimate !== null && estimate < minEstimate) return [];
     if (admissions && farBelowSatRange(admissions, academics.sat)) return [];
+    const gate = hasAcademics && admissions ? realismGate(admissions, academics, prefs?.ambition === "ambitious") : { ok: true };
+    if (!gate.ok) return [];
+    // Not suggested when Forge's career data shows no graduates in the student's major there.
+    const access = majorAccess(row.unitid, ws.profile.intended || "");
+    if (access && !access.offered) return [];
+    if (options.excludeOnList && ws.colleges.some(c => c.scorecardId === row.unitid || c.slug === (admissions?.slug || slugify(row.institution)))) return [];
     const overBudget = budget !== null && row.net_price != null && row.net_price > budget;
     if (overBudget && base.tier === "safety") return [];
     const inRegion = !regions.length || regions.some(r => REGIONS[r]?.includes(row.state));
@@ -222,6 +296,7 @@ export function recommendColleges(ws: Workspace) {
     const cautions = [
       ...base.cautions,
       ...(!major && codes.size ? ["No published earnings for a matching major at this college. This does not mean the program is absent or weak; verify its curriculum."] : []),
+      ...(access?.hardSwitch ? [`Getting into ${access.hardSwitch.split(":")[0]} here is ${access.hardSwitch.split(": ")[1]} for students who don't start in it. Apply to the major directly if the college allows it.`] : []),
       ...(!row.location_observed ? ["Where graduates work (used for cost of living) is modeled for this institution, not observed."] : []),
       ...(overBudget ? [`Average net price ${money(row.net_price!)} is above your budget of ${money(budget!)} a year. Run this college's net price calculator.`] : []),
     ];
@@ -238,7 +313,10 @@ export function recommendColleges(ws: Workspace) {
     };
     const adjustedEarnings = row.typical_earnings != null && row.rpp_grad != null ? Math.round(row.typical_earnings / (row.rpp_grad / 100)) : null;
     const score = row.score_partial * 0.75 + (major ? 25 * (1 - (major.rank - 1) / major.of) : 0);
-    return [{ college, fit, score, matchesPrefs: inRegion && inSetting, inStatePublic: inState && isPublic,
+    // Targets and likely schools where the student sits in the upper half of the range come first.
+    const band = base.tier === "reach" ? 0 : academicBand(admissions, academics);
+    if (gate.passedBecauseOfTrend) reasons.push(`Suggested because you reported a clear upward grade trend: it relaxed Forge's GPA screen for this college by ${GATE.trendRelief.toFixed(2)}. Your cumulative GPA is still below its typical range.`);
+    return [{ college, fit, score, band, matchesPrefs: inRegion && inSetting, inStatePublic: inState && isPublic,
       onList: ws.colleges.some(c => c.scorecardId === row.unitid || c.slug === college.slug), evidence: {
       fairRank: row.rank_partial, rankLow: row.rank_partial_low, rankHigh: row.rank_partial_high,
       careerScore: row.score_partial, adjustedEarnings,
@@ -246,7 +324,7 @@ export function recommendColleges(ws: Workspace) {
       major,
       scorecardUrl: `https://collegescorecard.ed.gov/school/?${row.unitid}`,
     }}];
-  }).sort((a,b) => b.score - a.score || a.college.scorecardId! - b.college.scorecardId!);
+  }).sort((a,b) => a.band - b.band || b.score - a.score || a.college.scorecardId! - b.college.scorecardId!);
   type Candidate = (typeof candidates)[number];
   const { count, goals } = listQuotas(prefs);
   const preferred = candidates.filter(c => c.matchesPrefs);
@@ -286,10 +364,10 @@ export function recommendColleges(ws: Workspace) {
   if (hasAcademics && !selected.some(c => c.fit.tier === "safety")) limitations.push("No likely option could be supported by the available evidence. Broaden your search and verify a financially workable safer choice.");
   return {
     generatedAt: rankings.generated,
-    methodology: "Each college gets one planning estimate: its overall admission rate × an SAT factor (1.25 at or above the 75th percentile, 1.0 inside the middle 50%, 0.6 below the 25th) × a GPA factor (1.25 at 0.15 above the reported unweighted average, 0.6 more than 0.3 below it). The same constants apply to every college. Reach: estimate under 25% or admission under 20%. Likely: estimate 60% or more at a college admitting at least 50% (75% when there is nothing to compare). Ambition sets the minimum estimate to be suggested (2%, 4% or 8%) and the category mix. A college is not suggested when your SAT is more than 1.5 middle-50% widths below its 25th percentile (Tukey's outlier fence). Within each category, sort by 75% of the career-outcomes score with a half cost-of-living adjustment (0–100) + up to 25 points for where the intended major ranks among colleges with published earnings. Region and campus-setting choices filter the pool. A budget removes likely colleges above it and flags the rest. The estimate is not an admission probability.",
+    methodology: "Each college gets one planning estimate: its overall admission rate × an SAT factor (1.25 at or above the 75th percentile, 1.0 inside the middle 50%, 0.6 below the 25th) × a GPA factor (1.25 at 0.15 above the reported unweighted average, 0.6 more than 0.3 below it). The same constants apply to every college. Reach: estimate under 25% or admission under 20%. Likely: estimate 60% or more at a college admitting at least 50% (75% when there is nothing to compare). Ambition sets the minimum estimate to be suggested (2%, 4% or 8%) and the category mix. A college is not suggested when your SAT is more than 1.5 middle-50% widths below its 25th percentile (Tukey's outlier fence). Selective colleges also need you in realistic range: under 15% admission, an SAT at or above the 25th percentile and an unweighted GPA within 0.10 of the average; 15–35%, an SAT no more than half a middle-50% width below the 25th percentile and a GPA within 0.25; with neither comparison available they aren't suggested. An ambitious student with a clear upward grade trend gets 0.10 more room on the GPA test. A weighted GPA is never compared with unweighted averages. Colleges that Forge's career data shows with no graduates in your intended major aren't suggested. Within the target and likely categories, colleges where your scores sit in the upper half of the reported range come first. Within each group, sort by 75% of the career-outcomes score with a half cost-of-living adjustment (0–100) + up to 25 points for where the intended major ranks among colleges with published earnings. Region and campus-setting choices filter the pool. A budget removes likely colleges above it and flags the rest. The estimate is not an admission probability.",
     sources: [{label:"Ranking data and sources",url:"/data/rankings/sources.md"},{label:"Methodology limitations",url:"/data/rankings/DISCLOSURE.md"},{label:"US Department of Education College Scorecard",url:"https://collegescorecard.ed.gov/data/"},{label:"UC testing policy",url:"https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/filling-out-the-application.html"}],
     limitations, profileGaps, gaps,
-    recommendations: selected.map(({score: _score, matchesPrefs: _matches, inStatePublic: _local, ...row}) => row),
+    recommendations: selected.map(({score: _score, band: _band, matchesPrefs: _matches, inStatePublic: _local, ...row}) => row),
   };
 }
 
@@ -321,7 +399,8 @@ export function isSeededRow(c: College): boolean {
 export function seedRecommendedColleges(ws: Workspace, options: { keepUserSchools?: boolean } = {}): { colleges: College[]; gaps: ListGap[] } {
   const kept = options.keepUserSchools ? ws.colleges.filter(c => !isSeededRow(c)) : ws.colleges;
   const { count: desired, goals } = listQuotas(ws.onboarding.listPrefs);
-  const suggestions = recommendColleges({ ...ws, colleges: kept }).recommendations.filter(r => !r.onList);
+  // Saved schools are left out before each category is cut to size, so they never use up its slots.
+  const suggestions = recommendColleges({ ...ws, colleges: kept }, { excludeOnList: true }).recommendations;
   const tierOf = (c: College) => {
     const school = c.scorecardId ? US_NEWS_BY_SCORECARD_ID.get(c.scorecardId) : undefined;
     return school ? assessAcademicFit(school, ws).tier : c.tier;

@@ -1,0 +1,38 @@
+{
+  "slug": "university-of-rochester",
+  "name": "University of Rochester",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "41.9% (9,056 of 21,609; Class of 2029, CDS 2025-26)", "sourceUrl": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "41.8% ED (472 of 1,129; ED I and ED II combined, CDS 2025-26)", "sourceUrl": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1400-1510 enrolled (15.7% submitted SAT; CDS 2025-26)", "sourceUrl": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "31-34 enrolled (6.4% submitted ACT; CDS 2025-26)", "sourceUrl": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "Average HS GPA 3.73 (unweighted basis not stated); 84.6% in top tenth, 95.1% in top quarter of class (CDS 2025-26)", "sourceUrl": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional (or 'test-flexible': SAT, ACT, AP, IB and other exams count); choose on the Rochester questions; can't switch to test-optional after the deadline. Superscores within SAT or ACT", "sourceUrl": "https://admissions.rochester.edu/applying/testing-policies", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "Nearly; average 97% of need met for first-years, 688 of 750 with need fully met (CDS 2025-26 H2). Need-based aid includes loans and work study", "sourceUrl": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "css_profile", "value": "Required with FAFSA (both biological parents if divorced/separated). Due Dec 1 (ED I), Jan 5 (ED II), Feb 15 (RD)", "sourceUrl": "https://www.rochester.edu/financial-aid/prospective-undergraduates", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; all admitted applicants considered automatically, no separate form; about 75% of admits got merit for 2026-27, average about $20,000. Apply by Dec 1 priority scholarship deadline for highest consideration", "sourceUrl": "https://www.rochester.edu/financial-aid/scholarships", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$96,022 total 2026-27 COA for residential students (tuition $71,750, fees $1,622, housing $12,822, plus food and other items); textbooks included in tuition", "sourceUrl": "https://www.rochester.edu/financial-aid/undergraduate-tuition-expenses", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Binding ED I (Nov 1, decision mid-Dec) and ED II (Jan 5, decision early Feb); nonbinding priority scholarship deadline Dec 1 (decision late Feb); RD Jan 5 (decision Apr 1). No EA", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Strongly recommended, especially for merit; with staff, a student or alumni. Alumni interviews can be requested Aug-Sep and early Nov through Jan 7. Interview rated 'important' (CDS 2025-26 C7)", "sourceUrl": "https://admissions.rochester.edu/applying/interviewing", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Considered: 'important' (CDS 2025-26 C7)", "sourceUrl": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "Combined degree programs need a program choice and short extra essay: REMS (BA/MD) due Nov 15; BMP, GEAR, GRADE, HEAL follow ED I/ED II/RD dates. CDPs not available for spring entry", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Supporting materials may follow the app: ED I by Nov 25, ED II by Jan 15, RD by Feb 5. ED admits get housing and registration priority", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$9,678 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195030", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$12,185 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195030", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$21,087 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195030", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$27,883 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195030", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$46,801 (2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=195030", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-01", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "cycle": "2026-27", "note": "ED I, binding; CSS Profile and FAFSA due Dec 1" },
+    { "plan": "REMS", "date": "2026-11-15", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "cycle": "2026-27", "note": "Rochester Early Medical Scholars combined degree" },
+    { "plan": "Priority", "date": "2026-12-01", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "cycle": "2026-27", "note": "Nonbinding priority scholarship deadline" },
+    { "plan": "ED2", "date": "2027-01-05", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "cycle": "2026-27", "note": "Binding; CSS Profile and FAFSA due Jan 5" },
+    { "plan": "RD", "date": "2027-01-05", "sourceUrl": "https://admissions.rochester.edu/applying/dates-and-deadlines", "cycle": "2026-27", "note": "CSS Profile and FAFSA due Feb 15" }
+  ],
+  "supplements": [
+    { "label": "Rochester supplemental essay", "prompt": "The University of Rochester is a place where curiosity and creativity meet. How will you combine our academic flexibility and co-curricular opportunities to create an experience that reflects your interests and ambitions?", "limit": 250, "unit": "words", "required": true, "sourceUrl": "https://admissions.rochester.edu/applying/how-to-apply", "cycle": "2026-27" }
+  ]
+}

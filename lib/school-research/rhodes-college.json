@@ -1,0 +1,207 @@
+{
+  "slug": "rhodes-college",
+  "name": "Rhodes College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "49.3% (2,790 of 5,663; Fall 2026 entering class, CDS 2026-27).",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "44.5% ED I + ED II combined (177 of 398; Fall 2026, CDS 2026-27)",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1320-1470 (Fall 2026 enrollees who submitted; CDS 2026-27)",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "29-33 (Fall 2026 enrollees who submitted; CDS 2026-27)",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 3.71 (Fall 2026 entering class, CDS 2026-27)",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; scores superscored (no superscoring across old/new SAT); ACT without science accepted; self-reporting allowed",
+      "sourceUrl": "https://www.rhodes.edu/admission-aid/apply-rhodes/first-year-application-checklist",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No full-need pledge stated; first-year aid recipients had 87.8% of need met on average, 69 of 198 fully met (CDS 2026-27)",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "FAFSA required for aid; CSS Profile also accepted (not required). Aid deadlines: Nov 1 (ED I), Nov 15 (EA), Jan 15 (ED II), Jan 31 (RD)",
+      "sourceUrl": "https://www.rhodes.edu/admission-aid/cost-affordability/first-year-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes; all applicants considered automatically: Cambridge $45,000, Presidential $40,000, Founders and Hon $38,000, Diehl $36,000, Rhodes Award $20,000-$34,000, Tennessee Advantage $33,000 per year (not stackable). Some scholarships need separate applications",
+      "sourceUrl": "https://www.rhodes.edu/admission-aid/cost-affordability/rhodes-institutional-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$15,770 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221351",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$19,960 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221351",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$15,910 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221351",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$37,103 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221351",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$31,878 (2023-24, College Navigator)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=221351",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "About $78,000: tuition $60,240, fees $820, food & housing $15,196, books $1,200, transport $1,300 (CDS 2026-27 section G; official tuition page did not load)",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 1) and ED II (Jan 15), both binding; EA (Nov 15, non-binding, not restrictive); RD Jan 15",
+      "sourceUrl": "https://rhodes.edu/admission-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional; on campus or with traveling staff; no alumni interviews. Optional 90-second InitialView Elevator Pitch video. CDS: interview 'Considered'",
+      "sourceUrl": "https://www.rhodes.edu/admission-aid/admission-faqs",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2026-27 C7)",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission; some named scholarships (e.g. art/music, Bonner, physics) need separate applications",
+      "sourceUrl": "https://www.rhodes.edu/admission-aid/cost-affordability/rhodes-institutional-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No Rhodes-specific supplemental essay on the checklist: Common App with personal essay, transcript, school report and counselor rec, one to three teacher recs; RD applicants send a mid-year report.",
+      "sourceUrl": "https://www.rhodes.edu/admission-aid/apply-rhodes/first-year-application-checklist",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Rhodes has already posted its CDS 2026-27 (Fall 2026 class), newer than most schools. Its SAT/ACT submission percentages show a spreadsheet error (#REF!).",
+      "sourceUrl": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://rhodes.edu/admission-aid",
+      "cycle": "2026-27",
+      "note": "ED I, binding; FAFSA/CSS by Nov 1; aid notice Nov 15"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-15",
+      "sourceUrl": "https://rhodes.edu/admission-aid",
+      "cycle": "2026-27",
+      "note": "Non-binding; FAFSA/CSS by Nov 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://rhodes.edu/admission-aid",
+      "cycle": "2026-27",
+      "note": "Binding"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://rhodes.edu/admission-aid",
+      "cycle": "2026-27",
+      "note": "Aid forms by Jan 31; mid-year report required"
+    }
+  ],
+  "supplements": []
+}

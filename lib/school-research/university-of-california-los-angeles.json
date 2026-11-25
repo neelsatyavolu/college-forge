@@ -1,0 +1,286 @@
+{
+ "slug": "university-of-california-los-angeles",
+ "name": "University of California, Los Angeles",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "9.4% (13,659 of 145,086; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/ucla/2025-26/34ebd833ddc8493ba28d7a1fd1953621fddcbc1e233cc418bbe046b42b151e70.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "Not reported: UCLA does not consider SAT/ACT",
+   "sourceUrl": "https://admission.ucla.edu/apply/first-year/first-year-requirements",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "Not reported: UCLA does not consider SAT/ACT",
+   "sourceUrl": "https://admission.ucla.edu/apply/first-year/first-year-requirements",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average HS GPA 3.94 (CDS 2025-26 C12)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/ucla/2025-26/34ebd833ddc8493ba28d7a1fd1953621fddcbc1e233cc418bbe046b42b151e70.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-free: SAT/ACT not considered for admission or scholarships; may be used for eligibility or placement",
+   "sourceUrl": "https://admission.ucla.edu/apply/first-year/first-year-requirements",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No 100%-of-need pledge. UC Blue and Gold: most California families earning up to $100,000 get enough gift aid to cover UC tuition",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/tuition-financial-aid/types-of-aid/blue-and-gold-opportunity-plan.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA or California Dream Act Application by March 2 priority deadline",
+   "sourceUrl": "https://admission.ucla.edu/tuition-aid/financial-aid-and-scholarships",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Some merit scholarships; admitted students get priority if they complete the UCLA Scholarship Application within two weeks of decisions",
+   "sourceUrl": "https://financialaid.ucla.edu/types-of-aid/scholarships",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$5,579 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110662",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$6,682 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110662",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$9,811 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110662",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$14,142 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110662",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$29,682 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=110662",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 residence hall budget: $45,500 California residents; $84,770 nonresidents (adds $39,270 nonresident supplemental tuition)",
+   "sourceUrl": "https://admission.ucla.edu/tuition-aid/tuition-fees",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "No early action or early decision; UC application due Nov 30",
+   "sourceUrl": "https://admission.ucla.edu/apply/first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No admission interviews; letters of recommendation not required or accepted",
+   "sourceUrl": "https://admission.ucla.edu/apply/first-year/first-year-requirements",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/ucla/2025-26/34ebd833ddc8493ba28d7a1fd1953621fddcbc1e233cc418bbe046b42b151e70.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Reviewed for one major only (UC alternate major not used). Letters & Science: major choice doesn't affect chances. Arts, architecture, music, film/TV, theater, dance, games, nursing need department supplemental applications (deadlines Dec 4, 2026 to Jan 20, 2027).",
+   "sourceUrl": "https://admission.ucla.edu/apply/supplemental-applications",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "UCLA reviews first-year applicants for one major only; many apply as undeclared",
+   "sourceUrl": "https://admission.ucla.edu/apply/first-year/choosing-major",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "UC Personal Insight Questions: answer any 4 of the 8, max 350 words each.",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "RD",
+   "date": "2026-11-30",
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/dates-and-deadlines.html",
+   "cycle": "2026-27",
+   "note": "UC application filing period Oct 1-Nov 30; no ED/EA"
+  },
+  {
+   "plan": "Supplemental",
+   "date": "2026-12-04",
+   "sourceUrl": "https://admission.ucla.edu/apply/supplemental-applications",
+   "cycle": "2026-27",
+   "note": "Music majors' supplemental application (department)"
+  },
+  {
+   "plan": "Supplemental",
+   "date": "2026-12-07",
+   "sourceUrl": "https://admission.ucla.edu/apply/supplemental-applications",
+   "cycle": "2026-27",
+   "note": "Film and Television, Theater supplemental application"
+  },
+  {
+   "plan": "Supplemental",
+   "date": "2026-12-15",
+   "sourceUrl": "https://admission.ucla.edu/apply/supplemental-applications",
+   "cycle": "2026-27",
+   "note": "Computational Art, Dance, Games, World Arts and Cultures"
+  },
+  {
+   "plan": "Supplemental",
+   "date": "2027-01-15",
+   "sourceUrl": "https://admission.ucla.edu/apply/supplemental-applications",
+   "cycle": "2026-27",
+   "note": "Nursing supplemental application"
+  },
+  {
+   "plan": "Supplemental",
+   "date": "2027-01-20",
+   "sourceUrl": "https://admission.ucla.edu/apply/supplemental-applications",
+   "cycle": "2026-27",
+   "note": "Architectural Studies, Art"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "PIQ 1: Leadership",
+   "prompt": "Describe an example of your leadership experience in which you have positively influenced others, helped resolve disputes or contributed to group efforts over time.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 2: Creativity",
+   "prompt": "Every person has a creative side, and it can be expressed in many ways: problem solving, original and innovative thinking, and artistically, to name a few. Describe how you express your creative side.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 3: Talent",
+   "prompt": "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 4: Educational opportunity or barrier",
+   "prompt": "Describe how you have taken advantage of a significant educational opportunity or worked to overcome an educational barrier you have faced.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 5: Challenge",
+   "prompt": "Describe the most significant challenge you have faced and the steps you have taken to overcome this challenge. How has this challenge affected your academic achievement?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 6: Academic subject",
+   "prompt": "Think about an academic subject that inspires you. Describe how you have furthered this interest inside and/or outside of the classroom.",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 7: Community",
+   "prompt": "What have you done to make your school or your community a better place?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "PIQ 8: Strong candidate",
+   "prompt": "Beyond what has already been shared in your application, what do you believe makes you a strong candidate for admissions to the University of California?",
+   "limit": 350,
+   "unit": "words",
+   "required": false,
+   "sourceUrl": "https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/personal-insight-questions.html",
+   "cycle": "2026-27"
+  }
+ ]
+}

@@ -1,0 +1,265 @@
+{
+  "slug": "massachusetts-institute-of-technology",
+  "name": "Massachusetts Institute of Technology",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "4.6% (1,334 of 29,281; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://ir.mit.edu/projects/2025-26-common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "EA: 6.0% (721 of 12,052 admitted in EA; 175 more deferred EA applicants admitted in RA; Class of 2029)",
+      "sourceUrl": "https://mitadmissions.org/apply/process/stats/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1520-1570 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://ir.mit.edu/projects/2025-26-common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-35 (enrolled Fall 2025, CDS C9)",
+      "sourceUrl": "https://ir.mit.edu/projects/2025-26-common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "GPA not reported (N/Av in CDS C11/C12); class rank 'Considered'",
+      "sourceUrl": "https://ir.mit.edu/projects/2025-26-common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: SAT or ACT. EA tests by the November test date, RA by the December test date; highest section scores considered (superscore)",
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/tests-scores/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Need-blind and meets full need for all applicants, including international; aid offers built so loans shouldn't be needed. Families under $200K typically pay no tuition; under $100K parents typically pay nothing",
+      "sourceUrl": "https://sfs.mit.edu/undergraduate-students/our-approach-to-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + IDOC tax documents required (FAFSA too for domestic); due Nov 30 for EA, Feb 15 for RA",
+      "sourceUrl": "https://sfs.mit.edu/undergraduate-students/apply-for-aid/deadlines-process/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit scholarships; MIT Scholarships are awarded solely on financial need",
+      "sourceUrl": "https://sfs.mit.edu/undergraduate-students/types-of-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$5,347 (2021-22; NCES shows no figure for 2022-23 or 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166683",
+      "checkedAt": "2026-11-25",
+      "cycle": "2021-22",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$93 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166683",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$1,480 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166683",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$11,555 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166683",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,479 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=166683",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$92,760 total COA 2026-27 (tuition $66,720; fee $420; housing $14,090; food $8,104; books $930; personal $2,496)",
+      "sourceUrl": "https://sfs.mit.edu/undergraduate-students/the-cost-of-attendance/annual-student-budget/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action (non-binding, not restrictive) due Nov 1, decisions mid-December; Regular Action due Jan 4. No ED. Apply once per year, EA or RA only",
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/deadlines-requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Interview with an alumni Educational Counselor offered when one is available, after you apply; if none is available it is waived without penalty. Rated 'Important' in CDS C7",
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/interview/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://ir.mit.edu/projects/2025-26-common-data-set/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Admission is to MIT in general; students choose a major at the end of first year. The 'course of interest' on the application has no impact on admission",
+      "sourceUrl": "https://mitadmissions.org/help/faq/majors/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "MIT uses its own application (not the Common App). Activities form lists only four activities. Optional creative portfolios via SlideRoom (research, arts, maker). Admitted/deferred students submit the February Updates & Notes (FUN) form with midyear grades",
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/deadlines-requirements/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-01",
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/deadlines-requirements/",
+      "cycle": "2026-27",
+      "note": "Non-binding; decisions mid-December. Financial aid docs due Nov 30"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/deadlines-requirements/",
+      "cycle": "2026-27",
+      "note": "Regular Action; decisions mid-March. Financial aid docs due Feb 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Field of study",
+      "prompt": "What field of study appeals to you the most right now? (Note: Applicants select from a drop-down list.) Reflect on what has led you to this interest.",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Doing something different",
+      "prompt": "While some reach their goals following well-trodden paths, others blaze their own trails achieving the unexpected. In what ways have you done something different than what was expected in your educational journey?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Problems to tackle",
+      "prompt": "How have your personal and academic experiences influenced the types of problems you would want to tackle with an MIT education and the impact you aim to make on your community?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Unexpected challenge",
+      "prompt": "How did you manage a situation or challenge that you didn't expect? What did you learn from it?",
+      "limit": 200,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short response: fun",
+      "prompt": "What do you do just for fun?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short response: someone you admire",
+      "prompt": "Who is someone you admire, whether you know them personally or look up to them from afar? Tell us why.",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short response: topic",
+      "prompt": "What's a topic, academic or non-academic, that you could talk about for hours?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Short response: generalist or specialist",
+      "prompt": "MIT values both “generalists” with varied interests and “specialists” who focus deeply on one or a few passions. Which do you think best describes you, and why?",
+      "limit": 50,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Additional information",
+      "prompt": "One final, open-ended, additional-information text box where you can tell us anything else you think we really ought to know.",
+      "required": false,
+      "sourceUrl": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/",
+      "cycle": "2026-27"
+    }
+  ]
+}

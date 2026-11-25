@@ -1,0 +1,210 @@
+{
+  "slug": "carleton-college",
+  "name": "Carleton College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "21.8% (1,480 of 6,796; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "34.6% ED (263 of 760; Fall 2025, CDS 2025-26; Fall and Winter ED combined)",
+      "sourceUrl": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1460-1530 (39% submitted SAT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-35 (25% submitted ACT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "77% in top 10% of HS class (31% reported rank); no GPA reported (CDS 2025-26)",
+      "sourceUrl": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Permanently test-optional (since 2025); self-report OK; score deadline Feb 1 (ED II) / Mar 1 (RD); TOEFL/IELTS/DET if not English-medium",
+      "sourceUrl": "https://www.carleton.edu/admissions/apply/steps/criteria/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need; no-loan for all starting 2027-28 (loans replaced by grants)",
+      "sourceUrl": "https://www.carleton.edu/admissions/apply/afford/debtfree/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile (both custodial and noncustodial parents) + FAFSA; due Nov 15 (Fall ED) or Jan 15 (Winter ED/RD); free for income up to $100k",
+      "sourceUrl": "https://www.carleton.edu/financial-aid/apply-for-aid/new-students/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Nearly all aid is need-based; Carleton prioritizes need over merit",
+      "sourceUrl": "https://www.carleton.edu/financial-aid/our-approach/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$7,881 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173258",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$8,203 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173258",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$9,680 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173258",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,485 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173258",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$44,082 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=173258",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$97,870 total cost of attendance 2026-27 ($94,980 comprehensive fee; tuition $75,186)",
+      "sourceUrl": "https://www.carleton.edu/financial-aid/cost/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Fall ED (Nov 15) and Winter ED (Jan 15), binding; no EA; QuestBridge (late Sept)",
+      "sourceUrl": "https://www.carleton.edu/admissions/apply/steps/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Optional; not required; offered summer after junior year through mid-January",
+      "sourceUrl": "https://www.carleton.edu/admissions/apply/steps/interview/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7 'Level of applicant's interest'; interview 'Considered')",
+      "sourceUrl": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No admission by major; students declare a major early in their sixth term (junior fall), not before",
+      "sourceUrl": "https://www.carleton.edu/handbook/academics/?printable=1",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Carleton Supplement form (separate from Common App) asks test-submission intent, alumni relatives and how you heard of Carleton, plus an optional 'Anything missing?' box",
+      "sourceUrl": "https://www.admissions.carleton.edu/register/supplement",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "250-word limit on the optional 'Anything missing?' response is from a third-party guide; Carleton has no required supplemental essays",
+      "sourceUrl": "https://www.ivycoach.com/the-ivy-coach-blog/college-essays/carleton-college-supplemental-essay-prompts/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": true
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.carleton.edu/admissions/apply/steps/",
+      "cycle": "2026-27",
+      "note": "Fall ED, binding; CSS Profile + FAFSA due same day; notification by Dec 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.carleton.edu/admissions/apply/steps/",
+      "cycle": "2026-27",
+      "note": "Winter ED, binding; aid documents due same day; notification by Feb 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://www.carleton.edu/admissions/apply/steps/",
+      "cycle": "2026-27",
+      "note": "Aid documents due same day; notification by Apr 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Anything missing? (optional)",
+      "prompt": "Anything missing? Do you want to share more with us? If so, use this space to fill any gaps you think would assist us in reviewing your application.",
+      "limit": 250,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://www.admissions.carleton.edu/register/supplement",
+      "cycle": "2026-27"
+    }
+  ]
+}

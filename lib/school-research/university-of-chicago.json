@@ -1,0 +1,240 @@
+{
+  "slug": "university-of-chicago",
+  "name": "University of Chicago",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "4.5% (2,039 of 45,533; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://bpb-us-w2.wpmucdn.com/voices.uchicago.edu/dist/8/2077/files/2026/08/CDS_2025-2026_to_publish-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1500-1560 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://bpb-us-w2.wpmucdn.com/voices.uchicago.edu/dist/8/2077/files/2026/08/CDS_2025-2026_to_publish-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-35 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://bpb-us-w2.wpmucdn.com/voices.uchicago.edu/dist/8/2077/files/2026/08/CDS_2025-2026_to_publish-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional with a 'no harm' policy (scores used only if they help); self-report allowed; SAT and ACT superscored. Accepts Oct ACT/Nov SAT for EA/ED I, Dec for ED II, Jan SAT/Feb ACT for RD",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/uchicago-admissions-faq/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets full demonstrated need of every admitted student with no loan expectation",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/financial-support/financial-overview/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile NOT accepted (no IDOC): submit the free UChicago Financial Aid Worksheet plus FAFSA. Aid deadline Nov 15 for EA/ED I",
+      "sourceUrl": "https://financialaid.uchicago.edu/undergraduate/the-application-process/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: merit scholarships awarded by committee from the admission application, regardless of need; automatic consideration, no separate application",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/financial-support/scholarships/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "About $100,089 billed for 2026-27 (tuition $75,960; first-year fees $2,715; food & housing $21,414) plus books $1,800 and transport $702 (CDS G1/G5)",
+      "sourceUrl": "https://bpb-us-w2.wpmucdn.com/voices.uchicago.edu/dist/8/2077/files/2026/08/CDS_2025-2026_to_publish-1.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Action (non-binding) and Early Decision I (binding) due Nov 2, 2026; Early Decision II (binding) and Regular Decision due Jan 4, 2027",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/application/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No on-campus or alumni interviews; optional (highly recommended) two-minute video profile, or a Glimpse/InitialView interview in its place",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/uchicago-admissions-faq/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Visits and engagement are not used: UChicago says it does not make decisions based on whether a student visited or engaged with its programming",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/what-decisions-mean/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major declared on admission; students may declare from week 8 of first-year Spring Quarter and must declare by the end of second year (sixth quarter)",
+      "sourceUrl": "http://collegecatalog.uchicago.edu/thecollege/programsofstudy/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Supplement: one required 'Why UChicago' essay plus one required extended essay chosen from the prompts listed. Aid deadlines: Nov 15 (EA/ED I), Jan 15 (ED II), Feb 15 (RD)",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/financial-support/financial-overview/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$958 (2021-22; NCES shows no figure for 2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=144050",
+      "checkedAt": "2026-11-25",
+      "cycle": "2021-22",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$914 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=144050",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$226 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=144050",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$12,602 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=144050",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,524 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=144050",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-11-02",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/application/",
+      "cycle": "2026-27",
+      "note": "Non-binding; decisions mid-December. Aid due Nov 15"
+    },
+    {
+      "plan": "ED",
+      "date": "2026-11-02",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/application/",
+      "cycle": "2026-27",
+      "note": "ED I, binding; decisions mid-December. Aid due Nov 15"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-04",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/application/",
+      "cycle": "2026-27",
+      "note": "Binding. Aid documents due Jan 15"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/application/",
+      "cycle": "2026-27",
+      "note": "Decisions late March; reply by May 1. Aid documents due Feb 15"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why UChicago",
+      "prompt": "How does the University of Chicago, as you know it now, satisfy your desire for a particular kind of learning, community, and future? Please address with some specificity your own wishes and how they relate to UChicago.",
+      "required": true,
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Extended essay (choose one): Food for thought",
+      "prompt": "Food for thought: How do thoughts eat?",
+      "required": false,
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Extended essay (choose one): Origami",
+      "prompt": "The James Webb Space Telescope, launched in 2021, utilized origami-inspired techniques to compactly store and deploy its sunshield in space. Choose an artistic practice and use its principles to propose an elegant solution to a problem.",
+      "required": false,
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Extended essay (choose one): Mixed metaphor",
+      "prompt": "Sometimes metaphors get mixed up. For one reason or another, one could say, “we'll burn that bridge when we get there” or “the world is your china shop”. Make up your own mixed metaphor. Explain how it could make sense, be understood, or even applied.",
+      "required": false,
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Extended essay (choose one): Mundane Olympics",
+      "prompt": "The Olympics have long celebrated the pinnacle of human athletic achievement. But what if they expanded to honor the mundane? Imagine a new Olympic event built around an everyday activity like speed dishwashing or competitive grocery bagging. How is it scored, officiated, and judged? Why is it a worthy addition?",
+      "required": false,
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Extended essay (choose one): Mistaken acronym",
+      "prompt": "AI: Allen Iverson. NASA, or the North American Saxophone Alliance. Share a potentially confounding, comedic, or captivating example of MIA (Mistaken Identity of Acronym) and tell us its backstory.",
+      "required": false,
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Extended essay (choose one): Choose your own",
+      "prompt": "And, as always… the classic choose your own adventure option! In the spirit of adventurous inquiry, choose one of our past prompts (or create a question of your own). Be original, creative, thought provoking. Draw on your best qualities as a writer, thinker, visionary, social critic, sage, citizen of the world, or future citizen of the University of Chicago; take a little risk, and have fun!",
+      "required": false,
+      "sourceUrl": "https://collegeadmissions.uchicago.edu/apply/essay/",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ]
+}

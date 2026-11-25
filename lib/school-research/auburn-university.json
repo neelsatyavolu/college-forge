@@ -1,0 +1,214 @@
+{
+  "slug": "auburn-university",
+  "name": "Auburn University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "46.9% (27,724 of 59,121; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://auburn.edu/administration/ir/common-data-set/2025/section-c.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1280-1370 (enrolled Fall 2025; 19% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://auburn.edu/administration/ir/common-data-set/2025/section-c.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "26-31 (enrolled Fall 2025; 72% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://auburn.edu/administration/ir/common-data-set/2025/section-c.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "Average HS GPA 4.10 (Fall 2025, CDS 2025-26); admissions lists a middle-50% GPA of 3.87-4.33",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-required: official ACT/SAT scores (sent by the testing agency) are required for a complete application. Superscores ACT and SAT",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "No; average 60% of need met for first-year aid recipients (CDS 2025-26 H2)",
+      "sourceUrl": "https://auburn.edu/administration/ir/common-data-set/2025/section-h.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Not required; FAFSA only (CDS 2025-26 H). FAFSA and AUSOM scholarship application priority deadline Feb 12, 2027",
+      "sourceUrl": "https://auburn.edu/administration/ir/common-data-set/2025/section-h.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: automatic competitive merit for students admitted early action, based on HS GPA and ACT/SAT superscore; Fall 2027 resident chart $3,000-$12,000/yr (e.g. Presidential $12,000 at 3.5 GPA + ACT 33-36). Separate non-resident chart. File must be complete with scores by Dec 1",
+      "sourceUrl": "https://auburn.edu/scholarship/undergraduate/competitive-merit.php",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 on campus: $39,516 Alabama resident (tuition/fees $13,572), $63,540 non-resident (tuition/fees $37,596); includes housing/food $18,424, books $1,200, personal $3,088, transport $3,232. Extra professional fees for business, engineering, nursing, interior design and more",
+      "sourceUrl": "https://htmlscript.auburn.edu/administration/finaid/_assets/pdf/26-27_cost.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Non-binding Early Action in rounds: Sep 15, Oct 15, Nov 15, and final Dec 1 (decision early February); Regular Decision Feb 1 (early March). Scholarship consideration requires a complete file by an EA round. No ED",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://auburn.edu/administration/ir/common-data-set/2025/section-c.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Important (CDS 2025-26 C7); optional personal statement invites applicants to describe their connection to Auburn",
+      "sourceUrl": "https://auburn.edu/administration/ir/common-data-set/2025/section-c.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Architecture/Design/Construction carry higher tuition; business, engineering, nursing, interior design and hospitality charge professional fees. Undecided students can enter as Exploratory",
+      "sourceUrl": "https://htmlscript.auburn.edu/administration/finaid/_assets/pdf/26-27_cost.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Early Action applications get a preliminary academic review (rigor, GPA, tests, in-state/out-of-state mix); Regular Decision gets a comprehensive review. Optional personal statement, activities form and academic letters",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No required supplemental essays; the personal statement is optional (topics: experiences, goals, community, character, connection to Auburn)",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$19,536 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?100858",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$19,065 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?100858",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$21,665 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?100858",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$25,366 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?100858",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$30,726 average net price (in-state), federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?100858",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "EA",
+      "date": "2026-09-15",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "cycle": "2026-27",
+      "note": "Round 1; decision mid-October"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-10-15",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "cycle": "2026-27",
+      "note": "Round 2; decision mid-November"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "cycle": "2026-27",
+      "note": "Round 3; decision mid-December"
+    },
+    {
+      "plan": "EA",
+      "date": "2026-12-01",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "cycle": "2026-27",
+      "note": "Final EA round; file and official scores needed for merit; decision early February"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-02-01",
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "cycle": "2026-27",
+      "note": "Decision early March; FAFSA/AUSOM priority Feb 12"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Personal Statement (optional)",
+      "prompt": "Your personal statement is your chance to show us who you are. In your statement, you can share: Personal Experiences and Journey; Aspirations and Motivations; Community Contributions; Character and Values; Connection to Auburn.",
+      "required": false,
+      "sourceUrl": "https://www.auburn.edu/admissions/prospective-students/freshmen",
+      "cycle": "2026-27"
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "slug": "davidson-college",
+  "name": "Davidson College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "12.6% (1,127 of 8,933; Fall 2025 entering class, CDS 2025-26)",
+      "sourceUrl": "https://www.davidson.edu/media/9718/download?attachment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "29% ED (358 of 1,232; CDS 2025-26 C21, ED I and II combined; form row is labeled 'Fall 2024 entering class')",
+      "sourceUrl": "https://www.davidson.edu/media/9718/download?attachment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1410-1500 (25% submitted SAT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.davidson.edu/media/9718/download?attachment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "32-34 (24% submitted ACT; Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://www.davidson.edu/media/9718/download?attachment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "gpa_note",
+      "value": "80% of enrolled first-years in top tenth of HS class (CDS 2025-26 C10)",
+      "sourceUrl": "https://www.davidson.edu/media/9718/download?attachment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional; self-report OK; writing sections not considered; enrolling students send official scores",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/admission-process-help/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of calculated need with grants and student employment, no loans; need-blind for U.S. citizens and permanent residents",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile (incl. noncustodial parent) + FAFSA + IDOC tax documents required for need-based aid",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/financial-aid/applying-for-aid/prospective-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: Application Scholarships (field of study, service, arts) applied for separately by your plan deadline; James B. Duke Scholarship (up to 5 per class)",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/financial-aid/types-financial-aid/scholarships/application-scholarships",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$9,497 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$5,354 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$6,759 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,616 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$42,346 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=198385",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$99,385-$99,785 first-year cost of attendance 2027-28 ($96,960 billed; tuition $76,420), excluding health insurance",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/cost-attendance",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 4), binding; no EA; ED admit rate higher than RD per Davidson",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No evaluative interviews; informal 'Chat with a Wildcat' sessions only",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/admission-process-help/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'; interview 'Not Considered')",
+      "sourceUrl": "https://www.davidson.edu/media/9718/download?attachment",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No admission by major; declare by end of sophomore year",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/admission-process-help/frequently-asked-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "From fall 2027 (U.S. families): income up to $85k gets full tuition, fees, housing and meals; $85k-$175k tuition-free; above $175k full calculated need without loans",
+      "sourceUrl": "https://www.davidson.edu/news/2026/07/06/davidson-college-goes-tuition-free-for-low-middle-income-families",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Requires a peer recommendation plus two academic teacher recs and counselor report",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply/first-year-applicants",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "CSS Profile/FAFSA due dates not found on Davidson's current prospective-student aid page",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/financial-aid/applying-for-aid/prospective-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Davidson dropped its application fee (news item linked from the Apply page, July 31, 2026)",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply",
+      "cycle": "2026-27",
+      "note": "ED I, binding; notification by Dec 12; Application Scholarships due same day"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply",
+      "cycle": "2026-27",
+      "note": "ED II, binding; notification by Jan 30"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-11",
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply",
+      "cycle": "2026-27",
+      "note": "Notification by Apr 1"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Why Davidson",
+      "prompt": "There are just under 4,000 four-year colleges and universities in the United States. Being as specific as possible, what interests you most about Davidson College?",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply/first-year-applicants",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Curiosity",
+      "prompt": "Davidson encourages students to explore curiosities in and out of the classroom. What is a topic, activity or idea that excites you? Tell us why. Examples may include hobbies, books, interactions, music, podcasts, movies, etc.",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://www.davidson.edu/admission-and-financial-aid/apply/first-year-applicants",
+      "cycle": "2026-27"
+    }
+  ]
+}

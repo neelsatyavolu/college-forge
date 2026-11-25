@@ -1,0 +1,184 @@
+{
+ "slug": "michigan-state-university",
+ "name": "Michigan State University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "83.2% (52,411 of 62,965; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1100-1310 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "25-31 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional; applicants may self-report scores, and admitted students who did must send official scores",
+   "sourceUrl": "https://admissions.msu.edu/apply/first-year/act-sat-test-optional",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No; avg 61% of need met for first-years with need (CDS 2025-26 H2)",
+   "sourceUrl": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Not required; FAFSA only (CDS 2025-26 H8)",
+   "sourceUrl": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; all admitted students automatically considered for Admissions scholarships (incl. out-of-state awards). Applying EA by Nov 1 ensures maximum scholarship consideration",
+   "sourceUrl": "https://finaid.msu.edu/undergrad/undergrad-scholarships",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 est. COA: $38,346 Michigan resident / $67,030 out-of-state / $73,100 international",
+   "sourceUrl": "https://admissions.msu.edu/cost-aid",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "EA (non-binding, complete by Nov 1, decision by Jan 15); RD rolling with Feb 1 priority (decision by Mar 31) and Apr 1 final deadline. No ED",
+   "sourceUrl": "https://admissions.msu.edu/apply/first-year/dates-and-deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interview step in MSU's first-year application requirements; CDS 2025-26 C7 marks interview Considered",
+   "sourceUrl": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Choose a major preference on the application (or Exploratory); can change it until May 1. Many majors are restricted with additional admission requirements",
+   "sourceUrl": "https://admissions.msu.edu/apply/first-year/how-to-apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No MSU-specific supplements: one required essay (250-650 words) from a list of seven general prompts (Common App-style). No recommendation letters required",
+   "sourceUrl": "https://admissions.msu.edu/apply/first-year/how-to-apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS in-state aided students; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$11,741 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=171100&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$11,883 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=171100&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$14,300 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=171100&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$22,082 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=171100&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$30,356 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard; in-state aided students)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=171100&fields=school.name,latest.cost.net_price.public.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admissions.msu.edu/apply/first-year/dates-and-deadlines",
+   "cycle": "2026-27",
+   "note": "Non-binding; complete application by Nov 1; decision by Jan 15; max scholarship consideration"
+  },
+  {
+   "plan": "Priority",
+   "date": "2027-02-01",
+   "sourceUrl": "https://admissions.msu.edu/apply/first-year/dates-and-deadlines",
+   "cycle": "2026-27",
+   "note": "RD priority; decision by Mar 31"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-04-01",
+   "sourceUrl": "https://admissions.msu.edu/apply/first-year/dates-and-deadlines",
+   "cycle": "2026-27",
+   "note": "Final application deadline (rolling review)"
+  }
+ ],
+ "supplements": []
+}

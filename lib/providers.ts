@@ -102,6 +102,10 @@ export async function runChat(params: {
   emit: ChatEmitter;
   tools?: ToolSpec[];
   executeTool?: ToolExecutor;
+  shouldEndTurn?: () => boolean;
+  maxRounds?: number;
+  /** Onboarding writes the hub through tools, which only the Codex and Grok clients take. */
+  requireTools?: boolean;
 }): Promise<RunChatResult> {
   const { session, grokSession, connectionErrors } = await connections(params.preferred);
   const apiKey = getOpencodeKey();
@@ -138,6 +142,8 @@ export async function runChat(params: {
       emit: params.emit,
       tools: params.tools,
       executeTool: params.executeTool,
+      shouldEndTurn: params.shouldEndTurn,
+      maxRounds: params.maxRounds,
     });
     return {
       text: result.text,
@@ -158,6 +164,8 @@ export async function runChat(params: {
       emit: params.emit,
       tools: params.tools,
       executeTool: params.executeTool,
+      shouldEndTurn: params.shouldEndTurn,
+      maxRounds: params.maxRounds,
     });
     return {
       text: result.text,
@@ -172,6 +180,9 @@ export async function runChat(params: {
   if (params.preferred && !wantOpencode && !wantCodex && !wantGrok) {
     const label = params.preferred === "codex" ? "ChatGPT" : params.preferred === "grok" ? "Grok" : "OpenCode";
     throw new Error(connectionErrors[params.preferred] || `${label} is not connected or available. Connect it in Settings or choose Auto. Your message was not sent to another provider.`);
+  }
+  if (params.requireTools && (wantOpencode || (!params.preferred && !session && !grokSession))) {
+    throw new Error("Setup needs ChatGPT or Grok connected, because it saves your answers as you go. Connect one to continue.");
   }
   if (wantOpencode) return runOpencode();
   if (wantCodex) return runCodex(session!);

@@ -1,0 +1,237 @@
+{
+ "slug": "rensselaer-polytechnic-institute",
+ "name": "Rensselaer Polytechnic Institute",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "67.3% (9,655 of 14,356; Fall 2025 entry, CDS 2025-26)",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "69.1% ED (219 of 317; CDS 2025-26 C21, which labels the rows 'Fall 2024 entering class')",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1380-1500 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "31-34 (enrolled Fall 2025, CDS 2025-26 C9)",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Avg HS GPA 3.93; 63% in top tenth of class (CDS 2025-26 C11/C10)",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for Fall 2027 applicants; most can self-report scores, enrolling students send official scores",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "No; avg 63% of need met for first-years with need (CDS 2025-26 H2)",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "Required (code 2757) plus FAFSA for need-based aid. Priority dates: Nov 15 (ED I), Dec 15 (EA), Jan 8 (ED II), Jan 31 (RD)",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes; all U.S. citizen/permanent resident applicants automatically considered for RPI merit awards (e.g. Rensselaer Medal)",
+   "sourceUrl": "https://financialaid.rpi.edu/apply-aid/undergraduate-first-year-students",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$90,076 undergraduate COA, 2026-27",
+   "sourceUrl": "https://financialaid.rpi.edu/cost-attendance",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED I (binding, extended to Nov 6), EA (non-binding, Dec 1), ED II (binding, Jan 6), RD (Jan 15). B.S./M.D. due Nov 1. No application fee if submitted by Dec 1",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Not offered: RPI does not conduct interviews (optional InitialView for international students). CDS 2025-26 C7: Not Considered",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest')",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "B.Arch needs a creative portfolio within 10 days of the deadline plus an architecture essay; Accelerated Physician-Scientist (B.S./M.D.) due Nov 1 with its own essay. Other majors: no portfolio",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "CDS 2025-26 numbers read from RPI's official CDS PDF (linked from https://provost.rpi.edu/institutional-research-and-assessment)",
+   "sourceUrl": "https://rpi.box.com/s/xvg8qola8gporzjhu40rr1nadz417db0",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "No general supplements: the Common App personal statement satisfies RPI's essay requirement except for B.S./M.D. and Architecture applicants",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Net price from College Scorecard API (IPEDS data; College Navigator could not be reached)",
+   "sourceUrl": "https://collegescorecard.ed.gov/data/changelog/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$25,140 avg net price, income $0-30k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=194824&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$25,313 avg net price, income $30-48k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=194824&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$31,222 avg net price, income $48-75k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=194824&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$33,659 avg net price, income $75-110k (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=194824&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$35,346 avg net price, income $110k+ (2024-25, IPEDS via College Scorecard)",
+   "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=DEMO_KEY&id=194824&fields=school.name,latest.cost.net_price.private.by_income_level",
+   "checkedAt": "2026-11-25",
+   "cycle": "2024-25",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-06",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "cycle": "2026-27",
+   "note": "ED I, binding; extended from original date; decision Dec 12; CSS/FAFSA by Nov 15"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-12-01",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "cycle": "2026-27",
+   "note": "Non-binding; decision Jan 30; CSS/FAFSA by Dec 15"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-06",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "cycle": "2026-27",
+   "note": "Binding; decision Jan 16; CSS/FAFSA by Jan 8"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-15",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "cycle": "2026-27",
+   "note": "Decision Mar 6; CSS/FAFSA by Jan 31"
+  },
+  {
+   "plan": "B.S./M.D.",
+   "date": "2026-11-01",
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "cycle": "2026-27",
+   "note": "Physician-Scientist program; decision early April"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "B.S./M.D. applicants only",
+   "prompt": "State your reasons for aspiring to a career in medicine.",
+   "required": true,
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Architecture applicants only",
+   "prompt": "State your reasons for choosing architecture as your profession.",
+   "required": true,
+   "sourceUrl": "https://undergrad.admissions.rpi.edu/apply",
+   "cycle": "2026-27"
+  }
+ ]
+}

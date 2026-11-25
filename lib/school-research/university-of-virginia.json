@@ -1,0 +1,201 @@
+{
+ "slug": "university-of-virginia",
+ "name": "University of Virginia",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "15.6% (10,086 offers of 64,457 completed applications; class entering fall 2025)",
+   "sourceUrl": "https://admission.virginia.edu/admission/statistics",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "Section ranges only: EBRW 700-760, Math 710-780 (fall 2025 entering class); composite not published on this page",
+   "sourceUrl": "https://admission.virginia.edu/admission/statistics",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "32-35 (fall 2025 entering class)",
+   "sourceUrl": "https://admission.virginia.edu/admission/statistics",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "90% of enrollees who reported rank were in top 10% (only 30% reported rank); no GPA or test cut-offs",
+   "sourceUrl": "https://admission.virginia.edu/admission/statistics",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional for fall 2027; superscores SAT and ACT; can change test choice by Nov 22 (ED/EA) or Jan 15 (RD)",
+   "sourceUrl": "https://admission.virginia.edu/admission/deadlines-instructions",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of need with scholarships, grants, work-study and need-based loans (loans included)",
+   "sourceUrl": "https://sfs.virginia.edu/financial-aid-new-applicants/how-apply-aid-undergrad-programs/how-apply-financial-aid-first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile (code 5820) + FAFSA required; priority Dec 1, 2026 for ED/EA; deadline March 1, 2027 for all",
+   "sourceUrl": "https://sfs.virginia.edu/financial-aid-new-applicants/how-apply-aid-undergrad-programs/how-apply-financial-aid-first-year",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "SFS endowed scholarships are mainly need-based and awarded automatically (no application); SFS pages list no general merit scholarship application",
+   "sourceUrl": "https://sfs.virginia.edu/financial-aid-current-students/current-undergraduate-students/financial-aid-basics/types-aid/scholarships-grants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$8,174 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=234076",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$9,696 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=234076",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$13,283 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=234076",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$20,822 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=234076",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$35,402 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=234076",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 College of Arts & Sciences first year: $42,014 Virginians; $83,286-$84,976 non-Virginians",
+   "sourceUrl": "https://sfs.virginia.edu/financial-aid-new-applicants/financial-aid-basics/estimated-undergraduate-cost-attendance-2026-2027",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "Binding ED (Nov 1, decision by Dec 15, deposit Jan 15); non-binding, unrestrictive EA (Nov 1, decision by Feb 15); RD Jan 5. Plan changes by Nov 6.",
+   "sourceUrl": "https://admission.virginia.edu/admission/deadlines-instructions",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No interviews offered",
+   "sourceUrl": "https://admission.virginia.edu/faqs",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Not tracked: UVA does not track tours, info sessions or visits for application review",
+   "sourceUrl": "https://admission.virginia.edu/admission/deadlines-instructions",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Apply to one of: College of Arts & Sciences, Architecture, Engineering, Nursing, or Kinesiology. Commerce, Batten, Data Science and most Education programs: apply to the College. Majors declared after 1st/2nd year except Nursing and Kinesiology. ~2/3 of students are Virginians.",
+   "sourceUrl": "https://admission.virginia.edu/admission/deadlines-instructions",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "Only Nursing applicants have a UVA-specific essay (third-party report; not found on UVA's site). Optional arts portfolio via SlideRoom by the application deadline.",
+   "sourceUrl": "https://www.collegetransitions.com/blog/uva-supplemental-essay-prompts/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": true
+  },
+  {
+   "key": "notes",
+   "value": "Gap: UVA's 2025-26 Common Data Set section C (C7, C9 composite, ED counts) loads dynamically and could not be read; facts use UVA's admission statistics page instead.",
+   "sourceUrl": "https://ira.virginia.edu/common-data-set/common-data-set-2025-2026",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.virginia.edu/admission/deadlines-instructions",
+   "cycle": "2026-27",
+   "note": "Binding; counselor docs by Nov 8; decision by Dec 15; aid priority Dec 1"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.virginia.edu/admission/deadlines-instructions",
+   "cycle": "2026-27",
+   "note": "Non-binding, unrestrictive; decision by Feb 15; aid priority Dec 1"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-05",
+   "sourceUrl": "https://admission.virginia.edu/admission/deadlines-instructions",
+   "cycle": "2026-27",
+   "note": "Counselor docs by Jan 10; decision by Apr 1; aid deadline Mar 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "School of Nursing only",
+   "prompt": "Describe a health care-related experience or other significant interaction that deepened your interest in studying Nursing.",
+   "required": true,
+   "sourceUrl": "https://www.collegetransitions.com/blog/uva-supplemental-essay-prompts/",
+   "cycle": "2026-27",
+   "thirdParty": true
+  }
+ ]
+}

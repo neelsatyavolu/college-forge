@@ -171,7 +171,7 @@ function cfChatIntroCopy(ws) {
   ).length;
 
   if (!hasGpa && activities === 0 && colleges.length === 0) {
-    return "I build and maintain your hub. Upload a transcript, resume, or award list — or tell me your profile and target schools — and I'll fill in every page.";
+    return "I can see and change everything in Forge: your profile, list, essays, deadlines, applications and portals. Ask a question or tell me what to update.";
   }
   if (colleges.length === 0) {
     return "Your profile is started. I can build a balanced college list, re-tier schools, or pull anything still missing into the hub.";

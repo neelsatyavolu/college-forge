@@ -1,0 +1,237 @@
+{
+  "slug": "columbia-university",
+  "name": "Columbia University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "3.9% (2,325 of 60,247; Class of 2028, CDS 2024-25, Columbia College + Engineering; 2025-26 CDS not yet on Columbia's CDS page)",
+      "sourceUrl": "https://opir.columbia.edu/sites/opir.columbia.edu/files/content/Common%20Data%20Set/2024-25_Columbia_College_and_Columbia_Engineering_CDS.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "ED: 13.2% (795 of 6,007; CDS 2024-25 C21)",
+      "sourceUrl": "https://opir.columbia.edu/sites/opir.columbia.edu/files/content/Common%20Data%20Set/2024-25_Columbia_College_and_Columbia_Engineering_CDS.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1510-1560 (enrolled Fall 2024, CDS 2024-25 C9)",
+      "sourceUrl": "https://opir.columbia.edu/sites/opir.columbia.edu/files/content/Common%20Data%20Set/2024-25_Columbia_College_and_Columbia_Engineering_CDS.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-36 (enrolled Fall 2024, CDS 2024-25 C9)",
+      "sourceUrl": "https://opir.columbia.edu/sites/opir.columbia.edu/files/content/Common%20Data%20Set/2024-25_Columbia_College_and_Columbia_Engineering_CDS.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for 2026-27 (fall 2027 entry); SAT/ACT required again from the 2027-28 cycle (waivers available). Tests through November (ED) or February (RD)",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/testing",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need for all domestic students (and internationals admitted with aid) for four years; grants and student work only, no loans",
+      "sourceUrl": "https://cc-seas.financialaid.columbia.edu/how/aid/works",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile and FAFSA required. First-year aid applications due Nov 15 (ED) and Feb 15 (RD)",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/firstyear",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid: no academic, athletic or talent-based institutional scholarships; aid is need-based only",
+      "sourceUrl": "https://cc-seas.financialaid.columbia.edu/faq-page/prospective-students",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$99,774 first-year budget 2026-27 plus travel (tuition $72,800; fees $4,160; housing $12,522; food $7,128; books $1,320; personal $1,844)",
+      "sourceUrl": "https://cc-seas.financialaid.columbia.edu/eligibility/facts",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision (binding) due Nov 1, 2026; Regular Decision due Jan 1, 2027. No EA",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/firstyear",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No interviews for any applicants (ended May 2023); optional InitialView/Vericant videos only for language fluency",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/faq",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2024-25 C7 'Level of applicant's interest')",
+      "sourceUrl": "https://opir.columbia.edu/sites/opir.columbia.edu/files/content/Common%20Data%20Set/2024-25_Columbia_College_and_Columbia_Engineering_CDS.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Apply to Columbia College or Columbia Engineering (SEAS); the final prompt asks about your preferred areas of study at the school you choose",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Policy change: SAT/ACT required starting August 2027 (2027-28 cycle, fall 2028 entry). Latest Columbia College/Engineering CDS on Columbia's site is 2024-25; the 2025-26 file was not found",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/testing",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$4,570 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190150",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$2,275 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190150",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$5,866 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190150",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$11,782 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190150",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$50,621 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=190150",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/firstyear",
+      "cycle": "2026-27",
+      "note": "Binding"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-01",
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/firstyear",
+      "cycle": "2026-27"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "List of texts",
+      "prompt": "List the titles of texts, resources and outlets that have contributed to your intellectual development outside of academic courses, including but not limited to books, journals, websites, podcasts, essays, plays, presentations, videos, museums and other content that you enjoy.",
+      "limit": 100,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Lived experience",
+      "prompt": "Tell us about an aspect of your life so far or your lived experience that is important to you, and describe how it has shaped the way you would learn from and contribute to Columbia's multidimensional and collaborative environment.",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Disagreement",
+      "prompt": "At Columbia, students representing a wide range of perspectives are invited to live and learn together. In such a community, questions and debates naturally arise. Please describe a time when you did not agree with someone and discuss how you engaged with them and what you took away from the interaction.",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Adversity",
+      "prompt": "In college/university, students are often challenged in ways that they could not anticipate. Please describe a situation in which you have navigated through adversity and discuss how you changed as a result.",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Why Columbia",
+      "prompt": "Why are you interested in attending Columbia University? We encourage you to consider the aspect(s) that you find unique and compelling about Columbia.",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "label": "Areas of study",
+      "prompt": "What attracts you to your preferred areas of study at Columbia College or Columbia Engineering?",
+      "limit": 150,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "slug": "wabash-college",
+  "name": "Wabash College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "57.1% (1,424 of 2,496; Fall 2025 entering class, CDS 2025-26)", "sourceUrl": "https://www.wabash.edu/institutional_research/docs/cds-2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "ed_admit_rate", "value": "89.8% ED (97 of 108; Fall 2025, CDS 2025-26)", "sourceUrl": "https://www.wabash.edu/institutional_research/docs/cds-2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1130-1335 (40.5% of enrollees submitted SAT; CDS 2025-26)", "sourceUrl": "https://www.wabash.edu/institutional_research/docs/cds-2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "24-29.5 (10.2% of enrollees submitted ACT; CDS 2025-26)", "sourceUrl": "https://www.wabash.edu/institutional_research/docs/cds-2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "gpa_note", "value": "Average HS GPA 3.52 (CDS 2025-26); merit tiers keyed to GPA (3.8+ President's, 3.25-3.79 Dean's)", "sourceUrl": "https://www.wabash.edu/institutional_research/docs/cds-2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional; submitted scores are superscored; non-submitters still considered for merit", "sourceUrl": "https://www.wabash.edu/admissions/apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No general full-need pledge; average 94% of need met for first-years (CDS 2025-26). Wabash Promise: Indiana Pell recipients with SAI up to $5,000 pay $0 direct costs after federal loans; out-of-state Pell recipients (SAI up to $7,000) get tuition and fees plus $5,000", "sourceUrl": "https://www.wabash.edu/admissions/finances/sources", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; FAFSA only (code 001844). Extra $1,000 scholarship for filing the FAFSA by the posted date", "sourceUrl": "https://www.wabash.edu/admissions/finances/sources", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes, large: awarded on admission by GPA band: President's $36,000-$39,000, Dean's $30,000-$33,000, Alumni up to $27,000 per year. Lilly Awards (full COA) need a separate application by Jan 3, 2027; Dec 1 priority for merit", "sourceUrl": "https://www.wabash.edu/admissions/finances/sources", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$16,586 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152673", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$13,526 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152673", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$18,175 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152673", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$18,681 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152673", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$30,511 (2023-24, College Navigator)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=152673", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "$75,570 COA for 2027-28, the year this cycle enters (tuition $54,500, fees $1,300, housing & food $15,300, books, personal, extra meals, travel). 2026-27 COA $73,170", "sourceUrl": "https://www.wabash.edu/admissions/finances/costs", "checkedAt": "2026-11-25", "cycle": "2027-28", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "ED (Nov 15, binding; priority admission and additional scholarship), EA (Dec 1, non-binding, not restrictive), Regular (Jan 15, rolling decisions from Jan 18)", "sourceUrl": "https://www.wabash.edu/admissions/apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "Recommended as part of a campus visit, not required; CDS rates interview 'Important'", "sourceUrl": "https://bulletin.wabash.edu/admissions/application-procedures/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Very important (CDS 2025-26 C7)", "sourceUrl": "https://www.wabash.edu/institutional_research/docs/cds-2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "No major-specific admission; one application (Wabash or Common App) covers admission and merit. Lilly Award requires a separate application", "sourceUrl": "https://www.wabash.edu/admissions/apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Single-gender: 'The Liberal Arts College For Men'; admits men only.", "sourceUrl": "https://bulletin.wabash.edu/admissions/", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No supplemental essays: required items are the application, transcript and school report; the essay/written statement and test scores are optional. Application is free.", "sourceUrl": "https://www.wabash.edu/admissions/apply", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "ED", "date": "2026-11-15", "sourceUrl": "https://www.wabash.edu/admissions/apply", "cycle": "2026-27", "note": "Binding; decision by Dec 5; $400 deposit Jan 15" },
+    { "plan": "Priority (scholarships)", "date": "2026-12-01", "sourceUrl": "https://bulletin.wabash.edu/admissions/application-procedures/", "cycle": "2026-27", "note": "Priority merit consideration for completed files" },
+    { "plan": "EA", "date": "2026-12-01", "sourceUrl": "https://www.wabash.edu/admissions/apply", "cycle": "2026-27", "note": "Non-binding; decision by Dec 31" },
+    { "plan": "Lilly Award", "date": "2027-01-03", "sourceUrl": "https://www.wabash.edu/admissions/finances/sources", "cycle": "2026-27", "note": "Separate Lilly Award application (full-cost scholarship)" },
+    { "plan": "RD", "date": "2027-01-15", "sourceUrl": "https://www.wabash.edu/admissions/apply", "cycle": "2026-27", "note": "Regular admission; rolling decisions from Jan 18" }
+  ],
+  "supplements": []
+}

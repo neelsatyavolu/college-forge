@@ -1,9 +1,12 @@
 import { NextRequest } from "next/server";
 import { runChat } from "@/lib/providers";
 import type { ChatEvent, ChatTurn, ProviderName } from "@/lib/chat-types";
-import { getWorkspace } from "@/lib/store";
+import { getWorkspace, updateWorkspace } from "@/lib/store";
 import { buildHubSystemPrompt } from "@/lib/hub-context";
 import { makeHubTools } from "@/lib/hub-tools";
+import { makeInterviewTools, recordTurn } from "@/lib/interview-tools";
+import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
+import { sensitiveRefusal, toolAllowed } from "@/lib/tool-policy";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
 export const runtime = "nodejs";
@@ -11,6 +14,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 const MAX_TURNS = 24;
+
 const MAX_CONTENT_LEN = 8_000;
 
 type IncomingTurn = { role: "user" | "assistant"; content: string };
@@ -34,6 +38,8 @@ export async function POST(req: NextRequest) {
     codexModel?: unknown;
     grokModel?: unknown;
     opencodeModel?: unknown;
+    /** "onboarding": the setup interview. "research": one school's research step during setup. */
+    mode?: unknown;
   };
   try {
     body = await req.json();
@@ -67,6 +73,8 @@ export async function POST(req: NextRequest) {
   const codexModel = typeof body.codexModel === "string" ? body.codexModel : undefined;
   const grokModel = typeof body.grokModel === "string" ? body.grokModel : undefined;
 
+  const mode = body.mode === "onboarding" || body.mode === "research" ? body.mode : "hub";
+
   const encoder = new TextEncoder();
   const startedAt = Date.now();
 
@@ -85,9 +93,31 @@ export async function POST(req: NextRequest) {
       try {
         emit({ type: "status", stage: "context", message: "Loading your hub…" });
         const ws = await getWorkspace(workspaceId);
-        const instructions = buildHubSystemPrompt(ws);
         const lastUserText = [...turns].reverse().find((t) => t.role === "user")?.content || "";
-        const { tools, executeTool } = makeHubTools(workspaceId, { userText: lastUserText, draftStorageKey: ws.draftStorageKey });
+        const hub = makeHubTools(workspaceId, { userText: lastUserText, draftStorageKey: ws.draftStorageKey });
+        // Same scope check as the hub tools: a workspace reset mid-chat must not receive these writes.
+        const mutate = (fn: Parameters<typeof updateWorkspace>[1]) => updateWorkspace(workspaceId, (w) => {
+          if (w.draftStorageKey !== ws.draftStorageKey) throw new Error("This workspace was reset or changed. Start setup again.");
+          return fn(w);
+        });
+        const interview = makeInterviewTools(mutate, () => getWorkspace(workspaceId), emit);
+        const setup = mode !== "hub";
+        const instructions = mode === "onboarding"
+          ? buildInterviewPrompt(ws)
+          : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}` : buildHubSystemPrompt(ws);
+        const interviewNames = new Set(interview.tools.map((t) => t.name));
+        const tools = (setup ? [...hub.tools.filter((t) => !interviewNames.has(t.name)), ...interview.tools] : hub.tools)
+          .filter((t) => toolAllowed(mode, t.name));
+        const executeTool: typeof hub.executeTool = async (name, argsJson) => {
+          if (!toolAllowed(mode, name)) return `${name} isn't available here.`;
+          // Research turns never carry a student message, so the student's words come only from hub chats.
+          const refusal = sensitiveRefusal(name, mode === "hub" ? lastUserText : "");
+          if (refusal) return refusal;
+          return (setup ? await interview.execute(name, argsJson) : null) ?? hub.executeTool(name, argsJson);
+        };
+        if (mode === "onboarding") {
+          await mutate((w) => recordTurn(w, { role: "user", content: lastUserText.slice(0, 4000), at: Date.now() }));
+        }
 
         console.log(
           `[ai-chat] start ws=${wsTag} turns=${turns.length} uploads=${ws.uploads.length} ` +
@@ -112,7 +142,14 @@ export async function POST(req: NextRequest) {
           emit,
           tools,
           executeTool: countingExecuteTool,
+          ...(setup ? { requireTools: true, shouldEndTurn: interview.endTurn } : {}),
+          // Setup turns can move into the list step mid-turn, and research needs many reads; interview questions end early anyway.
+          ...(setup ? { maxRounds: 14 } : {}),
         });
+        if (mode === "onboarding") {
+          const ui = interview.shown();
+          await mutate((w) => recordTurn(w, { role: "assistant", content: result.text.slice(0, 4000), ...(ui ? { ui } : {}), at: Date.now() }));
+        }
 
         // Reads and answers do not authorize implicit changes to saved choices.
         // All writes occur through explicit workspace tools above.

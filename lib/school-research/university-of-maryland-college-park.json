@@ -1,0 +1,34 @@
+{
+  "slug": "university-of-maryland-college-park",
+  "name": "University of Maryland, College Park",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    { "key": "admit_rate", "value": "45.0% (30,218 of 67,101; Class of 2029, CDS 2025-26). In-state 43.7% (8,075 of 18,487), out-of-state 45.5% (22,143 of 48,614)", "sourceUrl": "https://www.irpa.umd.edu/InstitutionalData/CommonDataSet/CDS_2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "sat_mid50", "value": "1410-1520 enrolled (37% submitted SAT; CDS 2025-26)", "sourceUrl": "https://www.irpa.umd.edu/InstitutionalData/CommonDataSet/CDS_2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "act_mid50", "value": "32-35 enrolled (7% submitted ACT; CDS 2025-26)", "sourceUrl": "https://www.irpa.umd.edu/InstitutionalData/CommonDataSet/CDS_2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "test_policy", "value": "Test-optional through Spring and Fall 2027 entry; you choose your status on the application and can't change it after submitting. Superscores SAT and ACT. LEPs and merit review are also test-optional", "sourceUrl": "https://admissions.umd.edu/apply/freshman-application-faqs", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "meets_full_need", "value": "No; need fully met for 523 of 1,931 first-years with need (CDS 2025-26 H2)", "sourceUrl": "https://www.irpa.umd.edu/InstitutionalData/CommonDataSet/CDS_2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "meets_full_need", "value": "Terrapin Commitment covers 100% of tuition and fees for Maryland students with family income under $75,000 or Pell-eligible (FAFSA by Mar 1)", "sourceUrl": "https://admissions.umd.edu/tuition/our-terrapin-commitment", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "css_profile", "value": "Not required; FAFSA priority deadline Mar 1", "sourceUrl": "https://financialaid.umd.edu/important-dates", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "merit_aid", "value": "Yes; complete applications by the Nov 1 EA deadline are automatically reviewed for merit (U.S. citizens and eligible non-citizens). Honors College admits are considered for Banneker/Key. No separate application", "sourceUrl": "https://admissions.umd.edu/tuition/freshman-merit-scholarships", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "net_price_lt30k", "value": "$2,962 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=163286", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_30_48k", "value": "$6,051 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=163286", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_48_75k", "value": "$10,273 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=163286", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_75_110k", "value": "$18,250 (in-state, 2023-24)", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=163286", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "net_price_gt110k", "value": "$26,691 (in-state, 2023-24); NCES net price covers in-state students only", "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=163286", "checkedAt": "2026-11-25", "cycle": "2023-24", "thirdParty": false },
+    { "key": "sticker_cost", "value": "2025-26 estimated COA (2026-27 not yet posted): Maryland resident $32,408 (tuition/fees $12,008); non-resident $62,374 (tuition/fees $41,974). Business, engineering and CS majors pay extra differential tuition", "sourceUrl": "https://admissions.umd.edu/tuition/cost-of-attendance", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "ed_ea_options", "value": "Nonbinding EA Nov 1 (decision by Feb 1); RD Jan 20 (decision by Apr 1). No ED. Fall applicants are automatically considered for spring admission", "sourceUrl": "https://admissions.umd.edu/apply/application-deadlines", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "interview", "value": "No interviews; interview is not among UMD's 23 review factors", "sourceUrl": "https://admissions.umd.edu/apply/admission-review-process-factors", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "demonstrated_interest", "value": "Not considered (CDS 2025-26 C7)", "sourceUrl": "https://www.irpa.umd.edu/InstitutionalData/CommonDataSet/CDS_2025-2026.xlsx", "checkedAt": "2026-11-25", "cycle": "2025-26", "thirdParty": false },
+    { "key": "major_notes", "value": "Limited Enrollment Programs: Architecture, Biochemistry, Biological Sciences, Business, Chemistry, Computer Science, Criminology, Engineering, Immersive Media Design, Neuroscience, Psychology. LEP applicants get a second review by the program; those not admitted to the LEP go to Letters & Sciences and must meet gateway requirements", "sourceUrl": "https://admissions.umd.edu/academics/limited-enrollment-programs", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "Requires two recommendations (counselor and teacher); app fee $80; Common App or ApplyWeb", "sourceUrl": "https://admissions.umd.edu/apply/freshman-applicants", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false },
+    { "key": "notes", "value": "No UMD-specific supplements listed; the one required essay (max 650 words) answers one of UMD's seven listed questions, which match the Common App personal essay prompts", "sourceUrl": "https://admissions.umd.edu/apply/essay-questions", "checkedAt": "2026-11-25", "cycle": "2026-27", "thirdParty": false }
+  ],
+  "deadlines": [
+    { "plan": "EA", "date": "2026-11-01", "sourceUrl": "https://admissions.umd.edu/apply/application-deadlines", "cycle": "2026-27", "note": "Nonbinding; required for merit and Honors consideration" },
+    { "plan": "RD", "date": "2027-01-20", "sourceUrl": "https://admissions.umd.edu/apply/application-deadlines", "cycle": "2026-27" },
+    { "plan": "Financial aid", "date": "2027-03-01", "sourceUrl": "https://admissions.umd.edu/tuition/our-terrapin-commitment", "cycle": "2026-27", "note": "FAFSA priority deadline (also Terrapin Commitment)" }
+  ],
+  "supplements": []
+}

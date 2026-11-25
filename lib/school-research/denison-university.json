@@ -1,0 +1,184 @@
+{
+  "slug": "denison-university",
+  "name": "Denison University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "19.5% (2,385 of 12,202; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://denison.edu/sites/default/files/forms/2026-08/cds_du_20252026_published_updated2026.08.14.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "24.8% ED (394 of 1,589; CDS 2025-26)",
+      "sourceUrl": "https://denison.edu/sites/default/files/forms/2026-08/cds_du_20252026_published_updated2026.08.14.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1270-1420 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://denison.edu/sites/default/files/forms/2026-08/cds_du_20252026_published_updated2026.08.14.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "28-33 (enrolled Fall 2025, CDS 2025-26)",
+      "sourceUrl": "https://denison.edu/sites/default/files/forms/2026-08/cds_du_20252026_published_updated2026.08.14.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional since 2008; self-reported scores accepted; all submitted scores superscored",
+      "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need (CDS 2025-26: 100% of need met on average)",
+      "sourceUrl": "https://denison.edu/campus/admission/affordability-and-cost",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required (each parent if separated) with FAFSA, family verification form and 2025 income statements; due with the admission deadline for each round; must apply at admission to get need-based aid later",
+      "sourceUrl": "https://denison.edu/campus/admission/applying-for-financial-aid",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "Yes: all applicants automatically considered for merit scholarships and talent awards; arts scholarships via optional arts supplement",
+      "sourceUrl": "https://denison.edu/campus/admission/affordability-and-cost",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$16,656 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=202523",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$13,086 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=202523",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$17,827 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=202523",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$20,839 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=202523",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,472 (2023-2024)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=202523",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "2026-27 comprehensive fee $92,400 (tuition $74,000, housing & food $18,400); 2027-28 (fall 2027 entrants) $96,400 (tuition $77,000, housing & food $19,400)",
+      "sourceUrl": "https://denison.edu/campus/admission/affordability-and-cost",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "ED I (Nov 15) and ED II (Jan 15), both binding; RD Jan 15; no EA",
+      "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Recommended, not required; structured and evaluative; most admitted students interview. CDS 2025-26 rates interview Important",
+      "sourceUrl": "https://denison.edu/campus/admission/interview-opportunities",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://denison.edu/sites/default/files/forms/2026-08/cds_du_20252026_published_updated2026.08.14.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Students formally declare a major by the end of sophomore year; no capped or direct-admit majors found on admissions pages",
+      "sourceUrl": "https://denison.edu/academics/curriculum/academic-majors",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No supplemental essay required and no application fee",
+      "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
+      "cycle": "2026-27",
+      "note": "ED I, binding; aid forms due same day; decision about one month later"
+    },
+    {
+      "plan": "ED2",
+      "date": "2027-01-15",
+      "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
+      "cycle": "2026-27",
+      "note": "Binding; aid forms due same day"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-15",
+      "sourceUrl": "https://denison.edu/campus/admission/apply-for-admission",
+      "cycle": "2026-27",
+      "note": "Aid forms due same day; decisions by mid-March"
+    }
+  ],
+  "supplements": []
+}

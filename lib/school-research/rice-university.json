@@ -1,0 +1,261 @@
+{
+ "slug": "rice-university",
+ "name": "Rice University",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "8.0% (2,948 of 36,791; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/rice/2025-26/27379583b988c4b4c794876160df246b4f9dbf06b4afc24564975477dcb882e8.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "11.3% ED I + ED II combined (647 of 5,748; CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/rice/2025-26/27379583b988c4b4c794876160df246b4f9dbf06b4afc24564975477dcb882e8.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1510-1560 (CDS 2025-26; 59% submitted)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/rice/2025-26/27379583b988c4b4c794876160df246b4f9dbf06b4afc24564975477dcb882e8.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "34-36 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/rice/2025-26/27379583b988c4b4c794876160df246b4f9dbf06b4afc24564975477dcb882e8.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "90% of enrollees who reported rank were in top 10% of class (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/rice/2025-26/27379583b988c4b4c794876160df246b4f9dbf06b4afc24564975477dcb882e8.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional: SAT/ACT recommended, not required; superscores; essay sections not considered",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Meets 100% of demonstrated need, loan-free; need-blind for domestic students. Rice Investment: full tuition, fees and living grant under $100K income; full tuition grant $100K-200K (typical assets)",
+   "sourceUrl": "https://financialaid.rice.edu/",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile + FAFSA required; page lists due dates of Nov 15, Jan 4 and Feb 1 by decision plan",
+   "sourceUrl": "https://financialaid.rice.edu/apply-aid/first-year-domestic-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Merit scholarships: all admitted students automatically considered, no separate application; about 20% of admits offered one",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$5,827 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=227757",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$563 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=227757",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$3,217 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=227757",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$17,755 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=227757",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$48,466 (2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=227757",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "$97,309 on campus for 2026-27 ($71,140 tuition, $984 fees, $20,530 living, $1,540 books, $3,115 personal)",
+   "sourceUrl": "https://financialaid.rice.edu/cost-attendance",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "ED I (Nov 1) and ED II (Jan 4), both binding; no EA. ED admits must withdraw other applications and deposit by Jan 4 (ED I) or mid-Feb (ED II). Music applicants cannot apply ED.",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "Optional, recommended, not guaranteed; virtual with alumni or students, requested via portal after applying; Glimpse video also optional",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Considered (CDS 2025-26 C7 'Level of applicant's interest'); interview also 'Considered'",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/rice/2025-26/27379583b988c4b4c794876160df246b4f9dbf06b4afc24564975477dcb882e8.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Shepherd School of Music: audition materials by Dec 1, no ED/QuestBridge, must stay in music one year. Architecture: required portfolio + two essays. Art: optional portfolio.",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "notes",
+   "value": "'The Rice Box' image upload is required but not evaluated. Interview request deadlines: Nov 3 (ED I), Dec 16 (RD priority), Jan 6 (ED II/RD).",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27",
+   "note": "ED I, binding; decision mid-December"
+  },
+  {
+   "plan": "Priority",
+   "date": "2026-12-14",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27",
+   "note": "RD priority interview deadline: apply by this date to be considered for an interview"
+  },
+  {
+   "plan": "ED2",
+   "date": "2027-01-04",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27",
+   "note": "ED II, binding; decision late January"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-01-04",
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27",
+   "note": "Decision by April 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Academic areas",
+   "prompt": "Please explain what draws you to the academic areas you selected above and how you hope to explore them at Rice University.",
+   "limit": 150,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Rice experience",
+   "prompt": "Based upon your exploration of Rice University, what elements of the Rice experience appeal to you?",
+   "limit": 150,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Community (option 1 of 2)",
+   "prompt": "Please respond to one of the following prompts to explore how you will contribute to the Rice community: The Residential College System is at the heart of Rice student life and is heavily influenced by the particular cultural traditions and unique life experiences each student brings. What life experiences and/or unique perspectives are you looking forward to sharing with fellow Owls in the residential college system?",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Community (option 2 of 2)",
+   "prompt": "Please respond to one of the following prompts to explore how you will contribute to the Rice community: Rice is strengthened by its diverse community of learning and discovery that produces leaders and change agents across the spectrum of human endeavor. What perspectives shaped by your background, experiences, upbringing, and/or cultural identity inspire you to join our community of change agents at Rice?",
+   "limit": 500,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "The Rice Box",
+   "prompt": "One of Rice's long-standing traditions is “The Box,” a question on our application where we ask all of our applicants to share an image of something that appeals to them. The Box gives you the opportunity to present us with an image that shares something about yourself, your interests or what is meaningful to you.",
+   "required": true,
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Architecture 1",
+   "prompt": "Why are you determined to study architecture? Please explain your motivation and describe how your past experiences have led you to apply to the Rice School of Architecture in particular. Have you had an opportunity outside of school—such as an internship, building project, architecture summer program or other experience—that strengthened your interest in the field? If so, please describe how the experience further compels you to pursue a career in architecture.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Architecture 2",
+   "prompt": "Describe a building, place, or city that you have encountered and found especially compelling. What specifically captured your attention, and why? In your response, reflect on how this experience has shaped your understanding of architecture and the built environment.",
+   "limit": 250,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admission.rice.edu/apply/first-year-applicants",
+   "cycle": "2026-27"
+  }
+ ]
+}

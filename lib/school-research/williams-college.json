@@ -1,0 +1,177 @@
+{
+  "slug": "williams-college",
+  "name": "Williams College",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "8.6% (1,336 of 15,520; Fall 2025 entry, CDS 2025-26)",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "27% (256 of 964 ED applicants; CDS 2025-26)",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1490-1550 (enrolled Fall 2025; 43% submitted SAT; CDS 2025-26)",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "33-35 (enrolled Fall 2025; 18% submitted ACT; CDS 2025-26)",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional (\"truly test optional\"); self-report or screenshot accepted; superscores SAT/ACT; ACT science optional",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/first-year/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Yes: meets 100% of demonstrated need with no loans and no work-study expectation; free tuition for families earning $200K or less with typical assets; covers books for aided students",
+      "sourceUrl": "https://www.williams.edu/admission-aid/tuition-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "Required for non-federal aid; due with the admission application (Nov 15 ED, Jan 4 RD). FAFSA not an initial requirement for 2027-28",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/deadlines/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid: $0 institutional non-need-based grants (CDS 2025-26 H1) and 0 first-year non-need awards (H2A); aid is need-based",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$95,960 comprehensive fee (2026-27: tuition $76,300, housing $9,830, meals $9,490, fees $340); books est. $1,000",
+      "sourceUrl": "https://www.williams.edu/admission-aid/tuition-aid/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision Nov 15 (binding; sign ED agreement); Regular Decision Jan 4. No EA",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/first-year/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "Not offered; applicants may share an InitialView interview (international). Not considered in CDS 2025-26 C7",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/first-year/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Not considered (CDS 2025-26 C7)",
+      "sourceUrl": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "No major-specific admission found; optional studio/performing arts portfolio (SlideRoom) and science research abstracts are welcome",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/first-year/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "No writing supplement required. Optional: graded or ungraded academic paper on any topic, arts portfolio, research abstract",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/first-year/",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$2,291 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?168342",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$3,680 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?168342",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$722 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?168342",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$5,280 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?168342",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$43,912 average net price, federal aid recipients, 2024-25 (College Scorecard)",
+      "sourceUrl": "https://collegescorecard.ed.gov/school/?168342",
+      "checkedAt": "2026-11-25",
+      "cycle": "2024-25",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-15",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/deadlines/",
+      "cycle": "2026-27",
+      "note": "Binding; CSS Profile due same day"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://www.williams.edu/admission-aid/apply/deadlines/",
+      "cycle": "2026-27",
+      "note": "CSS Profile due same day"
+    }
+  ],
+  "supplements": []
+}

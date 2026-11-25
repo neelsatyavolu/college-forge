@@ -1,0 +1,218 @@
+{
+ "slug": "university-of-michigan-ann-arbor",
+ "name": "University of Michigan--Ann Arbor",
+ "checkedAt": "2026-11-25",
+ "complete": true,
+ "facts": [
+  {
+   "key": "admit_rate",
+   "value": "16.4% (17,915 of 109,112; Class of 2029, CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-michigan/2025-26/e3f51e6db84ddc8b584782a647c3ed28934fcd7ad9daec38e2083279c94cd19c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_admit_rate",
+   "value": "13% of ED applicants for fall 2026 admitted in the initial December 2025 ED release (first ED round)",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/first-year-application-plans",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "sat_mid50",
+   "value": "1370-1530 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-michigan/2025-26/e3f51e6db84ddc8b584782a647c3ed28934fcd7ad9daec38e2083279c94cd19c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "act_mid50",
+   "value": "32-34 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-michigan/2025-26/e3f51e6db84ddc8b584782a647c3ed28934fcd7ad9daec38e2083279c94cd19c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "gpa_note",
+   "value": "Average HS GPA 3.90 (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-michigan/2025-26/e3f51e6db84ddc8b584782a647c3ed28934fcd7ad9daec38e2083279c94cd19c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "test_policy",
+   "value": "Test-optional: SAT/ACT considered if submitted; self-reported scores accepted",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/requirements-deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Does not guarantee full need: average 91% of need met for first-years (CDS 2025-26)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-michigan/2025-26/e3f51e6db84ddc8b584782a647c3ed28934fcd7ad9daec38e2083279c94cd19c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "meets_full_need",
+   "value": "Go Blue Guarantee: free tuition for Michigan families with income and assets each $125,000 and under (in-state only)",
+   "sourceUrl": "https://finaid.umich.edu/apply-aid/new-undergraduates",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "css_profile",
+   "value": "CSS Profile (code 1839) + FAFSA required for U-M grants; due Nov 15 for ED; suggested Dec 15 for EA/RD; final deadline March 1",
+   "sourceUrl": "https://finaid.umich.edu/apply-aid/key-information",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "merit_aid",
+   "value": "Yes: most university scholarships awarded automatically from the admission application (apply early for equal consideration); some school/department scholarships need separate applications",
+   "sourceUrl": "https://finaid.umich.edu/apply-aid/new-undergraduates",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_lt30k",
+   "value": "$1,043 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170976",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_30_48k",
+   "value": "$1,878 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170976",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_48_75k",
+   "value": "$4,895 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170976",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_75_110k",
+   "value": "$10,869 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170976",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "net_price_gt110k",
+   "value": "$26,517 (in-state, 2023-24)",
+   "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=170976",
+   "checkedAt": "2026-11-25",
+   "cycle": "2023-24",
+   "thirdParty": false
+  },
+  {
+   "key": "sticker_cost",
+   "value": "2026-27 LSA lower-division estimate: $40,194 Michigan residents; $88,394 nonresidents (tuition/fees $18,896 in-state, $67,096 out-of-state)",
+   "sourceUrl": "https://finaid.umich.edu/getting-started/estimating-costs",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "ed_ea_options",
+   "value": "Three plans: binding ED (Nov 1; decision by Dec 24; commit by Jan 6), non-binding EA (Nov 1; decision by Jan 29), RD (Feb 1). Dual-degree/preferred admission programs only EA or RD (except Integrated Business and Engineering in ED). SMTD: RD only, Dec 1.",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/first-year-application-plans",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  },
+  {
+   "key": "interview",
+   "value": "No general admission interviews: interview 'Not considered' (CDS 2025-26 C7)",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-michigan/2025-26/e3f51e6db84ddc8b584782a647c3ed28934fcd7ad9daec38e2083279c94cd19c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "demonstrated_interest",
+   "value": "Considered (CDS 2025-26 C7 level of applicant's interest); 'why U-M' essay is the place to show interest",
+   "sourceUrl": "https://api.collegedata.fyi/storage/v1/object/public/sources/university-of-michigan/2025-26/e3f51e6db84ddc8b584782a647c3ed28934fcd7ad9daec38e2083279c94cd19c.pdf",
+   "checkedAt": "2026-11-25",
+   "cycle": "2025-26",
+   "thirdParty": false
+  },
+  {
+   "key": "major_notes",
+   "value": "Apply to a specific school/college; the second essay is about that school. Ross, Taubman, Stamps and SMTD have extra requirements; preferred admission and dual-degree programs available.",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/requirements-deadlines",
+   "checkedAt": "2026-11-25",
+   "cycle": "2026-27",
+   "thirdParty": false
+  }
+ ],
+ "deadlines": [
+  {
+   "plan": "ED",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/first-year-application-plans",
+   "cycle": "2026-27",
+   "note": "Binding; CSS/FAFSA due Nov 15; decision by Dec 24"
+  },
+  {
+   "plan": "EA",
+   "date": "2026-11-01",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/first-year-application-plans",
+   "cycle": "2026-27",
+   "note": "Non-binding; decision by Jan 29"
+  },
+  {
+   "plan": "RD",
+   "date": "2026-12-01",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/requirements-deadlines",
+   "cycle": "2026-27",
+   "note": "School of Music, Theatre & Dance applicants only"
+  },
+  {
+   "plan": "RD",
+   "date": "2027-02-01",
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/first-year-application-plans",
+   "cycle": "2026-27",
+   "note": "Decision by Apr 2; financial aid deadline March 1"
+  }
+ ],
+ "supplements": [
+  {
+   "label": "Leaders and citizens",
+   "prompt": "At the University of Michigan, we are focused on developing leaders and citizens who will challenge the present and enrich the future. In your essay, share with us how you are prepared to contribute to these goals. This could include the people, places, experiences, or aspirations that have shaped your journey and future plans.",
+   "limit": 300,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/essay-questions",
+   "cycle": "2026-27"
+  },
+  {
+   "label": "Why this school/college",
+   "prompt": "Describe the unique qualities that attract you to the specific undergraduate college or school (including preferred admission and dual degree programs) to which you are applying at the University of Michigan. How would that curriculum support your interests?",
+   "limit": 550,
+   "unit": "words",
+   "required": true,
+   "sourceUrl": "https://admissions.umich.edu/apply/first-year-applicants/essay-questions",
+   "cycle": "2026-27"
+  }
+ ]
+}

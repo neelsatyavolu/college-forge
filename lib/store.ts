@@ -7,6 +7,7 @@ import { listDocs } from "./doc-store";
 import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type Tracker } from "./tracker";
 import type { AdmissionOdds, ApplicationRead } from "./admission-odds";
 import type { SchoolStats } from "./school-stats";
+import type { SchoolResearch } from "./school-research";
 
 // ── Workspace data model ──────────────────────────────────────────────────
 // Mirrors the shape the hub UI renders (window.CF_DATA). Everything starts
@@ -42,6 +43,8 @@ export type College = {
   priceCalcUrl?: string;
   /** Who put the row on the list. "seed": the automatic list builder, which may replace it on a rebalance. Missing counts as the student's. */
   origin?: "seed" | "user" | "agent";
+  /** Sourced facts from the onboarding research step (lib/school-research.ts shape). Missing: not researched. */
+  research?: SchoolResearch & { attempts?: number; needsReview?: boolean };
 };
 export type Essay = {
   id: string; group?: string; label: string; prompt: string;
@@ -92,8 +95,33 @@ export type OnboardingListPrefs = {
 
 export type ListBudget = "lt15" | "15-30" | "30-50" | "50plus" | "unsure";
 
+export type InterviewSection = "basics" | "school" | "testing" | "activities" | "campus" | "money" | "early" | "deep";
+export type InterviewPhase = "interview" | "list" | "research" | "strategy" | "plan" | "done";
+/** One stored chat turn of the onboarding interview. `ui` is the tile/list/strategy the AI showed with it. */
+export type InterviewTurn = { role: "user" | "assistant"; content: string; ui?: unknown; at: number };
+export type InterviewState = {
+  phase: InterviewPhase;
+  section: InterviewSection;
+  transcript: InterviewTurn[];
+  /** Short AI-written summaries per section, so later turns need little history. */
+  notes: Partial<Record<InterviewSection, string>>;
+  /** Answers to the deeper questions (also copied into storyNotes.other). */
+  deep: { prompt: string; answer: string }[];
+  /** The student said they have no activities yet. */
+  noActivities?: boolean;
+  /** Merit-aid interest from the money section. */
+  meritInterest?: "yes" | "no" | "unsure";
+  /** The AI's ED/EA recommendation once the student confirmed it. */
+  strategy?: { ed?: string; ea: string[]; reasons: string; confirmed: boolean };
+  /** The last draft list the AI proposed (UiSchool[] from lib/chat-types.ts). */
+  listDraft?: import("./chat-types").UiSchool[];
+  startedAt: number;
+};
+
 export type OnboardingState = {
   completed: boolean;
+  /** The chat interview (onboarding v2). */
+  interview?: InterviewState;
   completedAt?: number;
   /** Freeform story from onboarding (activities / awards / other) for the AI. */
   storyNotes?: {
@@ -177,6 +205,8 @@ export type Workspace = {
   applicant: {
     name: string; cycle: string; year: string;
     gpaWeighted: string; gpaUnweighted: string; sat: string; satNote: string; awards: number;
+    /** Grades rising, steady or falling across high school (lib/college-recommendations.ts uses "up"). */
+    gpaTrend?: "up" | "steady" | "down";
   };
   profile: {
     intended: string; hs: string; gradYear: number | string; location: string;
@@ -265,6 +295,8 @@ export function emptyWorkspace(): Workspace {
 /** True while the full-screen onboarding wizard should block the hub. */
 export function needsOnboarding(ws: Workspace): boolean {
   if (ws.onboarding?.completed) return false;
+  // An interview in progress reopens by itself, even after the student's name is saved.
+  if (ws.onboarding?.interview && ws.onboarding.interview.phase !== "done") return true;
   if ((ws.applicant?.name || "").trim()) return false;
   if ((ws.colleges?.length || 0) > 0) return false;
   if ((ws.profile?.activities?.length || 0) > 0) return false;

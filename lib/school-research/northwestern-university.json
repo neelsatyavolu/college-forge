@@ -1,0 +1,239 @@
+{
+  "slug": "northwestern-university",
+  "name": "Northwestern University",
+  "checkedAt": "2026-11-25",
+  "complete": true,
+  "facts": [
+    {
+      "key": "admit_rate",
+      "value": "7.5% (3,933 of 52,676; Class of 2029, CDS 2025-26)",
+      "sourceUrl": "https://enrollment.northwestern.edu/data/2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_admit_rate",
+      "value": "ED: 20.4% (1,212 of 5,939; CDS 2025-26 C21)",
+      "sourceUrl": "https://enrollment.northwestern.edu/data/2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "sat_mid50",
+      "value": "1520-1560 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://enrollment.northwestern.edu/data/2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "act_mid50",
+      "value": "34-35 (enrolled Fall 2025 who submitted, CDS C9)",
+      "sourceUrl": "https://enrollment.northwestern.edu/data/2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "test_policy",
+      "value": "Test-optional for first-year applicants; self-reported scores accepted (official scores required on enrolling). ED applicants may self-report Oct/Nov scores until Nov 30, 2026; RD until Feb 15, 2027",
+      "sourceUrl": "https://admissions.northwestern.edu/faqs/standardized-testing-policy/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "meets_full_need",
+      "value": "Meets 100% of demonstrated need with scholarships, grants and work-study, no loans. Most families under $70K attend at no cost",
+      "sourceUrl": "https://undergradaid.northwestern.edu/how-aid-works/keeping-northwestern-affordable.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "css_profile",
+      "value": "CSS Profile + FAFSA required; aid due Dec 1, 2026 (ED) and Feb 1, 2027 (RD); Oct 1 for QuestBridge",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/application-deadlines.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "merit_aid",
+      "value": "No merit aid: Northwestern's financial aid is strictly need-based",
+      "sourceUrl": "https://undergradaid.northwestern.edu/how-aid-works/keeping-northwestern-affordable.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "sticker_cost",
+      "value": "$99,375 on-campus COA (tuition $71,802; fees $1,260; housing & meals $22,941; books $1,239; personal $2,079; loan fees $54). Page undated; tuition matches CDS G1 for 2026-27",
+      "sourceUrl": "https://undergradaid.northwestern.edu/how-aid-works/cost-of-attendance/index.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "ed_ea_options",
+      "value": "Early Decision (binding) due Nov 1, decisions mid-December, deposit by Feb 1; Regular Decision due Jan 4, decisions late March. No EA. About 50% of last year's class enrolled through ED",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/application-deadlines.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "interview",
+      "value": "No alumni interviews offered. Optional Glimpse video (U.S. schools) or InitialView interview (international), due Nov 6 (ED) / Jan 16 (RD)",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "demonstrated_interest",
+      "value": "Considered (CDS C7 'Level of applicant's interest')",
+      "sourceUrl": "https://enrollment.northwestern.edu/data/2025-2026.pdf",
+      "checkedAt": "2026-11-25",
+      "cycle": "2025-26",
+      "thirdParty": false
+    },
+    {
+      "key": "major_notes",
+      "value": "Bienen School of Music needs a separate supplement and audition; Integrated Science Program, MMSS and the Musical Theatre program need additional materials",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "notes",
+      "value": "Personal (Common App) essay is optional for 2026-27; one 300-word Northwestern essay required, plus 0-2 optional short answers",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "checkedAt": "2026-11-25",
+      "cycle": "2026-27",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_lt30k",
+      "value": "$1,764 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=147767",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_30_48k",
+      "value": "$6,099 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=147767",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_48_75k",
+      "value": "$7,898 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=147767",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_75_110k",
+      "value": "$18,282 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=147767",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    },
+    {
+      "key": "net_price_gt110k",
+      "value": "$48,777 (2023-24)",
+      "sourceUrl": "https://nces.ed.gov/collegenavigator/?id=147767",
+      "checkedAt": "2026-11-25",
+      "cycle": "2023-24",
+      "thirdParty": false
+    }
+  ],
+  "deadlines": [
+    {
+      "plan": "ED",
+      "date": "2026-11-01",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/application-deadlines.html",
+      "cycle": "2026-27",
+      "note": "Binding; decisions mid-December. Aid due Dec 1"
+    },
+    {
+      "plan": "RD",
+      "date": "2027-01-04",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/application-deadlines.html",
+      "cycle": "2026-27",
+      "note": "Decisions late March. Aid due Feb 1"
+    },
+    {
+      "plan": "QuestBridge",
+      "date": "2026-10-01",
+      "sourceUrl": "https://admissions.northwestern.edu/apply/application-deadlines.html",
+      "cycle": "2026-27",
+      "note": "QuestBridge applicants; decisions December"
+    }
+  ],
+  "supplements": [
+    {
+      "label": "Background",
+      "prompt": "We want to be sure we’re considering your application in the context of your personal experiences: What aspects of your background (your identity, your school setting, your community, your household, etc.) have most shaped how you see yourself engaging in Northwestern’s community, be it academically, extracurricularly, culturally, politically, socially, or otherwise?",
+      "limit": 300,
+      "unit": "words",
+      "required": true,
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (answer 0-2): The Rock",
+      "prompt": "Painting “The Rock” is a tradition at Northwestern that invites all forms of expression—students promote campus events or extracurricular groups, support social or activist causes, show their Wildcat spirit (what we call “Purple Pride”), celebrate their culture, and more. What would you paint on The Rock, and why?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (answer 0-2): Interdisciplinary",
+      "prompt": "Northwestern fosters a distinctively interdisciplinary culture. We believe discovery and innovation thrive at the intersection of diverse ideas, perspectives, and academic interests. Within this setting, if you could dream up an undergraduate class, research project, or creative effort (a start-up, a design prototype, a performance, etc.), what would it be? Who might be some ideal classmates or collaborators?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (answer 0-2): Community",
+      "prompt": "Community and belonging matter at Northwestern. Tell us about one or more communities, networks, or student groups you see yourself connecting with on campus.",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (answer 0-2): Location",
+      "prompt": "Northwestern’s location is special: on the shore of Lake Michigan, steps from downtown Evanston, just a few miles from Chicago. What aspects of our location are most compelling to you, and why?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "cycle": "2026-27"
+    },
+    {
+      "label": "Optional (answer 0-2): Perspectives",
+      "prompt": "Northwestern is a place where people with diverse backgrounds from all over the world can study, live, and talk with one another. This range of experiences and viewpoints immeasurably enriches learning. How might your individual background contribute to this diversity of perspectives in Northwestern’s classrooms and around our campus?",
+      "limit": 200,
+      "unit": "words",
+      "required": false,
+      "sourceUrl": "https://admissions.northwestern.edu/apply/requirements.html",
+      "cycle": "2026-27"
+    }
+  ]
+}

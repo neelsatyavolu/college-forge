@@ -495,7 +495,7 @@ function Settings({ theme, account, onToggleTheme, onStartOnboarding, onWorkspac
             <div style={{ flex: "1 1 220px", minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Redo onboarding</div>
               <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
-                Review your story, academics, and college preferences. Your existing answers are prefilled; finishing saves your changes.
+                Talk it through with your AI again. It starts from what's already saved and can suggest changes to your list; no school is removed unless you drop it.
               </p>
             </div>
             <Button size="sm" variant="secondary" onClick={redoOnboarding} disabled={setupBusy}>
