@@ -77,3 +77,13 @@ test('colleges without a research file fall back to the federal all-incomes aver
   assert.match(f.netPrice.label, /average net price, all incomes/);
   assert.equal(f.netPrice.amount, averageNetPrice(outside.name, outside.slug));
 });
+
+test('international students see full cost, never US income averages', () => {
+  const ws = emptyWorkspace();
+  ws.onboarding = { completed: false, listPrefs: { ambition: 'balanced', settings: [], size: 'any', regions: [], notes: '', budget: '30-50', needAid: true, incomeBracket: '75-110', citizenship: 'international' } };
+  const f = F.studentFacts(ws, 'University of Miami');
+  assert.equal(f.international, true);
+  assert.equal(f.netPrice.basis, 'sticker');
+  assert.match(f.netPrice.label, /full cost before any aid for international students/);
+  assert.notEqual(f.fitsBudget, 'yes', 'a ~$98k cost does not fit a $30-50k budget');
+});

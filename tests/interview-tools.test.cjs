@@ -55,7 +55,8 @@ test('propose_list enforces 8-15 applications and two affordable likely schools'
   const ws = wsWith({ budget: '30-50' });
   assert.match(T.checkListProposal(ws, list(7)), /7 applications/);
   assert.match(T.checkListProposal(ws, list(16)), /16 applications/);
-  assert.match(T.checkListProposal(ws, list(10, 2, 'unknown')), /Only 0 likely schools fit/);
+  assert.match(T.checkListProposal(ws, list(10, 2, 'no')), /Only 0 likely schools fit/);
+  assert.equal(T.checkListProposal(ws, list(10, 2, 'unknown')), null, 'unknown costs are not held against the list');
   assert.equal(T.checkListProposal(ws, list(10)), null);
   assert.equal(T.checkListProposal(wsWith({ budget: 'unsure' }), list(10, 2, 'unknown')), null);
 });

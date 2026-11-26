@@ -152,7 +152,7 @@ export function applyStudentFacts(ws: Workspace, schools: UiSchool[]): UiSchool[
     const f = studentFacts(ws, s.name, s.slug);
     return {
       ...s,
-      ...(f.netPrice ? { netPrice: f.netPrice.label } : f.outOfState ? { netPrice: "Out-of-state: check the nonresident cost", fitsBudget: "unknown" as const } : {}),
+      ...(f.netPrice ? { netPrice: f.netPrice.label } : f.outOfState ? { netPrice: "Out-of-state: check the nonresident cost", fitsBudget: "unknown" as const } : f.international ? { netPrice: "International: check this college's aid for international students", fitsBudget: "unknown" as const } : {}),
       ...(f.fitsBudget ? { fitsBudget: f.fitsBudget } : {}),
       ...(f.supplements && !isUcCampus(s) ? { supplements: f.supplements } : {}),
     };
@@ -194,10 +194,11 @@ export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | 
   const likely = schools.filter((s) => s.tier === "likely");
   const budget = ws.onboarding.listPrefs?.budget;
   const capped = budget && !NO_PRICE_CAP.has(budget);
-  const affordable = capped ? likely.filter((s) => s.fitsBudget === "yes") : likely;
+  // Unknown costs aren't held against the list; likely schools known to be over budget are.
+  const affordable = capped ? likely.filter((s) => s.fitsBudget !== "no") : likely;
   if (affordable.length < 2) {
     return capped
-      ? `Only ${affordable.length} likely school${affordable.length === 1 ? "" : "s"} fit the family's budget; include at least 2 (mark fitsBudget "yes" only when the net price is within it).`
+      ? `Only ${affordable.length} likely school${affordable.length === 1 ? "" : "s"} fit the family's budget; the others are over it. Include at least 2 likely schools whose cost could fit.`
       : `Include at least 2 likely schools (now ${likely.length}).`;
   }
   return null;

@@ -62,12 +62,23 @@ export function supplementsFor(research: SchoolResearch | null): "yes" | "no" | 
   return null;
 }
 
-export type StudentFacts = { netPrice: NetPrice | null; fitsBudget: "yes" | "no" | null; supplements: "yes" | "no" | null; outOfState?: boolean };
+export type StudentFacts = { netPrice: NetPrice | null; fitsBudget: "yes" | "no" | null; supplements: "yes" | "no" | null; outOfState?: boolean; international?: boolean };
 
 export function studentFacts(ws: Workspace, nameOrSlug: string, slug?: string): StudentFacts {
   const research = loadSchoolResearch(slug || nameOrSlug) ?? loadSchoolResearch(nameOrSlug);
   const prefs = ws.onboarding.listPrefs;
   const residency = (ws.profile.residency || "").trim().toUpperCase();
+  // Federal net-price data covers US students only; international aid works differently at every college.
+  if (prefs?.citizenship === "international") {
+    const sticker = research?.facts.find((f) => f.key === "sticker_cost");
+    const amount = sticker ? dollars(sticker.value) : null;
+    const noCap = !prefs.budget || BUDGET_CAP[prefs.budget] === null;
+    return {
+      netPrice: amount !== null ? { amount, basis: "sticker", label: `$${amount.toLocaleString("en-US")} full cost before any aid for international students` } : null,
+      fitsBudget: noCap ? (prefs.budget ? "yes" : null) : amount !== null && amount <= (BUDGET_CAP[prefs.budget!] ?? Infinity) ? "yes" : null,
+      supplements: supplementsFor(research), international: true,
+    };
+  }
   if (outOfStatePublic(schoolPlace(nameOrSlug, slug), residency) && prefs?.needAid !== false) {
     // The income-bracket average is for residents; a nonresident usually pays much more at a public.
     const noCap = !!prefs?.budget && BUDGET_CAP[prefs.budget] === null;
