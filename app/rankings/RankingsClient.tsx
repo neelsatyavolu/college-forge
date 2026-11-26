@@ -56,6 +56,8 @@ export default function RankingsClient() {
   const ranker = useMemo(() => (data.data ? createRanker(data.data) : null), [data.data]);
   const majors = useMemo(() => (data.data?.meta.majors ?? []).filter((m) => m.target), [data.data]);
   const admitted = useMemo(() => new Set(me.schools.filter((s) => s.admitted).map((s) => s.id)), [me]);
+  // A student with schools on their list sees just those, ranked among themselves on the full list's scale.
+  const mine = useMemo(() => (me.schools.length ? new Set(me.schools.map((s) => s.id)) : undefined), [me]);
   // Targets: what this browser saved, else the intended major on the student's profile, else every major.
   const targets = useMemo(() => {
     const all = majors.map((m) => m.key);
@@ -90,14 +92,14 @@ export default function RankingsClient() {
       return { rows: [], pathRanks: null, formula: new Map(ranker.rank(st, student).map((r) => [r.s.id, r.rk])) };
     }
     const st = { track: isPath ? "path" : active, ...flags, w: weights };
-    const rows = ranker.rank(st, student, isAdmitted ? admitted : undefined);
-    const pathRanks = isAdmitted ? new Map(ranker.rank(st, student).map((r) => [r.s.id, r.rk])) : null;
+    const rows = ranker.rank(st, student, isAdmitted ? admitted : mine);
+    const pathRanks = isAdmitted ? new Map(ranker.rank(st, student, mine).map((r) => [r.s.id, r.rk])) : null;
     return { rows, pathRanks, formula: null };
-  }, [ranker, active, isPath, isAdmitted, isAi, flags, weights, student, admitted]);
+  }, [ranker, active, isPath, isAdmitted, isAi, flags, weights, student, admitted, mine]);
 
   const total = data.data?.schools.length ?? 0;
   const title = isAi ? "Your judged list" : isAdmitted ? "Schools you got into" : isPath ? "Ranked by the majors you can reach" : active === "overall" ? "Ranked on all majors" : `Ranked on ${majors.find((m) => m.key === active)?.label.toLowerCase()}`;
-  const missing = !isPath && !isAi && data.data && ranker ? data.data.schools.filter((s) => !ranker.has(s, active)).map((s) => s.name) : [];
+  const missing = !isPath && !isAi && data.data && ranker ? data.data.schools.filter((s) => (!mine || mine.has(s.id)) && !ranker.has(s, active)).map((s) => s.name) : [];
 
   return (
     <WorkspaceShell theme={theme} onToggleTheme={toggleTheme} topline={`${total || "…"} colleges · cost never counts`}>
