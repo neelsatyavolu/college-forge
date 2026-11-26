@@ -44,8 +44,8 @@ export function trimForFinal(output: string): string {
 
 /** Onboarding: research must not run past the server's 300-second limit; the list or question must come out. */
 export const ONBOARDING_WRAP_UP: WrapUp = {
-  afterMs: 100_000,
+  afterMs: 80_000,
   deadlineMs: 290_000,
   tools: ["propose_list", "recommend_strategy", "ask_question", "advance_section"],
-  note: "Time is nearly up for this turn. Stop researching: with what you already know, call propose_list now (or ask_question if the list step hasn't started). Mark anything unverified as unknown.",
+  note: "Time is nearly up for this turn. Stop researching: with what you already know, call propose_list now (or ask_question if the list step hasn't started), with exactly the student's counts (suppCount with supplements, noSuppCount without) and their mix; there is no time to fix a list after this. Mark anything unverified as unknown.",
 };
