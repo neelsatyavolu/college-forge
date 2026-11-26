@@ -46,6 +46,12 @@ struct CollegesView: View {
             .navigationDestination(for: RankingsDetailRoute.self) { route in
                 RankingsDetailView(row: route.row, path: route.path)
             }
+            .navigationDestination(for: OfficialRankingsRoute.self) { _ in
+                OfficialRankingsView()
+            }
+            .navigationDestination(for: OfficialRankingRoute.self) { route in
+                OfficialRankingDetailView(row: route.row, list: route.list)
+            }
         }
         .environment(explore)
         .environment(picks)

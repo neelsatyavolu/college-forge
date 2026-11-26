@@ -57,6 +57,17 @@ struct RankingsView: View {
             }
             .listSectionSpacing(Theme.Spacing.xs)
 
+            Section {
+                NavigationLink(value: OfficialRankingsRoute()) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Official rankings").font(.body.weight(.medium)).foregroundStyle(Theme.ink)
+                        Text("U.S. News, liberal arts, Forbes and Niche, as published")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
+                }
+            }
+
             if let ai = response.ai {
                 aiSection(ai)
             } else {

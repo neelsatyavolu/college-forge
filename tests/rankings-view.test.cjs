@@ -53,6 +53,21 @@ test('admitted schools get their own tab and keep their My path rank', () => {
   assert.ok(view.rows.every(r => r.admitted && /^My path /.test(r.notes[0])));
 });
 
+test('a student with schools on their list sees only those schools', () => {
+  const ids = data.schools.slice(5, 9).map(s => s.id);
+  const me = { ...NO_RANKINGS_ME, workspace: true, schools: ids.map((id, i) => ({ id, major: [], admitted: i === 0 })) };
+  for (const v of ['path', 'overall', 'cs', 'admitted']) {
+    const view = buildRankingsView(data, me, input({ view: v }));
+    const shown = [...view.rows.map(r => r.id), ...view.missing.map(n => data.schools.find(s => s.name === n).id)];
+    assert.ok(shown.every(id => ids.includes(id)), v);
+  }
+  const path = buildRankingsView(data, me, input({}));
+  assert.deepEqual(path.rows.map(r => r.id).sort(), [...ids].sort());
+  assert.match(path.rows[0].rank, /^(T-)?1$/);
+  const admitted = buildRankingsView(data, me, input({ view: 'admitted' }));
+  assert.match(admitted.rows[0].notes[0], / of 4$/);
+});
+
 test('unknown views and targets fall back, and bad settings are refused', async () => {
   const view = buildRankingsView(data, NO_RANKINGS_ME, input({ view: 'nope', targets: ['nope'] }));
   assert.equal(view.view, 'path');

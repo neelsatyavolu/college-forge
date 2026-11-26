@@ -121,12 +121,14 @@ export function buildRankingsView(data: CareerData, me: RankingsMe, input: Ranki
     };
   }
 
+  // A student with schools on their list sees just those, ranked among themselves on the full list's scale.
+  const mine = me.schools.length ? new Set(me.schools.map((s) => s.id)) : undefined;
   const st = { track: isPath ? "path" : active, ...flags, w: weights };
-  const rows = ranker.rank(st, student, isAdmitted ? admitted : undefined);
-  const pathRanks = isAdmitted ? new Map(ranker.rank(st, student).map((r) => [r.s.id, r.rk])) : null;
+  const rows = ranker.rank(st, student, isAdmitted ? admitted : mine);
+  const pathRanks = isAdmitted ? new Map(ranker.rank(st, student, mine).map((r) => [r.s.id, r.rk])) : null;
   const tot = PILLARS.reduce((a, k) => a + weights[k], 0) || 1;
   const label = (k: string, r: RankedRow) => (isPath && !r.mx.direct && r.s.switch.lbl[k]) || majors.find((m) => m.key === k)?.short || "All majors";
-  const missing = isPath ? [] : data.schools.filter((s) => !ranker.has(s, active)).map((s) => s.name);
+  const missing = isPath ? [] : data.schools.filter((s) => (!mine || mine.has(s.id)) && !ranker.has(s, active)).map((s) => s.name);
 
   return {
     ...base,
