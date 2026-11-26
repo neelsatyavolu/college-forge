@@ -211,6 +211,16 @@ for (const row of US_NEWS_BY_SCORECARD_ID.values()) {
   US_NEWS_BY_SLUG.set(slugify(row.name), row);
 }
 
+const CONTROL_BY_ID = new Map(rankings.schools.map((r) => [r.unitid, r.control] as const));
+
+/** A college's state and whether it's public, when Forge's data knows. */
+export function schoolPlace(name: string, slug?: string): { state: string; isPublic: boolean } | null {
+  const row = (slug && US_NEWS_BY_SLUG.get(slug)) || US_NEWS_BY_SLUG.get(slugify(name));
+  if (!row) return null;
+  const control = CONTROL_BY_ID.get(row.scorecardId);
+  return control ? { state: row.state, isPublic: control === "public" } : null;
+}
+
 /**
  * Forge's data-based tier for a college the AI proposed, or null when Forge has no admissions numbers
  * for it. Tiers on the draft list come from here, so the AI can't call a near-likely school a target.

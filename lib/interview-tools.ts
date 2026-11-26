@@ -140,10 +140,10 @@ export function applyDataTiers(ws: Workspace, schools: UiSchool[]): { schools: U
 /** Fills each school's net price, budget fit and supplement need from Forge's research files. */
 export function applyStudentFacts(ws: Workspace, schools: UiSchool[]): UiSchool[] {
   return schools.map((s) => {
-    const f = studentFacts(ws, s.slug || s.name);
+    const f = studentFacts(ws, s.name, s.slug);
     return {
       ...s,
-      ...(f.netPrice ? { netPrice: f.netPrice.label } : {}),
+      ...(f.netPrice ? { netPrice: f.netPrice.label } : f.outOfState ? { netPrice: "Out-of-state: check the nonresident cost", fitsBudget: "unknown" as const } : {}),
       ...(f.fitsBudget ? { fitsBudget: f.fitsBudget } : {}),
       ...(f.supplements && !isUcCampus(s) ? { supplements: f.supplements } : {}),
     };

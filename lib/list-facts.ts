@@ -5,6 +5,7 @@
  */
 import type { IncomeBracket, OnboardingListPrefs, Workspace } from "./store";
 import { loadSchoolResearch, type SchoolResearch } from "./school-research";
+import { schoolPlace } from "./college-recommendations";
 
 export const CURRENT_CYCLE = "2026-27";
 
@@ -28,6 +29,11 @@ export function dollars(value: string): number | null {
 }
 
 export type NetPrice = { amount: number; basis: "income" | "sticker"; label: string };
+
+/** Federal net price by income counts in-state students only, so it isn't a nonresident's price at a public. */
+export function outOfStatePublic(place: { state: string; isPublic: boolean } | null, residency: string | undefined): boolean {
+  return !!place && place.isPublic && !!residency && /^[A-Z]{2}$/.test(residency) && place.state !== residency;
+}
 
 /**
  * What a year would likely cost this family: the average net price for their income bracket, or the
@@ -56,11 +62,17 @@ export function supplementsFor(research: SchoolResearch | null): "yes" | "no" | 
   return null;
 }
 
-export type StudentFacts = { netPrice: NetPrice | null; fitsBudget: "yes" | "no" | null; supplements: "yes" | "no" | null };
+export type StudentFacts = { netPrice: NetPrice | null; fitsBudget: "yes" | "no" | null; supplements: "yes" | "no" | null; outOfState?: boolean };
 
-export function studentFacts(ws: Workspace, nameOrSlug: string): StudentFacts {
-  const research = loadSchoolResearch(nameOrSlug);
+export function studentFacts(ws: Workspace, nameOrSlug: string, slug?: string): StudentFacts {
+  const research = loadSchoolResearch(slug || nameOrSlug) ?? loadSchoolResearch(nameOrSlug);
   const prefs = ws.onboarding.listPrefs;
+  const residency = (ws.profile.residency || "").trim().toUpperCase();
+  if (outOfStatePublic(schoolPlace(nameOrSlug, slug), residency) && prefs?.needAid !== false) {
+    // The income-bracket average is for residents; a nonresident usually pays much more at a public.
+    const noCap = !!prefs?.budget && BUDGET_CAP[prefs.budget] === null;
+    return { netPrice: null, fitsBudget: noCap ? "yes" : null, supplements: supplementsFor(research), outOfState: true };
+  }
   const netPrice = netPriceFor(research, prefs);
   const cap = prefs?.budget ? BUDGET_CAP[prefs.budget] ?? null : null;
   const fitsBudget = netPrice && cap !== null ? (netPrice.amount <= cap ? "yes" : "no") : cap === null && prefs?.budget ? "yes" : null;

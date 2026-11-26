@@ -44,3 +44,20 @@ test('the tier mix must roughly match the chosen ambition', () => {
   ws.onboarding.listPrefs.ambition = 'conservative';
   assert.equal(T.checkMix(ws, mk(0, 3, 3)), null, 'a small conservative list may skip reaches');
 });
+
+test('an out-of-state public never shows the in-state income average as the student\'s price', () => {
+  const ws = emptyWorkspace();
+  ws.profile = { ...ws.profile, residency: 'OR' };
+  ws.onboarding = { completed: false, listPrefs: { ambition: 'balanced', settings: [], size: 'any', regions: [], notes: '', budget: '15-30', needAid: true, incomeBracket: '75-110' } };
+  const michigan = F.studentFacts(ws, 'University of Michigan--Ann Arbor', 'university-of-michigan-ann-arbor');
+  assert.equal(michigan.outOfState, true);
+  assert.equal(michigan.netPrice, null);
+  assert.equal(michigan.fitsBudget, null);
+  ws.profile.residency = 'MI';
+  const resident = F.studentFacts(ws, 'University of Michigan--Ann Arbor', 'university-of-michigan-ann-arbor');
+  assert.notEqual(resident.outOfState, true, 'residents get the income average');
+  ws.profile.residency = 'OR';
+  ws.onboarding.listPrefs.budget = '50plus';
+  assert.equal(F.studentFacts(ws, 'University of Michigan--Ann Arbor', 'university-of-michigan-ann-arbor').fitsBudget, 'yes', 'no budget cap, so it fits');
+  assert.equal(F.outOfStatePublic({ state: 'CA', isPublic: false }, 'OR'), false, 'privates price everyone the same way');
+});
