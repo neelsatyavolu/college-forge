@@ -181,10 +181,14 @@ export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | 
   const apps = applicationCount(schools);
   const prefs = ws.onboarding.listPrefs;
   if (typeof prefs?.suppCount === "number" && typeof prefs?.noSuppCount === "number") {
-    const supp = applicationCount(schools.filter((s) => s.supplements !== "no"));
-    const quick = applicationCount(schools.filter((s) => s.supplements === "no"));
-    if (Math.abs(supp - prefs.suppCount) > 1 || Math.abs(quick - prefs.noSuppCount) > 1) {
-      return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${supp} and ${quick} (all UC campuses count as one supplement application). Mark each school's supplements yes/no from its current requirements.`;
+    // Schools whose supplement need is unknown can count either way: the list passes when some split works.
+    const yes = applicationCount(schools.filter((s) => s.supplements === "yes" || isUcCampus(s)));
+    const no = applicationCount(schools.filter((s) => s.supplements === "no" && !isUcCampus(s)));
+    const unknown = applicationCount(schools.filter((s) => s.supplements !== "yes" && s.supplements !== "no" && !isUcCampus(s)));
+    const fits = (target: number, sure: number) => sure <= target + 1 && sure + unknown >= target - 1;
+    const total = yes + no + unknown;
+    if (!fits(prefs.suppCount, yes) || !fits(prefs.noSuppCount, no) || Math.abs(total - (prefs.suppCount + prefs.noSuppCount)) > 2) {
+      return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${yes} with, ${no} without and ${unknown} unknown (all UC campuses count as one supplement application). Check the unknown ones' requirements, then adjust.`;
     }
   } else if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
   const likely = schools.filter((s) => s.tier === "likely");

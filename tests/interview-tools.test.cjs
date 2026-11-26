@@ -160,7 +160,7 @@ test('a list must match the student\'s supplement and no-supplement counts (±1)
   assert.equal(parsed[0].supplements, 'yes', 'UC is always a supplement application');
   assert.equal(T.checkListProposal(ws, parsed), null, '4 supplement apps (UC once) and 2 without');
   const tooFew = parsed.filter((s) => s.supplements !== 'no').slice(0, 2);
-  assert.match(T.checkListProposal(ws, tooFew), /asked for 4 applications with supplements and 2 without; this list has 1 and 0/);
+  assert.match(T.checkListProposal(ws, tooFew), /asked for 4 applications with supplements and 2 without; this list has 1 with, 0 without and 0 unknown/);
 });
 
 test('Forge resets tiers from its admissions data and remembers the AI\'s guess', () => {
@@ -201,4 +201,11 @@ test('a list Forge objects to is refused twice, then shown with a plain warning 
   const ev = h.events.find((e) => e.type === 'list');
   assert.match(ev.warning, /fewer than two likely schools on this list fit your budget/);
   assert.equal(h.ws.onboarding.interview.listRefusals, 0, 'the counter resets once a list is shown');
+});
+
+test('schools with unknown supplement needs count either way', () => {
+  const ws = wsWith({ budget: 'unsure', suppCount: 6, noSuppCount: 4 });
+  const mk = (n, supplements) => Array.from({ length: n }, (_, i) => ({ name: `${supplements}-${i}`, tier: i % 3 === 0 ? 'likely' : i % 3 === 1 ? 'target' : 'reach', reason: 'r', supplements }));
+  assert.equal(T.checkListProposal(ws, [...mk(6, 'yes'), ...mk(1, 'no'), ...mk(3, 'unknown')]), null, '3 unknown can be the quick apps');
+  assert.match(T.checkListProposal(ws, [...mk(9, 'yes'), ...mk(1, 'unknown')]), /9 with, 0 without and 1 unknown/);
 });

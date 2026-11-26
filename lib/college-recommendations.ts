@@ -417,6 +417,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     // More candidates in realistic range, best first, for an agent building a fuller list.
     ...(options.morePerTier ? { more: (["reach", "target", "safety"] as const).flatMap(tier => candidates
       .filter(c => c.fit.tier === tier && !selected.some(x => x.college.slug === c.college.slug))
+      // The student's region and setting choices first, then the rest.
+      .sort((a, b) => Number(b.matchesPrefs) - Number(a.matchesPrefs))
       .slice(0, options.morePerTier)
       .map(c => ({ name: c.college.name, slug: c.college.slug, scorecardId: c.college.scorecardId, tier: tier === "safety" ? "likely" : tier,
         location: c.college.location, admit: c.college.admit, satRange: c.college.satRange, inStatePublic: c.inStatePublic,
