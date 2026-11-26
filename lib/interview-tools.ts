@@ -137,13 +137,22 @@ export function applyDataTiers(ws: Workspace, schools: UiSchool[]): { schools: U
   return { schools: out, changed };
 }
 
+/** The balance problem in words for the student, shown on a list Forge accepted anyway. */
+export function studentWarning(problem: string): string {
+  if (/likely schools? fit the family's budget/.test(problem)) return "Heads up: fewer than two likely schools on this list fit your budget. Run each school's net price calculator, and consider adding an in-state public or a community-college transfer path as a backstop.";
+  if (/Include at least 2 likely/.test(problem)) return "Heads up: this list has fewer than two likely schools. Add a school you're very likely to get into before you finalize.";
+  if (/tiers \(after Forge's data\)/.test(problem)) return `Heads up: the mix doesn't quite match what you chose. ${problem.replace(/^The tiers \(after Forge's data\) are /, "It's ").replace(/ Swap schools to fix .*$/, "")}`;
+  if (/applications with supplements/.test(problem)) return "Heads up: the number of schools doesn't exactly match the counts you gave. Drop or ask for schools until it does.";
+  return `Heads up: ${problem}`;
+}
+
 /** Fills each school's net price, budget fit and supplement need from Forge's research files. */
 export function applyStudentFacts(ws: Workspace, schools: UiSchool[]): UiSchool[] {
   return schools.map((s) => {
     const f = studentFacts(ws, s.name, s.slug);
     return {
       ...s,
-      ...(f.netPrice ? { netPrice: f.netPrice.label } : f.outOfState ? { netPrice: "Out-of-state: check the nonresident cost", fitsBudget: "unknown" as const } : {}),
+      ...(f.netPrice ? { netPrice: f.netPrice.label } : f.outOfState ? { netPrice: "Out-of-state: check the nonresident cost", fitsBudget: "unknown" as const } : f.international ? { netPrice: "International: check this college's aid for international students", fitsBudget: "unknown" as const } : {}),
       ...(f.fitsBudget ? { fitsBudget: f.fitsBudget } : {}),
       ...(f.supplements && !isUcCampus(s) ? { supplements: f.supplements } : {}),
     };
@@ -172,19 +181,24 @@ export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | 
   const apps = applicationCount(schools);
   const prefs = ws.onboarding.listPrefs;
   if (typeof prefs?.suppCount === "number" && typeof prefs?.noSuppCount === "number") {
-    const supp = applicationCount(schools.filter((s) => s.supplements !== "no"));
-    const quick = applicationCount(schools.filter((s) => s.supplements === "no"));
-    if (Math.abs(supp - prefs.suppCount) > 1 || Math.abs(quick - prefs.noSuppCount) > 1) {
-      return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${supp} and ${quick} (all UC campuses count as one supplement application). Mark each school's supplements yes/no from its current requirements.`;
+    // Schools whose supplement need is unknown can count either way: the list passes when some split works.
+    const yes = applicationCount(schools.filter((s) => s.supplements === "yes" || isUcCampus(s)));
+    const no = applicationCount(schools.filter((s) => s.supplements === "no" && !isUcCampus(s)));
+    const unknown = applicationCount(schools.filter((s) => s.supplements !== "yes" && s.supplements !== "no" && !isUcCampus(s)));
+    const fits = (target: number, sure: number) => sure <= target + 1 && sure + unknown >= target - 1;
+    const total = yes + no + unknown;
+    if (!fits(prefs.suppCount, yes) || !fits(prefs.noSuppCount, no) || Math.abs(total - (prefs.suppCount + prefs.noSuppCount)) > 2) {
+      return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${yes} with, ${no} without and ${unknown} unknown (all UC campuses count as one supplement application). Check the unknown ones' requirements, then adjust.`;
     }
   } else if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
   const likely = schools.filter((s) => s.tier === "likely");
   const budget = ws.onboarding.listPrefs?.budget;
   const capped = budget && !NO_PRICE_CAP.has(budget);
-  const affordable = capped ? likely.filter((s) => s.fitsBudget === "yes") : likely;
+  // Unknown costs aren't held against the list; likely schools known to be over budget are.
+  const affordable = capped ? likely.filter((s) => s.fitsBudget !== "no") : likely;
   if (affordable.length < 2) {
     return capped
-      ? `Only ${affordable.length} likely school${affordable.length === 1 ? "" : "s"} fit the family's budget; include at least 2 (mark fitsBudget "yes" only when the net price is within it).`
+      ? `Only ${affordable.length} likely school${affordable.length === 1 ? "" : "s"} fit the family's budget; the others are over it. Include at least 2 likely schools whose cost could fit.`
       : `Include at least 2 likely schools (now ${likely.length}).`;
   }
   return null;
@@ -407,12 +421,20 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
         const { schools: tiered, changed } = applyDataTiers(ws, markCurrent(ws, parseSchools(a.schools)));
         const schools = applyStudentFacts(ws, tiered);
         const problem = checkListProposal(ws, schools) ?? checkMix(ws, schools);
-        if (problem) return `Not shown: ${problem}${changed.length ? ` (Forge's data also sets these tiers: ${changed.join(", ")}.)` : ""}`;
+        // Push back twice so the AI can fix the list; some students' situations can't meet every rule
+        // (two likely schools under a very tight budget may not exist), so the third try is shown with
+        // the problem stated plainly instead of looping.
+        const refusals = interviewOf(ws).listRefusals ?? 0;
+        if (problem && refusals < 2) {
+          await mutate((w) => withInterview(w, { ...interviewOf(w), listRefusals: refusals + 1 }));
+          return `Not shown: ${problem}${changed.length ? ` (Forge's data also sets these tiers: ${changed.join(", ")}.)` : ""} Fix it and call propose_list again; if it truly can't be met for this student, call again anyway and Forge will show the list with this caveat.`;
+        }
+        const warning = problem ? studentWarning(problem) : undefined;
         const ideaRaw = (a.edIdea ?? {}) as Args;
         const edIdea: UiEdIdea | undefined = text(ideaRaw.reason, 400) ? { ...(text(ideaRaw.school, 120) ? { school: text(ideaRaw.school, 120) } : {}), reason: text(ideaRaw.reason, 400)! } : undefined;
-        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, ...(edIdea ? { edIdea } : {}) }));
-        emit({ type: "list", schools, ...(edIdea ? { edIdea } : {}) });
-        stop({ list: schools, ...(edIdea ? { edIdea } : {}) });
+        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, listRefusals: 0, ...(edIdea ? { edIdea } : {}) }));
+        emit({ type: "list", schools, ...(edIdea ? { edIdea } : {}), ...(warning ? { warning } : {}) });
+        stop({ list: schools, ...(edIdea ? { edIdea } : {}), ...(warning ? { warning } : {}) });
         return `Shown to the student${changed.length ? `. Forge set these tiers from its admissions data: ${changed.join(", ")}` : ""}. Stop now; they will approve, drop or ask for changes.`;
       }
       case "recommend_strategy": {

@@ -59,7 +59,7 @@ async function counselorTurn(history, mode = 'onboarding') {
   const result = await runCodexChat({
     tokens, instructions: mode === 'onboarding' ? buildInterviewPrompt(ws) : `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`,
     turns: history.slice(-16), emit: noop, tools: [...hub.tools, ...iv.tools],
-    executeTool: async (n, a) => { calls.push(n); return exec(n, a); },
+    executeTool: async (n, a) => { calls.push(n); const out = await exec(n, a); if (n === 'propose_list' || n === 'advance_section') log(`   ${n} -> ${String(out).slice(0, 300)}`); return out; },
     shouldEndTurn: iv.endTurn, maxRounds: 14, effort: mode === 'onboarding' ? 'low' : 'medium',
   });
   if (mode === 'onboarding') await mutate((w) => recordTurn(recordTurn(w, { role: 'user', content: history.at(-1).content, at: Date.now() }), { role: 'assistant', content: result.text, at: Date.now() }));

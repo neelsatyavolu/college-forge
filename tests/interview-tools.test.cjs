@@ -55,7 +55,8 @@ test('propose_list enforces 8-15 applications and two affordable likely schools'
   const ws = wsWith({ budget: '30-50' });
   assert.match(T.checkListProposal(ws, list(7)), /7 applications/);
   assert.match(T.checkListProposal(ws, list(16)), /16 applications/);
-  assert.match(T.checkListProposal(ws, list(10, 2, 'unknown')), /Only 0 likely schools fit/);
+  assert.match(T.checkListProposal(ws, list(10, 2, 'no')), /Only 0 likely schools fit/);
+  assert.equal(T.checkListProposal(ws, list(10, 2, 'unknown')), null, 'unknown costs are not held against the list');
   assert.equal(T.checkListProposal(ws, list(10)), null);
   assert.equal(T.checkListProposal(wsWith({ budget: 'unsure' }), list(10, 2, 'unknown')), null);
 });
@@ -160,7 +161,7 @@ test('a list must match the student\'s supplement and no-supplement counts (±1)
   assert.equal(parsed[0].supplements, 'yes', 'UC is always a supplement application');
   assert.equal(T.checkListProposal(ws, parsed), null, '4 supplement apps (UC once) and 2 without');
   const tooFew = parsed.filter((s) => s.supplements !== 'no').slice(0, 2);
-  assert.match(T.checkListProposal(ws, tooFew), /asked for 4 applications with supplements and 2 without; this list has 1 and 0/);
+  assert.match(T.checkListProposal(ws, tooFew), /asked for 4 applications with supplements and 2 without; this list has 1 with, 0 without and 0 unknown/);
 });
 
 test('Forge resets tiers from its admissions data and remembers the AI\'s guess', () => {
@@ -187,4 +188,25 @@ test('the draft list takes net price and supplements from Forge\'s research, not
   assert.notEqual(miami.netPrice, '$5,000');
   assert.equal(miami.fitsBudget, /\$(\d+),/.test(miami.netPrice) && Number(miami.netPrice.replace(/[^\d]/g, '').slice(0, 5)) <= 30000 ? 'yes' : 'no');
   assert.equal(ucla.supplements, 'yes', 'a UC campus always has the PIQs');
+});
+
+test('a list Forge objects to is refused twice, then shown with a plain warning instead of looping', async () => {
+  const ws = complete(wsWith({ budget: 'lt15', needAid: true }));
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, budget: 'lt15', suppCount: 10, noSuppCount: 0 };
+  const h = harness(ws);
+  const schools = list(10, 2, 'no');
+  const call = () => h.tools.execute('propose_list', JSON.stringify({ schools }));
+  assert.match(await call(), /^Not shown: Only 0 likely schools fit/);
+  assert.match(await call(), /^Not shown:/);
+  assert.match(await call(), /^Shown to the student/);
+  const ev = h.events.find((e) => e.type === 'list');
+  assert.match(ev.warning, /fewer than two likely schools on this list fit your budget/);
+  assert.equal(h.ws.onboarding.interview.listRefusals, 0, 'the counter resets once a list is shown');
+});
+
+test('schools with unknown supplement needs count either way', () => {
+  const ws = wsWith({ budget: 'unsure', suppCount: 6, noSuppCount: 4 });
+  const mk = (n, supplements) => Array.from({ length: n }, (_, i) => ({ name: `${supplements}-${i}`, tier: i % 3 === 0 ? 'likely' : i % 3 === 1 ? 'target' : 'reach', reason: 'r', supplements }));
+  assert.equal(T.checkListProposal(ws, [...mk(6, 'yes'), ...mk(1, 'no'), ...mk(3, 'unknown')]), null, '3 unknown can be the quick apps');
+  assert.match(T.checkListProposal(ws, [...mk(9, 'yes'), ...mk(1, 'unknown')]), /9 with, 0 without and 1 unknown/);
 });

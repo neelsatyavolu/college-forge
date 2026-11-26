@@ -248,7 +248,7 @@ function OcSchoolTile({ s, off, disabled, onToggle }) {
   );
 }
 
-function OcListTiles({ schools, edIdea, disabled, onApprove, onRevise }) {
+function OcListTiles({ schools, edIdea, warning, disabled, onApprove, onRevise }) {
   const [dropped, setDropped] = React.useState([]);
   const [note, setNote] = React.useState("");
   const kept = schools.filter((s) => !dropped.includes(s.name));
@@ -268,6 +268,7 @@ function OcListTiles({ schools, edIdea, disabled, onApprove, onRevise }) {
           <p>{edIdea.reason}</p>
         </div>
       )}
+      {warning && <p className="oc-list-warn" role="note">{warning}</p>}
       <p className="oc-list-mix">{ocAppCount(kept)} applications · {mix}</p>
       {groups.map(([title, hint, group]) => group.length > 0 && (
         <section key={title} className="oc-list-group">

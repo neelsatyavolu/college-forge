@@ -41,6 +41,9 @@ const SCHOOLS = [
   ...['Case Western Reserve University', 'University of Rochester', 'Tufts University', 'Boston College'].map((name) => ({ name, tier: 'target', reason: 'Undergraduate research in biology from first year.', estChance: '35%', netPrice: '$31,500' })),
   ...['Johns Hopkins University', 'Duke University', 'Brown University', 'Rice University'].map((name) => ({ name, tier: 'reach', reason: 'Top biology research; meets full need.', estChance: '9%' })),
 ];
+// BIG=1 renders a 20-school list with a warning, to check how large lists lay out (screenshots only).
+const BIG_LIST = process.env.BIG ? [...SCHOOLS, ...Array.from({ length: 10 }, (_, k) => ({ name: `Sample College ${k + 1}`, tier: ['reach', 'target', 'likely'][k % 3], supplements: k % 2 ? 'no' : 'yes', reason: 'Strong program for your major and a campus you said you would like.', netPrice: `$${18 + k},400 average for your income`, fitsBudget: k % 4 ? 'yes' : 'no' }))] : null;
+const LIST_WARNING = 'Heads up: fewer than two likely schools on this list fit your budget. Run each school\'s net price calculator.';
 
 async function realRoute(handler, request) {
   const init = { method: request.method(), headers: request.headers() };
@@ -78,7 +81,7 @@ async function scripted(body) {
   if (n === 4) return nd({ type: 'delta', text: 'Great list. What did you get on the SAT?' }, { type: 'question', question: { id: 'sat', kind: 'number', prompt: 'SAT total', min: 400, max: 1600 } });
   if (n === 5) {
     await store.updateWorkspace(WS, (w) => ({ ...w, onboarding: { ...w.onboarding, interview: { ...w.onboarding.interview, phase: 'list', listDraft: SCHOOLS } } }));
-    return nd({ type: 'delta', text: "Here's a first list: 10 applications, balanced, with two likely schools that fit your budget." }, { type: 'list', schools: SCHOOLS, edIdea: { school: 'Case Western Reserve University', reason: 'Your strongest fit with a net price inside your budget; confirm after research.' } });
+    return nd({ type: 'delta', text: "Here's a first list: 10 applications, balanced, with two likely schools that fit your budget." }, { type: 'list', schools: BIG_LIST || SCHOOLS, ...(BIG_LIST ? { warning: LIST_WARNING } : {}), edIdea: { school: 'Case Western Reserve University', reason: 'Your strongest fit with a net price inside your budget; confirm after research.' } });
   }
   await store.updateWorkspace(WS, (w) => ({ ...w, onboarding: { ...w.onboarding, interview: { ...w.onboarding.interview, phase: 'strategy' } } }));
   return nd({ type: 'delta', text: 'Based on the research, Case Western is the strongest Early Decision fit.' }, { type: 'strategy', strategy: { ed: 'Case Western Reserve University', ea: ['Ohio State University', 'University of Pittsburgh'], reasons: 'ED at Case Western raises your odds most, and its net price fits your budget. Apply EA to Ohio State and Pitt so you have answers by January.' } });
@@ -261,7 +264,11 @@ try {
   await waitText("Here's a first list");
   await waitText('Early Decision idea');
   await waitText('No supplements');
-  assert.match(await page.evaluate(() => document.querySelector('.oc-list-mix').textContent), /10 applications · 4 reach · 4 target · 2 likely/);
+  const mixLine = await page.evaluate(() => document.querySelector('.oc-list-mix').textContent);
+  if (BIG_LIST) {
+    assert.match(mixLine, /20 applications/);
+    assert.match(await page.evaluate(() => document.body.innerText), /fewer than two likely schools on this list fit your budget/);
+  } else assert.match(mixLine, /10 applications · 4 reach · 4 target · 2 likely/);
   await assertVisible('.oc-list-actions', 'list approval buttons');
   await shoot('04-list');
   await page.evaluate(() => [...document.querySelectorAll('.oc-school')].find((s) => s.textContent.includes('Rice University')).querySelector('button').click());
