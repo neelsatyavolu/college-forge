@@ -67,6 +67,7 @@ async function counselorTurn(history, mode = 'onboarding') {
 }
 
 async function studentReply(history, ui) {
+  if (ui?.question?.kind === 'intake' && process.env.PASTE) return process.env.PASTE;
   const shown = ui?.question ? `\n[Shown as ${ui.question.kind}${ui.question.options ? ': ' + ui.question.options.map((o) => o.label).join(' | ') : ''}${ui.question.min != null ? ` (${ui.question.min}-${ui.question.max})` : ''}]` : '';
   const turns = history.slice(-10).map((t) => ({ role: t.role === 'user' ? 'assistant' : 'user', content: t.content || '(tiles)' }));
   turns[turns.length - 1] = { ...turns.at(-1), content: turns.at(-1).content + shown };

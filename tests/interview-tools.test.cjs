@@ -175,3 +175,16 @@ test('Forge resets tiers from its admissions data and remembers the AI\'s guess'
   assert.equal(schools[1].tier, 'target', 'unknown colleges keep the AI tier');
   assert.deepEqual(changed, ['Massachusetts Institute of Technology target→reach']);
 });
+
+test('the draft list takes net price and supplements from Forge\'s research, not the AI', () => {
+  const ws = wsWith({ budget: '15-30', needAid: true, incomeBracket: '75-110' });
+  const [miami, ucla] = T.applyStudentFacts(ws, [
+    { name: 'University of Miami', tier: 'target', reason: 'r', supplements: 'yes', netPrice: '$5,000', fitsBudget: 'yes' },
+    { name: 'University of California, Los Angeles', tier: 'reach', reason: 'r', supplements: 'yes' },
+  ]);
+  assert.equal(miami.supplements, 'no', 'research says Miami has no supplement');
+  assert.match(miami.netPrice, /average for your income/);
+  assert.notEqual(miami.netPrice, '$5,000');
+  assert.equal(miami.fitsBudget, /\$(\d+),/.test(miami.netPrice) && Number(miami.netPrice.replace(/[^\d]/g, '').slice(0, 5)) <= 30000 ? 'yes' : 'no');
+  assert.equal(ucla.supplements, 'yes', 'a UC campus always has the PIQs');
+});
