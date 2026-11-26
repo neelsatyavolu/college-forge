@@ -8,11 +8,14 @@ body { background: var(--canvas); color: var(--ink); font-family: var(--font-san
 .rk-lede a { color: var(--workspace-accent); white-space: nowrap; }
 
 /* View tabs */
-.rk-toolbar { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 24px; flex-wrap: wrap; border-bottom: 1px solid var(--hairline); margin-bottom: 16px; }
-.rk-tabs { display: flex; gap: 28px; }
+.rk-toolbar { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 20px; border-bottom: 1px solid var(--hairline); margin-bottom: 16px; }
+.rk-tabs { display: flex; gap: 24px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.rk-tabs::-webkit-scrollbar { display: none; }
+.rk-tabs.is-clipped { mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
 .rk-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; padding: 0 0 12px; font-size: 14px; font-weight: 500; color: var(--muted); }
 .rk-tab:hover { color: var(--ink); }
-.rk-more { margin: 0 0 8px auto; font: inherit; font-size: 14px; color: var(--ink); background: var(--canvas); border: 1px solid var(--hairline); border-radius: 6px; padding: 6px 10px; max-width: 100%; }
+.rk-more { flex: none; width: auto; field-sizing: content; max-width: 200px; margin: 0 0 8px; font: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: transparent; border: 1px solid var(--hairline); border-radius: 6px; padding: 4px 8px; cursor: pointer; }
+.rk-more:hover { color: var(--ink); }
 .rk-tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--workspace-accent); }
 .rk-tab:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: 4px; border-radius: 2px; }
 .rk-pricetoggle { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; }
@@ -203,7 +206,8 @@ button.rk-row:hover { background: var(--surface-soft); }
 /* Phones: rows become cards; data-label names each figure */
 @media (max-width: 700px) {
   .rk-tabs { flex: 1 1 100%; gap: 20px; overflow-x: auto; scrollbar-width: none; }
-  .rk-more { margin: 0 0 12px; width: 100%; }
+  .rk-toolbar { flex-wrap: wrap; }
+  .rk-more { margin: 0 0 12px; width: 100%; max-width: none; }
   .rk-tabs::-webkit-scrollbar { display: none; }
   .rk-tab { white-space: nowrap; }
   .rk-row--head { display: none; }
@@ -221,7 +225,6 @@ button.rk-row:hover { background: var(--surface-soft); }
   .rk-weights, .rk-method__cols { grid-template-columns: 1fr; }
   .rk-majorhead h2 { font-size: 30px; }
   .rk-field--grow { flex-basis: 100%; }
-  .rk-toolbar { align-items: stretch; }
   .rk-pricetoggle { padding-bottom: 10px; }
 }
 

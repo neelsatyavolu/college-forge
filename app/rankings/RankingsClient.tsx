@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CareerAi } from "@/lib/career-ai";
 import { DEFAULT_WEIGHTS, PILLARS, createRanker, type CareerData, type Student, type Weights } from "@/lib/career-ranking";
 import AiImport from "./AiImport";
@@ -83,6 +83,19 @@ export default function RankingsClient() {
   const more = useMemo(() => majors.filter((m) => !m.tab).sort((a, b) => a.label.localeCompare(b.label)), [majors]);
   const active = tabs.some((t) => t.id === view) || more.some((m) => m.key === view) ? view : "path";
   const isAi = active === "ai", isAdmitted = active === "admitted", isPath = active === "path" || isAdmitted;
+  // Fades the tab row's right edge while more tabs are scrolled out of view.
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [clipped, setClipped] = useState(false);
+  useEffect(() => {
+    const el = tabsRef.current;
+    if (!el) return;
+    const check = () => setClipped(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    el.addEventListener("scroll", check, { passive: true });
+    return () => { ro.disconnect(); el.removeEventListener("scroll", check); };
+  }, [tabs]);
 
   const result = useMemo(() => {
     if (!ranker) return null;
@@ -113,7 +126,7 @@ export default function RankingsClient() {
         </header>
 
         <div className="rk-toolbar">
-          <div className="rk-tabs" role="tablist" aria-label="Ranking view">
+          <div ref={tabsRef} className={"rk-tabs" + (clipped ? " is-clipped" : "")} role="tablist" aria-label="Ranking view">
             {tabs.map((t) => (
               <button key={t.id} type="button" role="tab" aria-selected={active === t.id} className="rk-tab" onClick={() => setView(t.id)}>
                 {t.label}
