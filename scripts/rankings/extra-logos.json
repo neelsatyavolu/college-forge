@@ -1,0 +1,32 @@
+{
+ "note": "Logos for ranked schools outside the college catalog (lib/catalog), used by the Official rankings lists. Files are in public/logos; each came from the school's own site icon or its Wikipedia infobox logo.",
+ "schools": [
+  { "name": "Augustana College", "aliases": ["Augustana College - Illinois"], "domains": ["augustana.edu"], "logo": "/logos/augustana.png" },
+  { "name": "Babson College", "domains": ["babson.edu"], "logo": "/logos/babson.png" },
+  { "name": "Baruch College", "aliases": ["CUNY Baruch College"], "domains": ["baruch.cuny.edu"], "logo": "/logos/baruch.png" },
+  { "name": "Bentley University", "domains": ["bentley.edu"], "logo": "/logos/bentley.png" },
+  { "name": "Bryant University", "domains": ["bryant.edu"], "logo": "/logos/bryant.png" },
+  { "name": "Cooper Union", "aliases": ["The Cooper Union for the Advancement of Science and Art"], "domains": ["cooper.edu"], "logo": "/logos/cooper.png" },
+  { "name": "Elon University", "domains": ["elon.edu"], "logo": "/logos/elon.png" },
+  { "name": "Fairfield University", "domains": ["fairfield.edu"], "logo": "/logos/fairfield.png" },
+  { "name": "State University of New York at Geneseo", "aliases": ["SUNY Geneseo"], "domains": ["geneseo.edu"], "logo": "/logos/geneseo.png" },
+  { "name": "Hunter College", "aliases": ["CUNY Hunter College"], "domains": ["hunter.cuny.edu"], "logo": "/logos/hunter.png" },
+  { "name": "University of La Verne", "domains": ["laverne.edu"], "logo": "/logos/laverne.png" },
+  { "name": "Loyola University Maryland", "domains": ["loyola.edu"], "logo": "/logos/loyolamd.png" },
+  { "name": "Manhattan University", "domains": ["manhattan.edu"], "logo": "/logos/manhattan.png" },
+  { "name": "Molloy University", "domains": ["molloy.edu"], "logo": "/logos/molloy.png" },
+  { "name": "New College of Florida", "domains": ["ncf.edu"], "logo": "/logos/ncf.png" },
+  { "name": "New Mexico Tech", "aliases": ["New Mexico Institute of Mining and Technology"], "domains": ["nmt.edu"], "logo": "/logos/nmt.png" },
+  { "name": "Franklin W. Olin College of Engineering", "aliases": ["Olin College of Engineering"], "domains": ["olin.edu"], "logo": "/logos/olin.png" },
+  { "name": "University of Redlands", "domains": ["redlands.edu"], "logo": "/logos/redlands.png" },
+  { "name": "Rose-Hulman Institute of Technology", "domains": ["rose-hulman.edu"], "logo": "/logos/rosehulman.png" },
+  { "name": "St. Mary’s College of Maryland", "aliases": ["St. Mary's College of Maryland"], "domains": ["smcm.edu"], "logo": "/logos/smcm.png" },
+  { "name": "St. Lawrence University", "domains": ["stlawu.edu"], "logo": "/logos/stlawu.png" },
+  { "name": "Truman State University", "domains": ["truman.edu"], "logo": "/logos/truman.png" },
+  { "name": "University of Detroit Mercy", "domains": ["udmercy.edu"], "logo": "/logos/udmercy.png" },
+  { "name": "University of Portland", "domains": ["up.edu"], "logo": "/logos/uportland.png" },
+  { "name": "United States Merchant Marine Academy", "domains": ["usmma.edu"], "logo": "/logos/usmma.png" },
+  { "name": "Rutgers University--Newark", "aliases": ["Rutgers University - Newark"], "domains": ["newark.rutgers.edu"], "logo": "/logos/rutgers.png" },
+  { "name": "Rutgers University--Camden", "aliases": ["Rutgers University–Camden"], "domains": ["camden.rutgers.edu"], "logo": "/logos/rutgers.png" }
+ ]
+}

@@ -7,7 +7,7 @@ struct OfficialRankingsView: View {
     }
 
     @Environment(WorkspaceStore.self) private var store
-    @AppStorage("forge.officialRankings.list") private var list: OfficialRankingList = .usn
+    @AppStorage("forge.officialRankings.list") private var list: OfficialRankingList = .forge
     @State private var state = LoadState.loading
 
     var body: some View {
@@ -42,13 +42,9 @@ struct OfficialRankingsView: View {
         let rows = data.lists[list.rawValue] ?? []
         return List {
             Section {
-                Picker("List", selection: $list) {
-                    ForEach(OfficialRankingList.allCases) { Text($0.label).tag($0) }
-                }
-                .pickerStyle(.segmented)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-                .sensoryFeedback(.selection, trigger: list)
+                OfficialListStrip(selected: $list)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
             }
             .listSectionSpacing(Theme.Spacing.xs)
 
@@ -67,7 +63,7 @@ struct OfficialRankingsView: View {
                 .textCase(nil)
                 .padding(.bottom, Theme.Spacing.xxs)
             } footer: {
-                Text("Ranks are copied from each publisher. Admit rate and SAT come from U.S. News and the College Scorecard where we have them, otherwise Forbes; setting from U.S. News; cost, salary and size from Forbes.")
+                Text(list == .forge ? OfficialRankingList.forgeAbout : "Ranks are copied from each publisher. Admit rate and SAT come from U.S. News and the College Scorecard where we have them, otherwise Forbes; setting from U.S. News; cost, salary and size from Forbes.")
                     .padding(.top, Theme.Spacing.xs)
             }
         }
@@ -80,6 +76,40 @@ struct OfficialRankingsView: View {
         line += "top \(list.top)"
         if rows > list.top { line += " (\(rows) with ties)" }
         return line
+    }
+}
+
+/// The eight lists as scrolling chips; a segmented control can't fit them.
+private struct OfficialListStrip: View {
+    @Binding var selected: OfficialRankingList
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: Theme.Spacing.xs) {
+                    ForEach(OfficialRankingList.allCases) { item in
+                        let isOn = item == selected
+                        Button {
+                            Haptics.selection()
+                            selected = item
+                        } label: {
+                            Text(item.label)
+                                .font(.subheadline.weight(isOn ? .semibold : .regular))
+                                .padding(.horizontal, Theme.Spacing.sm)
+                                .padding(.vertical, 7)
+                                .foregroundStyle(isOn ? Theme.canvas : Theme.body)
+                                .background(isOn ? Theme.accent : Theme.fill, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(isOn ? .isSelected : [])
+                        .id(item)
+                    }
+                }
+                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.xxs)
+            }
+            .onAppear { proxy.scrollTo(selected, anchor: .center) }
+        }
     }
 }
 
@@ -153,6 +183,7 @@ struct OfficialRankingDetailView: View {
     private var facts: [(String, String)] {
         let f = row.facts
         var out: [(String, String?)] = [
+            ("Weighted average rank", row.avg.map { $0.formatted(.number.precision(.fractionLength(1))) }),
             ("Admit rate", f?.admitRate.map { "\($0.formatted(.number.precision(.fractionLength(0...1))))%" }),
             ("SAT middle 50%", f?.sat),
             ("Sticker cost / yr", f?.cost.map(Self.money)),

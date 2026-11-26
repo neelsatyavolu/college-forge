@@ -71,3 +71,46 @@ test("the saved data file has the four lists at their sizes", async () => {
   assert.equal(data.lists.forbes.length, 100);
   assert.equal(data.lists.niche.length, 100);
 });
+
+test("the data file has every list, the Forge ranking and the merged full lists", async () => {
+  const data = JSON.parse(await readFile(path.join(__dirname, "../public/data/official-rankings.json"), "utf8"));
+  assert.equal(data.lists.wsj.length, 100);
+  assert.equal(data.lists.prPublic.length, 50);
+  assert.equal(data.lists.prPrivate.length, 50);
+  assert.equal(data.lists.forge.length, 100);
+  assert.ok(data.lists.forge.every((r, i, a) => r.avg != null && (!i || r.avg >= a[i - 1].avg)));
+  // Every school on every list has a logo.
+  for (const [id, list] of Object.entries(data.lists)) assert.deepEqual(list.filter((r) => !r.logo).map((r) => r.name), [], id);
+  // The merged table reaches well past the top-100 lists.
+  assert.ok(data.extra.schools.length > 600);
+  assert.ok(data.extra.schools.some((s) => s.usn > 300));
+});
+
+test("merged full lists join one school's ranks across publishers", async () => {
+  const { mergeSchools } = await load();
+  const rows = mergeSchools({
+    usnAll: [{ rank: 10, name: "Alpha University" }],
+    lacAll: [{ rank: 3, name: "Beta College" }],
+    forbesAll: [{ rank: 20, name: "Alpha University" }],
+    nicheAll: [{ rank: 30, name: "The Alpha University" }, { rank: 40, name: "Gamma State" }],
+  });
+  assert.deepEqual(rows.find((r) => r.name === "Alpha University"), { name: "Alpha University", usn: 10, forbes: 20, niche: 30 });
+  assert.deepEqual(rows.find((r) => r.name === "Beta College"), { name: "Beta College", lac: 3 });
+  assert.equal(rows.length, 3);
+});
+
+test("WSJ and Princeton Review pages parse to clean names", async () => {
+  const { parsePrincetonReview, parseWsjTable, cleanName } = await import(pathToFileURL(path.join(__dirname, "../scripts/rankings/extra.mjs")).href);
+  const pr = '<div class="ranked-box"><span>#7</span></div><h2><a href="/college/x">Harvard College</a></h2><li><span class="black-text">Cambridge, MA</span></li>'
+    + '<div class="ranked-box"><span>#8</span></div><h2><a href="/college/y">St. Mary&#39;s College of Maryland</a></h2>';
+  assert.deepEqual(parsePrincetonReview(pr), [
+    { rank: 7, name: "Harvard University", place: "Cambridge, MA" },
+    { rank: 8, name: "St. Mary’s College of Maryland", place: null },
+  ]);
+  const wsj = "<table><tr><td>Wall Street Journal/College Pulse Top 100</td></tr><tr><td>1</td><td>Stanford University</td><td>93</td></tr>"
+    + "<tr><td>33</td><td>Texas A &amp; M University, College Station</td><td>80</td></tr></table>";
+  assert.deepEqual(parseWsjTable(wsj), [{ rank: 1, name: "Stanford University" }, { rank: 33, name: "Texas A&M University, College Station" }]);
+  assert.equal(cleanName("Brigham Young University (UT)"), "Brigham Young University");
+  assert.equal(cleanName("State University of New York - Binghamton University"), "Binghamton University");
+  assert.equal(cleanName("California Polytechnic State Univ., San Luis Obispo"), "California Polytechnic State University, San Luis Obispo");
+});

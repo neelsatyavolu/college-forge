@@ -1,8 +1,8 @@
 {
- "source": "https://www.niche.com/colleges/search/best-colleges/ (pages 1-4)",
+ "source": "https://www.niche.com/colleges/search/best-colleges/ (pages 1-20)",
  "edition": "2027 Best Colleges in America",
  "captured": "2026-11-24",
- "note": "Niche blocks plain HTTP clients, so this list is read from the public pages in a browser and saved here. Re-capture yearly when Niche publishes a new edition.",
+ "note": "Niche blocks plain HTTP clients, so this list is read from the public pages in a browser and saved here. Ranks 1-100 carry city, stars and reviews for the Official rankings tab; 101-500 carry rank, name and state for the List tab. Re-capture yearly when Niche publishes a new edition.",
  "schools": [
   {
    "rank": 1,
@@ -41,7 +41,7 @@
    "name": "Princeton University",
    "city": "Princeton",
    "state": "NJ",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 532
   },
   {
@@ -49,7 +49,7 @@
    "name": "California Institute of Technology",
    "city": "Pasadena",
    "state": "CA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 140
   },
   {
@@ -57,7 +57,7 @@
    "name": "Vanderbilt University",
    "city": "Nashville",
    "state": "TN",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 1411
   },
   {
@@ -89,7 +89,7 @@
    "name": "Duke University",
    "city": "Durham",
    "state": "NC",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 1264
   },
   {
@@ -137,7 +137,7 @@
    "name": "University of California - Los Angeles",
    "city": "Los Angeles",
    "state": "CA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 5906
   },
   {
@@ -161,7 +161,7 @@
    "name": "University of Michigan - Ann Arbor",
    "city": "Ann Arbor",
    "state": "MI",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 5049
   },
   {
@@ -177,7 +177,7 @@
    "name": "University of Notre Dame",
    "city": "Notre Dame",
    "state": "IN",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 1481
   },
   {
@@ -193,7 +193,7 @@
    "name": "Claremont McKenna College",
    "city": "Claremont",
    "state": "CA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 344
   },
   {
@@ -233,7 +233,7 @@
    "name": "Washington and Lee University",
    "city": "Lexington",
    "state": "VA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 485
   },
   {
@@ -241,7 +241,7 @@
    "name": "University of Texas - Austin",
    "city": "Austin",
    "state": "TX",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 7110
   },
   {
@@ -297,7 +297,7 @@
    "name": "University of Southern California",
    "city": "Los Angeles",
    "state": "CA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 4247
   },
   {
@@ -313,7 +313,7 @@
    "name": "Davidson College",
    "city": "Davidson",
    "state": "NC",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 378
   },
   {
@@ -377,7 +377,7 @@
    "name": "Florida State University",
    "city": "Tallahassee",
    "state": "FL",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 9033
   },
   {
@@ -385,7 +385,7 @@
    "name": "University of Georgia",
    "city": "Athens",
    "state": "GA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 5992
   },
   {
@@ -465,7 +465,7 @@
    "name": "William & Mary",
    "city": "Williamsburg",
    "state": "VA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 2528
   },
   {
@@ -537,7 +537,7 @@
    "name": "Virginia Tech",
    "city": "Blacksburg",
    "state": "VA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 4374
   },
   {
@@ -609,7 +609,7 @@
    "name": "Clemson University",
    "city": "Clemson",
    "state": "SC",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 3868
   },
   {
@@ -625,7 +625,7 @@
    "name": "Bates College",
    "city": "Lewiston",
    "state": "ME",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 422
   },
   {
@@ -697,7 +697,7 @@
    "name": "Haverford College",
    "city": "Haverford",
    "state": "PA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 316
   },
   {
@@ -726,7 +726,7 @@
   },
   {
    "rank": 91,
-   "name": "Rutgers University\u2013New Brunswick",
+   "name": "Rutgers University–New Brunswick",
    "city": "Piscataway",
    "state": "NJ",
    "stars": 3.7,
@@ -753,7 +753,7 @@
    "name": "University of Massachusetts Amherst",
    "city": "Amherst",
    "state": "MA",
-   "stars": 4.0,
+   "stars": 4,
    "reviews": 5527
   },
   {
@@ -803,6 +803,3206 @@
    "state": "MA",
    "stars": 3.8,
    "reviews": 404
+  },
+  {
+   "rank": 101,
+   "name": "Indiana University - Bloomington",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 102,
+   "name": "The University of Tulsa",
+   "city": null,
+   "state": "OK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 103,
+   "name": "Texas Tech University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 104,
+   "name": "Wabash College",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 105,
+   "name": "Santa Clara University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 106,
+   "name": "Oklahoma State University",
+   "city": null,
+   "state": "OK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 107,
+   "name": "Kansas State University",
+   "city": null,
+   "state": "KS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 108,
+   "name": "Wayne State University",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 109,
+   "name": "Grinnell College",
+   "city": null,
+   "state": "IA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 110,
+   "name": "Kenyon College",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 111,
+   "name": "University of Rochester",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 112,
+   "name": "University of Utah",
+   "city": null,
+   "state": "UT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 113,
+   "name": "College of the Holy Cross",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 114,
+   "name": "Iowa State University",
+   "city": null,
+   "state": "IA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 115,
+   "name": "Cal Poly",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 116,
+   "name": "Colorado School of Mines",
+   "city": null,
+   "state": "CO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 117,
+   "name": "University of South Carolina",
+   "city": null,
+   "state": "SC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 118,
+   "name": "Southern Methodist University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 119,
+   "name": "University of Dayton",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 120,
+   "name": "University of Connecticut",
+   "city": null,
+   "state": "CT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 121,
+   "name": "The University of Kansas",
+   "city": null,
+   "state": "KS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 122,
+   "name": "Reed College",
+   "city": null,
+   "state": "OR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 123,
+   "name": "University of Houston",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 124,
+   "name": "Mississippi State University",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 125,
+   "name": "Michigan Technological University",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 126,
+   "name": "Cabarrus College of Health Sciences",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 127,
+   "name": "University of Illinois Chicago",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 128,
+   "name": "Bucknell University",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 129,
+   "name": "Smith College",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 130,
+   "name": "University of Arizona",
+   "city": null,
+   "state": "AZ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 131,
+   "name": "University of Tennessee, Knoxville",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 132,
+   "name": "Stevens Institute of Technology",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 133,
+   "name": "Binghamton University, SUNY",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 134,
+   "name": "University of West Florida",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 135,
+   "name": "Yeshiva University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 136,
+   "name": "Macalester College",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 137,
+   "name": "Lafayette College",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 138,
+   "name": "Furman University",
+   "city": null,
+   "state": "SC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 139,
+   "name": "George Washington University",
+   "city": null,
+   "state": "DC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 140,
+   "name": "St. Olaf College",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 141,
+   "name": "College of the Ozarks",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 142,
+   "name": "Texas Christian University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 143,
+   "name": "CUNY John Jay College of Criminal Justice",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 144,
+   "name": "University of North Carolina School of the Arts",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 145,
+   "name": "Mount Holyoke College",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 146,
+   "name": "Oregon State University",
+   "city": null,
+   "state": "OR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 147,
+   "name": "Worcester Polytechnic Institute",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 148,
+   "name": "Washington State University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 149,
+   "name": "The University of Alabama",
+   "city": null,
+   "state": "AL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 150,
+   "name": "University of Delaware",
+   "city": null,
+   "state": "DE",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 151,
+   "name": "University of Texas - Tyler",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 152,
+   "name": "University of Colorado Denver",
+   "city": null,
+   "state": "CO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 153,
+   "name": "University of Mississippi",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 154,
+   "name": "University of Missouri",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 155,
+   "name": "Stony Brook University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 156,
+   "name": "Florida A&M University",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 157,
+   "name": "Thomas Aquinas College",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 158,
+   "name": "Texas A&M International University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 159,
+   "name": "Illinois Institute of Technology",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 160,
+   "name": "Creighton University",
+   "city": null,
+   "state": "NE",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 161,
+   "name": "University of California - Riverside",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 162,
+   "name": "University at Buffalo, SUNY",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 163,
+   "name": "Drexel University",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 164,
+   "name": "Indiana University Indianapolis",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 165,
+   "name": "Whitman College",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 166,
+   "name": "CUNY Baruch College",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 167,
+   "name": "Pitzer College",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 168,
+   "name": "Saint Louis University",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 169,
+   "name": "University of Idaho",
+   "city": null,
+   "state": "ID",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 170,
+   "name": "Gallaudet University",
+   "city": null,
+   "state": "DC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 171,
+   "name": "Moody Bible Institute",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 172,
+   "name": "Brandeis University",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 173,
+   "name": "University of Nevada, Reno",
+   "city": null,
+   "state": "NV",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 174,
+   "name": "Touro University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 175,
+   "name": "Denison University",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 176,
+   "name": "Occidental College",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 177,
+   "name": "Wheaton College - Illinois",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 178,
+   "name": "University of Louisville",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 179,
+   "name": "Rhodes College",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 180,
+   "name": "South Dakota School of Mines and Technology",
+   "city": null,
+   "state": "SD",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 181,
+   "name": "Alcorn State University",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 182,
+   "name": "University of Arkansas",
+   "city": null,
+   "state": "AR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 183,
+   "name": "Temple University",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 184,
+   "name": "William Carey University",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 185,
+   "name": "New Jersey Institute of Technology",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 186,
+   "name": "Sewanee - The University of the South",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 187,
+   "name": "The University of Virginia's College at Wise",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 188,
+   "name": "Bentley University",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 189,
+   "name": "Rose-Hulman Institute of Technology",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 190,
+   "name": "Lehman College - City University of New York (CUNY)",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 191,
+   "name": "Union College - New York",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 192,
+   "name": "University of Houston-Clear Lake",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 193,
+   "name": "University of Nebraska - Lincoln",
+   "city": null,
+   "state": "NE",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 194,
+   "name": "The Citadel, the Military College of South Carolina",
+   "city": null,
+   "state": "SC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 195,
+   "name": "Colorado College",
+   "city": null,
+   "state": "CO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 196,
+   "name": "Syracuse University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 197,
+   "name": "University of Minnesota Crookston",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 198,
+   "name": "University of Colorado Boulder",
+   "city": null,
+   "state": "CO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 199,
+   "name": "Skidmore College",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 200,
+   "name": "Florida Atlantic University",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 201,
+   "name": "University of Memphis",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 202,
+   "name": "University of Missouri - Kansas City",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 203,
+   "name": "University of San Diego",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 204,
+   "name": "Wofford College",
+   "city": null,
+   "state": "SC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 205,
+   "name": "University of Kentucky",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 206,
+   "name": "Thomas Jefferson University",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 207,
+   "name": "Hope College",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 208,
+   "name": "Hampden-Sydney College",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 209,
+   "name": "Gettysburg College",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 210,
+   "name": "Rutgers University–Camden",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 211,
+   "name": "University of Wyoming",
+   "city": null,
+   "state": "WY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 212,
+   "name": "University of South Alabama",
+   "city": null,
+   "state": "AL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 213,
+   "name": "Stanbridge University - Orange County",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 214,
+   "name": "University of Charleston",
+   "city": null,
+   "state": "WV",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 215,
+   "name": "Baylor University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 216,
+   "name": "University of Maryland, Baltimore County",
+   "city": null,
+   "state": "MD",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 217,
+   "name": "Nevada State University",
+   "city": null,
+   "state": "NV",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 218,
+   "name": "College of Saint Mary",
+   "city": null,
+   "state": "NE",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 219,
+   "name": "University of Texas - Dallas",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 220,
+   "name": "Virginia Commonwealth University",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 221,
+   "name": "Molloy University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 222,
+   "name": "Marquette University",
+   "city": null,
+   "state": "WI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 223,
+   "name": "University of Texas Rio Grande Valley",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 224,
+   "name": "St. Bonaventure University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 225,
+   "name": "The University of Alabama in Huntsville",
+   "city": null,
+   "state": "AL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 226,
+   "name": "Lipscomb University",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 227,
+   "name": "Andrews University",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 228,
+   "name": "Mississippi University for Women",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 229,
+   "name": "Montana Technological University",
+   "city": null,
+   "state": "MT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 230,
+   "name": "West Virginia University",
+   "city": null,
+   "state": "WV",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 231,
+   "name": "University of Houston - Downtown",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 232,
+   "name": "Louisiana State University",
+   "city": null,
+   "state": "LA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 233,
+   "name": "University of Cincinnati",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 234,
+   "name": "University of Texas - Arlington",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 235,
+   "name": "Providence College",
+   "city": null,
+   "state": "RI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 236,
+   "name": "California State University - Long Beach",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 237,
+   "name": "Dordt University",
+   "city": null,
+   "state": "IA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 238,
+   "name": "California State University - Sacramento",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 239,
+   "name": "Utah State University",
+   "city": null,
+   "state": "UT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 240,
+   "name": "California State University - Stanislaus",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 241,
+   "name": "University at Albany, SUNY",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 242,
+   "name": "Illinois Wesleyan University",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 243,
+   "name": "Clark University",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 244,
+   "name": "Metropolitan State University - Minnesota",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 245,
+   "name": "University of West Georgia",
+   "city": null,
+   "state": "GA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 246,
+   "name": "Samford University",
+   "city": null,
+   "state": "AL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 247,
+   "name": "University of Michigan-Flint",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 248,
+   "name": "San Diego State University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 249,
+   "name": "Point Loma Nazarene University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 250,
+   "name": "Indiana University - East",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 251,
+   "name": "Drake University",
+   "city": null,
+   "state": "IA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 252,
+   "name": "Colorado State University",
+   "city": null,
+   "state": "CO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 253,
+   "name": "University of Portland",
+   "city": null,
+   "state": "OR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 254,
+   "name": "Louisiana State University - Shreveport",
+   "city": null,
+   "state": "LA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 255,
+   "name": "Albany College of Pharmacy and Health Sciences",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 256,
+   "name": "Cedarville University",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 257,
+   "name": "Tennessee Technological University",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 258,
+   "name": "Kean University",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 259,
+   "name": "Rensselaer Polytechnic Institute",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 260,
+   "name": "Missouri University of Science and Technology",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 261,
+   "name": "New Mexico State University",
+   "city": null,
+   "state": "NM",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 262,
+   "name": "Clayton State University",
+   "city": null,
+   "state": "GA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 263,
+   "name": "Trinity College - Connecticut",
+   "city": null,
+   "state": "CT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 264,
+   "name": "Dickinson College",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 265,
+   "name": "Lake Forest College",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 266,
+   "name": "Everglades University",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 267,
+   "name": "University of New Mexico",
+   "city": null,
+   "state": "NM",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 268,
+   "name": "Augustana University",
+   "city": null,
+   "state": "SD",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 269,
+   "name": "Mercer University",
+   "city": null,
+   "state": "GA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 270,
+   "name": "The Catholic University of America",
+   "city": null,
+   "state": "DC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 271,
+   "name": "University of North Carolina - Greensboro",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 272,
+   "name": "Ouachita Baptist University",
+   "city": null,
+   "state": "AR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 273,
+   "name": "University of the Pacific",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 274,
+   "name": "Bryn Mawr College",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 275,
+   "name": "Fairfield University",
+   "city": null,
+   "state": "CT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 276,
+   "name": "University of North Texas",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 277,
+   "name": "Augusta University",
+   "city": null,
+   "state": "GA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 278,
+   "name": "University of Southern Mississippi",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 279,
+   "name": "The College of New Jersey",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 280,
+   "name": "Lawrence University",
+   "city": null,
+   "state": "WI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 281,
+   "name": "Centre College",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 282,
+   "name": "University of St. Thomas - Minnesota",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 283,
+   "name": "University of California - Merced",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 284,
+   "name": "Hallmark University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 285,
+   "name": "University of Michigan - Dearborn",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 286,
+   "name": "University of Hawaii - West Oahu",
+   "city": null,
+   "state": "HI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 287,
+   "name": "Elmhurst University",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 288,
+   "name": "University of Massachusetts Lowell",
+   "city": null,
+   "state": "MA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 289,
+   "name": "North Dakota State University",
+   "city": null,
+   "state": "ND",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 290,
+   "name": "North Carolina A&T State University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 291,
+   "name": "Marshall University",
+   "city": null,
+   "state": "WV",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 292,
+   "name": "Louisiana Tech University",
+   "city": null,
+   "state": "LA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 293,
+   "name": "The University of Texas at San Antonio",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 294,
+   "name": "California Baptist University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 295,
+   "name": "Union University",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 296,
+   "name": "Ohio University",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 297,
+   "name": "University of North Carolina at Charlotte",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 298,
+   "name": "Rutgers University - Newark",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 299,
+   "name": "University of Alaska Fairbanks",
+   "city": null,
+   "state": "AK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 300,
+   "name": "Stetson University",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 301,
+   "name": "University of Dallas",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 302,
+   "name": "University of North Dakota",
+   "city": null,
+   "state": "ND",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 303,
+   "name": "Oklahoma City University",
+   "city": null,
+   "state": "OK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 304,
+   "name": "St. Lawrence University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 305,
+   "name": "New College of Florida",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 306,
+   "name": "Spelman College",
+   "city": null,
+   "state": "GA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 307,
+   "name": "Loyola Marymount University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 308,
+   "name": "Allegheny College",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 309,
+   "name": "University of New Hampshire",
+   "city": null,
+   "state": "NH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 310,
+   "name": "Murray State University",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 311,
+   "name": "Texas Woman's University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 312,
+   "name": "Mount Saint Mary's University Los Angeles",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 313,
+   "name": "University of Detroit Mercy",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 314,
+   "name": "AdventHealth University",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 315,
+   "name": "Portland State University",
+   "city": null,
+   "state": "OR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 316,
+   "name": "Texas State University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 317,
+   "name": "University of Scranton",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 318,
+   "name": "SUNY College of Environmental Science & Forestry",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 319,
+   "name": "Rhode Island School of Design",
+   "city": null,
+   "state": "RI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 320,
+   "name": "Texas A&M University - Texarkana",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 321,
+   "name": "Whitworth University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 322,
+   "name": "University of Minnesota Morris",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 323,
+   "name": "Western Carolina University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 324,
+   "name": "Georgia State University",
+   "city": null,
+   "state": "GA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 325,
+   "name": "University of Missouri—St. Louis",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 326,
+   "name": "Seton Hall University",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 327,
+   "name": "Adelphi University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 328,
+   "name": "University of South Carolina - Upstate",
+   "city": null,
+   "state": "SC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 329,
+   "name": "Purdue University Northwest",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 330,
+   "name": "Rochester Institute of Technology",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 331,
+   "name": "Texas A&M University - Victoria",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 332,
+   "name": "Clarkson University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 333,
+   "name": "Eastern New Mexico University",
+   "city": null,
+   "state": "NM",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 334,
+   "name": "Seattle University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 335,
+   "name": "Nebraska Methodist College of Nursing & Allied Health",
+   "city": null,
+   "state": "NE",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 336,
+   "name": "Earlham College",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 337,
+   "name": "Goshen College",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 338,
+   "name": "University of Central Missouri",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 339,
+   "name": "California State University - Northridge",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 340,
+   "name": "University of Nevada, Las Vegas",
+   "city": null,
+   "state": "NV",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 341,
+   "name": "Luther College",
+   "city": null,
+   "state": "IA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 342,
+   "name": "Towson University",
+   "city": null,
+   "state": "MD",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 343,
+   "name": "Nicholls State University",
+   "city": null,
+   "state": "LA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 344,
+   "name": "Abilene Christian University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 345,
+   "name": "Berea College",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 346,
+   "name": "Hobart and William Smith",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 347,
+   "name": "Rollins College",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 348,
+   "name": "Biola University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 349,
+   "name": "Elizabeth City State University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 350,
+   "name": "Angelo State University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 351,
+   "name": "George Mason University",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 352,
+   "name": "Millsaps College",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 353,
+   "name": "Lincoln Memorial University",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 354,
+   "name": "University of San Francisco",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 355,
+   "name": "CUNY Queens College",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 356,
+   "name": "University of Hawaii at Manoa",
+   "city": null,
+   "state": "HI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 357,
+   "name": "University of South Carolina Aiken",
+   "city": null,
+   "state": "SC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 358,
+   "name": "Florida Institute of Technology",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 359,
+   "name": "Loras College",
+   "city": null,
+   "state": "IA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 360,
+   "name": "West Texas A&M University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 361,
+   "name": "Gustavus Adolphus College",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 362,
+   "name": "Nova Southeastern University",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 363,
+   "name": "Northwestern State University of Louisiana",
+   "city": null,
+   "state": "LA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 364,
+   "name": "The College of Wooster",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 365,
+   "name": "Oral Roberts University",
+   "city": null,
+   "state": "OK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 366,
+   "name": "D'Youville University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 367,
+   "name": "SUNY Empire State University",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 368,
+   "name": "Montana State University",
+   "city": null,
+   "state": "MT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 369,
+   "name": "Valley City State University",
+   "city": null,
+   "state": "ND",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 370,
+   "name": "Embry-Riddle Aeronautical University - Worldwide",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 371,
+   "name": "California State University - Channel Islands",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 372,
+   "name": "University of North Carolina Pembroke",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 373,
+   "name": "Rasmussen University - St. Cloud",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 374,
+   "name": "Winston-Salem State University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 375,
+   "name": "Northwestern College - Iowa",
+   "city": null,
+   "state": "IA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 376,
+   "name": "University of Tennessee at Martin",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 377,
+   "name": "Northwest University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 378,
+   "name": "Appalachian State University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 379,
+   "name": "Pittsburg State University",
+   "city": null,
+   "state": "KS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 380,
+   "name": "Southern Illinois University Edwardsville",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 381,
+   "name": "University of the Incarnate Word",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 382,
+   "name": "The University of Texas at El Paso",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 383,
+   "name": "Oberlin College",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 384,
+   "name": "South Florida State College",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 385,
+   "name": "Emporia State University",
+   "city": null,
+   "state": "KS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 386,
+   "name": "University of Puget Sound",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 387,
+   "name": "East Tennessee State University",
+   "city": null,
+   "state": "TN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 388,
+   "name": "James Madison University",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 389,
+   "name": "Trinity Washington University",
+   "city": null,
+   "state": "DC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 390,
+   "name": "East Carolina University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 391,
+   "name": "University of North Florida",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 392,
+   "name": "St. Catherine University",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 393,
+   "name": "Martin Luther College",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 394,
+   "name": "Loyola University Chicago",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 395,
+   "name": "Ferris State University",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 396,
+   "name": "Northeastern Illinois University",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 397,
+   "name": "Virginia Military Institute",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 398,
+   "name": "Florida Gulf Coast University",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 399,
+   "name": "University of California - Santa Cruz",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 400,
+   "name": "University of Vermont",
+   "city": null,
+   "state": "VT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 401,
+   "name": "Oakland University",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 402,
+   "name": "Franklin & Marshall College",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 403,
+   "name": "Howard University",
+   "city": null,
+   "state": "DC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 404,
+   "name": "Indiana University - Kokomo",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 405,
+   "name": "Lubbock Christian University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 406,
+   "name": "Connecticut College",
+   "city": null,
+   "state": "CT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 407,
+   "name": "Taylor University",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 408,
+   "name": "Jacksonville State University",
+   "city": null,
+   "state": "AL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 409,
+   "name": "Augustana College - Illinois",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 410,
+   "name": "University of Evansville",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 411,
+   "name": "Eastern Mennonite University",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 412,
+   "name": "University of Texas - Permian Basin",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 413,
+   "name": "Maryville University of St. Louis",
+   "city": null,
+   "state": "MO",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 414,
+   "name": "Fayetteville State University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 415,
+   "name": "Southern Illinois University Carbondale",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 416,
+   "name": "Fashion Institute of Technology",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 417,
+   "name": "University of Maine",
+   "city": null,
+   "state": "ME",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 418,
+   "name": "DePauw University",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 419,
+   "name": "Valparaiso University",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 420,
+   "name": "California State University, Chico",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 421,
+   "name": "Transylvania University",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 422,
+   "name": "University of Oregon",
+   "city": null,
+   "state": "OR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 423,
+   "name": "Heritage University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 424,
+   "name": "Chapman University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 425,
+   "name": "University of Hawaii at Hilo",
+   "city": null,
+   "state": "HI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 426,
+   "name": "Northern Arizona University",
+   "city": null,
+   "state": "AZ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 427,
+   "name": "Seattle Pacific University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 428,
+   "name": "Hendrix College",
+   "city": null,
+   "state": "AR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 429,
+   "name": "Mount St. Joseph University",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 430,
+   "name": "Westmont College",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 431,
+   "name": "Dunwoody College of Technology",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 432,
+   "name": "PennWest California",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 433,
+   "name": "University of Nebraska at Omaha",
+   "city": null,
+   "state": "NE",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 434,
+   "name": "Regent University",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 435,
+   "name": "American University",
+   "city": null,
+   "state": "DC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 436,
+   "name": "University of St. Thomas - Texas",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 437,
+   "name": "Pepperdine University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 438,
+   "name": "University of St. Francis - Illinois",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 439,
+   "name": "Southern California Institute of Technology",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 440,
+   "name": "Embry-Riddle Aeronautical University - Daytona Beach",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 441,
+   "name": "Saint Mary's University of Minnesota",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 442,
+   "name": "Rowan University",
+   "city": null,
+   "state": "NJ",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 443,
+   "name": "University of the Cumberlands",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 444,
+   "name": "University of Arkansas at Little Rock",
+   "city": null,
+   "state": "AR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 445,
+   "name": "University of Louisiana at Lafayette",
+   "city": null,
+   "state": "LA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 446,
+   "name": "University of New Hampshire at Manchester",
+   "city": null,
+   "state": "NH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 447,
+   "name": "California State Polytechnic University - Pomona",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 448,
+   "name": "Huston-Tillotson University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 449,
+   "name": "California State University - Fresno",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 450,
+   "name": "Keiser University - Fort Lauderdale",
+   "city": null,
+   "state": "FL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 451,
+   "name": "University of Nebraska at Kearney",
+   "city": null,
+   "state": "NE",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 452,
+   "name": "Mid-America Christian University",
+   "city": null,
+   "state": "OK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 453,
+   "name": "SUNY Farmingdale State College",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 454,
+   "name": "San José State University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 455,
+   "name": "Wichita State University",
+   "city": null,
+   "state": "KS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 456,
+   "name": "Auburn University at Montgomery",
+   "city": null,
+   "state": "AL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 457,
+   "name": "Old Dominion University",
+   "city": null,
+   "state": "VA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 458,
+   "name": "Gonzaga University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 459,
+   "name": "Loyola University Maryland",
+   "city": null,
+   "state": "MD",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 460,
+   "name": "CUNY Brooklyn College",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 461,
+   "name": "University of Connecticut - Hartford",
+   "city": null,
+   "state": "CT",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 462,
+   "name": "The Christ College of Nursing & Health Sciences",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 463,
+   "name": "Boise State University",
+   "city": null,
+   "state": "ID",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 464,
+   "name": "Manchester University",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 465,
+   "name": "Marietta College",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 466,
+   "name": "DePaul University",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 467,
+   "name": "Bowling Green State University",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 468,
+   "name": "South Dakota State University",
+   "city": null,
+   "state": "SD",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 469,
+   "name": "Southern Arkansas University",
+   "city": null,
+   "state": "AR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 470,
+   "name": "University of Alaska Southeast",
+   "city": null,
+   "state": "AK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 471,
+   "name": "Elon University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 472,
+   "name": "CUNY City College of New York",
+   "city": null,
+   "state": "NY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 473,
+   "name": "Dominican University",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 474,
+   "name": "Moravian University",
+   "city": null,
+   "state": "PA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 475,
+   "name": "Arkansas State University",
+   "city": null,
+   "state": "AR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 476,
+   "name": "Calvin University",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 477,
+   "name": "St. Norbert College",
+   "city": null,
+   "state": "WI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 478,
+   "name": "Southwestern Oklahoma State University",
+   "city": null,
+   "state": "OK",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 479,
+   "name": "California State University - Bakersfield",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 480,
+   "name": "National Louis University",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 481,
+   "name": "Sul Ross State University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 482,
+   "name": "High Point University",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 483,
+   "name": "Coppin State University",
+   "city": null,
+   "state": "MD",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 484,
+   "name": "Mississippi Christian University",
+   "city": null,
+   "state": "MS",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 485,
+   "name": "Miami University",
+   "city": null,
+   "state": "OH",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 486,
+   "name": "Azusa Pacific University",
+   "city": null,
+   "state": "CA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 487,
+   "name": "Grand Valley State University",
+   "city": null,
+   "state": "MI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 488,
+   "name": "Sam Houston State University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 489,
+   "name": "St. Mary's University",
+   "city": null,
+   "state": "TX",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 490,
+   "name": "Maine Maritime Academy",
+   "city": null,
+   "state": "ME",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 491,
+   "name": "Wisconsin Lutheran College",
+   "city": null,
+   "state": "WI",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 492,
+   "name": "University of North Carolina - Wilmington",
+   "city": null,
+   "state": "NC",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 493,
+   "name": "University of Minnesota Duluth",
+   "city": null,
+   "state": "MN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 494,
+   "name": "Butler University",
+   "city": null,
+   "state": "IN",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 495,
+   "name": "Pacific Lutheran University",
+   "city": null,
+   "state": "WA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 496,
+   "name": "Harding University",
+   "city": null,
+   "state": "AR",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 497,
+   "name": "University of Louisiana - Monroe",
+   "city": null,
+   "state": "LA",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 498,
+   "name": "Roosevelt University",
+   "city": null,
+   "state": "IL",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 499,
+   "name": "Northern Kentucky University",
+   "city": null,
+   "state": "KY",
+   "stars": null,
+   "reviews": null
+  },
+  {
+   "rank": 500,
+   "name": "The University of West Alabama",
+   "city": null,
+   "state": "AL",
+   "stars": null,
+   "reviews": null
   }
  ]
 }

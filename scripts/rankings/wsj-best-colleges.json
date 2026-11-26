@@ -1,0 +1,409 @@
+{
+ "source": "https://poetsandquantsforundergrads.com/news/ranking-stanford-tops-wall-street-journals-2025-best-colleges-in-america/2/",
+ "publisher": "https://www.wsj.com/rankings/college-rankings/best-colleges-2026",
+ "edition": "2026 Best Colleges in the U.S.",
+ "captured": "2026-11-25",
+ "note": "wsj.com sends the full table only to subscribers, so the top 100 is read from Poets&Quants, which republishes it. Refresh yearly with: node scripts/fetch-official-rankings.mjs --wsj-url <the new Poets&Quants article page with the top 100 table>",
+ "schools": [
+  {
+   "rank": 1,
+   "name": "Stanford University"
+  },
+  {
+   "rank": 2,
+   "name": "Babson College"
+  },
+  {
+   "rank": 3,
+   "name": "Yale University"
+  },
+  {
+   "rank": 4,
+   "name": "Princeton University"
+  },
+  {
+   "rank": 5,
+   "name": "Harvard University"
+  },
+  {
+   "rank": 6,
+   "name": "Claremont McKenna College"
+  },
+  {
+   "rank": 7,
+   "name": "University of California, Berkeley"
+  },
+  {
+   "rank": 8,
+   "name": "Columbia University"
+  },
+  {
+   "rank": 9,
+   "name": "University of Pennsylvania"
+  },
+  {
+   "rank": 10,
+   "name": "Davidson College"
+  },
+  {
+   "rank": 11,
+   "name": "Massachusetts Institute of Technology"
+  },
+  {
+   "rank": 12,
+   "name": "Bentley University"
+  },
+  {
+   "rank": 13,
+   "name": "University of California, Davis"
+  },
+  {
+   "rank": 14,
+   "name": "University of California, Merced"
+  },
+  {
+   "rank": 15,
+   "name": "Harvey Mudd College"
+  },
+  {
+   "rank": 16,
+   "name": "Georgia Institute of Technology"
+  },
+  {
+   "rank": 17,
+   "name": "San José State University"
+  },
+  {
+   "rank": 18,
+   "name": "Cornell University"
+  },
+  {
+   "rank": 19,
+   "name": "Loyola University Maryland"
+  },
+  {
+   "rank": 20,
+   "name": "University of Notre Dame"
+  },
+  {
+   "rank": 21,
+   "name": "California State University, Stanislaus"
+  },
+  {
+   "rank": 22,
+   "name": "California State Polytechnic University, Pomona"
+  },
+  {
+   "rank": 23,
+   "name": "California Institute of Technology"
+  },
+  {
+   "rank": 24,
+   "name": "Swarthmore College"
+  },
+  {
+   "rank": 25,
+   "name": "University of Michigan, Ann Arbor"
+  },
+  {
+   "rank": 26,
+   "name": "Rice University"
+  },
+  {
+   "rank": 27,
+   "name": "Brown University"
+  },
+  {
+   "rank": 28,
+   "name": "California Polytechnic State University, San Luis Obispo"
+  },
+  {
+   "rank": 29,
+   "name": "Lehigh University"
+  },
+  {
+   "rank": 30,
+   "name": "University of Chicago"
+  },
+  {
+   "rank": 31,
+   "name": "University of Virginia, Main Campus"
+  },
+  {
+   "rank": 32,
+   "name": "California State University, Fresno"
+  },
+  {
+   "rank": 33,
+   "name": "Texas A&M University, College Station"
+  },
+  {
+   "rank": 34,
+   "name": "Vanderbilt University"
+  },
+  {
+   "rank": 35,
+   "name": "Virginia Tech"
+  },
+  {
+   "rank": 36,
+   "name": "University of Detroit Mercy"
+  },
+  {
+   "rank": 37,
+   "name": "University of Southern California"
+  },
+  {
+   "rank": 38,
+   "name": "University of Delaware"
+  },
+  {
+   "rank": 39,
+   "name": "Washington University in St. Louis"
+  },
+  {
+   "rank": 40,
+   "name": "Colgate University"
+  },
+  {
+   "rank": 41,
+   "name": "University of California, San Diego"
+  },
+  {
+   "rank": 42,
+   "name": "Colby College"
+  },
+  {
+   "rank": 43,
+   "name": "California State University, Long Beach"
+  },
+  {
+   "rank": 44,
+   "name": "Baruch College"
+  },
+  {
+   "rank": 45,
+   "name": "California State University, San Bernardino"
+  },
+  {
+   "rank": 46,
+   "name": "Carnegie Mellon University"
+  },
+  {
+   "rank": 47,
+   "name": "Dartmouth College"
+  },
+  {
+   "rank": 48,
+   "name": "University of California, Irvine"
+  },
+  {
+   "rank": 49,
+   "name": "University of Texas at Austin"
+  },
+  {
+   "rank": 50,
+   "name": "Northwestern University"
+  },
+  {
+   "rank": 51,
+   "name": "Quinnipiac University"
+  },
+  {
+   "rank": 52,
+   "name": "California State University, Northridge"
+  },
+  {
+   "rank": 53,
+   "name": "Georgetown University"
+  },
+  {
+   "rank": 54,
+   "name": "Florida International University"
+  },
+  {
+   "rank": 55,
+   "name": "University of Illinois Urbana-Champaign"
+  },
+  {
+   "rank": 56,
+   "name": "Lafayette College"
+  },
+  {
+   "rank": 57,
+   "name": "University of California, Riverside"
+  },
+  {
+   "rank": 58,
+   "name": "College of the Holy Cross"
+  },
+  {
+   "rank": 59,
+   "name": "California State University, Chico"
+  },
+  {
+   "rank": 60,
+   "name": "Amherst College"
+  },
+  {
+   "rank": 61,
+   "name": "Washington and Lee University"
+  },
+  {
+   "rank": 62,
+   "name": "Azusa Pacific University"
+  },
+  {
+   "rank": 63,
+   "name": "Brigham Young University"
+  },
+  {
+   "rank": 64,
+   "name": "Towson University"
+  },
+  {
+   "rank": 65,
+   "name": "California State University, Fullerton"
+  },
+  {
+   "rank": 66,
+   "name": "California State University, Sacramento"
+  },
+  {
+   "rank": 67,
+   "name": "Montclair State University"
+  },
+  {
+   "rank": 68,
+   "name": "Duke University"
+  },
+  {
+   "rank": 69,
+   "name": "San Francisco State University"
+  },
+  {
+   "rank": 70,
+   "name": "California State University, Los Angeles"
+  },
+  {
+   "rank": 71,
+   "name": "George Mason University"
+  },
+  {
+   "rank": 72,
+   "name": "University of Florida"
+  },
+  {
+   "rank": 73,
+   "name": "Manhattan University"
+  },
+  {
+   "rank": 74,
+   "name": "Augustana College"
+  },
+  {
+   "rank": 75,
+   "name": "Molloy University"
+  },
+  {
+   "rank": 76,
+   "name": "University of Rhode Island"
+  },
+  {
+   "rank": 77,
+   "name": "University of North Carolina at Chapel Hill"
+  },
+  {
+   "rank": 78,
+   "name": "University of Utah"
+  },
+  {
+   "rank": 79,
+   "name": "California State University, San Marcos"
+  },
+  {
+   "rank": 80,
+   "name": "University of California, Los Angeles"
+  },
+  {
+   "rank": 81,
+   "name": "Fairfield University"
+  },
+  {
+   "rank": 82,
+   "name": "Marquette University"
+  },
+  {
+   "rank": 83,
+   "name": "Haverford College"
+  },
+  {
+   "rank": 84,
+   "name": "New Jersey Institute of Technology"
+  },
+  {
+   "rank": 85,
+   "name": "University of the Pacific"
+  },
+  {
+   "rank": 86,
+   "name": "University of Portland"
+  },
+  {
+   "rank": 87,
+   "name": "University of La Verne"
+  },
+  {
+   "rank": 88,
+   "name": "University of Connecticut"
+  },
+  {
+   "rank": 89,
+   "name": "University of Redlands"
+  },
+  {
+   "rank": 90,
+   "name": "Bucknell University"
+  },
+  {
+   "rank": 91,
+   "name": "Santa Clara University"
+  },
+  {
+   "rank": 92,
+   "name": "Johns Hopkins University"
+  },
+  {
+   "rank": 93,
+   "name": "Wake Forest University"
+  },
+  {
+   "rank": 94,
+   "name": "University of Wisconsin, Madison"
+  },
+  {
+   "rank": 95,
+   "name": "Villanova University"
+  },
+  {
+   "rank": 96,
+   "name": "Bryant University"
+  },
+  {
+   "rank": 97,
+   "name": "University of Washington, Seattle"
+  },
+  {
+   "rank": 98,
+   "name": "University of San Diego"
+  },
+  {
+   "rank": 99,
+   "name": "Worcester Polytechnic Institute"
+  },
+  {
+   "rank": 100,
+   "name": "Emory University"
+  }
+ ]
+}

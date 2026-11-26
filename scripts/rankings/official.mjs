@@ -32,6 +32,22 @@ const ALIASES = {
   "university of south": "sewanee",
   "sewanee university of south": "sewanee",
   "united states military academy west point": "united states military academy",
+  "purdue university west lafayette": "purdue university",
+  "cal poly": "california polytechnic state university san luis obispo",
+  // The catalog's short names for California State University campuses.
+  "cal poly pomona": "california state polytechnic university pomona",
+  "cal state long beach": "california state university long beach",
+  "chico state": "california state university chico",
+  "fresno state": "california state university fresno",
+  "csu san bernardino": "california state university san bernardino",
+  "csu san marcos": "california state university san marcos",
+  "miami university oxford": "miami university",
+  "binghamton university suny": "binghamton university",
+  "stony brook university suny": "stony brook university",
+  "ohio state university columbus": "ohio state university",
+  "university of pittsburgh pittsburgh": "university of pittsburgh",
+  "cuny hunter college": "hunter college",
+  "california polytechnic state univ san luis obispo": "california polytechnic state university san luis obispo",
 };
 
 /** One key per school, whatever list it came from. */
@@ -41,6 +57,7 @@ export function schoolKey(name) {
     .replace(/\s*\([^)]*\)/g, " ") // "University of Miami (FL)"
     .replace(/&/g, " and ")
     .replace(/[‐-―–—-]/g, " ")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // "San José"
     .replace(/[.,'’()]/g, "")
     .replace(/\b(the|at|in)\b/g, " ")
     .replace(/\b(main campus|campus)\b/g, " ")
@@ -69,6 +86,34 @@ export function parseForbes(o) {
       website: typeof o.webSite === "string" && /^(www\.)?[a-z0-9.-]+\.[a-z]{2,}$/i.test(o.webSite) ? o.webSite.toLowerCase() : null,
     },
   };
+}
+
+/**
+ * Every school on the full lists, merged across lists by schoolKey, for the List tab
+ * to look up schools outside the top-100 lists: [{name, usn, lac, forbes, niche}].
+ * `usn` and `lac` are U.S. News's national and liberal arts ranks (a school has one).
+ */
+export function mergeSchools({ usnAll = [], lacAll = [], forbesAll = [], nicheAll = [] }) {
+  const byKey = new Map();
+  const add = (list, field) => {
+    for (const s of list) {
+      const k = schoolKey(s.name);
+      const row = byKey.get(k) || { name: s.name };
+      if (row[field] == null) row[field] = s.rank;
+      byKey.set(k, row);
+    }
+  };
+  add(usnAll, "usn");
+  add(lacAll, "lac");
+  add(forbesAll, "forbes");
+  add(nicheAll, "niche");
+  return [...byKey.values()];
+}
+
+/** "Atlanta, GA" on a Princeton Review row as city and state. */
+function withPlace(s) {
+  const m = /^(.*),\s*([A-Z]{2})$/.exec(s.place || "");
+  return { rank: s.rank, name: s.name, city: m ? m[1] : null, state: m ? m[2] : null };
 }
 
 /**
@@ -101,7 +146,10 @@ export function logoFinder(catalog = []) {
   return (name, website) => byDomain.get(domainOf(website)) || byName.get(schoolKey(name)) || null;
 }
 
-export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated, catalog = [] }) {
+/** Every list's id, in tab order. "forge" is the weighted average of the others (public/hub/rank-list.js). */
+export const LIST_IDS = ["forge", "usn", "lac", "forbes", "niche", "wsj", "prPublic", "prPrivate"];
+
+export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated, catalog = [], extra, forge }) {
   const logoOf = logoFinder(catalog);
   const forbesTop = forbesAll.filter((s) => s.rank <= 100);
   const lists = {
@@ -110,12 +158,25 @@ export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated,
     forbes: forbesTop,
     niche: niche.filter((s) => s.rank <= 100),
   };
+  if (extra) {
+    lists.wsj = extra.wsj.filter((s) => s.rank <= 100);
+    lists.prPublic = extra.prPublic.map(withPlace);
+    lists.prPrivate = extra.prPrivate.map(withPlace);
+  }
+  if (forge) lists.forge = forge.filter((s) => s.rank <= 100);
   const rankIn = {};
-  for (const [id, list] of Object.entries({ usn, lac, forbes: forbesAll, niche })) {
+  const deep = { usn, lac, forbes: forbesAll, niche, ...(extra ? { wsj: extra.wsj, prPublic: extra.prPublic, prPrivate: extra.prPrivate } : {}) };
+  for (const [id, list] of Object.entries(deep)) {
     rankIn[id] = new Map();
     for (const s of list) if (!rankIn[id].has(schoolKey(s.name))) rankIn[id].set(schoolKey(s.name), s.rank);
   }
   const forbesFacts = new Map(forbesAll.map((s) => [schoolKey(s.name), s.facts]));
+  // City and state for lists that don't give them (WSJ, the Forge ranking).
+  const placeOf = new Map();
+  for (const s of [...forbesAll, ...usn, ...lac, ...niche]) {
+    const k = schoolKey(s.name);
+    if (s.city && !placeOf.has(k)) placeOf.set(k, { city: String(s.city).trim(), state: s.state || null });
+  }
   const usnFacts = new Map(usn.map((s) => [schoolKey(s.name), s]));
 
   const shaped = {};
@@ -125,7 +186,7 @@ export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated,
       const key = schoolKey(s.name);
       const f = forbesFacts.get(key) || null;
       const u = usnFacts.get(key) || null;
-      if (!f && id !== "forbes") unmatched.push(`${id}: ${s.name}`);
+      if (!f && !u && id !== "forbes") unmatched.push(`${id}: ${s.name}`);
       const facts = {
         admitRate: u && u.admitRate != null ? Math.round(u.admitRate * 1000) / 10 : f ? f.admitRate : null,
         sat: u && u.sat25 && u.sat75 ? `${u.sat25}-${u.sat75}` : f ? f.sat : null,
@@ -136,15 +197,23 @@ export function buildOfficial({ usn, lac, forbesAll, niche, editions, generated,
         website: f ? f.website : null,
       };
       const elsewhere = {};
-      for (const other of ["usn", "lac", "forbes", "niche"]) {
+      for (const other of Object.keys(deep)) {
         if (other === id) continue;
         const r = rankIn[other].get(key);
         if (r != null) elsewhere[other] = r;
       }
-      const row = { rank: s.rank, name: s.name, city: s.city || null, state: s.state || null, logo: logoOf(s.name, facts.website), facts, elsewhere };
+      const at = placeOf.get(key) || {};
+      const row = { rank: s.rank, name: s.name, city: (s.city && String(s.city).trim()) || at.city || null, state: s.state || at.state || null, logo: logoOf(s.name, facts.website), facts, elsewhere };
+      if (id === "forge") row.avg = s.avg;
       if (id === "niche") { row.stars = s.stars ?? null; row.reviews = s.reviews ?? null; }
       return row;
     });
   }
-  return { data: { generated, editions, lists: shaped }, unmatched };
+  // Lists only the List tab's average reads, kept to rank and name.
+  const data = { generated, editions, lists: shaped };
+  if (extra) {
+    data.extra = Object.fromEntries(["wsj", "prPublic", "prPrivate"].filter((id) => extra[id]).map((id) => [id, extra[id].map(({ rank, name }) => ({ rank, name }))]));
+    if (extra.schools) data.extra.schools = extra.schools;
+  }
+  return { data, unmatched };
 }

@@ -1,15 +1,18 @@
 // The List tab: every application in one compact list, best average rank first.
 
 function useRankingSchools() {
-  const [state, setState] = React.useState({ schools: null, official: [], error: false });
+  const [state, setState] = React.useState({ schools: null, official: [], extra: null, error: false });
   React.useEffect(() => {
     let live = true;
     const load = (url) => fetch(url).then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
     // The official lists only fill in schools the career file doesn't cover, so the list still shows without them.
-    const official = load("/data/official-rankings.json").then(window.cfRankList.officialSchools).catch(() => []);
+    // They also hold the WSJ and Princeton Review lists the average adds.
+    const official = load("/data/official-rankings.json").catch(() => null);
     Promise.all([load("/data/career-ranking.json"), official])
-      .then(([j, o]) => { if (live) setState({ schools: Array.isArray(j.schools) ? j.schools : [], official: o, error: false }); })
-      .catch(() => { if (live) setState({ schools: null, official: [], error: true }); });
+      .then(([j, o]) => {
+        if (live) setState({ schools: Array.isArray(j.schools) ? j.schools : [], official: o ? window.cfRankList.officialSchools(o) : [], extra: (o && o.extra) || null, error: false });
+      })
+      .catch(() => { if (live) setState({ schools: null, official: [], extra: null, error: true }); });
     return () => { live = false; };
   }, []);
   return state;
@@ -17,12 +20,25 @@ function useRankingSchools() {
 
 const rankText = (n) => (n == null ? "—" : `#${n}`);
 
+/** The short rank line under a school, and its longer spoken version. */
+function rankSummary(ranks) {
+  const usn = `USN ${rankText(ranks.usn)}${ranks.lac ? (ranks.usnNational ? ` LAC ≈${Math.round(ranks.usnNational)}` : " LAC") : ""}`;
+  const parts = [usn, `Niche ${rankText(ranks.niche)}`, `Forbes ${rankText(ranks.forbes)}`, `WSJ ${rankText(ranks.wsj)}`];
+  if (ranks.pr) parts.push(`PR #${ranks.pr.rank} ${ranks.pr.kind}`);
+  const title = [
+    ranks.lac ? (ranks.usnNational ? `U.S. News #${ranks.usn} liberal arts, counted as about #${Math.round(ranks.usnNational)} national` : "U.S. News liberal arts (not averaged)") : "U.S. News",
+    "Niche", "Forbes", "WSJ/College Pulse",
+    ranks.pr ? `Princeton Review Best Value #${ranks.pr.rank} ${ranks.pr.kind}${ranks.pr.national ? `, counted as about #${Math.round(ranks.pr.national)}` : ""}` : null,
+  ].filter(Boolean).join(" · ");
+  return { text: parts.join(" · "), title };
+}
+
 function RankList({ tracker }) {
   const { SchoolMark } = window.cfApp;
   const { Button } = window.CollegeForgeDesignSystem_e95e63;
-  const { schools, official, error } = useRankingSchools();
+  const { schools, official, extra, error } = useRankingSchools();
   const [copied, setCopied] = React.useState("");
-  const rows = schools ? window.cfRankList.rankList(tracker.apps, schools, official) : [];
+  const rows = schools ? window.cfRankList.rankList(tracker.apps, schools, official, extra) : [];
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(window.cfRankList.copyText(rows));
@@ -37,7 +53,7 @@ function RankList({ tracker }) {
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">List</h1>
-          <p className="cf-page-lede">Your schools, ordered by the average of their U.S. News, Niche and Forbes ranks. U.S. News ranks liberal arts colleges on a separate list, so a college’s LAC rank counts as the national rank at the same standing, using Niche and Forbes (which rank both together) as the common scale.</p>
+          <p className="cf-page-lede">Your schools, ordered by a weighted average of five rankings. U.S. News and Forbes count fully; Niche ¾, since part of it is student reviews; WSJ ½, since it swings year to year and only its top 100 is public; the Princeton Review ¼, since it rates cost and aid rather than overall strength. Liberal arts and Princeton Review ranks count at the national rank of the same standing, and a list a school isn’t on is left out.</p>
         </div>
         {rows.length ? <div className="cf-row-actions"><Button size="sm" variant="secondary" onClick={copy}>{copied || "Copy colleges"}</Button></div> : null}
       </header>
@@ -52,8 +68,8 @@ function RankList({ tracker }) {
               <span className="cf-rank-row__pos">{r.avg == null ? "" : i + 1}</span>
               <SchoolMark name={r.app.name} logo={r.app.logo} />
               <span className="cf-rank-row__name"><span className="cf-rank-row__label">{r.app.name}</span>{admitted ? <span className="cf-rank-row__tag">{r.app.status === "committed" ? "Committed" : "Admitted"}</span> : null}</span>
-              <span className="cf-rank-row__src" title={r.ranks.lac ? (r.ranks.usnNational ? `U.S. News #${r.ranks.usn} liberal arts, counted as about #${Math.round(r.ranks.usnNational)} national · Niche · Forbes` : "U.S. News (liberal arts list, not averaged) · Niche · Forbes") : "U.S. News · Niche · Forbes"}>{r.avg == null ? "Not ranked" : `${rankText(r.ranks.usn)}${r.ranks.lac ? (r.ranks.usnNational ? ` LAC ≈${Math.round(r.ranks.usnNational)}` : " LAC") : ""} · ${rankText(r.ranks.niche)} · ${rankText(r.ranks.forbes)}`}</span>
-              <span className="cf-rank-row__avg" title="Average rank">{r.avg == null ? "—" : r.avg.toFixed(1)}</span>
+              <span className="cf-rank-row__src" title={rankSummary(r.ranks).title}>{r.avg == null ? "Not ranked" : rankSummary(r.ranks).text}</span>
+              <span className="cf-rank-row__avg" title="Weighted average rank">{r.avg == null ? "—" : r.avg.toFixed(1)}</span>
             </li>
             );
           })}

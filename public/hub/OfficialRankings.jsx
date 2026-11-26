@@ -1,13 +1,23 @@
-// The Official rankings tab: U.S. News, liberal arts, Forbes and Niche lists as
+// The Official rankings tab: the Forge ranking (a weighted average of the others),
+// then U.S. News, liberal arts, Forbes, Niche, WSJ and Princeton Review lists as
 // published, each school expandable to its facts and its ranks on the other lists.
 
 const OFFICIAL_LISTS = [
+  { id: "forge", label: "Forge", title: "Forge ranking", top: 100 },
   { id: "usn", label: "U.S. News", title: "U.S. News National Universities", top: 100 },
   { id: "lac", label: "Liberal arts", title: "U.S. News National Liberal Arts Colleges", top: 50 },
   { id: "forbes", label: "Forbes", title: "Forbes America’s Top Colleges", top: 100 },
   { id: "niche", label: "Niche", title: "Niche Best Colleges in America", top: 100 },
+  { id: "wsj", label: "WSJ", title: "WSJ/College Pulse Best Colleges in the U.S.", top: 100 },
+  { id: "prPublic", label: "Best value public", title: "Princeton Review Top 50 Best Value Colleges (Public)", top: 50 },
+  { id: "prPrivate", label: "Best value private", title: "Princeton Review Top 50 Best Value Colleges (Private)", top: 50 },
 ];
-const OTHER_LABEL = { usn: "U.S. News", lac: "U.S. News liberal arts", forbes: "Forbes", niche: "Niche" };
+const OTHER_LABEL = {
+  usn: "U.S. News", lac: "U.S. News liberal arts", forbes: "Forbes", niche: "Niche", wsj: "WSJ",
+  prPublic: "Princeton Review Best Value (public)", prPrivate: "Princeton Review Best Value (private)",
+};
+// The editions object names the Princeton Review once and the liberal arts list under U.S. News.
+const EDITION_KEY = { lac: "usn", prPublic: "pr", prPrivate: "pr" };
 const OFFICIAL_TAB_KEY = "cf.officialRankings.list";
 
 function useOfficialRankings() {
@@ -37,6 +47,7 @@ function OfficialFacts({ row, listId }) {
     ["Setting", f.setting],
   ];
   if (listId === "niche" && row.reviews) facts.push(["Niche reviews", row.stars ? `${row.stars} ★ from ${fmtCount(row.reviews)}` : fmtCount(row.reviews)]);
+  if (listId === "forge" && row.avg != null) facts.unshift(["Weighted average rank", row.avg.toFixed(1)]);
   const shown = facts.filter(([, v]) => v);
   const others = Object.entries(row.elsewhere || {});
   return (
@@ -60,24 +71,24 @@ function OfficialRankings() {
   const { SchoolMark } = window.cfApp;
   const { data, error } = useOfficialRankings();
   const [listId, setListId] = React.useState(() => {
-    try { const v = localStorage.getItem(OFFICIAL_TAB_KEY); return OFFICIAL_LISTS.some((l) => l.id === v) ? v : "usn"; } catch (e) { return "usn"; }
+    try { const v = localStorage.getItem(OFFICIAL_TAB_KEY); return OFFICIAL_LISTS.some((l) => l.id === v) ? v : "forge"; } catch (e) { return "forge"; }
   });
   const [open, setOpen] = React.useState(null);
   const pick = (id) => { setListId(id); setOpen(null); try { localStorage.setItem(OFFICIAL_TAB_KEY, id); } catch (e) {} };
   const list = OFFICIAL_LISTS.find((l) => l.id === listId);
   const rows = data ? data.lists[listId] || [] : [];
-  const edition = data && data.editions ? data.editions[listId === "lac" ? "usn" : listId] : "";
+  const edition = data && data.editions ? data.editions[EDITION_KEY[listId] || listId] : "";
 
   return (
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">Official rankings</h1>
-          <p className="cf-page-lede">The published lists, in the publishers’ own order. Open a school for its admit rate, test scores, cost and where it lands on the other lists.</p>
+          <p className="cf-page-lede">The published lists, in the publishers’ own order, and the Forge ranking: a weighted average of them, the same one your List tab uses. Open a school for its admit rate, test scores, cost and where it lands on the other lists.</p>
         </div>
       </header>
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>Couldn’t load the rankings. Reload the page to try again.</p> : null}
-      <div className="cf-ptabs" role="tablist" aria-label="Ranking lists">
+      <div className="cf-ptabs cf-ptabs--scroll" role="tablist" aria-label="Ranking lists">
         {OFFICIAL_LISTS.map((l) => (
           <button key={l.id} type="button" role="tab" id={`orank-tab-${l.id}`} aria-selected={listId === l.id} aria-controls="orank-panel" className={"cf-ptab" + (listId === l.id ? " is-active" : "")} onClick={() => pick(l.id)}>
             {l.label}<span className="cf-ptab__n">{l.top}</span>
@@ -86,7 +97,8 @@ function OfficialRankings() {
       </div>
       {data ? (
         <section id="orank-panel" role="tabpanel" aria-labelledby={`orank-tab-${listId}`}>
-          <p className="cf-orank__source">{list.title}{edition ? `, ${edition}` : ""} · top {list.top}{rows.length > list.top ? ` (${rows.length} with ties)` : ""}</p>
+          <p className="cf-orank__source">{list.title}{edition && listId !== "forge" ? `, ${edition}` : ""} · top {list.top}{rows.length > list.top ? ` (${rows.length} with ties)` : ""}</p>
+          {listId === "forge" ? <p className="cf-help cf-orank__about">Each school’s ranks averaged with fixed weights: U.S. News and Forbes count fully, Niche ¾, WSJ ½ and the Princeton Review ¼. Liberal arts and Princeton Review ranks count at the national rank of the same standing. A school needs U.S. News plus Niche’s worth of weight or more to be ranked, so one list alone can’t place it.</p> : null}
           <ol className="cf-apps-list cf-orank">
             {rows.map((r) => {
               const key = `${listId}-${r.rank}-${r.name}`;
