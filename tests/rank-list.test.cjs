@@ -194,3 +194,26 @@ test('the Forge ranking orders schools by the List tab average and skips thin co
     assert.ok(w >= 1.5, r.name);
   }
 });
+
+test('the student’s career rank joins the average at the national rank of the same standing', () => {
+  const { lacLink } = require('../public/hub/rank-list.js');
+  assert.equal(W.career, W.usn);
+  // A made-up career ranking: the schools in Forbes order, so it tracks the other lists and can be linked.
+  const career = [...schools].sort((a, b) => (a.forbes || 999) - (b.forbes || 999)).map((s, i) => ({ id: s.id, rank: i + 1 }));
+  const apps = [{ id: 'c', name: 'Cornell University' }, { id: 'u', name: 'Unknown College of Nowhere' }];
+  const byId = Object.fromEntries(rankList(apps, schools, null, null, career).map((r) => [r.app.id, r]));
+  const c = byId.c.ranks;
+  const cornell = schools.find((s) => s.name === nameOf('Cornell University'));
+  assert.equal(c.career.rank, career.find((x) => x.id === cornell.id).rank);
+  assert.ok(c.career.national > 0);
+  assert.equal(byId.c.avg, wavg([c.usnNational, W.usn], [c.niche, W.niche], [c.forbes, W.forbes], [c.career.national, W.career]));
+  assert.equal(byId.u.ranks.career, null);
+  assert.ok(lacLink(schools));
+});
+
+test('without a career ranking the average is unchanged', () => {
+  const [a] = rankList([{ id: 'c', name: 'Cornell University' }], schools);
+  const [b] = rankList([{ id: 'c', name: 'Cornell University' }], schools, null, null, null);
+  assert.equal(a.ranks.career, null);
+  assert.equal(a.avg, b.avg);
+});

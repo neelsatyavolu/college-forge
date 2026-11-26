@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Target majors, weights and adjustments. Changes re-rank right away and are kept on this phone.
+/// Target majors, weights and adjustments. Changes re-rank right away and are saved with the student’s list, shared with the website.
 struct RankingsSettingsSheet: View {
     let response: RankingsResponse
     @Environment(RankingsModel.self) private var model
@@ -15,7 +15,7 @@ struct RankingsSettingsSheet: View {
                 Section {
                     Button("Reset weights and adjustments", role: .destructive) {
                         Haptics.selection()
-                        model.resetSettings()
+                        model.resetSettings(defaults: current.defaults)
                     }
                 }
             }

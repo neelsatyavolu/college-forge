@@ -80,3 +80,27 @@ test('unknown views and targets fall back, and bad settings are refused', async 
   assert.equal(ok.status, 200);
   assert.equal((await ok.json()).view, 'overall');
 });
+
+test('saved settings drive the app view: picked majors, then intended, then every major', () => {
+  const { pathRanks, resolveTargets } = require('../lib/career-settings.ts');
+  const all = data.meta.majors.filter(m => m.target).map(m => m.key);
+  assert.deepEqual(resolveTargets(all, [all[0], 'nope'], [all[1]]), [all[0]]);
+  assert.deepEqual(resolveTargets(all, ['nope'], [all[1]]), [all[1]]);
+  assert.deepEqual(resolveTargets(all, [], []), all);
+  const picked = all.slice(0, 2);
+  const me = { ...NO_RANKINGS_ME, workspace: true, settings: { targets: picked } };
+  const view = buildRankingsView(data, me, input({}));
+  assert.deepEqual(view.targets, picked);
+  // A target sent with the request wins over the saved one.
+  assert.deepEqual(buildRankingsView(data, me, input({ targets: [all[3]] })).targets, [all[3]]);
+  // Saved weights and flags apply when the request has none.
+  const w = { ...DEFAULT_WEIGHTS, campus: 0 };
+  const v2 = buildRankingsView(data, { ...me, settings: { weights: w, flags: { col: false, va: true, stretch: false } } }, input({}));
+  assert.deepEqual(v2.weights, w);
+  assert.equal(v2.flags.va, true);
+  // The List tab's full-list ranks match the view's order when the student has no schools of their own.
+  const ranks = pathRanks(data, { intended: [], schools: [], settings: { targets: picked } });
+  assert.equal(ranks.length, data.schools.length);
+  assert.deepEqual(ranks.map(r => r.id), view.rows.map(r => r.id));
+  assert.ok(ranks.every(r => Number.isInteger(r.rank) && r.rank >= 1));
+});

@@ -1,6 +1,7 @@
 // The List tab: applications ordered by a weighted average of their U.S. News,
 // Forbes, Niche, WSJ and Princeton Review ranks (/data/career-ranking.json and
-// /data/official-rankings.json).
+// /data/official-rankings.json), and the student's own career ranking (My path,
+// /api/rankings/path) when they have one.
 // Plain script so the List tab and the node tests share it.
 (function (root) {
   /**
@@ -12,8 +13,10 @@
    * it moves a lot year to year, and only its top 100 is public.
    * Princeton Review Best Value: a cost-and-aid value rating, not an overall ranking, ranked
    * separately for public and private schools and only to 50, so it counts least.
+   * Career (the student's My path rank): outcomes in the majors this student can reach there,
+   * from federal pay records, so it counts as fully as U.S. News and Forbes.
    */
-  var WEIGHTS = { usn: 1, forbes: 1, niche: 0.75, wsj: 0.5, pr: 0.25 };
+  var WEIGHTS = { usn: 1, forbes: 1, niche: 0.75, wsj: 0.5, pr: 0.25, career: 1 };
 
   // Campus suffixes in the ranking file's full names ("Ohio State University-Main Campus").
   var CAMPUS = / (main campus|campus immersion|pittsburgh campus|seattle campus)$/;
@@ -179,6 +182,21 @@
     return out;
   }
 
+  /**
+   * The career ranking ranks only its own ~160 schools, so a My path rank is linked to the national
+   * scale like a LAC rank. `career` is [{id, rank}] for every school on the career list.
+   */
+  function careerLink(schools, career) {
+    var byId = {};
+    career.forEach(function (c) { byId[c.id] = c.rank; });
+    var pairs = [];
+    schools.forEach(function (s) {
+      var anchor = nicheForbes(s);
+      if (byId[s.id] != null && anchor != null) pairs.push([byId[s.id], anchor]);
+    });
+    return { byId: byId, toNational: linkThrough(pairs, nationalLine(schools)) };
+  }
+
   function weightedAverage(parts) {
     var sum = 0, w = 0;
     parts.forEach(function (p) { if (p[0] != null) { sum += p[0] * p[1]; w += p[1]; } });
@@ -222,13 +240,17 @@
   /** Every app with its ranks and their weighted average, best first; schools with no rank go last.
    * A liberal arts college's U.S. News rank counts as its linked national rank, and so does a
    * Princeton Review rank. Apps the career file doesn't cover are looked up in `fallback`
-   * (officialSchools). `extra` is official-rankings.json's extra lists (WSJ, Princeton Review). */
-  function rankList(apps, schools, fallback, extra) {
+   * (officialSchools). `extra` is official-rankings.json's extra lists (WSJ, Princeton Review).
+   * `career` is the student's My path rank for every career-list school ([{id, rank}]); it counts at
+   * the national rank of the same standing. */
+  function rankList(apps, schools, fallback, extra, career) {
     var toNational = lacLink(schools);
     var ex = extra || {};
     var pr = prLinks(schools, ex);
+    var cl = career && career.length ? careerLink(schools, career) : null;
     var rows = apps.map(function (app) {
-      var school = matchSchool(app.name, schools) || (fallback ? matchSchool(app.name, fallback) : null);
+      var own = matchSchool(app.name, schools);
+      var school = own || (fallback ? matchSchool(app.name, fallback) : null);
       var ranks = school ? ranksOf(school, toNational) : { usn: null, lac: false, usnNational: null, niche: null, forbes: null };
       ranks.wsj = rankOn(ex.wsj, school, app.name);
       ranks.pr = null;
@@ -236,9 +258,12 @@
         var r = ranks.pr ? null : rankOn(ex[id], school, app.name);
         if (r != null) ranks.pr = { rank: r, kind: id === "prPublic" ? "public" : "private", national: pr[id] ? pr[id](r) : null };
       });
+      var cr = own && cl ? cl.byId[own.id] : null;
+      ranks.career = cr != null ? { rank: cr, national: cl.toNational ? cl.toNational(cr) : null } : null;
       var wa = weightedAverage([
         [ranks.usnNational, WEIGHTS.usn], [ranks.niche, WEIGHTS.niche], [ranks.forbes, WEIGHTS.forbes],
         [ranks.wsj, WEIGHTS.wsj], [ranks.pr && ranks.pr.national, WEIGHTS.pr],
+        [ranks.career && ranks.career.national, WEIGHTS.career],
       ]);
       return { app: app, ranks: ranks, avg: wa.avg, weight: wa.weight };
     });

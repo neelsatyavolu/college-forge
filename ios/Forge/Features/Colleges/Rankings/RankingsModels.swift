@@ -12,12 +12,14 @@ struct RankingsFlags: Codable, Hashable, Sendable {
     var stretch = false
 }
 
-/// The settings sent to POST /api/rankings/view.
+/// The settings sent to POST /api/rankings/view. Weights, flags and targets are only sent after the student
+/// changes them here, with `save`, so the server keeps them on the workspace and the website uses them too.
 struct RankingsRequest: Codable, Hashable, Sendable {
     var view = "path"
     var weights: RankingsWeights?
     var flags: RankingsFlags?
     var targets: [String]?
+    var save: Bool?
 }
 
 /// The server's finished ranking (lib/rankings-view.ts).

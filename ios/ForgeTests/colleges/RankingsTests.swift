@@ -54,4 +54,18 @@ struct RankingsTests {
         #expect((json["flags"] as? [String: Bool])?["va"] == true)
         #expect(json["targets"] as? [String] == ["cs"])
     }
+
+    @Test func savesChangedSettingsToTheWorkspaceNotThePhone() {
+        let model = RankingsModel()
+        let saved = model.request
+        defer { model.request = saved }
+        model.request = RankingsRequest(view: saved.view)
+        #expect(model.request.save == nil)
+        model.toggleTarget("econ", current: ["cs"], order: ["econ", "cs"])
+        #expect(model.request.save == true)
+        // A fresh model keeps only the view; the workspace's saved settings apply.
+        let reloaded = RankingsModel()
+        #expect(reloaded.request.targets == nil)
+        #expect(reloaded.request.view == model.request.view)
+    }
 }

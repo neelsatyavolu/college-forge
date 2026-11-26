@@ -1,7 +1,8 @@
 import Foundation
 import Observation
 
-/// The career ranking screen's state. Settings are kept on this phone, like the website keeps them in the browser.
+/// The career ranking screen's state. Majors, weights and adjustments are saved on the student's workspace,
+/// shared with the website; only the selected view is kept on this phone.
 @MainActor
 @Observable
 final class RankingsModel {
@@ -18,8 +19,10 @@ final class RankingsModel {
     }
 
     init() {
-        request = UserDefaults.standard.data(forKey: Self.storageKey)
-            .flatMap { try? JSONDecoder().decode(RankingsRequest.self, from: $0) } ?? RankingsRequest()
+        // Settings saved here by older builds are dropped: the workspace's saved ones apply instead.
+        let stored = UserDefaults.standard.data(forKey: Self.storageKey)
+            .flatMap { try? JSONDecoder().decode(RankingsRequest.self, from: $0) }
+        request = RankingsRequest(view: stored?.view ?? "path")
     }
 
     var response: RankingsResponse? {
@@ -63,6 +66,7 @@ final class RankingsModel {
         next[key] = value
         guard next.values.contains(where: { $0 > 0 }) else { return }
         request.weights = next
+        request.save = true
     }
 
     func flags(current: RankingsFlags) -> RankingsFlags {
@@ -71,6 +75,7 @@ final class RankingsModel {
 
     func setFlags(_ flags: RankingsFlags) {
         request.flags = flags
+        request.save = true
     }
 
     /// Adds or removes a target major. The last one can't be removed.
@@ -78,15 +83,17 @@ final class RankingsModel {
         let next = current.contains(key) ? current.filter { $0 != key } : current + [key]
         guard !next.isEmpty else { return }
         request.targets = order.filter(next.contains)
+        request.save = true
     }
 
-    func resetSettings() {
-        request.weights = nil
-        request.flags = nil
+    func resetSettings(defaults: RankingsDefaults) {
+        request.weights = defaults.weights
+        request.flags = defaults.flags
+        request.save = true
     }
 
     private func save() {
-        if let data = try? JSONEncoder().encode(request) {
+        if let data = try? JSONEncoder().encode(RankingsRequest(view: request.view)) {
             UserDefaults.standard.set(data, forKey: Self.storageKey)
         }
     }

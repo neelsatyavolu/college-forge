@@ -5,6 +5,7 @@ import {
 } from "@/lib/career-ranking";
 import { COLLEGES, logoUrl } from "@/lib/catalog";
 import { expandAlias } from "@/lib/college-aliases";
+import { CAREER_DEFAULT_FLAGS, careerFlagsSchema, careerTargetsSchema, careerWeightsSchema, resolveTargets } from "@/lib/career-settings";
 import type { RankingsMe } from "@/lib/rankings-me";
 
 /**
@@ -12,17 +13,16 @@ import type { RankingsMe } from "@/lib/rankings-me";
  * Mirrors app/rankings/RankingsClient.tsx and CareerList.tsx: same tabs, same targets rule, same tags.
  */
 
-export const RANKINGS_DEFAULT_FLAGS = { col: true, va: false, stretch: false };
-
-const weightsSchema = z.object(Object.fromEntries(PILLARS.map((k) => [k, z.number().min(0).max(100)])) as Record<Pillar, z.ZodNumber>)
-  .refine((w) => PILLARS.some((k) => w[k] > 0));
+export const RANKINGS_DEFAULT_FLAGS = CAREER_DEFAULT_FLAGS;
 
 export const rankingsViewInput = z.object({
   view: z.string().max(40).default("path"),
-  weights: weightsSchema.optional(),
-  flags: z.object({ col: z.boolean(), va: z.boolean(), stretch: z.boolean() }).optional(),
-  /** Majors the student wants; empty or missing means the profile's intended majors, else every major. */
-  targets: z.array(z.string().max(40)).max(20).optional(),
+  weights: careerWeightsSchema.optional(),
+  flags: careerFlagsSchema.optional(),
+  /** Majors the student wants; missing means the saved picks, then the profile's intended majors, then every major. */
+  targets: careerTargetsSchema.optional(),
+  /** Also save the weights, flags and targets sent here on the student's workspace. */
+  save: z.boolean().optional(),
 });
 export type RankingsViewInput = z.infer<typeof rankingsViewInput>;
 
@@ -53,16 +53,15 @@ const num = (v: number | null | undefined) => (isNum(v) ? v : null);
 
 export function buildRankingsView(data: CareerData, me: RankingsMe, input: RankingsViewInput) {
   const ranker = createRanker(data);
-  const weights: Weights = input.weights ?? { ...DEFAULT_WEIGHTS };
-  const flags = input.flags ?? { ...RANKINGS_DEFAULT_FLAGS };
+  const saved = me.settings;
+  const weights: Weights = input.weights ?? saved?.weights ?? { ...DEFAULT_WEIGHTS };
+  const flags = input.flags ?? saved?.flags ?? { ...RANKINGS_DEFAULT_FLAGS };
   const majors = data.meta.majors.filter((m) => m.target);
   const all = majors.map((m) => m.key);
   const admitted = new Set(me.schools.filter((s) => s.admitted).map((s) => s.id));
 
   const picked = (input.targets ?? []).filter((k) => all.includes(k));
-  const from = picked.length ? picked : me.intended.length ? me.intended : all;
-  const ok = from.filter((k) => all.includes(k));
-  const targets = ok.length ? ok : all;
+  const targets = resolveTargets(all, picked.length ? picked : saved?.targets, me.intended);
   const student: Student = {
     targets,
     direct: Object.fromEntries(

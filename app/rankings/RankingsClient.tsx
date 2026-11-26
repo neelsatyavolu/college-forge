@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CareerAi } from "@/lib/career-ai";
+import type { CareerSettings as SavedSettings } from "@/lib/career-settings";
 import { DEFAULT_WEIGHTS, PILLARS, createRanker, type CareerData, type Student, type Weights } from "@/lib/career-ranking";
 import AiImport from "./AiImport";
 import AiList from "./AiList";
@@ -12,8 +13,28 @@ import Methodology from "./Methodology";
 import WorkspaceShell from "./WorkspaceShell";
 import "./rankings.css";
 
-type Me = { workspace: boolean; account?: boolean; intended: string[]; schools: { id: number; major: string[]; admitted: boolean }[]; ai?: CareerAi | null };
-const EMPTY_ME: Me = { workspace: false, account: false, intended: [], schools: [], ai: null };
+type Me = { workspace: boolean; account?: boolean; intended: string[]; schools: { id: number; major: string[]; admitted: boolean }[]; ai?: CareerAi | null; settings?: SavedSettings | null };
+const EMPTY_ME: Me = { workspace: false, account: false, intended: [], schools: [], ai: null, settings: null };
+
+/**
+ * Saves setting changes on the student's workspace (PUT /api/rankings/me) a moment after the last one,
+ * so the iOS app and the List tab rank the same way. The browser copy still applies if saving fails.
+ */
+function useSettingsSaver(): (s: SavedSettings) => void {
+  const pending = useRef<SavedSettings>({});
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  return useCallback((s: SavedSettings) => {
+    pending.current = { ...pending.current, ...s };
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      const body = pending.current;
+      pending.current = {};
+      fetch("/api/rankings/me", {
+        method: "PUT", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify(body),
+      }).catch(() => undefined);
+    }, 600);
+  }, []);
+}
 
 const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
 const isWeights = (v: unknown): v is Weights =>
@@ -30,20 +51,43 @@ export default function RankingsClient() {
   const [theme, toggleTheme] = useTheme();
   const data = useJson<CareerData>("/data/career-ranking.json");
   const [me, setMe] = useState<Me>(EMPTY_ME);
+  const [meLoaded, setMeLoaded] = useState(false);
   const [view, setViewState] = useState("path");
-  const [weights, setWeights] = useStored<Weights>("cf.career.weights", DEFAULT_WEIGHTS, isWeights);
-  const [flags, setFlags] = useStored<Flags>("cf.career.flags", DEFAULT_FLAGS, isFlags);
+  const [weights, setWeights, weightsStored] = useStored<Weights>("cf.career.weights", DEFAULT_WEIGHTS, isWeights);
+  const [flags, setFlags, flagsStored] = useStored<Flags>("cf.career.flags", DEFAULT_FLAGS, isFlags);
   const [picked, setPicked, pickedStored] = useStored<string[]>("cf.career.targets", [], isStrings);
+  const saveSettings = useSettingsSaver();
+  const changeWeights = useCallback((w: Weights) => { setWeights(w); saveSettings({ weights: w }); }, [setWeights, saveSettings]);
+  const changeFlags = useCallback((f: Flags) => { setFlags(f); saveSettings({ flags: f }); }, [setFlags, saveSettings]);
+  const changeTargets = useCallback((t: string[]) => { setPicked(t); saveSettings({ targets: t }); }, [setPicked, saveSettings]);
 
   useEffect(() => {
     setViewState(readView());
     let live = true;
     fetch("/api/rankings/me", { credentials: "same-origin" })
       .then((r) => (r.ok ? r.json() : EMPTY_ME))
-      .then((m: Me) => live && setMe(m && Array.isArray(m.schools) ? m : EMPTY_ME))
+      .then((m: Me) => { if (live) { setMe(m && Array.isArray(m.schools) ? m : EMPTY_ME); setMeLoaded(true); } })
       .catch(() => undefined);
     return () => { live = false; };
   }, []);
+
+  // Once the workspace answers: its saved settings win over this browser's copy, and settings only this
+  // browser had (from before they were saved on the workspace) are saved there.
+  const synced = useRef(false);
+  useEffect(() => {
+    if (!meLoaded || synced.current) return;
+    synced.current = true;
+    const s = me.settings ?? {};
+    if (s.targets?.length) setPicked(s.targets);
+    if (s.weights) setWeights(s.weights);
+    if (s.flags) setFlags(s.flags);
+    const local: SavedSettings = {
+      ...(!s.targets?.length && pickedStored && picked.length ? { targets: picked } : {}),
+      ...(!s.weights && weightsStored ? { weights } : {}),
+      ...(!s.flags && flagsStored ? { flags } : {}),
+    };
+    if (me.workspace && Object.keys(local).length) saveSettings(local);
+  }, [meLoaded, me, picked, pickedStored, weights, weightsStored, flags, flagsStored, setPicked, setWeights, setFlags, saveSettings]);
 
   const setView = useCallback((v: string) => {
     setViewState(v);
@@ -152,11 +196,11 @@ export default function RankingsClient() {
           <CareerSettings
             majors={majors}
             targets={targets}
-            onTargets={setPicked}
+            onTargets={changeTargets}
             weights={weights}
-            onWeights={setWeights}
+            onWeights={changeWeights}
             flags={flags}
-            onFlags={setFlags}
+            onFlags={changeFlags}
             showTargets={isPath}
           >
             {me.account && <AiImport ai={me.ai ?? null} onChange={(ai) => { setMe((m) => ({ ...m, ai })); if (!ai && isAi) setView("path"); }} />}
