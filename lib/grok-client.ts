@@ -1,4 +1,5 @@
 import type { ChatTurn, ChatEmitter, ToolSpec, ToolExecutor } from "./chat-types";
+import { finalTools, isFinalRound, requestTimeout, trimForFinal, type WrapUp } from "./tool-budget";
 import { READ_FILE_TOOL, readContextFile } from "./file-tool";
 import { WEB_SEARCH_TOOL, WEB_FETCH_TOOL, runWebSearch, runWebFetch } from "./web-search-tool";
 import {
@@ -16,7 +17,8 @@ import { providerModels } from "./ai-models";
 
 // Hub builds need several tool rounds (web_search × N + set_* + upsert_college).
 const MAX_ROUNDS = 10;
-const UPSTREAM_TIMEOUT_MS = 90_000;
+// Grok reasons before answering and does not stream here; writing a whole college list can take two to three minutes.
+const UPSTREAM_TIMEOUT_MS = 180_000;
 
 export { DEFAULT_GROK_MODEL };
 
@@ -52,14 +54,15 @@ async function callGrok(
   tokens: GrokTokens,
   model: string,
   messages: GrokMessage[],
-  tools: ToolSpec[]
+  tools: ToolSpec[],
+  timeoutMs = UPSTREAM_TIMEOUT_MS
 ): Promise<{
   text: string;
   toolCalls: AssistantToolCall[];
   finishReason: string | null;
 }> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(`${GROK_API_BASE}/chat/completions`, {
       method: "POST",
@@ -101,7 +104,7 @@ async function callGrok(
     };
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
-      throw new Error(`Grok request timed out after ${UPSTREAM_TIMEOUT_MS / 1000}s.`);
+      throw new Error(`Grok request timed out after ${Math.round(timeoutMs / 1000)}s.`);
     }
     throw err instanceof Error ? err : new Error(String(err));
   } finally {
@@ -157,6 +160,8 @@ export async function runGrokChat(params: {
   shouldEndTurn?: () => boolean;
   /** Overrides the tool-round cap (research steps need more reads). */
   maxRounds?: number;
+  /** Ends a long turn in time: the final round offers only the finishing tools. */
+  wrapUp?: WrapUp;
 }): Promise<GrokChatResult> {
   const { emit } = params;
   const tools = params.tools ?? DEFAULT_TOOLS;
@@ -175,7 +180,10 @@ export async function runGrokChat(params: {
   let lastFinishReason: string | null = null;
 
   const maxRounds = params.maxRounds && params.maxRounds > 0 ? Math.min(params.maxRounds, 16) : MAX_ROUNDS;
+  const startedAt = Date.now();
   for (let round = 0; round < maxRounds; round++) {
+    const final = isFinalRound(params.wrapUp, startedAt, round, maxRounds);
+    if (final) messages.push({ role: "user", content: params.wrapUp!.note });
     emit({
       type: "status",
       stage: round === 0 ? "thinking" : "round",
@@ -183,7 +191,8 @@ export async function runGrokChat(params: {
       round: round + 1,
     });
 
-    const { text, toolCalls, finishReason } = await callGrok(params.tokens, model, messages, tools);
+    const sent = final ? messages.map((m) => (m.role === "tool" && typeof m.content === "string" ? { ...m, content: trimForFinal(m.content) } : m)) : messages;
+    const { text, toolCalls, finishReason } = await callGrok(params.tokens, model, sent, final ? finalTools(tools, params.wrapUp!) : tools, requestTimeout(params.wrapUp, startedAt, UPSTREAM_TIMEOUT_MS));
     lastFinishReason = finishReason;
     if (finishReason === "length") truncated = true;
 
@@ -223,6 +232,7 @@ export async function runGrokChat(params: {
     if (params.shouldEndTurn?.()) {
       return { text: accumulated, model, finishReason: "awaiting_student", rounds: round + 1, truncated };
     }
+    if (final) break;
   }
 
   const suffix = friendlyToolBudgetNote();

@@ -17,10 +17,10 @@ const wsWith = (prefs = {}) => {
   return ws;
 };
 
-function harness(ws) {
+function harness(ws, hurry) {
   let state = ws;
   const events = [];
-  const tools = T.makeInterviewTools(async (fn) => (state = fn(state)), async () => state, (e) => events.push(e));
+  const tools = T.makeInterviewTools(async (fn) => (state = fn(state)), async () => state, (e) => events.push(e), hurry);
   return { tools, events, get ws() { return state; } };
 }
 
@@ -221,4 +221,14 @@ test('a student applying without scores cannot be shown test-required colleges',
   assert.match(T.studentWarning(problem), /^Heads up: Harvard University requires SAT or ACT scores\. You said you're applying without scores/);
   ws.applicant.satNote = '1500 superscore'; ws.applicant.sat = '1500';
   assert.doesNotMatch(T.checkListProposal(ws, list) || '', /Harvard/);
+});
+
+test('past the research budget, a list Forge objects to is shown at once with its warning', async () => {
+  const ws = complete(wsWith({ budget: 'lt15', needAid: true }));
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, budget: 'lt15', suppCount: 10, noSuppCount: 0 };
+  const h = harness(ws, () => true);
+  const out = await h.tools.execute('propose_list', JSON.stringify({ schools: list(10, 2, 'no') }));
+  assert.match(out, /^Shown to the student/);
+  const ev = h.events.find((e) => e.type === 'list');
+  assert.match(ev.warning, /fewer than two likely schools on this list fit your budget/);
 });

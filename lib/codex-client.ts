@@ -1,4 +1,5 @@
 import { CODEX_BACKEND_BASE, type CodexTokens } from "./codex-oauth";
+import { finalTools, isFinalRound, trimForFinal, type WrapUp } from "./tool-budget";
 import { providerModels } from "./ai-models";
 import type { ChatTurn, ChatEmitter, ToolSpec, ToolExecutor } from "./chat-types";
 import { READ_FILE_TOOL, readContextFile } from "./file-tool";
@@ -397,6 +398,8 @@ export async function runCodexChat(params: {
   maxRounds?: number;
   /** Reasoning effort: "low" (default) keeps interview replies quick; "medium" for research and the copilot. */
   effort?: CodexEffort;
+  /** Ends a long turn in time: the final round offers only the finishing tools. */
+  wrapUp?: WrapUp;
 }): Promise<CodexChatResult> {
   const { emit } = params;
   const tools = params.tools ?? DEFAULT_TOOLS;
@@ -411,7 +414,10 @@ export async function runCodexChat(params: {
   let truncated = false;
 
   const maxRounds = params.maxRounds && params.maxRounds > 0 ? Math.min(params.maxRounds, 16) : MAX_ROUNDS;
+  const startedAt = Date.now();
   for (let round = 0; round < maxRounds; round++) {
+    const final = isFinalRound(params.wrapUp, startedAt, round, maxRounds);
+    if (final) input.push({ role: "user", content: [{ type: "input_text", text: params.wrapUp!.note }] });
     emit({
       type: "status",
       stage: round === 0 ? "thinking" : "round",
@@ -423,11 +429,11 @@ export async function runCodexChat(params: {
       params.tokens,
       model,
       params.instructions,
-      input,
+      final ? input.map((item) => ("type" in item && item.type === "function_call_output" ? { ...item, output: trimForFinal(item.output) } : item)) : input,
       emit,
       round + 1,
       accumulated.length > 0,
-      tools,
+      final ? finalTools(tools, params.wrapUp!) : tools,
       params.effort
     );
     lastFinishReason = finishReason;
@@ -462,6 +468,7 @@ export async function runCodexChat(params: {
     if (params.shouldEndTurn?.()) {
       return { text: accumulated, model, finishReason: "awaiting_student", rounds: round + 1, truncated };
     }
+    if (final) break;
   }
 
   const suffix = friendlyToolBudgetNote();

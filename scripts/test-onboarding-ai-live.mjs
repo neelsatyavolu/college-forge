@@ -31,6 +31,7 @@ const { makeInterviewTools, recordTurn } = require(path.join(root, 'lib/intervie
 const { buildInterviewPrompt, RESEARCH_RULES } = require(path.join(root, 'lib/interview-prompt.ts'));
 const { buildHubSystemPrompt } = require(path.join(root, 'lib/hub-context.ts'));
 const { firstIncomplete } = require(path.join(root, 'lib/interview-checklist.ts'));
+const { ONBOARDING_WRAP_UP } = require(path.join(root, 'lib/tool-budget.ts'));
 const { applyApprovedList } = require(path.join(root, 'lib/onboarding-list.ts'));
 const { importCurated, researchSteps } = require(path.join(root, 'lib/research-plan.ts'));
 
@@ -38,6 +39,15 @@ const auth = JSON.parse(readFileSync(path.join(os.homedir(), '.codex/auth.json')
 const exp = JSON.parse(Buffer.from(auth.access_token.split('.')[1], 'base64url').toString()).exp * 1000;
 if (exp < Date.now() + 10 * 60_000) { console.error('The Codex CLI token expires soon; run `codex` once to refresh it, then retry.'); process.exit(2); }
 const tokens = { accessToken: auth.access_token, refreshToken: auth.refresh_token, expiresAt: exp, accountId: auth.account_id };
+// PROVIDER=grok runs the interviewer on Grok (~/.grok/auth.json, the Grok CLI's sign-in); the student stays on ChatGPT.
+const GROK = process.env.PROVIDER === 'grok';
+const { runGrokChat } = GROK ? require(path.join(root, 'lib/grok-client.ts')) : {};
+const grokTokens = GROK ? (() => {
+  const entry = Object.values(JSON.parse(readFileSync(path.join(os.homedir(), '.grok/auth.json'), 'utf8')))[0];
+  const until = Date.parse(entry.expires_at);
+  if (until < Date.now() + 10 * 60_000) { console.error('The Grok CLI sign-in expires soon; run `grok` once to refresh it, then retry.'); process.exit(2); }
+  return { accessToken: entry.key, refreshToken: entry.refresh_token, expiresAt: until };
+})() : null;
 
 const MAX_TURNS = Number(process.argv[2] || 40);
 const RESEARCH_N = Number(process.argv[3] || 2);
@@ -53,14 +63,15 @@ async function counselorTurn(history, mode = 'onboarding') {
   const ws = await read();
   const events = [];
   const hub = makeHubTools(WS, { userText: history.at(-1).content, draftStorageKey: ws.draftStorageKey });
-  const iv = makeInterviewTools(mutate, read, (e) => events.push(e));
+  const turnStartedAt = Date.now();
+  const iv = makeInterviewTools(mutate, read, (e) => events.push(e), () => Date.now() - turnStartedAt >= ONBOARDING_WRAP_UP.afterMs);
   const exec = async (name, args) => (await iv.execute(name, args)) ?? hub.executeTool(name, args);
   const calls = [];
-  const result = await runCodexChat({
-    tokens, instructions: mode === 'onboarding' ? buildInterviewPrompt(ws) : `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`,
-    turns: history.slice(-16), emit: noop, tools: [...hub.tools, ...iv.tools],
+  const result = await (GROK ? runGrokChat : runCodexChat)({
+    tokens: GROK ? grokTokens : tokens, instructions: mode === 'onboarding' ? buildInterviewPrompt(ws) : `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`,
+    turns: history.slice(-16), emit: process.env.ROUNDS ? (e) => { if (e.type === 'status' && e.round) log(`   round ${e.round} ${e.stage}`); } : noop, tools: [...hub.tools.filter((t) => !iv.tools.some((x) => x.name === t.name)), ...iv.tools],
     executeTool: async (n, a) => { calls.push(n); const out = await exec(n, a); if (n === 'propose_list' || n === 'advance_section') log(`   ${n} -> ${String(out).slice(0, 300)}`); return out; },
-    shouldEndTurn: iv.endTurn, maxRounds: 14, effort: mode === 'onboarding' ? 'low' : 'medium',
+    shouldEndTurn: iv.endTurn, maxRounds: 14, ...(mode === 'onboarding' ? { wrapUp: ONBOARDING_WRAP_UP } : {}), effort: mode === 'onboarding' ? 'low' : 'medium',
   });
   if (mode === 'onboarding') await mutate((w) => recordTurn(recordTurn(w, { role: 'user', content: history.at(-1).content, at: Date.now() }), { role: 'assistant', content: result.text, at: Date.now() }));
   return { text: result.text, events, calls, finish: result.finishReason };

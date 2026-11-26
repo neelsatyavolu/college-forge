@@ -258,6 +258,11 @@ export function scorecardToCollege(r: ScorecardCollege): College {
  * hub scores fit: above 75th = strong, inside the band = close, below 25th
  * = reach.
  */
+/** A note saying the student hasn't tested yet but plans to (a junior, or a senior with a test date ahead). */
+export function isNotYetTestedNote(note: string | undefined): boolean {
+  return /not (?:yet )?taken(?: yet)?|haven'?t (?:taken|tested)|not tested yet|(?:plan(?:s|ning)?|going) to take|taking (?:the )?(?:SAT|ACT)|(?:SAT|ACT) (?:is )?(?:scheduled|planned|in (?:jan|feb|mar|apr|may|jun|aug|sep|oct|nov|dec))/i.test(note || "");
+}
+
 export function isTestOptionalNote(note: string | undefined): boolean {
   return /test[- ]optional|not (?:submitting|reporting|sending)(?: (?:test|SAT|ACT))? scores|(?:won't|will not|don't|do not) (?:submit|send|report)(?: (?:test|SAT|ACT|my))? scores|(?:didn't|did not|won't|will not|never) take (?:the )?(?:SAT|ACT)|no (?:SAT|ACT|test) scores/i.test(note || "");
 }

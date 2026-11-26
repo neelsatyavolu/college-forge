@@ -4,6 +4,7 @@ import type { ChatEvent, ChatTurn, ProviderName } from "@/lib/chat-types";
 import { getWorkspace, updateWorkspace } from "@/lib/store";
 import { buildHubSystemPrompt } from "@/lib/hub-context";
 import { makeHubTools } from "@/lib/hub-tools";
+import { ONBOARDING_WRAP_UP } from "@/lib/tool-budget";
 import { dedupeParagraphs, makeInterviewTools, recordTurn } from "@/lib/interview-tools";
 import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
 import { sensitiveRefusal, toolAllowed } from "@/lib/tool-policy";
@@ -100,7 +101,8 @@ export async function POST(req: NextRequest) {
           if (w.draftStorageKey !== ws.draftStorageKey) throw new Error("This workspace was reset or changed. Start setup again.");
           return fn(w);
         });
-        const interview = makeInterviewTools(mutate, () => getWorkspace(workspaceId), emit);
+        const turnStartedAt = Date.now();
+        const interview = makeInterviewTools(mutate, () => getWorkspace(workspaceId), emit, () => Date.now() - turnStartedAt >= ONBOARDING_WRAP_UP.afterMs);
         const setup = mode !== "hub";
         const instructions = mode === "onboarding"
           ? buildInterviewPrompt(ws)
@@ -145,6 +147,8 @@ export async function POST(req: NextRequest) {
           ...(setup ? { requireTools: true, shouldEndTurn: interview.endTurn } : {}),
           // Setup turns can move into the list step mid-turn, and research needs many reads; interview questions end early anyway.
           ...(setup ? { maxRounds: 14 } : {}),
+          // Onboarding must hand the student a question or list before the 300-second limit.
+          ...(mode === "onboarding" ? { wrapUp: ONBOARDING_WRAP_UP } : {}),
           // Interview questions should come back fast; research and the copilot benefit from more thought.
           effort: mode === "onboarding" ? "low" : "medium",
         });

@@ -63,3 +63,19 @@ test('the mix only changes when the student\'s own message is about it', async (
   assert.equal(prefs.ambition, 'ambitious');
   assert.equal(prefs.ambitionChosen, true);
 });
+
+test('application counts are saved only when the student gave them, or accepted a recommendation', async () => {
+  const save = (userText, args) => makeHubTools('copilot-counts', { userText }).executeTool('set_list_preferences', JSON.stringify(args));
+  const out = await save('15', { suppCount: '15', noSuppCount: '0' });
+  assert.match(out, /Not saved: noSuppCount/);
+  let prefs = (await getWorkspace('copilot-counts')).onboarding.listPrefs;
+  assert.equal(prefs.suppCount, 15);
+  assert.equal(prefs.noSuppCount, undefined, 'an inferred 0 is dropped');
+  await save('five of those', { noSuppCount: '5' });
+  assert.equal((await getWorkspace('copilot-counts')).onboarding.listPrefs.noSuppCount, 5);
+  await save('none, I am fine writing essays', { noSuppCount: '0' });
+  assert.equal((await getWorkspace('copilot-counts')).onboarding.listPrefs.noSuppCount, 0);
+  await save('Sounds good, go with that', { suppCount: '8', noSuppCount: '3', countsRecommended: true });
+  prefs = (await getWorkspace('copilot-counts')).onboarding.listPrefs;
+  assert.deepEqual([prefs.suppCount, prefs.noSuppCount, prefs.countsRecommended], [8, 3, true]);
+});
