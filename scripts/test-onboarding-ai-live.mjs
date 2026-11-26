@@ -102,7 +102,7 @@ try {
   log('LIST:', listShown.map((s) => `${s.tier}${s.aiTier ? `(ai:${s.aiTier})` : ''}/${s.supplements || '?'}: ${s.name}`).join(' | '));
   const idea = (await read()).onboarding.interview.edIdea;
   log('ED IDEA:', idea ? `${idea.school || 'none'}: ${idea.reason.slice(0, 200)}` : '(none)');
-  log('PREFS:', JSON.stringify((await read()).onboarding.listPrefs), 'gpaRecent', (await read()).applicant.gpaRecent, 'trend', (await read()).applicant.gpaTrend);
+  log('PREFS:', JSON.stringify((await read()).onboarding.listPrefs), 'gpaRecent', (await read()).applicant.gpaRecent, 'trend', (await read()).applicant.gpaTrend, 'satNote', JSON.stringify((await read()).applicant.satNote), 'testing', JSON.stringify((await read()).profile.testing));
 
   // Approve the whole list, then research the first few schools for real.
   const approved = applyApprovedList(await read(), listShown.map((s) => s.name), []);

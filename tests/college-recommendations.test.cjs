@@ -369,3 +369,8 @@ test('a strong test-optional student gets selective test-optional reaches and no
  assert.ok(all.filter(x=>x.tier==='reach').length>=5,'has reaches');
  for(const s of slugs) assert.equal(R.testRequired(s),false,`${s} requires tests`);
 });
+test('test-optional notes in everyday words', () => {
+ const { isTestOptionalNote } = require('../lib/colleges.ts');
+ for (const n of ['Test optional','applying test-optional',"won't submit scores","didn't take the SAT",'never take the ACT','no SAT scores','not sending scores']) assert.equal(isTestOptionalNote(n),true,n);
+ for (const n of ['1450 superscore','Math 780, EBRW 700','taking the SAT in March']) assert.equal(isTestOptionalNote(n),false,n);
+});

@@ -210,3 +210,15 @@ test('schools with unknown supplement needs count either way', () => {
   assert.equal(T.checkListProposal(ws, [...mk(6, 'yes'), ...mk(1, 'no'), ...mk(3, 'unknown')]), null, '3 unknown can be the quick apps');
   assert.match(T.checkListProposal(ws, [...mk(9, 'yes'), ...mk(1, 'unknown')]), /9 with, 0 without and 1 unknown/);
 });
+
+test('a student applying without scores cannot be shown test-required colleges', () => {
+  const ws = wsWith({ budget: 'unsure' });
+  ws.applicant.gpaUnweighted = '3.95'; ws.applicant.satNote = 'Test optional';
+  const fill = (n, tier) => Array.from({ length: n }, (_, i) => ({ name: `${tier} College ${i}`, tier, reason: 'r', supplements: 'yes' }));
+  const list = [{ name: 'Harvard University', tier: 'reach', reason: 'r', supplements: 'yes' }, ...fill(3, 'reach'), ...fill(4, 'target'), ...fill(3, 'likely')];
+  const problem = T.checkListProposal(ws, list);
+  assert.match(problem, /^Harvard University requires SAT or ACT scores/);
+  assert.match(T.studentWarning(problem), /^Heads up: Harvard University requires SAT or ACT scores\. You said you're applying without scores/);
+  ws.applicant.satNote = '1500 superscore'; ws.applicant.sat = '1500';
+  assert.doesNotMatch(T.checkListProposal(ws, list) || '', /Harvard/);
+});

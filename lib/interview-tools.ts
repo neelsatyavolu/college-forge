@@ -4,7 +4,7 @@
  * the student answers before the AI goes on. Profile answers are saved with the regular profile tools.
  */
 import type { ChatEmitter, ToolSpec, UiEdIdea, UiQuestion, UiSchool, UiStrategy } from "./chat-types";
-import { dataTier } from "./college-recommendations";
+import { dataTier, studentAcademics, testRequired } from "./college-recommendations";
 import { studentFacts } from "./list-facts";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
@@ -142,6 +142,7 @@ export function studentWarning(problem: string): string {
   if (/likely schools? fit the family's budget/.test(problem)) return "Heads up: fewer than two likely schools on this list fit your budget. Run each school's net price calculator, and consider adding an in-state public or a community-college transfer path as a backstop.";
   if (/Include at least 2 likely/.test(problem)) return "Heads up: this list has fewer than two likely schools. Add a school you're very likely to get into before you finalize.";
   if (/tiers \(after Forge's data\)/.test(problem)) return `Heads up: the mix doesn't quite match what you chose. ${problem.replace(/^The tiers \(after Forge's data\) are /, "It's ").replace(/ Swap schools to fix .*$/, "")}`;
+  if (/SAT or ACT scores, and this student is applying without them/.test(problem)) return `Heads up: ${problem.replace(/, and this student is applying without them\..*$/, "")}. You said you're applying without scores, so confirm each policy or drop them.`;
   if (/applications with supplements/.test(problem)) return "Heads up: the number of schools doesn't exactly match the counts you gave. Drop or ask for schools until it does.";
   return `Heads up: ${problem}`;
 }
@@ -179,6 +180,10 @@ export function checkMix(ws: Workspace, schools: UiSchool[]): string | null {
 /** Why a proposed list breaks the balance rules, or null when it is acceptable. */
 export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | null {
   const apps = applicationCount(schools);
+  if (studentAcademics(ws).testOptional) {
+    const needTests = schools.filter((s) => testRequired(slugify(s.name), s.name)).map((s) => s.name);
+    if (needTests.length) return `${needTests.join(", ")} require${needTests.length === 1 ? "s" : ""} SAT or ACT scores, and this student is applying without them. Replace ${needTests.length === 1 ? "it" : "them"} with test-optional or test-blind colleges.`;
+  }
   const prefs = ws.onboarding.listPrefs;
   if (typeof prefs?.suppCount === "number" && typeof prefs?.noSuppCount === "number") {
     // Schools whose supplement need is unknown can count either way: the list passes when some split works.
