@@ -17,6 +17,31 @@ final class SessionModel {
     private(set) var phase: Phase = .launching
     /// The account's name and email from /api/me.
     private(set) var user: MeResponse.User?
+    /// Students this account follows as a parent (from /api/me).
+    private(set) var parent = MeResponse.Parent()
+    /// The parent chose to start applications of their own, so the tabs show instead of the parent dashboard.
+    /// Saved per account, so another parent signing in on this phone still lands on their dashboard.
+    var parentWantsOwnWorkspace: Bool {
+        get {
+            access(keyPath: \.parentWantsOwnWorkspace)
+            return ownWorkspaceKey.map { UserDefaults.standard.bool(forKey: $0) } ?? false
+        }
+        set {
+            withMutation(keyPath: \.parentWantsOwnWorkspace) {
+                if let key = ownWorkspaceKey { UserDefaults.standard.set(newValue, forKey: key) }
+            }
+        }
+    }
+    /// Set from a parent's own tabs to go back to the parent dashboard.
+    var showParentDashboard = false
+    private var ownWorkspaceKey: String? {
+        user.map { "forge.parent.ownWorkspace.\($0.email.lowercased())" }
+    }
+
+    /// Whether RootView shows the parent dashboard instead of the tabs.
+    var showsParentHome: Bool {
+        parent.students > 0 && (showParentDashboard || (parent.home && !parentWantsOwnWorkspace))
+    }
     /// Shown on the sign-in screen after a failed attempt or an expired session.
     var signInMessage: String?
 
@@ -86,7 +111,7 @@ final class SessionModel {
         do {
             let me = try await api.me()
             guard phase == .signedIn else { return }
-            if me.signedIn { user = me.user } else { sessionEnded() }
+            if me.signedIn { user = me.user; parent = me.parent } else { sessionEnded() }
         } catch APIError.signedOut {
             sessionEnded()
         } catch {
@@ -99,6 +124,7 @@ final class SessionModel {
             let me = try await api.me()
             guard me.signedIn else { return await endAfterRejectedToken() }
             user = me.user
+            parent = me.parent
         } catch APIError.signedOut {
             return await endAfterRejectedToken()
         } catch {
@@ -114,8 +140,17 @@ final class SessionModel {
         finishSignOut(message: phase == .signingIn ? "Sign-in didn't finish. Try again." : "Your session ended. Sign in again.")
     }
 
+    /// Re-reads /api/me, e.g. after a parent opens an invite on the web or a student removes them.
+    func refreshParent() async {
+        guard phase == .signedIn, let me = try? await api.me(), me.signedIn else { return }
+        user = me.user
+        parent = me.parent
+    }
+
     private func finishSignOut(message: String?) {
         user = nil
+        parent = MeResponse.Parent()
+        showParentDashboard = false
         phase = .signedOut
         signInMessage = message
         didSignOut?()

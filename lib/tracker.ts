@@ -129,7 +129,10 @@ const isDate = (v: unknown): v is string => v === "" || (typeof v === "string" &
 export const DECISION_RECEIVED = "Decision received";
 const OUTCOME_WORDS =
   /\b(admit|admitted|admission decision|accept|accepted|acceptance|congratulations|enroll|enrollment|deposit|denied|deny|rejected|waitlist|wait list|waitlisted|defer|deferred|deferral|decided|decision (released|available|posted))\b/i;
-export const revealsDecision = (text: string): boolean => OUTCOME_WORDS.test(text);
+/** A stated portal status that is itself a decision (College Apps worker/src/portal/parse.ts). */
+export const DECISION_STATUS =
+  /^(admitted|not admitted|denied|deny|wait ?list(ed)?|deferred|decided|decision (released|available|made)|complete - decision made|clear admit|(provisional|conditional)(ly)? admit(ted)?|admit\/deny|not csu eligible|offered (mid-year )?admission|appointment offered)\b/i;
+export const revealsDecision = (text: string): boolean => OUTCOME_WORDS.test(text) || DECISION_STATUS.test(text.trim());
 
 /** Identifies the decision the portal shows now; empty when it shows none. */
 export function portalDecisionKey(app: TrackedApp): string {

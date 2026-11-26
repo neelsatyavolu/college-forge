@@ -23,6 +23,7 @@ function readView() {
 
 function App() {
   const [account, setAccount] = React.useState(null);
+  const [parentMode, setParentMode] = React.useState(false);
   const [tracker, setTrackerState] = React.useState({ revision: -1, autocheck: true, apps: [] });
   // Parallel portal checks answer out of order; keep the newest workspace revision.
   const setTracker = React.useCallback(t => { if (t) setTrackerState(cur => ((t.revision || 0) >= (cur.revision || 0) ? t : cur)); }, []);
@@ -75,6 +76,7 @@ function App() {
       const me = await window.cfApi.me();
       setAccount(me);
       if (!me.signedIn) { setLoading(false); return; }
+      if (window.cfWantsParentDashboard(me)) { setParentMode(true); setLoading(false); return; }
       const [ws, apps] = await Promise.all([window.cfApi.getWorkspace(), window.cfApi.applications()]);
       let setupDismissed = false;
       try { setupDismissed = localStorage.getItem("cf.setupBannerHidden." + (ws?.draftStorageKey || "local")) === "1"; } catch (e) {}
@@ -182,6 +184,7 @@ function App() {
   const portalCount = tracker.apps.filter(a => a.stage !== "working" || (a.login && a.login.hasPassword)).length;
   if (loading) return <div className="cf-loading-screen" role="status"><span className="cf-loading-mark">✱</span>Opening your workspace…</div>;
   if (account && !account.signedIn) return <SignIn />;
+  if (parentMode) return <ParentDashboard account={account} />;
   if (loadError) return <div className="cf-loading-screen"><div role="alert">{loadError}</div><Button onClick={refresh}>Try again</Button></div>;
   if (runOnboarding) return <OnboardingChat data={data} onComplete={completeOnboarding} onCancel={async () => { await refresh(); setRunOnboarding(false); }} />;
 
@@ -216,7 +219,7 @@ function App() {
         </div>
       </aside>
       <div className="cf-workspace-body">
-        <div className="cf-workspace-topline"><span>MY COLLEGE WORKSPACE</span><span>{account && account.user ? account.user.email : data.applicant.cycle || "Your next chapter starts here"}</span></div>
+        <div className="cf-workspace-topline"><span>MY COLLEGE WORKSPACE</span><span>{account && account.parent && account.parent.students > 0 ? <a href="/hub/index.html?view=parent" style={{ color: "inherit", marginRight: 14 }}>Parent dashboard</a> : null}{account && account.user ? account.user.email : data.applicant.cycle || "Your next chapter starts here"}</span></div>
         <main id="workspace-main" className="cf-hub-main" ref={mainRef} tabIndex={-1}>
           {!data.onboarding?.completed && !setupBannerHidden && <div className="cf-setup-banner" role="note" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", margin: "24px 0 0", padding: "12px 16px", borderRadius: 8, border: "1px solid var(--hairline)", background: "var(--surface-soft)", color: "var(--body)", fontSize: 14 }}>
             <span>Setup isn't finished. Answer a few questions to get a starting college list.</span>

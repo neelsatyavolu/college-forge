@@ -19,6 +19,7 @@ import { syncEssaySupplements } from "@/lib/essay-supplements";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { deleteAllLogins } from "@/lib/portal-logins";
 import { createShareLink, revokeShareLink } from "@/lib/sharing";
+import { removeAllParents } from "@/lib/parents";
 import { applyWorkspacePatch, checkWorkspacePatch, isStalePatch, type WorkspacePatch } from "@/lib/workspace-patch";
 import {
   getRecovery,
@@ -125,6 +126,14 @@ export async function POST(req: NextRequest) {
   const action = typeof body.action === "string" ? body.action : "";
 
   if (action === "reset") {
+    // Like share links, parents lose access to a reset workspace. First, and not best-effort: a parent who kept
+    // access would see whatever the student adds next.
+    try {
+      await removeAllParents(id);
+    } catch (error) {
+      console.error("reset: could not remove parents", error instanceof Error ? error.name : "unknown");
+      return withCookie({ success: false, error: "Couldn't reset. Try again." }, setCookie, 500);
+    }
     const ws = await resetWorkspace(id);
     // A reset clears the tracker, so its saved portal logins go too.
     await deleteAllLogins(id).catch(() => undefined);

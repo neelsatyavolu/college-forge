@@ -13,8 +13,13 @@ struct RootView: View {
                 SignInView()
                     .transition(.opacity)
             case .signedIn:
-                MainTabView()
-                    .transition(.opacity)
+                if session.showsParentHome {
+                    ParentHomeView()
+                        .transition(.opacity)
+                } else {
+                    MainTabView()
+                        .transition(.opacity)
+                }
             }
         }
         .animation(.easeInOut(duration: 0.25), value: session.phase)

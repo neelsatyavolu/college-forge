@@ -39,6 +39,8 @@ struct MainTabView: View {
             Task {
                 await push.sceneDidBecomeActive()
                 await session.refreshUserIfNeeded()
+                // A parent may have accepted an invite on the web meanwhile.
+                await session.refreshParent()
             }
             // Coming back after a while: pick up portal checks that ran in the meantime.
             if Date.now.timeIntervalSince(lastRefresh) > 60 {

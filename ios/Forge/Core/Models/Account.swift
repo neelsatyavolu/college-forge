@@ -4,10 +4,18 @@ import Foundation
 struct MeResponse: Codable, Hashable, Sendable {
     var signedIn: Bool
     var user: User?
+    /// Parent accounts: how many students this account follows.
+    var parent: Parent = Parent()
 
     struct User: Codable, Hashable, Sendable {
         var email: String
         var name: String
+    }
+
+    struct Parent: Codable, Hashable, Sendable {
+        var students = 0
+        /// The parent dashboard opens instead of the tabs: they follow someone and have no applications of their own.
+        var home = false
     }
 }
 
@@ -16,6 +24,15 @@ extension MeResponse {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         signedIn = c.bool(.signedIn)
         user = c.optional(User.self, .user)
+        parent = c.value(.parent, Parent())
+    }
+}
+
+extension MeResponse.Parent {
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        students = c.int(.students)
+        home = c.bool(.home)
     }
 }
 

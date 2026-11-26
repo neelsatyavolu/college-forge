@@ -1,4 +1,4 @@
-import { DECISION_RECEIVED, revealsDecision, type PortalResult } from "../tracker";
+import { DECISION_RECEIVED, DECISION_STATUS, revealsDecision, type PortalResult } from "../tracker";
 import { C, button, callout, escapeHtml, layout } from "./layout";
 
 /**
@@ -11,10 +11,6 @@ import { C, button, callout, escapeHtml, layout } from "./layout";
 export type CheckErrorCode = "signin" | "mfa" | "sso" | "not_slate" | "unreachable" | "other";
 
 export type CheckOutcome = { ok: true; result: PortalResult } | { ok: false; code: CheckErrorCode; message: string };
-
-/** A stated status that is itself a decision (College Apps worker/src/portal/parse.ts). */
-const DECISION_STATUS =
-  /^(admitted|not admitted|denied|deny|wait ?list(ed)?|deferred|decided|decision (released|available|made)|complete - decision made|clear admit|(provisional|conditional)(ly)? admit(ted)?|admit\/deny|not csu eligible|offered (mid-year )?admission|appointment offered)\b/i;
 
 /** What a check found, reduced to what's worth comparing. */
 export interface CheckState {

@@ -67,6 +67,13 @@ private struct MoreList: View {
                 NavigationLink(value: MoreRoute.share) {
                     MoreNavRow(title: "Share & export", detail: shareDetail, systemImage: "square.and.arrow.up", tint: Theme.teal)
                 }
+                if session.parent.students > 0 {
+                    Button {
+                        session.showParentDashboard = true
+                    } label: {
+                        MoreNavRow(title: "Parent dashboard", detail: "Students you follow", systemImage: "person.2", tint: Theme.accent)
+                    }
+                }
             }
             Section("Connections") {
                 NavigationLink(value: MoreRoute.assistants) {
