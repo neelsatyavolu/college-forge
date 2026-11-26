@@ -5,6 +5,7 @@
  */
 import type { ChatEmitter, ToolSpec, UiEdIdea, UiQuestion, UiSchool, UiStrategy } from "./chat-types";
 import { dataTier } from "./college-recommendations";
+import { studentFacts } from "./list-facts";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
 import { SECTIONS, firstIncomplete, missingFields, startInterview } from "./interview-checklist";
@@ -15,7 +16,7 @@ type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
 
 export const TRANSCRIPT_CAP = 120;
-const KINDS: UiQuestion["kind"][] = ["single", "multi", "upload", "number", "school_search", "confirm", "activities"];
+const KINDS: UiQuestion["kind"][] = ["single", "multi", "upload", "number", "school_search", "confirm", "activities", "intake"];
 const TIERS: UiSchool["tier"][] = ["reach", "target", "likely"];
 const NO_PRICE_CAP = new Set(["50plus", "unsure"]);
 
@@ -58,7 +59,7 @@ export function parseQuestion(a: Args): UiQuestion | string {
   const id = text(a.id, 60);
   const prompt = text(a.prompt, 500);
   const kind = KINDS.find((k) => k === a.kind);
-  if (!id || !prompt || !kind) return "ask_question needs id, prompt and kind (single | multi | upload | number | school_search | confirm | activities).";
+  if (!id || !prompt || !kind) return "ask_question needs id, prompt and kind (single | multi | upload | number | school_search | confirm | activities | intake).";
   const options = Array.isArray(a.options)
     ? a.options.flatMap((o) => {
         const r = (o ?? {}) as Args;
@@ -136,6 +137,36 @@ export function applyDataTiers(ws: Workspace, schools: UiSchool[]): { schools: U
   return { schools: out, changed };
 }
 
+/** Fills each school's net price, budget fit and supplement need from Forge's research files. */
+export function applyStudentFacts(ws: Workspace, schools: UiSchool[]): UiSchool[] {
+  return schools.map((s) => {
+    const f = studentFacts(ws, s.name, s.slug);
+    return {
+      ...s,
+      ...(f.netPrice ? { netPrice: f.netPrice.label } : f.outOfState ? { netPrice: "Out-of-state: check the nonresident cost", fitsBudget: "unknown" as const } : {}),
+      ...(f.fitsBudget ? { fitsBudget: f.fitsBudget } : {}),
+      ...(f.supplements && !isUcCampus(s) ? { supplements: f.supplements } : {}),
+    };
+  });
+}
+
+const MIX_SHARES = { ambitious: [0.4, 0.35], balanced: [0.28, 0.42], conservative: [0.15, 0.4] } as const;
+
+/** Why the tier mix doesn't match the student's chosen mix, or null. Tolerance: 2 schools or a quarter of the list. */
+export function checkMix(ws: Workspace, schools: UiSchool[]): string | null {
+  const ambition = ws.onboarding.listPrefs?.ambition ?? "balanced";
+  const [reachShare, targetShare] = MIX_SHARES[ambition] ?? MIX_SHARES.balanced;
+  const n = schools.length;
+  if (n < 4) return null;
+  const count = (t: UiSchool["tier"]) => schools.filter((s) => s.tier === t).length;
+  const goal = { reach: Math.round(n * reachShare), target: Math.round(n * targetShare), likely: n - Math.round(n * reachShare) - Math.round(n * targetShare) };
+  const slack = Math.max(2, Math.round(n / 4));
+  const off = (["reach", "target", "likely"] as const).filter((t) => Math.abs(count(t) - goal[t]) > slack);
+  if (count("reach") === 0 && !(ambition === "conservative" && n < 8)) off.push("reach");
+  if (!off.length) return null;
+  return `The tiers (after Forge's data) are ${count("reach")} reach / ${count("target")} target / ${count("likely")} likely; a ${ambition} list of ${n} should be about ${goal.reach} / ${goal.target} / ${goal.likely}. Swap schools to fix ${[...new Set(off)].join(" and ")}.`;
+}
+
 /** Why a proposed list breaks the balance rules, or null when it is acceptable. */
 export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | null {
   const apps = applicationCount(schools);
@@ -205,7 +236,7 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   {
     name: "ask_question",
     description:
-      "Show the student one question as tiles and END YOUR TURN. Use it for anything with fixed answers (single/multi choice, confirm), the transcript upload (kind 'upload'), a number (GPA, scores: kind 'number' with min/max) or schools they already like (kind 'school_search'), or the editable activities-and-honors list (kind 'activities': the student fills in rows or uploads a resume; saving writes the list to their profile). Write any lead-in sentence before calling it. The student may type instead of tapping.",
+      "Show the student one question as tiles and END YOUR TURN. Use it for anything with fixed answers (single/multi choice, confirm), the transcript upload (kind 'upload'), a number (GPA, scores: kind 'number' with min/max) or schools they already like (kind 'school_search'), the quick-start form (kind 'intake': name, school, state, citizenship, GPAs and trend, tests, majors, family income, budget, aid, first-gen, list mix, counts and ED in one place, with options to paste an AI-written summary or upload files), or the editable activities-and-honors list (kind 'activities': the student fills in rows or uploads a resume; saving writes the list to their profile). Write any lead-in sentence before calling it. The student may type instead of tapping.",
     parameters: {
       type: "object",
       properties: {
@@ -373,8 +404,9 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
         const ws = await read();
         const gap = firstIncomplete(ws);
         if (gap) return `Not shown: finish the interview first (${gap} still needs ${missingFields(ws, gap).join(", ")}).`;
-        const { schools, changed } = applyDataTiers(ws, markCurrent(ws, parseSchools(a.schools)));
-        const problem = checkListProposal(ws, schools);
+        const { schools: tiered, changed } = applyDataTiers(ws, markCurrent(ws, parseSchools(a.schools)));
+        const schools = applyStudentFacts(ws, tiered);
+        const problem = checkListProposal(ws, schools) ?? checkMix(ws, schools);
         if (problem) return `Not shown: ${problem}${changed.length ? ` (Forge's data also sets these tiers: ${changed.join(", ")}.)` : ""}`;
         const ideaRaw = (a.edIdea ?? {}) as Args;
         const edIdea: UiEdIdea | undefined = text(ideaRaw.reason, 400) ? { ...(text(ideaRaw.school, 120) ? { school: text(ideaRaw.school, 120) } : {}), reason: text(ideaRaw.reason, 400)! } : undefined;

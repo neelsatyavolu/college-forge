@@ -194,7 +194,8 @@ function OcActivitiesTile({ profile, revision, disabled, onAnswer }) {
   );
 }
 
-function OcQuestionBody({ q, profile, revision, disabled, onAnswer }) {
+function OcQuestionBody({ q, data, profile, revision, disabled, onAnswer }) {
+  if (q.kind === "intake") return <window.OcIntakeTile data={data} disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "activities") return <OcActivitiesTile profile={profile} revision={revision} disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "upload") return <OcUploadTile disabled={disabled} onAnswer={onAnswer} />;
   if (q.kind === "number") return <OcNumberTile q={q} disabled={disabled} onAnswer={onAnswer} />;
@@ -206,12 +207,12 @@ function OcQuestionBody({ q, profile, revision, disabled, onAnswer }) {
 const ocNorm = (t) => (t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 /** The question itself, then its tiles. The prompt is skipped when the message above already says it. */
-function OcQuestion({ q, lead, profile, revision, disabled, onAnswer }) {
+function OcQuestion({ q, lead, data, profile, revision, disabled, onAnswer }) {
   const said = q.prompt && ocNorm(lead).includes(ocNorm(q.prompt));
   return (
     <div className="oc-question">
       {!said && <p className="oc-question-prompt">{q.prompt}</p>}
-      <OcQuestionBody q={q} profile={profile} revision={revision} disabled={disabled} onAnswer={onAnswer} />
+      <OcQuestionBody q={q} data={data} profile={profile} revision={revision} disabled={disabled} onAnswer={onAnswer} />
     </div>
   );
 }
@@ -318,4 +319,4 @@ function OcResearchBoard({ cards }) {
   );
 }
 
-Object.assign(window, { OcQuestion, OcListTiles, OcStrategyTiles, OcResearchBoard });
+Object.assign(window, { OcUploadTile, OcQuestion, OcListTiles, OcStrategyTiles, OcResearchBoard });

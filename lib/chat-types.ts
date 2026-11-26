@@ -22,7 +22,7 @@ export type ChatStage =
 /** A question the onboarding AI asked, drawn as tiles (or an upload / number / school picker). */
 export type UiQuestion = {
   id: string;
-  kind: "single" | "multi" | "upload" | "number" | "school_search" | "confirm" | "activities";
+  kind: "single" | "multi" | "upload" | "number" | "school_search" | "confirm" | "activities" | "intake";
   prompt: string;
   options?: { value: string; label: string; hint?: string }[];
   min?: number;

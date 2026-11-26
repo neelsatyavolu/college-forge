@@ -74,7 +74,7 @@ test('propose_list waits for the interview to be complete', async () => {
 function complete(ws) {
   ws.applicant = { ...ws.applicant, name: 'Sam', gpaUnweighted: '3.8', sat: '1400' };
   ws.profile = { ...ws.profile, hs: 'HS', gradYear: 2027, intended: 'Biology', residency: 'OH', activities: [{ rank: 1, name: 'Robotics', type: 'Academic' }] };
-  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, settings: ['any'], regions: ['any'], budget: 'unsure', needAid: false, ed: 'no', ambitionChosen: true, suppCount: 10, noSuppCount: 0 };
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, settings: ['any'], regions: ['any'], budget: 'unsure', needAid: false, ed: 'no', ambitionChosen: true, suppCount: 10, noSuppCount: 0, citizenship: 'us', incomeBracket: 'unsure' };
   ws.onboarding.interview = { phase: 'interview', section: 'deep', transcript: [], notes: {}, deep: [1, 2, 3].map((i) => ({ prompt: 'q', answer: 'a' })), startedAt: 1 };
   return ws;
 }
@@ -174,4 +174,17 @@ test('Forge resets tiers from its admissions data and remembers the AI\'s guess'
   assert.equal(schools[0].aiTier, 'target');
   assert.equal(schools[1].tier, 'target', 'unknown colleges keep the AI tier');
   assert.deepEqual(changed, ['Massachusetts Institute of Technology target→reach']);
+});
+
+test('the draft list takes net price and supplements from Forge\'s research, not the AI', () => {
+  const ws = wsWith({ budget: '15-30', needAid: true, incomeBracket: '75-110' });
+  const [miami, ucla] = T.applyStudentFacts(ws, [
+    { name: 'University of Miami', tier: 'target', reason: 'r', supplements: 'yes', netPrice: '$5,000', fitsBudget: 'yes' },
+    { name: 'University of California, Los Angeles', tier: 'reach', reason: 'r', supplements: 'yes' },
+  ]);
+  assert.equal(miami.supplements, 'no', 'research says Miami has no supplement');
+  assert.match(miami.netPrice, /average for your income/);
+  assert.notEqual(miami.netPrice, '$5,000');
+  assert.equal(miami.fitsBudget, /\$(\d+),/.test(miami.netPrice) && Number(miami.netPrice.replace(/[^\d]/g, '').slice(0, 5)) <= 30000 ? 'yes' : 'no');
+  assert.equal(ucla.supplements, 'yes', 'a UC campus always has the PIQs');
 });

@@ -43,7 +43,8 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
       if (!has(p.hs)) out.push("high school");
       if (!has(p.gradYear)) out.push("graduation year");
       if (!has(p.intended)) out.push('intended major (or "Undecided")');
-      if (!has(p.residency)) out.push("state of residence");
+      if (!has(p.residency) && prefs?.citizenship !== "international") out.push("state of residence");
+      if (!prefs?.citizenship) out.push("citizenship (or not sure)");
       break;
     case "school": {
       const readTranscript = ws.uploads.length > 0 && (p.coursework.aps.length + p.coursework.honors.length + p.coursework.senior.length) > 0;
@@ -66,6 +67,7 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
     case "money":
       if (!prefs?.budget) out.push("yearly budget");
       if (typeof prefs?.needAid !== "boolean") out.push("need-based aid yes/no");
+      if (!prefs?.incomeBracket) out.push("family income range (or not sure)");
       break;
     case "early":
       if (!prefs?.ambitionChosen) out.push("reach / target / likely mix");

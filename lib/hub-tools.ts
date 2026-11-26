@@ -1,3 +1,4 @@
+import { studentFacts } from "./list-facts";
 import { EXTRA_TOOL_SPECS, runExtraTool } from "./copilot-extra-tools";
 import { bridgeToolSpecs, runBridgeTool } from "./copilot-bridge-tools";
 import type { ToolSpec, ToolExecutor } from "./chat-types";
@@ -426,7 +427,18 @@ export function makeHubTools(
       if (extraReply !== null) return extraReply;
       switch (name) {
         case "get_college_recommendations": {
-          return JSON.stringify(recommendColleges(await scopedWorkspace()));
+          const ws = await scopedWorkspace();
+          const result = recommendColleges(ws, { morePerTier: 8 });
+          // What each school would cost this family and whether it needs supplements, from Forge's research files.
+          const forYou = (name: string, slug?: string) => {
+            const f = studentFacts(ws, name, slug);
+            return { netPriceForYou: f.netPrice?.label ?? (f.outOfState ? "out-of-state public: the income averages are for residents; check the nonresident cost" : null), fitsBudget: f.fitsBudget, supplements: f.supplements };
+          };
+          return JSON.stringify({
+            ...result,
+            recommendations: result.recommendations.map((r) => ({ ...r, forYou: forYou(r.college.name, r.college.slug) })),
+            more: (result.more ?? []).map((m) => ({ ...m, ...forYou(m.name, m.slug) })),
+          });
         }
         case "read_upload": {
           if (typeof a.name !== "string") return "read_upload requires a string 'name'.";

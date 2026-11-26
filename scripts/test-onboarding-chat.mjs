@@ -70,7 +70,8 @@ async function scripted(body) {
     return nd({ type: 'tool', name: 'web_fetch', round: 1 }, { type: 'research', slug, name: slug, stage: 'done', facts: 14 });
   }
   if (body.mode !== 'onboarding') return nd({ type: 'delta', text: 'Saved.' });
-  const n = state.chats.filter((c) => c.mode === 'onboarding').length;
+  const n = state.chats.filter((c) => c.mode === 'onboarding').length - 1;
+  if (n === 0) return nd({ type: 'delta', text: 'Welcome to Forge! Fill in whatever you know and we will take it from there.' }, { type: 'question', question: { id: 'intake', kind: 'intake', prompt: 'Start with what you know' } });
   if (n === 1) return nd({ type: 'delta', text: "Great to meet you, Sam. Let's start with where you'd like to live for four years." }, { type: 'question', question: { id: 'setting', kind: 'multi', prompt: 'Campus setting', options: [{ value: 'urban', label: 'City' }, { value: 'suburban', label: 'Suburban' }, { value: 'college-town', label: 'College town', hint: 'Campus is the town' }, { value: 'rural', label: 'Rural' }, { value: 'any', label: 'No preference' }], allowOther: true } });
   if (n === 2) return nd({ type: 'delta', text: 'Got it. Do you have your transcript? It saves us typing every course.' }, { type: 'question', question: { id: 'transcript', kind: 'upload', prompt: 'Transcript' } });
   if (n === 3) return nd({ type: 'delta', text: 'Thanks, I read it. Now the things you do outside class.' }, { type: 'question', question: { id: 'acts', kind: 'activities', prompt: 'List your activities and any awards' } });
@@ -139,15 +140,17 @@ try {
   }, label);
   // The newest content must sit above the answer box, never hidden under it.
   const assertVisible = async (selector, label) => {
-    await new Promise((r) => setTimeout(r, 250));
-    const box = await page.evaluate((sel) => {
+    const above = (sel) => {
       const els = [...document.querySelectorAll(sel)];
       const el = els[els.length - 1];
       const composer = document.querySelector('.oc-composer');
-      return el && composer ? { bottom: el.getBoundingClientRect().bottom, top: composer.getBoundingClientRect().top } : null;
-    }, selector);
-    assert.ok(box, `${label}: element found`);
-    assert.ok(box.bottom <= box.top + 1, `${label}: bottom ${Math.round(box.bottom)} is above the answer box at ${Math.round(box.top)}`);
+      return !!el && !!composer && el.getBoundingClientRect().bottom <= composer.getBoundingClientRect().top + 1;
+    };
+    const ok = await page.waitForFunction(above, { timeout: 3000 }, selector).then(() => true, () => false);
+    if (!ok) {
+      const box = await page.evaluate((sel) => { const el = [...document.querySelectorAll(sel)].pop(); const c = document.querySelector('.oc-composer'); return el && c ? [Math.round(el.getBoundingClientRect().bottom), Math.round(c.getBoundingClientRect().top)] : null; }, selector);
+      assert.fail(`${label}: ${box ? `bottom ${box[0]} sits below the answer box at ${box[1]}` : 'element not found'}`);
+    }
   };
   const shoot = async (name) => {
     for (const [w, h] of [[1440, 900], [1000, 800], [390, 844]]) {
@@ -169,7 +172,31 @@ try {
   // Connected: the interview starts by itself and shows tiles.
   state.aiConnected = true;
   await page.reload();
+  // The quick start: three ways in, a form with "Not sure" everywhere, saved straight to the profile.
+  await waitText('Start with what you know');
+  await waitText('Have an AI that knows you?');
+  await assertVisible('.ik .oc-tile-row', 'quick start save button');
+  await page.setViewport({ width: 1440, height: 900 });
+  await shoot('01b-intake');
+  await page.evaluate(() => {
+    const chip = (group, label) => [...document.querySelectorAll(`.ik-chips[aria-label="${group}"] .ik-chip`)].find((b) => b.textContent === label).click();
+    chip('citizenship', 'US citizen'); chip('incomeBracket', '$75–110k'); chip('budget', '$30–50k'); chip('needAid', 'Yes'); chip('firstGen', 'No'); chip('ambition', 'Balanced'); chip('ed', 'Maybe');
+  });
+  const field = async (label, value) => { const h = await page.evaluateHandle((l) => [...document.querySelectorAll('.ik-field')].find((f) => f.querySelector('.ik-label').firstChild.textContent === l).querySelector('input,select'), label); await h.asElement().type(value); };
+  await field('Majors you\'re considering', 'Biology');
+  await page.evaluate(() => [...document.querySelectorAll('.ik-check input')].find((i) => i.parentElement.textContent.includes('recommend')).click());
+  await click('Save and continue');
   await waitText("where you'd like to live");
+  const intake = await store.getWorkspace(WS);
+  assert.equal(intake.onboarding.listPrefs.incomeBracket, '75-110');
+  assert.equal(intake.onboarding.listPrefs.citizenship, 'us');
+  assert.equal(intake.onboarding.listPrefs.firstGen, 'no');
+  assert.equal(intake.onboarding.listPrefs.suppCount, 8, 'recommended counts for a balanced list');
+  assert.equal(intake.onboarding.listPrefs.countsRecommended, true);
+  const sent = state.chats.at(-1).messages.at(-1).content;
+  assert.match(sent, /I filled in the quick start/);
+  assert.match(sent, /Family income: \$75–110k/);
+  assert.match(sent, /Not sure \/ left blank: .*test scores/);
   await page.waitForSelector('.oc-tile');
   await page.setViewport({ width: 1440, height: 560 });
   await assertVisible('.oc-tile', 'last tile on a short window');

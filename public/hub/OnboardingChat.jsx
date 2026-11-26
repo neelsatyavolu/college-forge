@@ -120,13 +120,13 @@ function ocDedupe(text) {
   return kept.map((k) => k.text).join("\n\n");
 }
 
-function OcMessage({ m, live, busy, profile, revision, onAnswer, onApprove, onRevise, onConfirm }) {
+function OcMessage({ m, live, busy, data, profile, revision, onAnswer, onApprove, onRevise, onConfirm }) {
   const ui = m.ui || {};
   const content = m.role === "assistant" ? ocDedupe(m.content) : m.content;
   return (
     <div className={"oc-msg oc-msg--" + m.role}>
       {content && <div className="oc-bubble">{content}</div>}
-      {live && ui.question && <window.OcQuestion q={ui.question} lead={content} profile={profile} revision={revision} disabled={busy} onAnswer={onAnswer} />}
+      {live && ui.question && <window.OcQuestion q={ui.question} lead={content} data={data} profile={profile} revision={revision} disabled={busy} onAnswer={onAnswer} />}
       {live && ui.list && <window.OcListTiles schools={ui.list} edIdea={ui.edIdea} disabled={busy} onApprove={onApprove} onRevise={onRevise} />}
       {live && ui.strategy && <window.OcStrategyTiles strategy={ui.strategy} disabled={busy} onConfirm={onConfirm} onAnswer={onAnswer} />}
     </div>
@@ -171,9 +171,14 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   // hidden under the answer box. It follows new content unless the student scrolled up to read.
   const scrollRef = React.useRef(null);
   const followRef = React.useRef(true);
+  // Only the student's own scrolling (wheel, touch, keys, scrollbar drag) decides whether to keep following;
+  // scroll events from layout changes (a tall tile closing, the window resizing) are ignored.
+  const userScrollAt = React.useRef(0);
+  const markUserScroll = () => { userScrollAt.current = Date.now(); };
   const onThreadScroll = () => {
     const el = scrollRef.current;
-    if (el) followRef.current = el.scrollTop + el.clientHeight >= el.scrollHeight - 120;
+    if (!el || Date.now() - userScrollAt.current > 800) return;
+    followRef.current = el.scrollTop + el.clientHeight >= el.scrollHeight - 120;
   };
   React.useLayoutEffect(() => {
     const last = turns[turns.length - 1];
@@ -185,7 +190,9 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   React.useEffect(() => {
     const el = scrollRef.current;
     if (!el || typeof ResizeObserver === "undefined") return;
+    // Content growing, or the thread shrinking (a phone keyboard opening, a smaller window), keeps the bottom in view.
     const ro = new ResizeObserver(() => { if (followRef.current) el.scrollTop = el.scrollHeight; });
+    ro.observe(el);
     if (el.firstElementChild) ro.observe(el.firstElementChild);
     return () => ro.disconnect();
   }, [ai]);
@@ -351,12 +358,13 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         </div>
         {onCancel && <button type="button" className="oc-link" onClick={onCancel}>Save and exit</button>}
       </header>
-      <div className="oc-scroll" ref={scrollRef} onScroll={onThreadScroll}>
+      <div className="oc-scroll" ref={scrollRef} onScroll={onThreadScroll} onWheel={markUserScroll} onTouchMove={markUserScroll} onPointerDown={markUserScroll}
+        onKeyDown={(e) => { if (["PageUp", "PageDown", "ArrowUp", "ArrowDown", "Home", "End", " "].includes(e.key)) markUserScroll(); }}>
       <main className="oc-thread">
         {turns.filter((t) => !(t.role === "user" && OC_HIDDEN.has(t.content))).map((m, i, shown) => (
           m.board
             ? (cards.length > 0 && <window.OcResearchBoard key={i} cards={cards} />)
-            : <OcMessage key={i} m={m} live={m === turns[lastAssistant] && i === shown.length - 1 && phase !== "research"} busy={busy} profile={ws?.profile} revision={ws?.revision}
+            : <OcMessage key={i} m={m} live={m === turns[lastAssistant] && i === shown.length - 1 && phase !== "research"} busy={busy} data={ws} profile={ws?.profile} revision={ws?.revision}
                 onAnswer={send} onApprove={approve} onRevise={revise} onConfirm={confirmStrategy} />
         ))}
         {!turns.some((t) => t.board) && cards.length > 0 && <window.OcResearchBoard cards={cards} />}

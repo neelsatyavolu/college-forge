@@ -14,7 +14,7 @@ function filled() {
   ws.profile.activities = [{ rank: 1, name: 'Robotics', type: 'Academic' }];
   ws.onboarding = {
     completed: false,
-    listPrefs: { ambition: 'balanced', settings: ['suburban'], size: 'any', regions: ['any'], notes: '', budget: '30-50', needAid: true, ed: 'maybe', ambitionChosen: true, suppCount: 6, noSuppCount: 2 },
+    listPrefs: { ambition: 'balanced', settings: ['suburban'], size: 'any', regions: ['any'], notes: '', budget: '30-50', needAid: true, ed: 'maybe', ambitionChosen: true, suppCount: 6, noSuppCount: 2, citizenship: 'us', incomeBracket: '48-75' },
     interview: { ...startInterview(1), deep: [1, 2, 3].map((i) => ({ prompt: `q${i}`, answer: `a${i}` })) },
   };
   return ws;
@@ -27,7 +27,7 @@ test('sections run in the agreed order', () => {
 test('an empty workspace starts at basics with every basics field missing', () => {
   const ws = emptyWorkspace();
   assert.equal(firstIncomplete(ws), 'basics');
-  assert.deepEqual(missingFields(ws, 'basics'), ['name', 'high school', 'graduation year', 'intended major (or "Undecided")', 'state of residence']);
+  assert.deepEqual(missingFields(ws, 'basics'), ['name', 'high school', 'graduation year', 'intended major (or "Undecided")', 'state of residence', 'citizenship (or not sure)']);
 });
 
 test('a fully answered workspace has nothing left', () => {
@@ -68,8 +68,10 @@ test('activities accept an explicit none-yet', () => {
 
 test('money needs a budget and a yes/no on need-based aid', () => {
   const ws = filled();
-  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, budget: undefined, needAid: undefined };
-  assert.deepEqual(missingFields(ws, 'money'), ['yearly budget', 'need-based aid yes/no']);
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, budget: undefined, needAid: undefined, incomeBracket: undefined };
+  assert.deepEqual(missingFields(ws, 'money'), ['yearly budget', 'need-based aid yes/no', 'family income range (or not sure)']);
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, budget: 'unsure', needAid: false, incomeBracket: 'unsure' };
+  assert.deepEqual(missingFields(ws, 'money'), [], 'not sure is an answer');
 });
 
 test('deep needs three answers', () => {
@@ -85,4 +87,12 @@ test('the list plan needs the mix, both counts and the ED stance; zero quick sch
   assert.deepEqual(missingFields(ws, 'early'), ['reach / target / likely mix', 'how many schools with supplements', 'how many schools without supplements', 'Early Decision stance']);
   ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, ambitionChosen: true, suppCount: 7, noSuppCount: 0, ed: 'no' };
   assert.deepEqual(missingFields(ws, 'early'), []);
+});
+
+test('international students are not asked for a state', () => {
+  const ws = filled();
+  ws.profile = { ...ws.profile, residency: '' };
+  assert.deepEqual(missingFields(ws, 'basics'), ['state of residence']);
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, citizenship: 'international' };
+  assert.deepEqual(missingFields(ws, 'basics'), []);
 });
