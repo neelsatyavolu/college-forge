@@ -358,8 +358,11 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         </div>
         {onCancel && <button type="button" className="oc-link" onClick={onCancel}>Save and exit</button>}
       </header>
-      <div className="oc-scroll" ref={scrollRef} onScroll={onThreadScroll} onWheel={markUserScroll} onTouchMove={markUserScroll} onPointerDown={markUserScroll}
-        onKeyDown={(e) => { if (["PageUp", "PageDown", "ArrowUp", "ArrowDown", "Home", "End", " "].includes(e.key)) markUserScroll(); }}>
+      <div className="oc-scroll" ref={scrollRef} onScroll={onThreadScroll} onWheel={markUserScroll} onTouchMove={markUserScroll}
+        // Only a press on the scrollbar itself is scrolling; a click on a tile's button (which may collapse the tile) is not.
+        onPointerDown={(e) => { if (e.target === e.currentTarget) markUserScroll(); }}
+        // Keys typed into a field inside the thread (the intake form) aren't scrolling either.
+        onKeyDown={(e) => { if (!e.target.closest("input, textarea, select, [contenteditable]") && ["PageUp", "PageDown", "ArrowUp", "ArrowDown", "Home", "End", " "].includes(e.key)) markUserScroll(); }}>
       <main className="oc-thread">
         {turns.filter((t) => !(t.role === "user" && OC_HIDDEN.has(t.content))).map((m, i, shown) => (
           m.board
