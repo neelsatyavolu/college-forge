@@ -76,6 +76,9 @@ export type WorkspacePatch = {
 
 const LIST_BUDGETS = ["lt15", "15-30", "30-50", "50plus", "unsure"] as const;
 const ED_CHOICES = ["yes", "no", "maybe"] as const;
+const INCOME_BRACKETS = ["lt30", "30-48", "48-75", "75-110", "gt110", "unsure"] as const;
+const CITIZENSHIP = ["us", "permanent", "international", "unsure"] as const;
+const YES_NO_UNSURE = ["yes", "no", "unsure"] as const;
 
 /** Writes SAT and its note to both stored copies (applicant and profile.testing), plus the ACT. Absent fields are kept. */
 export function setTestScores(ws: Workspace, scores: { sat?: string; satNote?: string; act?: string }): Workspace {
@@ -126,6 +129,9 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
     }
     if (!blank(lp.ed) && !(ED_CHOICES as readonly unknown[]).includes(lp.ed)) {
       return { ok: false, error: "Early Decision must be yes, no or maybe." };
+    }
+    for (const [key, allowed] of [["incomeBracket", INCOME_BRACKETS], ["citizenship", CITIZENSHIP], ["firstGen", YES_NO_UNSURE]] as const) {
+      if (!blank(lp[key]) && !(allowed as readonly unknown[]).includes(lp[key])) return { ok: false, error: `${key} must be one of ${allowed.join(", ")}.` };
     }
     if (lp.needAid !== undefined && lp.needAid !== null && typeof lp.needAid !== "boolean") {
       return { ok: false, error: "needAid must be true or false." };
@@ -180,6 +186,10 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     if ((LIST_BUDGETS as readonly unknown[]).includes(p.budget)) listPrefs.budget = p.budget;
     if ((ED_CHOICES as readonly unknown[]).includes(p.ed)) listPrefs.ed = p.ed;
     if (typeof p.needAid === "boolean") listPrefs.needAid = p.needAid;
+    if ((INCOME_BRACKETS as readonly unknown[]).includes(p.incomeBracket)) listPrefs.incomeBracket = p.incomeBracket;
+    if ((CITIZENSHIP as readonly unknown[]).includes(p.citizenship)) listPrefs.citizenship = p.citizenship;
+    if ((YES_NO_UNSURE as readonly unknown[]).includes(p.firstGen)) listPrefs.firstGen = p.firstGen;
+    if (typeof p.countsRecommended === "boolean") listPrefs.countsRecommended = p.countsRecommended;
     if (supp !== null || quick !== null) { /* appCount follows the two counts */ }
     else if (p.appCount === null) listPrefs.appCount = null;
     else if (typeof p.appCount === "number" && Number.isFinite(p.appCount)) listPrefs.appCount = Math.max(8, Math.min(15, Math.round(p.appCount)));

@@ -278,7 +278,7 @@ function listQuotas(prefs: Workspace["onboarding"]["listPrefs"]) {
 
 const money = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
 
-export function recommendColleges(ws: Workspace, options: { excludeOnList?: boolean } = {}) {
+export function recommendColleges(ws: Workspace, options: { excludeOnList?: boolean; morePerTier?: number } = {}) {
   const prefs = ws.onboarding.listPrefs as PrefsWithBudget | undefined;
   const codes = majorCodes(ws.profile.intended);
   const regions = (prefs?.regions || []).filter(r => r !== "any");
@@ -396,6 +396,13 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     sources: [{label:"Ranking data and sources",url:"/data/rankings/sources.md"},{label:"Methodology limitations",url:"/data/rankings/DISCLOSURE.md"},{label:"US Department of Education College Scorecard",url:"https://collegescorecard.ed.gov/data/"},{label:"UC testing policy",url:"https://admission.universityofcalifornia.edu/how-to-apply/applying-as-a-first-year/filling-out-the-application.html"}],
     limitations, profileGaps, gaps,
     recommendations: selected.map(({score: _score, band: _band, matchesPrefs: _matches, inStatePublic: _local, ...row}) => row),
+    // More candidates in realistic range, best first, for an agent building a fuller list.
+    ...(options.morePerTier ? { more: (["reach", "target", "safety"] as const).flatMap(tier => candidates
+      .filter(c => c.fit.tier === tier && !selected.some(x => x.college.slug === c.college.slug))
+      .slice(0, options.morePerTier)
+      .map(c => ({ name: c.college.name, slug: c.college.slug, scorecardId: c.college.scorecardId, tier: tier === "safety" ? "likely" : tier,
+        location: c.college.location, admit: c.college.admit, satRange: c.college.satRange, inStatePublic: c.inStatePublic,
+        note: c.fit.reasons[0], caution: c.fit.cautions.find(x => !/^Planning category/.test(x) && /switch|budget|No published earnings/i.test(x)) }))) } : {}),
   };
 }
 

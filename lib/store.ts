@@ -97,7 +97,17 @@ export type OnboardingListPrefs = {
   suppCount?: number;
   /** How many quick applications with no supplements the student wants. */
   noSuppCount?: number;
+  /** Forge suggested the two counts because the student wasn't sure. */
+  countsRecommended?: boolean;
+  /** Family income bracket, the same bands as federal net-price data. */
+  incomeBracket?: IncomeBracket;
+  /** Citizenship for aid and admission rules: international students face different aid and odds. */
+  citizenship?: "us" | "permanent" | "international" | "unsure";
+  /** First in the family to go to college. */
+  firstGen?: "yes" | "no" | "unsure";
 };
+
+export type IncomeBracket = "lt30" | "30-48" | "48-75" | "75-110" | "gt110" | "unsure";
 
 export type ListBudget = "lt15" | "15-30" | "30-50" | "50plus" | "unsure";
 

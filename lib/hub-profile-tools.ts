@@ -165,6 +165,9 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
         appCount: { type: "number" },
         regions: { type: "array", items: str }, settings: { type: "array", items: str },
         size: { type: "string", enum: ["small", "medium", "large", "any"] },
+        incomeBracket: { type: "string", enum: ["lt30", "30-48", "48-75", "75-110", "gt110", "unsure"], description: "Family income, in $1,000s a year (the federal net-price bands). 'unsure' is fine." },
+        citizenship: { type: "string", enum: ["us", "permanent", "international", "unsure"] },
+        firstGen: { type: "string", enum: ["yes", "no", "unsure"], description: "First in the family to attend a four-year college." },
         suppCount: { type: "string", description: "How many applications with supplemental essays the student will write, as digits, e.g. '6'. All UC campuses together count as one." },
         noSuppCount: { type: "string", description: "How many quick applications with no supplements they want, as digits; '0' is a real answer." },
         notes: { type: "string", description: "Free-text constraints. Replaces the saved notes." },
@@ -284,7 +287,7 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
     case "set_list_preferences": {
       const countOf = (v: unknown) => (typeof v === "string" && /^\d{1,2}$/.test(v.trim()) ? Number(v.trim()) : undefined);
       const listPrefs = {
-        ...pick(a, ["ambition", "appCount", "regions", "settings", "size", "notes", "budget", "ed"]), needAid: toolFlag(a.needAid),
+        ...pick(a, ["ambition", "appCount", "regions", "settings", "size", "notes", "budget", "ed", "incomeBracket", "citizenship", "firstGen"]), needAid: toolFlag(a.needAid),
         ...(countOf(a.suppCount) !== undefined ? { suppCount: countOf(a.suppCount) } : {}),
         ...(countOf(a.noSuppCount) !== undefined ? { noSuppCount: countOf(a.noSuppCount) } : {}),
       };
