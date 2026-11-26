@@ -53,7 +53,7 @@ test('testing is satisfied by SAT, ACT, or a test-optional note', () => {
   const ws = filled();
   ws.profile.testing = { sat: '—', satNote: '', aps: [] };
   ws.applicant = { ...ws.applicant, sat: '—' };
-  assert.deepEqual(missingFields(ws, 'testing'), ['SAT, ACT, or test-optional']);
+  assert.deepEqual(missingFields(ws, 'testing'), ["SAT, ACT, test-optional, or a note that they haven't tested yet"]);
   ws.profile.testing = { sat: '—', satNote: 'Test optional', aps: [] };
   assert.deepEqual(missingFields(ws, 'testing'), []);
 });
@@ -95,4 +95,16 @@ test('international students are not asked for a state', () => {
   assert.deepEqual(missingFields(ws, 'basics'), ['state of residence']);
   ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, citizenship: 'international' };
   assert.deepEqual(missingFields(ws, 'basics'), []);
+});
+
+test('a student who has not tested yet can finish the testing section', () => {
+  const { emptyWorkspace } = require('../lib/store.ts');
+  const C = require('../lib/interview-checklist.ts');
+  const { isNotYetTestedNote, isTestOptionalNote } = require('../lib/colleges.ts');
+  const ws = emptyWorkspace();
+  assert.ok(C.missingFields(ws, 'testing').length, 'nothing given yet');
+  ws.applicant.satNote = 'Not taken yet: SAT in March, expects about 1400';
+  assert.deepEqual(C.missingFields(ws, 'testing'), []);
+  for (const n of ["haven't taken the SAT", 'taking the ACT in April', 'SAT scheduled for March', 'planning to take the SAT']) assert.equal(isNotYetTestedNote(n), true, n);
+  assert.equal(isTestOptionalNote('Not taken yet: SAT in March'), false, 'not the same as applying without scores');
 });

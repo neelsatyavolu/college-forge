@@ -170,6 +170,7 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
         firstGen: { type: "string", enum: ["yes", "no", "unsure"], description: "First in the family to attend a four-year college." },
         suppCount: { type: "string", description: "How many applications with supplemental essays the student will write, as digits, e.g. '6'. All UC campuses together count as one." },
         noSuppCount: { type: "string", description: "How many quick applications with no supplements they want, as digits; '0' is a real answer." },
+        countsRecommended: { type: "boolean", description: "true when the counts are your recommendation that the student accepted (they weren't sure), not numbers they gave." },
         notes: { type: "string", description: "Free-text constraints. Replaces the saved notes." },
         budget: { type: "string", enum: ["lt15", "15-30", "30-50", "50plus", "unsure"] },
         needAid: yesNo("yes: applying for need-based aid. no: not applying."), ed: { type: "string", enum: ["yes", "no", "maybe"] },
@@ -290,6 +291,7 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
         ...pick(a, ["ambition", "appCount", "regions", "settings", "size", "notes", "budget", "ed", "incomeBracket", "citizenship", "firstGen"]), needAid: toolFlag(a.needAid),
         ...(countOf(a.suppCount) !== undefined ? { suppCount: countOf(a.suppCount) } : {}),
         ...(countOf(a.noSuppCount) !== undefined ? { noSuppCount: countOf(a.noSuppCount) } : {}),
+        ...(typeof a.countsRecommended === "boolean" ? { countsRecommended: a.countsRecommended } : {}),
       };
       return savePatch(mutate, { listPrefs }, "Saved the list preferences. The saved list is unchanged until rebalance_list runs.");
     }

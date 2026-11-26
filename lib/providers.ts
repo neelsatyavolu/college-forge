@@ -104,6 +104,8 @@ export async function runChat(params: {
   executeTool?: ToolExecutor;
   shouldEndTurn?: () => boolean;
   maxRounds?: number;
+  /** Ends a long turn in time (onboarding research must finish inside the server limit). */
+  wrapUp?: import("./tool-budget").WrapUp;
   /** ChatGPT reasoning effort; other providers ignore it. */
   effort?: "low" | "medium";
   /** Onboarding writes the hub through tools, which only the Codex and Grok clients take. */
@@ -146,6 +148,7 @@ export async function runChat(params: {
       executeTool: params.executeTool,
       shouldEndTurn: params.shouldEndTurn,
       maxRounds: params.maxRounds,
+      wrapUp: params.wrapUp,
       effort: params.effort,
     });
     return {
@@ -169,6 +172,7 @@ export async function runChat(params: {
       executeTool: params.executeTool,
       shouldEndTurn: params.shouldEndTurn,
       maxRounds: params.maxRounds,
+      wrapUp: params.wrapUp,
     });
     return {
       text: result.text,

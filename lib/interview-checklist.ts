@@ -4,7 +4,7 @@
  * all satisfy it the same way. Values Codex fills by default (0, "", "—") count as missing.
  */
 import type { InterviewSection, InterviewState, Workspace } from "./store";
-import { isTestOptionalNote } from "./colleges";
+import { isNotYetTestedNote, isTestOptionalNote } from "./colleges";
 
 export const SECTIONS: InterviewSection[] = ["basics", "school", "testing", "activities", "campus", "money", "early", "deep"];
 export const DEEP_MIN = 3;
@@ -52,8 +52,9 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
       break;
     }
     case "testing": {
-      const optional = isTestOptionalNote(ws.applicant.satNote) || isTestOptionalNote(p.testing.satNote);
-      if (!optional && !has(ws.applicant.sat) && !has(p.testing.sat) && !has(p.testing.act)) out.push("SAT, ACT, or test-optional");
+      const notes = [ws.applicant.satNote, p.testing.satNote];
+      const answered = notes.some((n) => isTestOptionalNote(n) || isNotYetTestedNote(n));
+      if (!answered && !has(ws.applicant.sat) && !has(p.testing.sat) && !has(p.testing.act)) out.push("SAT, ACT, test-optional, or a note that they haven't tested yet");
       break;
     }
     case "activities":

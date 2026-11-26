@@ -356,7 +356,13 @@ function statusOf(ws: Workspace) {
 /** `execute` returns null for tools it doesn't own, so the caller can fall through to the hub tools. */
 export type InterviewExecutor = (name: string, argsJson: string) => Promise<string | null>;
 
-export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace>, emit: ChatEmitter): { tools: ToolSpec[]; execute: InterviewExecutor; endTurn: () => boolean; shown: () => unknown } {
+export function makeInterviewTools(
+  mutate: Mutate,
+  read: () => Promise<Workspace>,
+  emit: ChatEmitter,
+  /** True once the turn is past its research budget: a list Forge objects to is then shown with its warning rather than sent back for another slow rewrite. */
+  hurry: () => boolean = () => false,
+): { tools: ToolSpec[]; execute: InterviewExecutor; endTurn: () => boolean; shown: () => unknown } {
   let ended = false;
   let lastUi: unknown;
   const stop = (ui: unknown) => { ended = true; lastUi = ui; };
@@ -430,7 +436,7 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
         // (two likely schools under a very tight budget may not exist), so the third try is shown with
         // the problem stated plainly instead of looping.
         const refusals = interviewOf(ws).listRefusals ?? 0;
-        if (problem && refusals < 2) {
+        if (problem && refusals < 2 && !hurry()) {
           await mutate((w) => withInterview(w, { ...interviewOf(w), listRefusals: refusals + 1 }));
           return `Not shown: ${problem}${changed.length ? ` (Forge's data also sets these tiers: ${changed.join(", ")}.)` : ""} Fix it and call propose_list again; if it truly can't be met for this student, call again anyway and Forge will show the list with this caveat.`;
         }

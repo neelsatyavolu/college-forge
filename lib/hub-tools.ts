@@ -31,6 +31,18 @@ type Args = Record<string, unknown>;
  */
 const MIX_WORDS = /\b(reach|reaches|balanced|likely|safer|safety|safeties|ambitious|conservative|mix|target)\b/i;
 
+const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"];
+
+/** Whether the student's own message gives this count (as digits, or "none"/"zero" for 0). */
+export function saidCount(userText: string, value: unknown): boolean {
+  const n = String(value ?? "").trim();
+  if (!/^\d{1,2}$/.test(n)) return false;
+  if (new RegExp(`(^|[^\\d])${Number(n)}([^\\d]|$)`).test(userText)) return true;
+  const word = NUMBER_WORDS[Number(n)];
+  if (word && new RegExp(`\\b${word}\\b`, "i").test(userText)) return true;
+  return Number(n) === 0 && /\b(none|zero|no quick|no schools?|not any)\b/i.test(userText);
+}
+
 export function makeHubTools(
   workspaceId: string,
   opts?: { userText?: string; draftStorageKey?: string }
@@ -421,8 +433,23 @@ export function makeHubTools(
         const { ambition: _ignored, ...rest } = a;
         a = rest;
       }
+      // Application counts likewise come from the student: a number they typed or picked, or a
+      // recommendation they accepted. A count the model inferred (say, 0 quick apps) is dropped.
+      const droppedCounts: string[] = [];
+      if (name === "set_list_preferences" && a.countsRecommended !== true) {
+        for (const key of ["suppCount", "noSuppCount"] as const) {
+          if (a[key] !== undefined && !saidCount(userText, a[key])) {
+            droppedCounts.push(key);
+            const { [key]: _dropped, ...rest } = a;
+            a = rest;
+          }
+        }
+      }
+      const countNote = droppedCounts.length
+        ? ` Not saved: ${droppedCounts.join(" and ")} (the student hasn't given ${droppedCounts.length === 1 ? "that number" : "those numbers"}). Ask with a number question, or recommend counts and save them with countsRecommended true once they agree.`
+        : "";
       const profileReply = await runProfileTool(name, a, mutate);
-      if (profileReply !== null) return profileReply;
+      if (profileReply !== null) return profileReply + countNote;
       const extraReply = await runExtraTool(workspaceId, mutate, name, a);
       if (extraReply !== null) return extraReply;
       switch (name) {
