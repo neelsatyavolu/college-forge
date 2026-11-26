@@ -259,7 +259,7 @@ export function scorecardToCollege(r: ScorecardCollege): College {
  * = reach.
  */
 export function isTestOptionalNote(note: string | undefined): boolean {
-  return /test[- ]optional|not (?:submitting|reporting)(?: test)? scores/i.test(note || "");
+  return /test[- ]optional|not (?:submitting|reporting|sending)(?: (?:test|SAT|ACT))? scores|(?:won't|will not|don't|do not) (?:submit|send|report)(?: (?:test|SAT|ACT|my))? scores|(?:didn't|did not|won't|will not|never) take (?:the )?(?:SAT|ACT)|no (?:SAT|ACT|test) scores/i.test(note || "");
 }
 
 export function fitFor(college: College, applicantSat: string | undefined, satNote?: string) {

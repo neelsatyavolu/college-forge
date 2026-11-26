@@ -4,6 +4,7 @@ import type { College, Workspace } from "./store";
 import { US_NEWS_BY_SCORECARD_ID, type UsNewsCollege } from "./us-news-rankings";
 import { slugify, isTestOptionalNote } from "./colleges";
 import { actToSat } from "./act-concordance";
+import { loadSchoolResearch } from "./school-research";
 import careerData from "../public/data/career-ranking.json";
 import { majorKeysOf, SWITCH_LABELS, type CareerData } from "./career-ranking";
 
@@ -133,9 +134,12 @@ function gpaFactor(school: UsNewsCollege, studentGpa: number | null): number | n
  * unweighted GPA within 0.10 of the average); 15-35% allows half a middle-50% width below the 25th
  * percentile and 0.25 below the GPA average. A missing comparison never counts as passing: with
  * neither available, colleges under 35% aren't suggested. An ambitious student with a clear upward
- * grade trend gets 0.10 more room on the GPA test only.
+ * grade trend gets 0.10 more room on the GPA test only. When no test score can be compared (the student
+ * is test-optional, or the college is test-blind) and the college publishes no comparable GPA, the GPA
+ * test uses a fixed stand-in average (3.90 under 15% admission, 3.75 for 15-35%), so a strong
+ * test-optional student isn't shut out of every college that skips GPA in its data.
  */
-export const GATE = { verySelective: 0.15, selective: 0.35, gpaMarginVery: 0.1, gpaMarginSelective: 0.25, satWidthsSelective: 0.5, trendRelief: 0.1 } as const;
+export const GATE = { verySelective: 0.15, selective: 0.35, gpaMarginVery: 0.1, gpaMarginSelective: 0.25, satWidthsSelective: 0.5, trendRelief: 0.1, assumedGpaVery: 3.9, assumedGpaSelective: 3.75 } as const;
 
 export function realismGate(school: UsNewsCollege, academics: StudentAcademics, ambitious: boolean): { ok: boolean; reason?: string; passedBecauseOfTrend?: boolean } {
   const admit = school.admitRate;
@@ -143,7 +147,8 @@ export function realismGate(school: UsNewsCollege, academics: StudentAcademics, 
   const very = admit < GATE.verySelective;
   const relief = ambitious && academics.trendUp ? GATE.trendRelief : 0;
   const satComparable = satFactor(school, academics.sat) !== null;
-  const avg = comparableGpa(school);
+  const published = comparableGpa(school);
+  const avg = published ?? (satComparable ? null : very ? GATE.assumedGpaVery : GATE.assumedGpaSelective);
   const studentGpa = studentGpaFor(school, academics);
   const gpaComparable = studentGpa !== null && avg !== null;
   if (!satComparable && !gpaComparable) return { ok: false, reason: "No comparable GPA or test score for a college this selective." };
@@ -159,6 +164,13 @@ export function realismGate(school: UsNewsCollege, academics: StudentAcademics, 
     if (studentGpa! < strict - 1e-9) return { ok: true, passedBecauseOfTrend: true };
   }
   return { ok: true };
+}
+
+/** Whether Forge's research file says this college requires SAT or ACT scores of first-year applicants. */
+export function testRequired(slug: string, name?: string): boolean {
+  const research = loadSchoolResearch(slug) ?? (name ? loadSchoolResearch(name) : null);
+  const policy = research?.facts.find((f) => f.key === "test_policy")?.value;
+  return typeof policy === "string" && /^\s*test[- ]required\b/i.test(policy);
 }
 
 /** 0 when the student is at or above the middle of the college's reported range, 1 otherwise. */
@@ -321,6 +333,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     if (admissions && farBelowSatRange(admissions, academics.sat)) return [];
     const gate = hasAcademics && admissions ? realismGate(admissions, academics, prefs?.ambition === "ambitious") : { ok: true };
     if (!gate.ok) return [];
+    // A student applying without scores can't apply where Forge's research shows scores are required.
+    if (academics.testOptional && testRequired(admissions?.slug || slugify(row.institution), row.institution)) return [];
     // Not suggested when Forge's career data shows no graduates in the student's major there.
     const access = majorAccess(row.unitid, ws.profile.intended || "");
     if (access && !access.offered) return [];

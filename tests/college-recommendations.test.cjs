@@ -60,9 +60,10 @@ test('the gate is monotonic: better academics never fail where worse ones pass',
   if (ok) assert.equal(realismGate(selective(admit),academics(Math.min(4,gpa+0.05),Math.min(1600,sat+20)),false).ok,true);
  }
 });
-test('missing comparisons never pass the gate', () => {
- assert.equal(realismGate({...selective(0.1),gpa:null},academics(4.0,null),true).ok,false,'test-optional with no comparable GPA');
- assert.equal(realismGate({...selective(0.1),gpa:3.9,gpaWeighted:true},academics(4.0,null),true).ok,false,'weighted college average');
+test('missing comparisons fall back to a fixed stand-in bar, never a free pass', () => {
+ assert.equal(realismGate({...selective(0.1),gpa:null},academics(4.0,null),true).ok,true,'test-optional 4.0 meets the stand-in 3.90 bar');
+ assert.equal(realismGate({...selective(0.1),gpa:null},academics(3.6,null),true).ok,false,'test-optional 3.6 does not');
+ assert.equal(realismGate({...selective(0.1),gpa:3.9,gpaWeighted:true},academics(3.7,null),true).ok,false,'a weighted-only college average uses the stand-in bar too');
  assert.equal(realismGate({...selective(0.1),gpa:null},academics(3.0,1500),true).ok,true,'SAT alone can qualify');
 });
 test('an upward trend helps only ambitious students, and only on the GPA test', () => {
@@ -341,4 +342,35 @@ test('residents get every home-state public in realistic range as candidates, UC
  assert.ok((r.inState||[]).every(x=>x.tier));
  ws.applicant.gpaRecent=undefined;
  assert.ok(!(recommendColleges(ws,{morePerTier:8}).inState||[]).some(x=>/Los Angeles/.test(x.name)),'cumulative 3.49 alone is out of range for UCLA');
+});
+test('a strong test-optional student can reach colleges that publish no GPA; a weaker one still cannot', () => {
+ const noGpa={slug:'x',admitRate:0.07,sat25:1500,sat75:1560,gpa:null,gpaWeighted:false};
+ const to=(gpa)=>({gpa,sat:null,trendUp:false,gpaRecent:null,gpaFromWeighted:false,satFromAct:false,testOptional:true,cautions:[]});
+ assert.equal(realismGate(noGpa,to(3.95),false).ok,true,'3.95 test-optional passes the stand-in 3.90');
+ assert.equal(realismGate(noGpa,to(3.6),false).ok,false,'3.60 does not');
+ assert.equal(realismGate({...noGpa,admitRate:0.25},to(3.55),false).ok,true,'15-35%: stand-in 3.75 minus 0.25');
+ const withSat={gpa:3.6,sat:1520,trendUp:false,gpaRecent:null,gpaFromWeighted:false,satFromAct:false,testOptional:false,cautions:[]};
+ assert.equal(realismGate(noGpa,withSat,false).ok,true,'with a comparable SAT, the stand-in GPA is not used');
+});
+test('test-required colleges are read from the research files', () => {
+ const R=require('../lib/college-recommendations.ts');
+ assert.equal(R.testRequired('harvard-university'),true);
+ assert.equal(R.testRequired('massachusetts-institute-of-technology'),true);
+ assert.equal(R.testRequired('smith-college'),false,'test-optional, scores required only for some');
+ assert.equal(R.testRequired('no-such-college'),false);
+});
+test('a strong test-optional student gets selective test-optional reaches and no test-required colleges', () => {
+ const ws=emptyWorkspace();ws.applicant.gpaUnweighted='3.95';ws.applicant.satNote='test-optional';ws.profile.intended='Political Science';
+ ws.onboarding={completed:false,listPrefs:{ambition:'ambitious',settings:[],size:'any',regions:[],notes:''}};
+ const R=require('../lib/college-recommendations.ts');
+ const r=recommendColleges(ws,{morePerTier:8});
+ const all=[...r.recommendations.map(x=>({slug:x.college.slug,tier:x.fit.tier})),...(r.more||[]).map(x=>({slug:x.slug,tier:x.tier}))];
+ const slugs=all.map(x=>x.slug);
+ assert.ok(all.filter(x=>x.tier==='reach').length>=5,'has reaches');
+ for(const s of slugs) assert.equal(R.testRequired(s),false,`${s} requires tests`);
+});
+test('test-optional notes in everyday words', () => {
+ const { isTestOptionalNote } = require('../lib/colleges.ts');
+ for (const n of ['Test optional','applying test-optional',"won't submit scores","didn't take the SAT",'never take the ACT','no SAT scores','not sending scores']) assert.equal(isTestOptionalNote(n),true,n);
+ for (const n of ['1450 superscore','Math 780, EBRW 700','taking the SAT in March']) assert.equal(isTestOptionalNote(n),false,n);
 });
