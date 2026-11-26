@@ -438,6 +438,7 @@ export function makeHubTools(
             ...result,
             recommendations: result.recommendations.map((r) => ({ ...r, forYou: forYou(r.college.name, r.college.slug) })),
             more: (result.more ?? []).map((m) => ({ ...m, ...forYou(m.name, m.slug) })),
+            inState: (result.inState ?? []).map((m) => ({ ...m, ...forYou(m.name, m.slug) })),
           });
         }
         case "read_upload": {

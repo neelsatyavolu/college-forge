@@ -40,7 +40,7 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
   switch (section) {
     case "basics":
       if (!has(ws.applicant.name)) out.push("name");
-      if (!has(p.hs)) out.push("high school");
+      // The high school's name helps but isn't needed for a list, so a student who'd rather not say can go on.
       if (!has(p.gradYear)) out.push("graduation year");
       if (!has(p.intended)) out.push('intended major (or "Undecided")');
       if (!has(p.residency) && prefs?.citizenship !== "international") out.push("state of residence");

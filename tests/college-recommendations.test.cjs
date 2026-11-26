@@ -332,3 +332,13 @@ test('a hard switch into the major is called out', () => {
  const a = majorAccess(hard.id, label);
  assert.ok(a && a.offered && a.hardSwitch, `${hard.name} ${label}`);
 });
+test('residents get every home-state public in realistic range as candidates, UCs judged on 10th-11th GPA', () => {
+ const ws=profile();ws.applicant.gpaUnweighted='3.49';ws.applicant.sat='1510';ws.applicant.gpaRecent='3.8';ws.profile.intended='Journalism';ws.profile.residency='CA';
+ ws.onboarding.listPrefs={ambition:'balanced',settings:[],size:'any',regions:[],notes:'',budget:'50plus'};
+ const r=recommendColleges(ws,{morePerTier:8});
+ const names=(r.inState||[]).map(x=>x.name);
+ assert.ok(names.some(n=>/Los Angeles/.test(n))&&names.some(n=>/San Diego/.test(n)),names.join('; '));
+ assert.ok((r.inState||[]).every(x=>x.tier));
+ ws.applicant.gpaRecent=undefined;
+ assert.ok(!(recommendColleges(ws,{morePerTier:8}).inState||[]).some(x=>/Los Angeles/.test(x.name)),'cumulative 3.49 alone is out of range for UCLA');
+});

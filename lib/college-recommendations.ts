@@ -421,6 +421,10 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
       .map(c => ({ name: c.college.name, slug: c.college.slug, scorecardId: c.college.scorecardId, tier: tier === "safety" ? "likely" : tier,
         location: c.college.location, admit: c.college.admit, satRange: c.college.satRange, inStatePublic: c.inStatePublic,
         note: c.fit.reasons[0], caution: c.fit.cautions.find(x => !/^Planning category/.test(x) && /switch|budget|No published earnings/i.test(x)) }))) } : {}),
+    // Every home-state public in realistic range: residents often get in at higher rates and pay less,
+    // and a ranking-ordered pool can leave them out.
+    ...(options.morePerTier && residency ? { inState: candidates.filter(c => c.inStatePublic && c.fit.tier).slice(0, 10)
+      .map(c => ({ name: c.college.name, slug: c.college.slug, tier: c.fit.tier === "safety" ? "likely" : c.fit.tier, admit: c.college.admit, note: c.fit.reasons.find(x => /UC uses|10th-11th|SAT|GPA/.test(x)) ?? c.fit.reasons[0] })) } : {}),
   };
 }
 

@@ -27,7 +27,7 @@ test('sections run in the agreed order', () => {
 test('an empty workspace starts at basics with every basics field missing', () => {
   const ws = emptyWorkspace();
   assert.equal(firstIncomplete(ws), 'basics');
-  assert.deepEqual(missingFields(ws, 'basics'), ['name', 'high school', 'graduation year', 'intended major (or "Undecided")', 'state of residence', 'citizenship (or not sure)']);
+  assert.deepEqual(missingFields(ws, 'basics'), ['name', 'graduation year', 'intended major (or "Undecided")', 'state of residence', 'citizenship (or not sure)']);
 });
 
 test('a fully answered workspace has nothing left', () => {
@@ -37,7 +37,7 @@ test('a fully answered workspace has nothing left', () => {
 test('Codex-style 0 and empty strings count as missing', () => {
   const ws = filled();
   ws.profile = { ...ws.profile, gradYear: 0, hs: '' };
-  assert.deepEqual(missingFields(ws, 'basics'), ['high school', 'graduation year']);
+  assert.deepEqual(missingFields(ws, 'basics'), ['graduation year'], 'the high school name is optional');
 });
 
 test('school accepts a read transcript instead of a GPA', () => {

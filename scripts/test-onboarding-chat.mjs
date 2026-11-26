@@ -180,10 +180,14 @@ try {
   await shoot('01b-intake');
   await page.evaluate(() => {
     const chip = (group, label) => [...document.querySelectorAll(`.ik-chips[aria-label="${group}"] .ik-chip`)].find((b) => b.textContent === label).click();
+    const multi = (group, label) => [...document.querySelectorAll(`.ik-chips[aria-label="${group}"] .ik-chip`)].find((b) => b.textContent === label).click();
+    multi('settings', 'Suburban'); multi('regions', 'Midwest');
     chip('citizenship', 'US citizen'); chip('incomeBracket', '$75–110k'); chip('budget', '$30–50k'); chip('needAid', 'Yes'); chip('firstGen', 'No'); chip('ambition', 'Balanced'); chip('ed', 'Maybe');
   });
-  const field = async (label, value) => { const h = await page.evaluateHandle((l) => [...document.querySelectorAll('.ik-field')].find((f) => f.querySelector('.ik-label').firstChild.textContent === l).querySelector('input,select'), label); await h.asElement().type(value); };
+  const field = async (label, value) => { const h = await page.evaluateHandle((l) => [...document.querySelectorAll('.ik-field')].find((f) => f.querySelector('.ik-label').firstChild.textContent === l).querySelector('input,select,textarea'), label); await h.asElement().type(value); };
   await field('Majors you\'re considering', 'Biology');
+  await field('Schools you already like', 'Case Western');
+  await field('One per line: what it is, your role, grades, hours a week', 'Hospital volunteer, front desk, 10-12, 4 hrs/wk\nBiology Olympiad semifinalist, 2026');
   await page.evaluate(() => [...document.querySelectorAll('.ik-check input')].find((i) => i.parentElement.textContent.includes('recommend')).click());
   await click('Save and continue');
   await waitText("where you'd like to live");
@@ -197,6 +201,10 @@ try {
   assert.match(sent, /I filled in the quick start/);
   assert.match(sent, /Family income: \$75–110k/);
   assert.match(sent, /Not sure \/ left blank: .*test scores/);
+  assert.match(sent, /Hospital volunteer, front desk/);
+  assert.match(sent, /Schools I already like: Case Western/);
+  assert.deepEqual(intake.onboarding.listPrefs.settings, ['suburban']);
+  assert.deepEqual(intake.onboarding.listPrefs.regions, ['midwest']);
   await page.waitForSelector('.oc-tile');
   await page.setViewport({ width: 1440, height: 560 });
   await assertVisible('.oc-tile', 'last tile on a short window');

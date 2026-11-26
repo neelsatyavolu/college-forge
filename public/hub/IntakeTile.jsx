@@ -28,7 +28,23 @@ const IK_CHOICES = {
   firstGen: [["yes", "Yes"], ["no", "No"], ["unsure", "Not sure"]],
   ambition: [["ambitious", "More reaches"], ["balanced", "Balanced"], ["conservative", "More likely schools"], ["", "Not sure"]],
   ed: [["yes", "Yes"], ["maybe", "Maybe"], ["no", "No"]],
+  settings: [["urban", "City"], ["suburban", "Suburban"], ["college-town", "College town"], ["rural", "Rural"], ["any", "Any"]],
+  size: [["small", "Small (<5k)"], ["medium", "Medium (5–15k)"], ["large", "Large (15k+)"], ["any", "Any"]],
+  regions: [["west", "West"], ["midwest", "Midwest"], ["south", "South"], ["mid-atlantic", "Mid-Atlantic"], ["northeast", "New England"], ["any", "Anywhere"]],
 };
+
+/** Pick-several chips; "any" clears the others. */
+function IkMultiChips({ name, value, onChange, disabled }) {
+  const list = value || [];
+  const toggle = (v) => onChange(v === "any" ? (list.includes("any") ? [] : ["any"]) : list.includes(v) ? list.filter((x) => x !== v) : [...list.filter((x) => x !== "any"), v]);
+  return (
+    <div className="ik-chips" role="group" aria-label={name}>
+      {IK_CHOICES[name].map(([v, label]) => (
+        <button key={v} type="button" className="ik-chip" aria-pressed={list.includes(v)} disabled={disabled} onClick={() => toggle(v)}>{label}</button>
+      ))}
+    </div>
+  );
+}
 
 /** Suggested counts by mix, for students who don't know how many schools to apply to. */
 const IK_RECOMMENDED = { ambitious: [9, 3], balanced: [8, 3], conservative: [6, 4], "": [8, 3] };
@@ -68,6 +84,8 @@ function ikInitial(data) {
     ambition: lp.ambitionChosen ? lp.ambition : undefined,
     suppCount: lp.suppCount === undefined ? "" : String(lp.suppCount), noSuppCount: lp.noSuppCount === undefined ? "" : String(lp.noSuppCount),
     recommendCounts: false, ed: lp.ed,
+    settings: lp.settings || [], size: lp.size && lp.size !== "any" ? lp.size : lp.size === "any" && (lp.settings || []).length ? "any" : undefined, regions: lp.regions || [], campusNotes: "",
+    activities: ((p.activities) || []).map((a) => [a.name, a.role].filter(Boolean).join(", ")).join("\n"), likedSchools: "",
   };
 }
 
@@ -105,6 +123,10 @@ function ikBuild(f) {
     ...(quick !== undefined ? { noSuppCount: quick } : {}),
     ...(f.recommendCounts ? { countsRecommended: true } : {}),
     ...(f.ed ? { ed: f.ed } : {}),
+    ...(f.settings.length ? { settings: f.settings } : {}),
+    ...(f.size ? { size: f.size } : {}),
+    ...(f.regions.length ? { regions: f.regions } : {}),
+    ...(f.campusNotes.trim() ? { notes: f.campusNotes.trim().slice(0, 1000) } : {}),
   };
   const label = (k, v) => (IK_CHOICES[k].find(([x]) => x === v) || [, v])[1];
   const said = [
@@ -119,11 +141,18 @@ function ikBuild(f) {
     listPrefs.ambition && `Mix: ${label("ambition", listPrefs.ambition)}`,
     supp !== undefined && `${supp} schools with supplements and ${quick} without${f.recommendCounts ? " (Forge's suggestion; I wasn't sure)" : ""}`,
     listPrefs.ed && `Early Decision: ${listPrefs.ed}`,
+    listPrefs.settings && `Campus setting: ${listPrefs.settings.map((v) => label("settings", v)).join(", ")}`,
+    listPrefs.size && `Size: ${label("size", listPrefs.size)}`,
+    listPrefs.regions && `Regions: ${listPrefs.regions.map((v) => label("regions", v)).join(", ")}`,
+    listPrefs.notes && `Also matters: ${listPrefs.notes}`,
+    f.likedSchools.trim() && `Schools I already like: ${f.likedSchools.trim()}`,
+    f.activities.trim() && `Activities and awards (one per line; please save each):\n${f.activities.trim().split("\n").map((l) => `  · ${l.trim()}`).filter((l) => l.length > 4).join("\n")}`,
   ].filter(Boolean);
   const blanks = [
     !applicant.gpaUnweighted && !applicant.gpaWeighted && "GPA", !f.testOptional && !testing.sat && !testing.act && "test scores",
     !profile.intended && "intended major", !listPrefs.incomeBracket && "family income", !listPrefs.budget && "budget",
     listPrefs.needAid === undefined && "need-based aid", !listPrefs.ambition && "list mix", supp === undefined && "how many schools", !listPrefs.ed && "Early Decision",
+    !listPrefs.settings && !listPrefs.regions && "campus preferences", !f.activities.trim() && "activities",
   ].filter(Boolean);
   return { patch: { applicant, profile, listPrefs }, said, blanks };
 }
@@ -213,6 +242,22 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
 
       <fieldset className="ik-group"><legend>What you want to study</legend>
         <IkField label="Majors you're considering" hint="or Undecided" wide><input className="oc-input" placeholder="Economics, maybe computer science" value={f.intended} disabled={off} onChange={set("intended")} maxLength={200} /></IkField>
+      </fieldset>
+
+      <fieldset className="ik-group"><legend>Campus</legend>
+        <div className="ik-grid">
+          <IkField label="Setting" hint="pick any" wide><IkMultiChips name="settings" value={f.settings} disabled={off} onChange={set("settings")} /></IkField>
+          <IkField label="Size" wide><IkChips name="size" value={f.size} disabled={off} onChange={set("size")} /></IkField>
+          <IkField label="Regions" hint="pick any" wide><IkMultiChips name="regions" value={f.regions} disabled={off} onChange={set("regions")} /></IkField>
+          <IkField label="Anything else that matters" hint="optional" wide><input className="oc-input" placeholder="Strong student newspaper, near home, warm weather…" value={f.campusNotes} disabled={off} onChange={set("campusNotes")} maxLength={300} /></IkField>
+          <IkField label="Schools you already like" hint="optional" wide><input className="oc-input" placeholder="Northwestern, UCLA…" value={f.likedSchools} disabled={off} onChange={set("likedSchools")} maxLength={300} /></IkField>
+        </div>
+      </fieldset>
+
+      <fieldset className="ik-group"><legend>Activities and awards</legend>
+        <IkField label="One per line: what it is, your role, grades, hours a week" hint="rough is fine" wide>
+          <textarea className="oc-input" rows={4} placeholder={"Student news show, co-executive producer, 9–12, 10 hrs/wk\nRegional journalism award, 2026"} value={f.activities} disabled={off} onChange={set("activities")} maxLength={2000} />
+        </IkField>
       </fieldset>
 
       <fieldset className="ik-group"><legend>Money</legend>
