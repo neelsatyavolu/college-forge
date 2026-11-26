@@ -60,9 +60,10 @@ test('the gate is monotonic: better academics never fail where worse ones pass',
   if (ok) assert.equal(realismGate(selective(admit),academics(Math.min(4,gpa+0.05),Math.min(1600,sat+20)),false).ok,true);
  }
 });
-test('missing comparisons never pass the gate', () => {
- assert.equal(realismGate({...selective(0.1),gpa:null},academics(4.0,null),true).ok,false,'test-optional with no comparable GPA');
- assert.equal(realismGate({...selective(0.1),gpa:3.9,gpaWeighted:true},academics(4.0,null),true).ok,false,'weighted college average');
+test('missing comparisons fall back to a fixed stand-in bar, never a free pass', () => {
+ assert.equal(realismGate({...selective(0.1),gpa:null},academics(4.0,null),true).ok,true,'test-optional 4.0 meets the stand-in 3.90 bar');
+ assert.equal(realismGate({...selective(0.1),gpa:null},academics(3.6,null),true).ok,false,'test-optional 3.6 does not');
+ assert.equal(realismGate({...selective(0.1),gpa:3.9,gpaWeighted:true},academics(3.7,null),true).ok,false,'a weighted-only college average uses the stand-in bar too');
  assert.equal(realismGate({...selective(0.1),gpa:null},academics(3.0,1500),true).ok,true,'SAT alone can qualify');
 });
 test('an upward trend helps only ambitious students, and only on the GPA test', () => {
@@ -341,4 +342,13 @@ test('residents get every home-state public in realistic range as candidates, UC
  assert.ok((r.inState||[]).every(x=>x.tier));
  ws.applicant.gpaRecent=undefined;
  assert.ok(!(recommendColleges(ws,{morePerTier:8}).inState||[]).some(x=>/Los Angeles/.test(x.name)),'cumulative 3.49 alone is out of range for UCLA');
+});
+test('a strong test-optional student can reach colleges that publish no GPA; a weaker one still cannot', () => {
+ const noGpa={slug:'x',admitRate:0.07,sat25:1500,sat75:1560,gpa:null,gpaWeighted:false};
+ const to=(gpa)=>({gpa,sat:null,trendUp:false,gpaRecent:null,gpaFromWeighted:false,satFromAct:false,testOptional:true,cautions:[]});
+ assert.equal(realismGate(noGpa,to(3.95),false).ok,true,'3.95 test-optional passes the stand-in 3.90');
+ assert.equal(realismGate(noGpa,to(3.6),false).ok,false,'3.60 does not');
+ assert.equal(realismGate({...noGpa,admitRate:0.25},to(3.55),false).ok,true,'15-35%: stand-in 3.75 minus 0.25');
+ const withSat={gpa:3.6,sat:1520,trendUp:false,gpaRecent:null,gpaFromWeighted:false,satFromAct:false,testOptional:false,cautions:[]};
+ assert.equal(realismGate(noGpa,withSat,false).ok,true,'with a comparable SAT, the stand-in GPA is not used');
 });

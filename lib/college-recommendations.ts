@@ -133,9 +133,12 @@ function gpaFactor(school: UsNewsCollege, studentGpa: number | null): number | n
  * unweighted GPA within 0.10 of the average); 15-35% allows half a middle-50% width below the 25th
  * percentile and 0.25 below the GPA average. A missing comparison never counts as passing: with
  * neither available, colleges under 35% aren't suggested. An ambitious student with a clear upward
- * grade trend gets 0.10 more room on the GPA test only.
+ * grade trend gets 0.10 more room on the GPA test only. When no test score can be compared (the student
+ * is test-optional, or the college is test-blind) and the college publishes no comparable GPA, the GPA
+ * test uses a fixed stand-in average (3.90 under 15% admission, 3.75 for 15-35%), so a strong
+ * test-optional student isn't shut out of every college that skips GPA in its data.
  */
-export const GATE = { verySelective: 0.15, selective: 0.35, gpaMarginVery: 0.1, gpaMarginSelective: 0.25, satWidthsSelective: 0.5, trendRelief: 0.1 } as const;
+export const GATE = { verySelective: 0.15, selective: 0.35, gpaMarginVery: 0.1, gpaMarginSelective: 0.25, satWidthsSelective: 0.5, trendRelief: 0.1, assumedGpaVery: 3.9, assumedGpaSelective: 3.75 } as const;
 
 export function realismGate(school: UsNewsCollege, academics: StudentAcademics, ambitious: boolean): { ok: boolean; reason?: string; passedBecauseOfTrend?: boolean } {
   const admit = school.admitRate;
@@ -143,7 +146,8 @@ export function realismGate(school: UsNewsCollege, academics: StudentAcademics, 
   const very = admit < GATE.verySelective;
   const relief = ambitious && academics.trendUp ? GATE.trendRelief : 0;
   const satComparable = satFactor(school, academics.sat) !== null;
-  const avg = comparableGpa(school);
+  const published = comparableGpa(school);
+  const avg = published ?? (satComparable ? null : very ? GATE.assumedGpaVery : GATE.assumedGpaSelective);
   const studentGpa = studentGpaFor(school, academics);
   const gpaComparable = studentGpa !== null && avg !== null;
   if (!satComparable && !gpaComparable) return { ok: false, reason: "No comparable GPA or test score for a college this selective." };
