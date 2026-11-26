@@ -241,11 +241,12 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
             {s.location ? <span style={{ color: "var(--muted-soft)" }}> · {s.location}</span> : null}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <SuppPill load={s.supp} />
+            <SuppPill load={s.supplementsNeeded === "no" ? "No supps" : s.supp} />
             {s.deadline ? (
               <span style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)" }}>{s.deadline}</span>
             ) : null}
             {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Overall admission rate: {s.admit}</span> : null}
+            {s.netPriceForYou ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Your likely cost: {s.netPriceForYou}</span> : null}
           </div>
           <OddsLine odds={odds} stale={oddsStale} />
           <ResearchFacts research={s.research} />

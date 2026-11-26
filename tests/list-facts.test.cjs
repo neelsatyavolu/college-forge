@@ -61,3 +61,19 @@ test('an out-of-state public never shows the in-state income average as the stud
   assert.equal(F.studentFacts(ws, 'University of Michigan--Ann Arbor', 'university-of-michigan-ann-arbor').fitsBudget, 'yes', 'no budget cap, so it fits');
   assert.equal(F.outOfStatePublic({ state: 'CA', isPublic: false }, 'OR'), false, 'privates price everyone the same way');
 });
+
+test('colleges without a research file fall back to the federal all-incomes average, labeled as such', () => {
+  const { averageNetPrice } = require('../lib/college-recommendations.ts');
+  const ws = emptyWorkspace();
+  ws.profile = { ...ws.profile, residency: 'CA' };
+  ws.onboarding = { completed: false, listPrefs: { ambition: 'balanced', settings: [], size: 'any', regions: [], notes: '', budget: '30-50', needAid: true, incomeBracket: '48-75' } };
+  const pool = require('../public/data/rankings/top250.json').schools;
+  const manifest = new Set(require('../lib/school-research/manifest.json').schools.map((s) => s.slug));
+  const { US_NEWS_TOP_250 } = require('../lib/us-news-rankings.ts');
+  const outside = US_NEWS_TOP_250.find((s) => !manifest.has(s.slug) && pool.some((r) => r.unitid === s.scorecardId && r.control !== 'public' && typeof r.net_price === 'number'));
+  assert.ok(outside, 'fixture: a private pool college without a research file');
+  const f = F.studentFacts(ws, outside.name, outside.slug);
+  assert.equal(f.netPrice.basis, 'average');
+  assert.match(f.netPrice.label, /average net price, all incomes/);
+  assert.equal(f.netPrice.amount, averageNetPrice(outside.name, outside.slug));
+});

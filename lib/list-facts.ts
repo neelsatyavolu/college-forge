@@ -5,7 +5,7 @@
  */
 import type { IncomeBracket, OnboardingListPrefs, Workspace } from "./store";
 import { loadSchoolResearch, type SchoolResearch } from "./school-research";
-import { schoolPlace } from "./college-recommendations";
+import { averageNetPrice, schoolPlace } from "./college-recommendations";
 
 export const CURRENT_CYCLE = "2026-27";
 
@@ -28,7 +28,7 @@ export function dollars(value: string): number | null {
   return m ? Number(m[1].replace(/,/g, "")) : null;
 }
 
-export type NetPrice = { amount: number; basis: "income" | "sticker"; label: string };
+export type NetPrice = { amount: number; basis: "income" | "sticker" | "average"; label: string };
 
 /** Federal net price by income counts in-state students only, so it isn't a nonresident's price at a public. */
 export function outOfStatePublic(place: { state: string; isPublic: boolean } | null, residency: string | undefined): boolean {
@@ -73,7 +73,9 @@ export function studentFacts(ws: Workspace, nameOrSlug: string, slug?: string): 
     const noCap = !!prefs?.budget && BUDGET_CAP[prefs.budget] === null;
     return { netPrice: null, fitsBudget: noCap ? "yes" : null, supplements: supplementsFor(research), outOfState: true };
   }
-  const netPrice = netPriceFor(research, prefs);
+  // Without a research file, the federal all-incomes average is the best guide; it says so.
+  const avg = !research && prefs?.needAid !== false ? averageNetPrice(nameOrSlug, slug) : null;
+  const netPrice = netPriceFor(research, prefs) ?? (avg !== null ? { amount: avg, basis: "average" as const, label: `$${avg.toLocaleString("en-US")} average net price, all incomes` } : null);
   const cap = prefs?.budget ? BUDGET_CAP[prefs.budget] ?? null : null;
   const fitsBudget = netPrice && cap !== null ? (netPrice.amount <= cap ? "yes" : "no") : cap === null && prefs?.budget ? "yes" : null;
   return { netPrice, fitsBudget, supplements: supplementsFor(research) };
