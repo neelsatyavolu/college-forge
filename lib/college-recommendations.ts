@@ -4,6 +4,7 @@ import type { College, Workspace } from "./store";
 import { US_NEWS_BY_SCORECARD_ID, type UsNewsCollege } from "./us-news-rankings";
 import { slugify, isTestOptionalNote } from "./colleges";
 import { actToSat } from "./act-concordance";
+import { loadSchoolResearch } from "./school-research";
 import careerData from "../public/data/career-ranking.json";
 import { majorKeysOf, SWITCH_LABELS, type CareerData } from "./career-ranking";
 
@@ -163,6 +164,13 @@ export function realismGate(school: UsNewsCollege, academics: StudentAcademics, 
     if (studentGpa! < strict - 1e-9) return { ok: true, passedBecauseOfTrend: true };
   }
   return { ok: true };
+}
+
+/** Whether Forge's research file says this college requires SAT or ACT scores of first-year applicants. */
+export function testRequired(slug: string, name?: string): boolean {
+  const research = loadSchoolResearch(slug) ?? (name ? loadSchoolResearch(name) : null);
+  const policy = research?.facts.find((f) => f.key === "test_policy")?.value;
+  return typeof policy === "string" && /^\s*test[- ]required\b/i.test(policy);
 }
 
 /** 0 when the student is at or above the middle of the college's reported range, 1 otherwise. */
@@ -325,6 +333,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     if (admissions && farBelowSatRange(admissions, academics.sat)) return [];
     const gate = hasAcademics && admissions ? realismGate(admissions, academics, prefs?.ambition === "ambitious") : { ok: true };
     if (!gate.ok) return [];
+    // A student applying without scores can't apply where Forge's research shows scores are required.
+    if (academics.testOptional && testRequired(admissions?.slug || slugify(row.institution), row.institution)) return [];
     // Not suggested when Forge's career data shows no graduates in the student's major there.
     const access = majorAccess(row.unitid, ws.profile.intended || "");
     if (access && !access.offered) return [];

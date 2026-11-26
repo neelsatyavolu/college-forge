@@ -352,3 +352,20 @@ test('a strong test-optional student can reach colleges that publish no GPA; a w
  const withSat={gpa:3.6,sat:1520,trendUp:false,gpaRecent:null,gpaFromWeighted:false,satFromAct:false,testOptional:false,cautions:[]};
  assert.equal(realismGate(noGpa,withSat,false).ok,true,'with a comparable SAT, the stand-in GPA is not used');
 });
+test('test-required colleges are read from the research files', () => {
+ const R=require('../lib/college-recommendations.ts');
+ assert.equal(R.testRequired('harvard-university'),true);
+ assert.equal(R.testRequired('massachusetts-institute-of-technology'),true);
+ assert.equal(R.testRequired('smith-college'),false,'test-optional, scores required only for some');
+ assert.equal(R.testRequired('no-such-college'),false);
+});
+test('a strong test-optional student gets selective test-optional reaches and no test-required colleges', () => {
+ const ws=emptyWorkspace();ws.applicant.gpaUnweighted='3.95';ws.applicant.satNote='test-optional';ws.profile.intended='Political Science';
+ ws.onboarding={completed:false,listPrefs:{ambition:'ambitious',settings:[],size:'any',regions:[],notes:''}};
+ const R=require('../lib/college-recommendations.ts');
+ const r=recommendColleges(ws,{morePerTier:8});
+ const all=[...r.recommendations.map(x=>({slug:x.college.slug,tier:x.fit.tier})),...(r.more||[]).map(x=>({slug:x.slug,tier:x.tier}))];
+ const slugs=all.map(x=>x.slug);
+ assert.ok(all.filter(x=>x.tier==='reach').length>=5,'has reaches');
+ for(const s of slugs) assert.equal(R.testRequired(s),false,`${s} requires tests`);
+});
