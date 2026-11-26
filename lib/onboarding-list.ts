@@ -14,6 +14,14 @@ import { interviewOf } from "./interview-tools";
 const TIER: Record<UiSchool["tier"], NonNullable<College["tier"]>> = { reach: "reach", target: "target", likely: "safety" };
 const same = (c: { slug?: string; name: string }, ref: string) => c.slug === ref || slugify(c.name) === slugify(ref);
 
+/** The per-student facts shown on a draft tile, kept on the saved school. */
+function draftFacts(s: UiSchool): Partial<College> {
+  return {
+    ...(s.netPrice ? { netPriceForYou: s.netPrice } : {}),
+    ...(s.supplements === "yes" || s.supplements === "no" ? { supplementsNeeded: s.supplements } : {}),
+  };
+}
+
 /** Formula rows by slug, so approved formula picks keep their admit, SAT and price data. */
 function formulaRows(ws: Workspace): College[] {
   try {
@@ -33,11 +41,11 @@ export function applyApprovedList(ws: Workspace, keep: string[], drop: string[],
     .map((s) => {
       const row = rows.find((r) => same(r, s.slug || s.name) || same(r, s.name));
       const slug = row?.slug || s.slug || slugify(s.name);
-      return { ...(row ?? { slug, name: s.name, short: s.name }), slug, tier: TIER[s.tier], origin: "agent" as const };
+      return { ...(row ?? { slug, name: s.name, short: s.name }), slug, tier: TIER[s.tier], origin: "agent" as const, ...draftFacts(s) };
     });
   const tiered = current.map((c) => {
     const s = kept.find((k) => same(c, k.slug || k.name) || same(c, k.name));
-    return s ? { ...c, tier: TIER[s.tier] } : c;
+    return s ? { ...c, tier: TIER[s.tier], ...draftFacts(s) } : c;
   });
   const next: Workspace = { ...ws, colleges: [...tiered, ...added] };
   return syncEssaySupplements({ ...next, onboarding: { ...next.onboarding, interview: { ...interviewOf(next), phase: "research" } } });

@@ -54,3 +54,10 @@ test('finishing does not touch the list and needs a complete checklist', () => {
   const w = ws([rice], draft);
   assert.match(finishOnboarding(w, 5).error, /basics/);
 });
+
+test('the approved list keeps each school\'s price for the student and supplement need', () => {
+  const w = ws([], [{ name: 'Grinnell College', tier: 'target', reason: 'r', netPrice: '$21,000 average for your income', supplements: 'no' }]);
+  const out = applyApprovedList(w, ['Grinnell College'], [], []);
+  assert.equal(out.colleges[0].netPriceForYou, '$21,000 average for your income');
+  assert.equal(out.colleges[0].supplementsNeeded, 'no');
+});

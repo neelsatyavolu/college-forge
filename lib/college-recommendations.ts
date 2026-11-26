@@ -212,6 +212,14 @@ for (const row of US_NEWS_BY_SCORECARD_ID.values()) {
 }
 
 const CONTROL_BY_ID = new Map(rankings.schools.map((r) => [r.unitid, r.control] as const));
+const NET_PRICE_BY_ID = new Map(rankings.schools.map((r) => [r.unitid, r.net_price] as const));
+
+/** The federal average net price across all incomes (aid recipients), for colleges without a research file. */
+export function averageNetPrice(name: string, slug?: string): number | null {
+  const row = (slug && US_NEWS_BY_SLUG.get(slug)) || US_NEWS_BY_SLUG.get(slugify(name));
+  const v = row ? NET_PRICE_BY_ID.get(row.scorecardId) : undefined;
+  return typeof v === "number" ? Math.round(v) : null;
+}
 
 /** A college's state and whether it's public, when Forge's data knows. */
 export function schoolPlace(name: string, slug?: string): { state: string; isPublic: boolean } | null {

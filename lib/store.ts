@@ -43,6 +43,10 @@ export type College = {
   priceCalcUrl?: string;
   /** Who put the row on the list. "seed": the automatic list builder, which may replace it on a rebalance. Missing counts as the student's. */
   origin?: "seed" | "user" | "agent";
+  /** What a year would likely cost this student, from the draft list (income bracket or full cost). */
+  netPriceForYou?: string;
+  /** Whether the application needs supplemental essays. */
+  supplementsNeeded?: "yes" | "no";
   /** Sourced facts from the onboarding research step (lib/school-research.ts shape). Missing: not researched. */
   research?: SchoolResearch & { attempts?: number; needsReview?: boolean };
 };
