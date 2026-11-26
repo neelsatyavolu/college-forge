@@ -53,7 +53,7 @@ export type ResearchStage = "searching" | "reading" | "saved" | "done" | "needs_
 export type ChatEvent =
   | { type: "status"; stage: ChatStage; message: string; round?: number }
   | { type: "question"; question: UiQuestion }
-  | { type: "list"; schools: UiSchool[]; edIdea?: UiEdIdea }
+  | { type: "list"; schools: UiSchool[]; edIdea?: UiEdIdea; warning?: string }
   | { type: "strategy"; strategy: UiStrategy }
   | { type: "research"; slug: string; name: string; stage: ResearchStage; facts?: number }
   | { type: "tool"; name: string; path?: string; round: number }

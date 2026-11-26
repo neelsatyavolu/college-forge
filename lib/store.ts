@@ -135,6 +135,8 @@ export type InterviewState = {
   strategy?: { ed?: string; ea: string[]; reasons: string; confirmed: boolean };
   /** The last draft list the AI proposed (UiSchool[] from lib/chat-types.ts). */
   listDraft?: import("./chat-types").UiSchool[];
+  /** Balance problems Forge pushed back on for the current draft; after two, the list is shown with a warning. */
+  listRefusals?: number;
   /** The early-round idea shown with the draft list. */
   edIdea?: import("./chat-types").UiEdIdea;
   startedAt: number;

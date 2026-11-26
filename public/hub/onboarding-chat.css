@@ -124,6 +124,7 @@
 }
 
 /* Draft list: supplement groups, tier tags, mix line and the ED idea. */
+.oc-list-warn { margin: 0; padding: 10px 12px; font-size: 13px; line-height: 1.5; color: var(--body); border: 1px solid var(--warning); border-radius: 8px; }
 .oc-list-mix { margin: 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .oc-list-head em { margin-left: 8px; font-style: normal; font-weight: 400; color: var(--muted-soft, var(--muted)); }
 .oc-school-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }

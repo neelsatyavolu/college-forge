@@ -137,6 +137,15 @@ export function applyDataTiers(ws: Workspace, schools: UiSchool[]): { schools: U
   return { schools: out, changed };
 }
 
+/** The balance problem in words for the student, shown on a list Forge accepted anyway. */
+export function studentWarning(problem: string): string {
+  if (/likely schools? fit the family's budget/.test(problem)) return "Heads up: fewer than two likely schools on this list fit your budget. Run each school's net price calculator, and consider adding an in-state public or a community-college transfer path as a backstop.";
+  if (/Include at least 2 likely/.test(problem)) return "Heads up: this list has fewer than two likely schools. Add a school you're very likely to get into before you finalize.";
+  if (/tiers \(after Forge's data\)/.test(problem)) return `Heads up: the mix doesn't quite match what you chose. ${problem.replace(/^The tiers \(after Forge's data\) are /, "It's ").replace(/ Swap schools to fix .*$/, "")}`;
+  if (/applications with supplements/.test(problem)) return "Heads up: the number of schools doesn't exactly match the counts you gave. Drop or ask for schools until it does.";
+  return `Heads up: ${problem}`;
+}
+
 /** Fills each school's net price, budget fit and supplement need from Forge's research files. */
 export function applyStudentFacts(ws: Workspace, schools: UiSchool[]): UiSchool[] {
   return schools.map((s) => {
@@ -407,12 +416,20 @@ export function makeInterviewTools(mutate: Mutate, read: () => Promise<Workspace
         const { schools: tiered, changed } = applyDataTiers(ws, markCurrent(ws, parseSchools(a.schools)));
         const schools = applyStudentFacts(ws, tiered);
         const problem = checkListProposal(ws, schools) ?? checkMix(ws, schools);
-        if (problem) return `Not shown: ${problem}${changed.length ? ` (Forge's data also sets these tiers: ${changed.join(", ")}.)` : ""}`;
+        // Push back twice so the AI can fix the list; some students' situations can't meet every rule
+        // (two likely schools under a very tight budget may not exist), so the third try is shown with
+        // the problem stated plainly instead of looping.
+        const refusals = interviewOf(ws).listRefusals ?? 0;
+        if (problem && refusals < 2) {
+          await mutate((w) => withInterview(w, { ...interviewOf(w), listRefusals: refusals + 1 }));
+          return `Not shown: ${problem}${changed.length ? ` (Forge's data also sets these tiers: ${changed.join(", ")}.)` : ""} Fix it and call propose_list again; if it truly can't be met for this student, call again anyway and Forge will show the list with this caveat.`;
+        }
+        const warning = problem ? studentWarning(problem) : undefined;
         const ideaRaw = (a.edIdea ?? {}) as Args;
         const edIdea: UiEdIdea | undefined = text(ideaRaw.reason, 400) ? { ...(text(ideaRaw.school, 120) ? { school: text(ideaRaw.school, 120) } : {}), reason: text(ideaRaw.reason, 400)! } : undefined;
-        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, ...(edIdea ? { edIdea } : {}) }));
-        emit({ type: "list", schools, ...(edIdea ? { edIdea } : {}) });
-        stop({ list: schools, ...(edIdea ? { edIdea } : {}) });
+        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, listRefusals: 0, ...(edIdea ? { edIdea } : {}) }));
+        emit({ type: "list", schools, ...(edIdea ? { edIdea } : {}), ...(warning ? { warning } : {}) });
+        stop({ list: schools, ...(edIdea ? { edIdea } : {}), ...(warning ? { warning } : {}) });
         return `Shown to the student${changed.length ? `. Forge set these tiers from its admissions data: ${changed.join(", ")}` : ""}. Stop now; they will approve, drop or ask for changes.`;
       }
       case "recommend_strategy": {

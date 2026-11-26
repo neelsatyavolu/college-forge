@@ -188,3 +188,17 @@ test('the draft list takes net price and supplements from Forge\'s research, not
   assert.equal(miami.fitsBudget, /\$(\d+),/.test(miami.netPrice) && Number(miami.netPrice.replace(/[^\d]/g, '').slice(0, 5)) <= 30000 ? 'yes' : 'no');
   assert.equal(ucla.supplements, 'yes', 'a UC campus always has the PIQs');
 });
+
+test('a list Forge objects to is refused twice, then shown with a plain warning instead of looping', async () => {
+  const ws = complete(wsWith({ budget: 'lt15', needAid: true }));
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, budget: 'lt15', suppCount: 10, noSuppCount: 0 };
+  const h = harness(ws);
+  const schools = list(10, 2, 'no');
+  const call = () => h.tools.execute('propose_list', JSON.stringify({ schools }));
+  assert.match(await call(), /^Not shown: Only 0 likely schools fit/);
+  assert.match(await call(), /^Not shown:/);
+  assert.match(await call(), /^Shown to the student/);
+  const ev = h.events.find((e) => e.type === 'list');
+  assert.match(ev.warning, /fewer than two likely schools on this list fit your budget/);
+  assert.equal(h.ws.onboarding.interview.listRefusals, 0, 'the counter resets once a list is shown');
+});
