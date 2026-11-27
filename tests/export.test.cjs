@@ -26,3 +26,13 @@ test('calendar content escapes line breaks, folds UTF-8 safely and keeps stable 
 test('counselor brief includes schools with unknown tiers and uses likely terminology',()=>{
  const ws=workspace();ws.colleges=[{slug:'likely',name:'Likely school',tier:'safety'},{slug:'unknown',name:'Unassessed school'}];const brief=exportCounselorBrief(ws);assert.match(brief,/### Likely/);assert.match(brief,/Unassessed school/);assert.doesNotMatch(brief,/Safetys/);
 });
+test('all-day events end the next day, deadlines get a 3-day reminder, and subscribers refresh every 6 hours',()=>{
+ const ws=workspace();ws.criticalDates=[{date:'2027-12-31',label:'New year eve milestone'}];ws.tracker={apps:[{id:'a',name:'Deadline School',status:'planning',round:'ED',deadline:'2026-11-01',decisionDate:'',notes:'',portalName:'',portalUrl:'',platform:'',lastChecked:null,createdAt:1,updatedAt:1}],autocheck:true,emails:true,flags:[]};
+ const text=exportCalendar(ws,'2026-10-01').text;
+ assert.match(text,/REFRESH-INTERVAL;VALUE=DURATION:PT6H\r\n/);assert.match(text,/X-PUBLISHED-TTL:PT6H\r\n/);
+ assert.match(text,/DTSTART;VALUE=DATE:20271231\r\nDTEND;VALUE=DATE:20280101\r\n/);
+ const events=text.split('BEGIN:VEVENT').slice(1);
+ const deadline=events.find(e=>e.includes('Deadline School'));const milestone=events.find(e=>e.includes('New year eve'));
+ assert.match(deadline,/BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Deadline School — application due \(ED\)\r\nTRIGGER:-P3D\r\nEND:VALARM\r\nEND:VEVENT/);
+ assert.doesNotMatch(milestone,/VALARM/);
+});

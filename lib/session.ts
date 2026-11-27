@@ -2,6 +2,7 @@ import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from
 import { deleteDoc, readDoc, updateDoc, writeDoc } from "./doc-store";
 import { getShare, putShare } from "./share-store";
 import { copyWorkspace, getWorkspace, retireWorkspace } from "./store";
+import { moveFeed } from "./calendar-feed";
 
 /**
  * Forge accounts are Xanom accounts. Each Xanom `sub` owns exactly one workspace; the signed `forge_session`
@@ -86,6 +87,7 @@ export async function signInAccount(
         await updateDoc<{ sub: string }>(ownerKey(claim.movedTo), (cur) => cur ?? { sub: user.sub });
         const account = await touchAccount(user, claim.movedTo, now);
         await moveShareLinks(claim.movedTo);
+        await moveFeed(claim.movedTo);
         await retireWorkspace(anon);
         return account;
       }

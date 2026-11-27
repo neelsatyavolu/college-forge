@@ -9,6 +9,7 @@ struct MoreShareExportView: View {
             MoreParentsSection(role: .parent)
             MoreParentsSection(role: .counselor)
             MoreShareLinksSection()
+            MoreCalendarFeedSection()
             MoreExportSection()
             MoreAdvisorNotesSection()
         }

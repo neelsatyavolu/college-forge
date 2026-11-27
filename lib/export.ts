@@ -1,4 +1,4 @@
-import { statusInfo } from "./tracker";
+import { decisionDateOf, statusInfo, todayIso } from "./tracker";
 import { createHash } from "node:crypto";
 import type { Workspace } from "./store";
 
@@ -201,26 +201,41 @@ function foldIcsLine(line: string): string {
   return result.join("\r\n");
 }
 
-/** Calendar content and an explicit count of dates that need correction. */
-export function exportCalendar(ws: Workspace): { text: string; included: number; skipped: number } {
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//College Forge//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:College Forge deadlines"];
+// The day after an all-day DTSTART, so every calendar shows a one-day event (RFC 5545 3.6.1).
+function nextIcsDay(date: string): string {
+  const next = new Date(Date.UTC(Number(date.slice(0, 4)), Number(date.slice(4, 6)) - 1, Number(date.slice(6, 8)) + 1));
+  return next.toISOString().slice(0, 10).replace(/-/g, "");
+}
+
+/** Calendar content and an explicit count of dates that need correction. `today` (yyyy-mm-dd) dates the decision estimates; `notes: false` leaves out the student's own notes (the shared subscription). */
+export function exportCalendar(ws: Workspace, today = todayIso(), options: { notes?: boolean } = {}): { text: string; included: number; skipped: number } {
+  // Subscribed calendars refetch every 6 hours (Apple and Outlook read these; Google keeps its own schedule).
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//College Forge//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:College Forge deadlines", "REFRESH-INTERVAL;VALUE=DURATION:PT6H", "X-PUBLISHED-TTL:PT6H"];
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const events: { date: string; title: string; detail?: string }[] = [];
+  // alarm: application deadlines get a reminder 3 days before.
+  const events: { date: string; title: string; detail?: string; alarm?: boolean }[] = [];
   for (const date of ws.criticalDates || []) events.push({ date: date.date, title: date.label, detail: date.detail });
   const tracked = ws.tracker?.apps || [];
   for (const app of tracked) {
     const stage = statusInfo(app.status).stage;
-    if (app.deadline && stage === "working") events.push({ date: app.deadline, title: `${app.name} — application due${app.round ? ` (${app.round})` : ""}`, detail: app.name });
-    if (app.decisionDate && (stage === "working" || stage === "waiting")) events.push({ date: app.decisionDate, title: `${app.name} — decision`, detail: app.name });
+    if (app.deadline && stage === "working") events.push({ date: app.deadline, title: `${app.name} — application due${app.round ? ` (${app.round})` : ""}`, detail: app.name, alarm: true });
+    const decision = stage === "working" || stage === "waiting" ? decisionDateOf(app, today) : null;
+    if (decision && !decision.estimated) events.push({ date: decision.date, title: `${app.name} — decision`, detail: app.name });
+    if (decision?.estimated) events.push({ date: decision.date, title: `${app.name}: decision (estimated from last year)`, detail: app.name });
+    if (stage !== "closed") {
+      for (const followUp of app.followUps || []) {
+        if (followUp.due && !followUp.done) events.push({ date: followUp.due, title: `${app.name}: ${followUp.text}`, detail: app.name });
+      }
+    }
   }
   // Shortlist dates only where the Applications tab doesn't already give one (or the application is done).
   const covered = (slug: string) => tracked.some((a) => a.slug === slug && (a.deadline || statusInfo(a.status).stage !== "working"));
   for (const college of (ws.colleges || []).filter((c) => !covered(c.slug))) {
-    for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name });
-    if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name });
+    for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name, alarm: true });
+    if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name, alarm: true });
   }
   for (const scholarship of ws.scholarships || []) {
-    if (scholarship.deadline) events.push({ date: scholarship.deadline, title: `Scholarship: ${scholarship.name}`, detail: scholarship.notes });
+    if (scholarship.deadline) events.push({ date: scholarship.deadline, title: `Scholarship: ${scholarship.name}`, detail: options.notes === false ? undefined : scholarship.notes });
   }
   for (const recommendation of ws.recommendations || []) {
     if (recommendation.deadline) events.push({ date: recommendation.deadline, title: `Rec letter: ${recommendation.name}`, detail: recommendation.type });
@@ -235,8 +250,9 @@ export function exportCalendar(ws: Workspace): { text: string; included: number;
     if (seen.has(uid)) continue;
     seen.add(uid);
     included += 1;
-    lines.push("BEGIN:VEVENT", `UID:cf-${uid}@college-forge`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${date}`, `SUMMARY:${icsEscape(event.title)}`);
+    lines.push("BEGIN:VEVENT", `UID:cf-${uid}@college-forge`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${date}`, `DTEND;VALUE=DATE:${nextIcsDay(date)}`, `SUMMARY:${icsEscape(event.title)}`);
     if (event.detail) lines.push(`DESCRIPTION:${icsEscape(event.detail)}`);
+    if (event.alarm) lines.push("BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsEscape(event.title)}`, "TRIGGER:-P3D", "END:VALARM");
     lines.push("END:VEVENT");
   }
   lines.push("END:VCALENDAR");
