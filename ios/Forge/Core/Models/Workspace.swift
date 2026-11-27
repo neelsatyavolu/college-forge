@@ -32,6 +32,8 @@ struct Workspace: Codable, Hashable, Sendable {
     /// True while the onboarding wizard should cover the app (mirrors `needsOnboarding` in lib/store.ts).
     var needsOnboarding: Bool {
         if onboarding.completed { return false }
+        // An interview in progress reopens by itself, even after the student's name is saved.
+        if let interview = onboarding.interview, interview.phase != "done" { return true }
         if !applicant.name.trimmingCharacters(in: .whitespaces).isEmpty { return false }
         return colleges.isEmpty && profile.activities.isEmpty
     }

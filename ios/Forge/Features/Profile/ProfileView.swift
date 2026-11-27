@@ -53,13 +53,13 @@ private struct ProfileHome: View {
                     Label("Redo setup", systemImage: "arrow.counterclockwise")
                 }
             } footer: {
-                Text("Walk through the setup questions again. Your saved answers are filled in, and your list, edits and drafts are kept.")
+                Text("Go through the setup interview again with your AI. Your saved answers count as given, and your list, edits and drafts are kept.")
             }
         }
         .listStyle(.insetGrouped)
         .refreshable { await store.refresh() }
         .fullScreenCover(isPresented: $showSetup) {
-            OnboardingFlow(canCancel: true)
+            SetupChatView(canCancel: true)
         }
     }
 }

@@ -5,6 +5,18 @@ struct OnboardingState: Codable, Hashable, Sendable {
     var completedAt: Double?
     var storyNotes: StoryNotes?
     var listPrefs: ListPrefs?
+    /// The chat interview (onboarding v2). Decoded only; never sent back.
+    var interview: OnboardingInterview?
+
+    private enum CodingKeys: String, CodingKey { case completed, completedAt, storyNotes, listPrefs, interview }
+
+    func encode(to encoder: any Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(completed, forKey: .completed)
+        try c.encodeIfPresent(completedAt, forKey: .completedAt)
+        try c.encodeIfPresent(storyNotes, forKey: .storyNotes)
+        try c.encodeIfPresent(listPrefs, forKey: .listPrefs)
+    }
 }
 
 extension OnboardingState {
@@ -14,6 +26,7 @@ extension OnboardingState {
         completedAt = c.optionalDouble(.completedAt)
         storyNotes = c.optional(StoryNotes.self, .storyNotes)
         listPrefs = c.optional(ListPrefs.self, .listPrefs)
+        interview = c.optional(OnboardingInterview.self, .interview)
     }
 }
 
