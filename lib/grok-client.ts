@@ -74,7 +74,7 @@ async function callGrok(
       body: JSON.stringify({
         model,
         messages,
-        tools: tools.map((t) => ({ type: "function", function: t })),
+        ...(tools.length ? { tools: tools.map((t) => ({ type: "function", function: t })) } : {}),
         temperature: 0.4,
         max_tokens: 16384,
         // Grok 4.5+ reasons at "high" unless told otherwise; that alone can take minutes per request.

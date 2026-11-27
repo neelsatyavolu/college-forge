@@ -40,7 +40,7 @@ export function friendlyCutOffNote(): string {
 }
 
 export function friendlyToolBudgetNote(): string {
-  return "\n\n_(That took a lot of steps — ask a follow-up if you need more.)_";
+  return "\n\n(I ran out of steps for this turn. Say \"continue\" and I'll pick up where I left off.)";
 }
 
 /** Map hub tool name (+ optional path/query) to a short status line. */
