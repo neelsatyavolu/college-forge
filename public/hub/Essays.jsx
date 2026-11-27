@@ -577,7 +577,11 @@ function HiddenRow({ items, open, onToggle, activeId, local, onSelect }) {
 
 function Essays({ data, onAsk, onWorkspaceChange }) {
   // Schools the student isn't writing for leave the sidebar and every count; NotWritingFor lists them.
-  const allGroups = React.useMemo(() => buildGroups(data), [data]);
+  // A picked option with its own limit ("(150 word limit)") is the limit the student writes to.
+  const allGroups = React.useMemo(() => {
+    const chosen = data.essayOption || {};
+    return buildGroups(data).map((g) => ({ ...g, items: (g.items || []).map((it) => ESSAY_PLAN.withChosenOption(it, chosen[it.id])) }));
+  }, [data]);
   const groups = React.useMemo(
     () => allGroups.filter((g) => g.kind === "orphan" || !ESSAY_PLAN.isSchoolSkipped(g.key, { essaySchools: data.essaySchools })),
     [allGroups, data.essaySchools]
@@ -701,10 +705,18 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     return t.required > t.final;
   };
   // Every essay the school requires (after picks and hidden ones) is marked final.
+  // A school with only optional essays (NYU's Bridge builders) counts as done once every essay shown is final.
   const allFinal = (g) => {
     const t = ESSAY_PLAN.writingTotals([g], local, status, visOpts);
-    return t.required > 0 && t.final >= t.required;
+    if (t.required > 0) return t.final >= t.required;
+    const shown = ESSAY_PLAN.visibleItems(g.items, visOpts);
+    return shown.length > 0 && shown.every((it) => status[it.id] === "final");
   };
+  // Schools still being written first, finished (checked) ones after, removed-from-list leftovers last; order kept within each.
+  const sidebarGroups = groups
+    .map((g, i) => ({ g, i, rank: g.kind === "orphan" ? 2 : allFinal(g) ? 1 : 0 }))
+    .sort((a, b) => a.rank - b.rank || a.i - b.i)
+    .map((x) => x.g);
   const dueGroups = groups.filter((g) => g.due);
   const nextGroup = dueGroups.filter(unfinished).sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0]
     || dueGroups.slice().sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0];
@@ -907,7 +919,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                   ))}
                 </div>
               </div>
-            )) : groups.map((g) => {
+            )) : sidebarGroups.map((g) => {
               const open = openKeys.has(g.key);
               const items = ESSAY_PLAN.visibleItems(g.items, visOpts);
               const hiddenItems = (g.items || []).filter((it) => hiddenMap[it.id]);
