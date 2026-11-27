@@ -184,7 +184,7 @@ function sectionPatch(draft, groups, checked, baseRevision) {
     ...(has("aps") ? { aps: draft.aps.map((ap) => ({ ...ap, score: String(ap.score) })) } : {}),
   };
   const profile = {
-    ...(has("applicant") ? { intended: draft.intended, hs: draft.hs, gradYear, location: draft.location, counselor: draft.counselor, residency: draft.residency } : {}),
+    ...(has("applicant") ? { intended: draft.intended, switchTo: draft.switchTo, pathNote: draft.pathNote, hs: draft.hs, gradYear, location: draft.location, counselor: draft.counselor, residency: draft.residency } : {}),
     ...(Object.keys(testing).length ? { testing } : {}),
     ...(has("coursework") ? { coursework: Object.fromEntries(Object.entries(draft.coursework).map(([key, value]) => [key, value.split("\n").map((course) => course.trim()).filter(Boolean)])) } : {}),
     ...(has("activities") ? { activities: draft.activities.map((activity, index) => ({ ...activity, rank: index + 1 })) } : {}),
@@ -231,6 +231,8 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
       act: blankStat(p.testing.act),
       satNote: p.testing.satNote || "",
       intended: p.intended || "",
+      switchTo: p.switchTo || "",
+      pathNote: p.pathNote || "",
       hs: p.hs || "",
       gradYear: p.gradYear || "",
       location: p.location || "",
@@ -325,6 +327,8 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
               <Input label="Cycle" value={draft.cycle} onChange={(v) => setDraft((d) => ({ ...d, cycle: v }))} placeholder="Fall 2027" />
               <Input label="Year label" value={draft.year} onChange={(v) => setDraft((d) => ({ ...d, year: v }))} />
               <Input label="Intended major" value={draft.intended} onChange={(v) => setDraft((d) => ({ ...d, intended: v }))} />
+              <Input label="Might switch to" hint="Optional · Majors you plan to move into" value={draft.switchTo} onChange={(v) => setDraft((d) => ({ ...d, switchTo: v }))} />
+              <Input label="Why switch" hint="Optional · Used on your Decision board" value={draft.pathNote} onChange={(v) => setDraft((d) => ({ ...d, pathNote: v }))} />
               <Input label="High school" value={draft.hs} onChange={(v) => setDraft((d) => ({ ...d, hs: v }))} />
               <Input label="Grad year" inputMode="numeric" placeholder="2027" hint="Optional · Four digits, 1900–2100" value={String(draft.gradYear)} onChange={(v) => setDraft((d) => ({ ...d, gradYear: v }))} />
               <Input label="Location" value={draft.location} onChange={(v) => setDraft((d) => ({ ...d, location: v }))} />
@@ -433,6 +437,7 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
           <Panel title="Applicant" action={<EditButton section="applicant" label="applicant details" onEdit={startEdit} disabled={busy || !!editing} />}>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <Field label="Intended major" value={p.intended} />
+              {p.switchTo ? <Field label="Might switch to" value={p.switchTo} /> : null}
               <Field label="High school" value={hsLabel(p)} />
               <Field label="Location" value={p.location} />
               <Field label="Counselor" value={p.counselor} />

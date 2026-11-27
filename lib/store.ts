@@ -277,6 +277,10 @@ export type Workspace = {
     coursework: { honors: string[]; aps: string[]; senior: string[] };
     activities: Activity[];
     honors: Honor[];
+    /** Majors the student plans to switch into after applying as `intended` (the decision board only). */
+    switchTo?: string;
+    /** Why, in the student's words (the decision board only). */
+    pathNote?: string;
   };
   ed: null | { school: string; deadline: string; daysLeft: number | string; reason: string };
   /** source "student": added or edited on the Timeline; AI rewrites keep these. */
@@ -324,6 +328,8 @@ export type Workspace = {
   careerSettings?: unknown;
   /** Private calendar subscription (lib/calendar-feed.ts). The token is the feed's only credential. */
   calendarFeed?: { token: string; createdAt: number };
+  /** The AI's two picks among admitted schools (lib/decision-board.ts). The student's alone: never in share links. */
+  decisionBoard?: unknown;
 };
 
 export function emptyWorkspace(): Workspace {
@@ -800,9 +806,12 @@ export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" |
 } {
   // applicationRead and admissionOdds hold AI assessments drawn from uploads (family context, concerns): the student's alone.
   // essayAiChecks: GPTZero results are the student's to share or not.
-  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, scholarships, essayAiChecks: _e, ...rest } = ws;
+  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, scholarships, essayAiChecks: _e, decisionBoard: _b, ...rest } = ws;
+  // decisionBoard holds the AI's picks over family cost and aid; switchTo/pathNote feed only the board.
+  const { switchTo: _sw, pathNote: _pn, ...profile } = rest.profile;
   return {
     ...rest,
+    profile,
     // A school's own award amount and its aid offer stay with the student (lib/aid-validate.ts).
     scholarships: scholarships.map((s) => sharedScholarship(s)),
     // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.

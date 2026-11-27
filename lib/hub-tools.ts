@@ -25,6 +25,7 @@ import { checkAidAgainstWorkspace, checkFinancialAid, checkScholarshipList, merg
 import { aidPlan } from "./aid-plan";
 
 class AidToolError extends Error {}
+import { DECISION_TOOL_SPECS, runDecisionTool } from "./decision-picks";
 
 type Args = Record<string, unknown>;
 
@@ -429,9 +430,9 @@ export function makeHubTools(
   ];
 
   // The MCP server's tracker, sharing and read tools, for everything the list above doesn't cover.
-  const bridged = bridgeToolSpecs(new Set([...tools.map((t) => t.name), ...PROFILE_TOOL_SPECS.map((t) => t.name), ...EXTRA_TOOL_SPECS.map((t) => t.name)]));
+  const bridged = bridgeToolSpecs(new Set([...tools.map((t) => t.name), ...PROFILE_TOOL_SPECS.map((t) => t.name), ...EXTRA_TOOL_SPECS.map((t) => t.name), ...DECISION_TOOL_SPECS.map((t) => t.name)]));
   const bridgedNames = new Set(bridged.map((t) => t.name));
-  const allTools = [...tools, ...EXTRA_TOOL_SPECS, ...bridged];
+  const allTools = [...tools, ...EXTRA_TOOL_SPECS, ...DECISION_TOOL_SPECS, ...bridged];
 
   const executeTool: ToolExecutor = async (name, argsJson) => {
     // Log the operation, not student details or URLs contained in arguments.
@@ -471,6 +472,8 @@ export function makeHubTools(
       if (profileReply !== null) return profileReply + countNote;
       const extraReply = await runExtraTool(workspaceId, mutate, name, a, scopedWorkspace);
       if (extraReply !== null) return extraReply;
+      const decisionReply = await runDecisionTool(name, a, mutate);
+      if (decisionReply !== null) return decisionReply;
       switch (name) {
         case "get_college_recommendations": {
           const ws = await scopedWorkspace();

@@ -195,6 +195,7 @@ function App() {
     try { localStorage.setItem(setupBannerKey, "1"); } catch (e) {}
   };
   const hiddenDecisions = tracker.apps.filter(a => a.decision && a.decision.state === "hidden").length;
+  const admits = tracker.apps.filter(a => a.stage === "admitted").length;
   const portalCount = tracker.apps.filter(a => a.stage !== "working" || (a.login && a.login.hasPassword)).length;
   if (loading) return <div className="cf-loading-screen" role="status"><span className="cf-loading-mark">✱</span>Opening your workspace…</div>;
   if (account && !account.signedIn) return <SignIn />;
@@ -221,7 +222,7 @@ function App() {
         <nav aria-label="Workspace">
           {NAV_GROUPS.map(group => <div className="cf-nav-group" key={group}>
             <div className="cf-nav-group-label">{group}</div>
-            {NAV.filter(n => n.group === group).map(n => <a key={n.id} href={"#" + n.id} className="cf-nav-link" aria-current={view === n.id ? "page" : undefined}>
+            {NAV.filter(n => n.group === group && (!n.needsAdmit || admits > 0 || view === n.id)).map(n => <a key={n.id} href={"#" + n.id} className="cf-nav-link" aria-current={view === n.id ? "page" : undefined}>
               <NavIcon name={n.icon} /><span>{n.label}</span>{n.id === "shortlist" && data.colleges.length > 0 && <span className="cf-nav-count">{data.colleges.length}</span>}{n.id === "applications" && portalCount > 0 && <span className="cf-nav-count">{portalCount}</span>}{n.id === "progress" && tracker.apps.length > 0 && <span className="cf-nav-count">{tracker.apps.length}</span>}{n.id === "decisions" && hiddenDecisions > 0 && <span className="cf-nav-count" style={{ background: "var(--coral)", color: "var(--on-primary)" }} aria-label={`${hiddenDecisions} new`}>{hiddenDecisions}</span>}
             </a>)}
             {PAGE_LINKS.filter(n => n.group === group).map(n => <a key={n.href} href={n.href} className="cf-nav-link"><NavIcon name={n.icon} /><span>{n.label}</span></a>)}
@@ -245,6 +246,7 @@ function App() {
           {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTrackerAndList} />}
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspaceAndTracker} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={refresh} />}
+          {view === "board" && <DecisionBoard tracker={tracker} onTrackerChange={setTracker} />}
           {view === "list" && <RankList tracker={tracker} />}
           {view === "official" && <OfficialRankings />}
           {view === "profile" && <Profile data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}

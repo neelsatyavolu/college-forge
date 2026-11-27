@@ -119,6 +119,8 @@ export const testingFieldsSchema = z.object({
 
 export const profileFieldsSchema = z.object({
   intended: text("Intended major").optional(),
+  switchTo: text("Majors you may switch to").optional(),
+  pathNote: text("Why you'd switch", 500).optional(),
   hs: text("High school").optional(),
   gradYear: gradYear.optional(),
   location: text("Location").optional(),

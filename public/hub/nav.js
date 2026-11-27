@@ -7,6 +7,7 @@
     { id: "applications", label: "Portals", group: "Applications", icon: "inbox" },
     { id: "progress", label: "Progress", group: "Applications", icon: "progress" },
     { id: "decisions", label: "Decisions", group: "Applications", icon: "mail" },
+    { id: "board", label: "Decision board", group: "Applications", icon: "columns", needsAdmit: true },
     { id: "list", label: "List", group: "Applications", icon: "list" },
     { id: "essays", label: "Essays", group: "Apply", icon: "edit" },
     { id: "track", label: "Letters & aid", group: "Apply", icon: "folder" },

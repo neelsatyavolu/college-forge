@@ -1144,11 +1144,12 @@ function initialPrefs(data) {
 
 // One AI chat request for the hub build; resolves when the stream ends.
 // onProgress gets short status lines for the UI.
-async function streamBuildChat(prompt, onProgress) {
+async function streamBuildChat(prompt, onProgress, opts) {
   const aiPrefs = loadAiPrefs();
   const body = {
     messages: [{ role: "user", content: prompt }],
   };
+  if (opts && opts.mode) body.mode = opts.mode;
   if (aiPrefs.preferred && aiPrefs.preferred !== "auto") body.provider = aiPrefs.preferred;
   if (aiPrefs.grokModel) body.grokModel = aiPrefs.grokModel;
   if (aiPrefs.codexModel) body.codexModel = aiPrefs.codexModel;
