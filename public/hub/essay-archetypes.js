@@ -210,6 +210,22 @@
     return { title: short, subtitle: name && name !== short ? name : null };
   }
 
+  /**
+   * The essay as the student answers it: when they picked an option of a choose-one prompt and that option
+   * states its own total limit ("(150 word limit)", "250 characters maximum"), that limit applies. A per-line
+   * or per-title limit isn't a total, so the prompt's limit stays.
+   */
+  function withChosenOption(it, choice) {
+    if (!it || !it.options || typeof choice !== "number" || !it.options[choice]) return it;
+    var text = String(it.options[choice]);
+    var m = text.match(/(\d{2,5})[-\s]*(word|character)s?\b(?:\s*(?:limit|max(?:imum)?))?(?!\s*per\b)([^)]*)/i);
+    if (!m || /\bper\b/i.test(m[3] || "") || /\bper\s+(line|title|item|book|answer|entry)\b/i.test(text.slice(m.index))) return it;
+    var limit = Number(m[1]);
+    var unit = /^char/i.test(m[2]) ? "characters" : "words";
+    if (!limit || (limit === it.limit && unit === it.unit)) return it;
+    return Object.assign({}, it, { limit: limit, unit: unit });
+  }
+
   var UC_APPLICATION_SLUG = "uc-application";
 
   /** A University of California campus; they share one UC Application essay group. */
@@ -349,6 +365,7 @@
     pickPatch: pickPatch,
     markSegments: markSegments,
     sidebarLabel: sidebarLabel,
+    withChosenOption: withChosenOption,
     schoolTitle: schoolTitle,
     audienceSet: audienceSet,
     audiencePatch: audiencePatch,

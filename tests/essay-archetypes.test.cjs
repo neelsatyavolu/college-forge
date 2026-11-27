@@ -203,3 +203,21 @@ test('a single program (an honors college) is an opt-in set; chosenAudience read
   assert.equal(chosenAudience(items, { h1: true, h2: true }), '');
   assert.equal(audienceSet([p('a', 'X'), p('b', 'X')]), null, 'every prompt for one program is just that school, not an opt-in');
 });
+
+test('a chosen option with its own limit sets the essay limit; per-line limits and no choice keep the prompt limit', () => {
+  const { withChosenOption } = require('../public/hub/essay-archetypes.js');
+  const it = { id: 'wake-2', label: 'Written supplement', prompt: 'p', limit: 300, unit: 'words', options: [
+    'List five books you’ve read that have intrigued you. (150 character limit per book title)',
+    'Tell us what piques your intellectual curiosity. (150 word limit)',
+    'Choose one of Dr. Angelou’s quotes. (300 word limit)',
+    'Give us your Top Ten List. (100 character limit per line)',
+    'Describe a moment. 250 characters maximum.',
+  ] };
+  assert.deepEqual([withChosenOption(it, 1).limit, withChosenOption(it, 1).unit], [150, 'words']);
+  assert.equal(withChosenOption(it, 2).limit, 300);
+  assert.equal(withChosenOption(it, 0), it, 'a per-title limit is not a total');
+  assert.equal(withChosenOption(it, 3), it);
+  assert.deepEqual([withChosenOption(it, 4).limit, withChosenOption(it, 4).unit], [250, 'characters']);
+  assert.equal(withChosenOption(it, undefined), it);
+  assert.equal(withChosenOption({ ...it, options: undefined }, 1).limit, 300);
+});
