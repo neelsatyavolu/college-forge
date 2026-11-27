@@ -244,7 +244,7 @@ function App() {
           </div>}
           {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTrackerAndList} />}
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspaceAndTracker} />}
-          {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} />}
+          {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={refresh} />}
           {view === "list" && <RankList tracker={tracker} />}
           {view === "official" && <OfficialRankings />}
           {view === "profile" && <Profile data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}

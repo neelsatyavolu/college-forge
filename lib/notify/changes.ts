@@ -4,7 +4,7 @@ import { C, button, callout, escapeHtml, layout } from "./layout";
 /**
  * What an automatic check found that's worth an email. Ported from College Apps (worker/src/notify.ts).
  * Forge keeps a short summary of the last check per school (see send.ts) to compare against. Decisions are
- * never named in an email: the student should find out in the portal itself.
+ * never named in an email or push: the student opens them in Forge, which keeps them covered until then.
  */
 
 /** Why a check failed, as the College Apps portal engine reports it. */
@@ -123,7 +123,7 @@ function longDate(iso: string): string {
 function line(change: Change): string {
   switch (change.kind) {
     case "decision":
-      return `${DECISION_RECEIVED}. Open your portal to see it.`;
+      return `${DECISION_RECEIVED}. Open Forge to see it.`;
     case "status":
       return change.from ? `Status changed from "${change.from}" to "${change.to}".` : `Status: "${change.to}".`;
     case "received":
@@ -145,7 +145,7 @@ function line(change: Change): string {
  * wording, checklist items or dates, which a phone shows to anyone nearby.
  */
 export function pushBody(changes: Change[]): string {
-  if (changes.some((c) => c.kind === "decision")) return `${DECISION_RECEIVED}. Open your portal to see it.`;
+  if (changes.some((c) => c.kind === "decision")) return `${DECISION_RECEIVED}. Open Forge to see it.`;
   if (changes.length && changes.every((c) => c.kind === "problem")) return "We couldn't check this portal. Update the saved login in Forge.";
   if (changes.some((c) => c.kind === "status")) return "Your application status changed.";
   if (changes.some((c) => c.kind === "missing")) return "Something new is listed as missing.";
@@ -161,8 +161,6 @@ export interface Email {
 export interface EmailExtras {
   /** An absolute URL to the school's logo (PNG; most email clients don't show SVG). */
   logo?: string;
-  /** The school's portal, for the button when a decision is up. */
-  portalUrl?: string;
   /** One click turns these emails off. */
   unsubscribeUrl: string;
 }
@@ -180,7 +178,7 @@ function block(change: Change): string {
   const arrow = `<span style="color:${C.muted};padding:0 6px">&rarr;</span>`;
   switch (change.kind) {
     case "decision":
-      return `<tr><td style="padding:0 0 16px">${callout(DECISION_RECEIVED, "Open your portal to see it.", "waiting")}</td></tr>`;
+      return `<tr><td style="padding:0 0 16px">${callout(DECISION_RECEIVED, "Open Forge to see it.", "waiting")}</td></tr>`;
     case "problem":
       return `<tr><td style="padding:0 0 16px">${callout("We couldn't check this portal", line(change), "hold")}</td></tr>`;
     case "status":
@@ -203,6 +201,9 @@ function schoolHeader(school: string, kicker: string, logo?: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px"><tr>${tile}<td style="vertical-align:middle"><div style="font-size:13px;font-weight:600;color:${C.accent};padding-bottom:2px">${escapeHtml(kicker)}</div><div style="font-size:21px;font-weight:700;line-height:1.25;letter-spacing:-0.01em;color:${C.ink}">${escapeHtml(school)}</div></td></tr></table>`;
 }
 
+/** Forge's Decisions page, where a posted decision waits covered until the student opens it. */
+const decisionsUrl = (appUrl: string) => `${appUrl.replace(/\/$/, "")}/hub/index.html#decisions`;
+
 export function composeEmail(school: string, changes: Change[], appUrl: string, extras: EmailExtras): Email {
   const decision = changes.some((c) => c.kind === "decision");
   const problem = changes.every((c) => c.kind === "problem");
@@ -217,10 +218,9 @@ export function composeEmail(school: string, changes: Change[], appUrl: string, 
   const text = `${school}\n\n${lines.map((l) => `- ${l}`).join("\n")}\n\nSee all your schools: ${appUrl}\n\nYou get these emails because automatic checks are on in Forge. Turn them off: ${off}\n\nForge · ${host}`;
 
   const kicker = decision ? "New in your portal" : problem ? "Needs your attention" : "Application update";
-  const cta =
-    decision && extras.portalUrl
-      ? `${button("Open your portal", extras.portalUrl)}<div style="padding-top:14px;font-size:14px"><a href="${escapeHtml(appUrl)}" style="color:${C.accent}">See all your schools</a></div>`
-      : button(problem ? "Update the login" : "See all your schools", appUrl);
+  const cta = decision
+    ? `${button("Open Forge", decisionsUrl(appUrl))}<div style="padding-top:14px;font-size:14px"><a href="${escapeHtml(appUrl)}" style="color:${C.accent}">See all your schools</a></div>`
+    : button(problem ? "Update the login" : "See all your schools", appUrl);
   const body = `${schoolHeader(school, kicker, extras.logo)}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${changes.map(block).join("")}</table><div style="padding-top:24px">${cta}</div>`;
   const html = layout({
     preheader: lines[0] ?? "",
@@ -236,7 +236,6 @@ export interface SchoolNews {
   school: string;
   changes: Change[];
   logo?: string;
-  portalUrl?: string;
 }
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
@@ -259,7 +258,7 @@ function digestSubject(news: SchoolNews[]): string {
 export function composeDigest(news: SchoolNews[], appUrl: string, extras: { unsubscribeUrl: string }): Email {
   if (news.length === 1) {
     const [only] = news as [SchoolNews];
-    return composeEmail(only.school, only.changes, appUrl, { ...extras, ...(only.logo ? { logo: only.logo } : {}), ...(only.portalUrl ? { portalUrl: only.portalUrl } : {}) });
+    return composeEmail(only.school, only.changes, appUrl, { ...extras, ...(only.logo ? { logo: only.logo } : {}) });
   }
   const decided = (n: SchoolNews) => n.changes.some((c) => c.kind === "decision");
   const ordered = [...news].sort((a, b) => Number(decided(b)) - Number(decided(a)));
@@ -271,7 +270,7 @@ export function composeDigest(news: SchoolNews[], appUrl: string, extras: { unsu
   const section = (n: SchoolNews, i: number) => {
     const problem = n.changes.every((c) => c.kind === "problem");
     const kicker = decided(n) ? "New in your portal" : problem ? "Needs your attention" : "Application update";
-    const portal = decided(n) && n.portalUrl ? `<div style="padding-top:4px;font-size:14px"><a href="${escapeHtml(n.portalUrl)}" style="color:${C.accent}">Open your ${escapeHtml(n.school)} portal</a></div>` : "";
+    const portal = decided(n) ? `<div style="padding-top:4px;font-size:14px"><a href="${escapeHtml(decisionsUrl(appUrl))}" style="color:${C.accent}">Open Forge to see it</a></div>` : "";
     const rule = i ? `border-top:1px solid ${C.line};padding-top:28px;margin-top:12px` : "";
     return `<div style="${rule}">${schoolHeader(n.school, kicker, n.logo)}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${n.changes.map(block).join("")}</table>${portal}</div>`;
   };

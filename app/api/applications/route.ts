@@ -16,6 +16,8 @@ import {
   listApps,
   removeApp,
   reveal,
+  getLetter,
+  addLetterAward,
   setAutocheck,
   setEmails,
   setLogin,
@@ -91,6 +93,8 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("update"), id: ref, edit }),
   z.object({ action: z.literal("remove"), id: ref }),
   z.object({ action: z.literal("reveal"), id: ref }),
+  z.object({ action: z.literal("letter"), id: ref, letterId: z.string().regex(/^[a-f0-9]{32}$/).optional() }),
+  z.object({ action: z.literal("award-add"), id: ref, index: z.number().int().min(0).max(9), letterId: z.string().regex(/^[a-f0-9]{32}$/).optional() }),
   z.object({ action: z.literal("login"), id: ref, username: z.string().max(254), password: z.string().max(256) }),
   z.object({ action: z.literal("forget-login"), id: ref }),
   z.object({ action: z.literal("autocheck"), on: z.boolean() }),
@@ -150,6 +154,12 @@ export async function POST(req: NextRequest) {
         return json({ success: true, data: await listApps(ws) });
       case "reveal":
         return json({ success: true, app: await reveal(ws, b.id), data: await listApps(ws) });
+      case "letter":
+        return json({ success: true, letter: await getLetter(ws, b.id, b.letterId) });
+      case "award-add": {
+        const r = await addLetterAward(ws, b.id, b.index, b.letterId);
+        return json({ success: true, scholarship: r.scholarship, scholarships: r.scholarships, data: await listApps(ws) });
+      }
       case "login":
         await setLogin(ws, b.id, { username: b.username, password: b.password });
         return json({ success: true, data: await listApps(ws) });

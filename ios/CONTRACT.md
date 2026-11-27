@@ -300,3 +300,16 @@ Validated on the server by `lib/aid-validate.ts`; derived by `lib/aid-plan.ts`. 
 - `GET /api/parent` rows gain `role` (`"parent"` | `"coach"`); a coach's row has the first name only and no `applications`. `me.parent.coach` is `true` when any followed student made this account their coach.
 - `GET /api/parent/[id]` for a coach returns `{level:"essays", role:"coach", student:{name, cycle}, essays, schools:[{slug, name}], essayDrafts, essayStatus, notes:[{id, body, author, createdAt, essayId, mine}]}` and nothing else (no `progress`, so the current `ParentDashboard` decode fails for coaches until the iOS side handles `level == "essays"`). `POST /api/parent/[id] {action:"note", essayId, body}` / `{action:"delete-note", noteId}` are coach-only.
 - `AdvisorNote.via` can be `"coach"`, with `byLink` (the coach's link id). Show those as "Coach · <author>".
+
+## Decision letters and awards
+
+Portal checks can capture the decision letter. Its body stays sealed on the server (`letters/<ws>/…`, lib/decision-letters.ts) and never appears in the workspace, share links, parent or counselor views, exports, emails, pushes or widgets.
+
+- `DecisionView.result: AppStatus?` (`admitted`, `denied`, `waitlisted`, `deferred`): only when `state == .revealed`; nil when unclear or from an older server. Prefer it over `DecisionLogic.guess`.
+- `TrackedApplication.letter: DecisionLetterMeta?{id, kind: LetterKind (.html .pdf .text), capturedAt (ms), result?, awards: [DecisionAward{name, amount, period}]}`: the revealed decision's letter, nil while hidden or when none was captured. Show the portal link only when it's nil.
+- `TrackedApplication.letterHistory: [DecisionLetterMeta]`: letters of earlier decisions the student opened, newest first.
+- `.letter(id:letterId:)` returns `ApplicationsResponse.letter: DecisionLetter{id, kind, text, html?, pdfBase64?, capturedAt, result?, awards}` (no `data`). Refused until the decision is revealed. Show HTML only with JavaScript off and no base URL (`DecisionLetterView`). Store wrapper: `store.decisionLetter(forApplication:letterId:)`.
+- `.awardAdd(id:index:letterId:)` (action `"award-add"`) adds that award to `scholarships` as `{status: "won", kind: "school", slug?}`; idempotent. Store wrapper: `store.addLetterAward(_:letterId:forApplication:)`.
+- `.reveal(id:)` now also records the outcome as the status while the application is still pending (up to Under review, or deferred or waitlisted), so `status`/`statusLabel` read "Admitted" right after a reveal.
+- Confetti: `CelebrationBurst` is hosted over the whole list by `DecisionsList` and `ApplicationDetailView`; `DecisionPanel` takes a `celebrate: Binding<Int>` and bumps it for an admit (reveal) or a recorded admitted/committed.
+- Widgets read only `decision.state`, `status`/`statusLabel`, `stage` and `decisionDate`; never `result`, `letter` or awards.

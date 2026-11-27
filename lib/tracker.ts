@@ -4,6 +4,7 @@ import { applyTestingEdit, type TestingChoice, type TestingEdit } from "./testin
 import { checkAidOffer, type AidOffer } from "./aid-validate";
 import type { InterestEvent } from "./interest-log";
 import { normalizeSchedule, type CheckSchedule } from "./check-schedule";
+import type { IncomingLetter, LetterAward, LetterKind, LetterResult } from "./decision-letter";
 
 /**
  * The applications tracker, ported from College Apps. Each school the student applies to, where it stands,
@@ -55,6 +56,22 @@ export interface PortalResult {
   round?: string;
   /** What the decision letter behind a posted update says ("Admitted", "Not admitted", ...). Shown only after a reveal. */
   outcome?: string;
+  /** The decision letter itself, only in transit from a check: withResult never stores it (lib/decision-letters.ts does, sealed). */
+  letter?: IncomingLetter;
+}
+
+/** What Forge knows about one captured decision letter. The body is stored sealed outside the workspace. */
+export interface LetterMeta {
+  /** letterKey(decisionKey). */
+  id: string;
+  /** The portalDecisionKey the letter came with, so an old letter never attaches to a newer decision. */
+  decisionKey: string;
+  capturedAt: number;
+  kind: LetterKind;
+  result: LetterResult;
+  awards: LetterAward[];
+  /** The student revealed the decision this letter belongs to. */
+  seen: boolean;
 }
 
 export interface TrackedApp {
@@ -107,6 +124,8 @@ export interface TrackedApp {
    * outside the catalog. Such a host never gets the master login; the student saving the link clears it.
    */
   portalFromEmail?: boolean;
+  /** Decision letters captured by checks, newest last (metadata only). */
+  letters?: LetterMeta[];
   createdAt: number;
   updatedAt: number;
 }
@@ -191,8 +210,9 @@ export function decisionOf(app: TrackedApp): DecisionView {
 
 /** A portal result safe to show before a reveal: no decision words in it. */
 export function shownPortal(app: TrackedApp): PortalResult | undefined {
-  const p = app.portal;
-  if (!p) return undefined;
+  if (!app.portal) return undefined;
+  // A letter body is never shown from here, even one an older import left in the stored result.
+  const p = stripLetter(app.portal);
   if (portalDecisionKey(app) && app.decisionSeen !== portalDecisionKey(app)) {
     const { outcome: _hidden, ...rest } = p;
     return { ...rest, statusText: "", update: DECISION_RECEIVED, checklist: [] };
@@ -259,7 +279,7 @@ export function todayIso(now = new Date()): string {
 
 // ── Applying a portal check ───────────────────────────────────────────────
 
-const ADJUSTABLE: StatusId[] = ["planning", "in_progress", "final_checks", "submitted", "submitted_npy", "complete"];
+export const ADJUSTABLE: StatusId[] = ["planning", "in_progress", "final_checks", "submitted", "submitted_npy", "complete"];
 
 /** Statuses a check may set: never a decision, deferral or waitlist, which are the student's to record. */
 export function suggestedStatus(app: TrackedApp, result: PortalResult): StatusId {
@@ -271,6 +291,11 @@ export function suggestedStatus(app: TrackedApp, result: PortalResult): StatusId
   if (allIn || /complete|review|decided|decision/i.test(result.statusText)) return "complete";
   if (required.length > 0) return "submitted";
   return app.status;
+}
+
+function stripLetter(result: PortalResult): PortalResult {
+  const { letter: _letter, ...rest } = result;
+  return rest;
 }
 
 function followsPortal(mine: string, before: string | undefined, now: string | undefined): boolean {
@@ -289,7 +314,7 @@ export function withResult(app: TrackedApp, result: PortalResult): TrackedApp {
   if (!result.ok) {
     if (result.checkedAt < lastAttempt) return app;
     if (prev?.ok) return { ...app, lastFailure: { at: result.checkedAt, error: result.error }, updatedAt: Math.max(result.checkedAt, app.updatedAt + 1) };
-    return { ...app, portal: result, updatedAt: Math.max(result.checkedAt, app.updatedAt + 1) };
+    return { ...app, portal: stripLetter(result), updatedAt: Math.max(result.checkedAt, app.updatedAt + 1) };
   }
   if (prev && result.checkedAt < prev.checkedAt) return app;
   // A good result older than a later failure still replaces the older snapshot, but the failure stays news.
@@ -298,7 +323,7 @@ export function withResult(app: TrackedApp, result: PortalResult): TrackedApp {
   const rest = keepFailure ? { ...base, lastFailure: app.lastFailure } : base;
   return {
     ...rest,
-    portal: result,
+    portal: stripLetter(result),
     status: suggestedStatus(app, result),
     lastChecked: result.checkedAt,
     decisionDate: followsPortal(app.decisionDate, prev?.decisionDate, result.decisionDate) ? "" : app.decisionDate,
@@ -456,7 +481,24 @@ export function editApp(app: TrackedApp, edit: AppEdit, now = Date.now()): Track
 
 export function revealDecision(app: TrackedApp): TrackedApp {
   const key = portalDecisionKey(app);
-  return key ? { ...app, decisionSeen: key, updatedAt: Date.now() } : app;
+  if (!key) return app;
+  const letters = app.letters?.map((l) => (l.decisionKey === key ? { ...l, seen: true } : l));
+  return { ...app, decisionSeen: key, ...(letters ? { letters } : {}), updatedAt: Date.now() };
+}
+
+/** The letter for the decision the portal shows now, if a check captured one. */
+export const currentLetter = (app: TrackedApp): LetterMeta | undefined => {
+  const key = portalDecisionKey(app);
+  return key ? app.letters?.find((l) => l.decisionKey === key) : undefined;
+};
+
+/**
+ * Adds a captured letter's metadata once per decision (by id, or by decision for ids saved before keyed ids);
+ * at most 10 kept per school (the oldest go first). The caller deletes the bodies of letters this drops.
+ */
+export function withLetter(app: TrackedApp, meta: LetterMeta): TrackedApp {
+  if (app.letters?.some((l) => l.id === meta.id || l.decisionKey === meta.decisionKey)) return app;
+  return { ...app, letters: [...(app.letters ?? []), meta].slice(-10) };
 }
 
 export const replaceApp = (tracker: Tracker, app: TrackedApp): Tracker => ({

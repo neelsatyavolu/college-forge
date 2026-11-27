@@ -357,3 +357,20 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-forward-recent { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; color: var(--body); }
 .cf-forward-help summary { cursor: pointer; font-size: 14px; color: var(--ink); min-height: 32px; display: flex; align-items: center; }
 .cf-forward-help .cf-help { margin: 6px 0 0; }
+
+/* Decision letters and awards */
+.cf-decision__result { margin: 0; max-width: 62ch; font-size: 14px; line-height: 1.6; color: var(--body); }
+.cf-decision__letter { display: grid; gap: 10px; justify-items: start; }
+.cf-decision__history { display: grid; gap: 6px; justify-items: start; }
+.cf-letter { width: 100%; display: grid; gap: 8px; }
+.cf-letter__frame { width: 100%; height: min(70vh, 640px); resize: vertical; border: 1px solid var(--hairline); border-radius: var(--radius-md); background: #fff; }
+.cf-letter__text { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 72ch; padding: 16px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); font: 400 15px/1.7 var(--font-serif); color: var(--body); }
+.cf-awards { display: grid; gap: 8px; }
+.cf-award { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 0; border-top: 1px solid var(--hairline-soft); }
+.cf-award__name { font-weight: 500; color: var(--ink); }
+.cf-award__amount { font: 500 14px/1 var(--font-mono); color: var(--success); }
+@media (max-width: 600px) {
+  /* The outcome pill sits under the school name instead of wrapping into the logo column. */
+  .cf-decision > .cf-outcome { grid-column: 2 / -1; justify-self: start; }
+  .cf-decision > span:empty { display: none; }
+}

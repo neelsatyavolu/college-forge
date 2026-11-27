@@ -3,7 +3,9 @@ import { latestSlot, normalizeSchedule } from "./check-schedule";
 import { readLogins, readMaster, resolveLogin, setMasterFor, type MasterLogin, type PortalLogin } from "./portal-logins";
 import { deleteSetup } from "./portal-setup";
 import { getWorkspace, updateWorkspace } from "./store";
-import { replaceApp, withResult, type PortalResult, type TrackedApp } from "./tracker";
+import { portalDecisionKey, replaceApp, withLetter, withResult, type LetterMeta, type PortalResult, type TrackedApp } from "./tracker";
+import { classifyOutcome, cleanLetter, findAwards, letterKey, type IncomingLetter } from "./decision-letter";
+import { deleteLetter, saveLetter } from "./decision-letters";
 import type { CheckErrorCode, CheckOutcome } from "./notify/changes";
 import { notifyChanges } from "./notify/send";
 
@@ -140,6 +142,7 @@ export async function checkApp(app: TrackedApp, login: PortalLogin | undefined, 
       ...(snap.decisionDate ? { decisionDate: snap.decisionDate } : {}),
       ...(snap.round ? { round: snap.round } : {}),
       ...(snap.outcome ? { outcome: snap.outcome } : {}),
+      ...(snap.letter ? { letter: snap.letter } : {}),
     };
   } catch (err) {
     if (err instanceof CheckFailure) return failed(err.message, err.code);
@@ -171,6 +174,56 @@ export function slotOpen(tracker: { schedule?: unknown; lastSlotAt?: number }, n
 }
 
 /**
+ * Seals and stores each decision letter a check brought back, keyed by the decision it came with, and
+ * returns their metadata by application id. The first letter saved for a decision is kept: a later one never
+ * replaces a letter the student may already have opened. A letter that fails to save is dropped; the check
+ * itself still counts.
+ */
+async function storeLetters(
+  workspaceId: string,
+  apps: TrackedApp[],
+  results: Map<string, PortalResult>,
+  raw: Map<string, IncomingLetter>,
+): Promise<Map<string, LetterMeta>> {
+  const metas = new Map<string, LetterMeta>();
+  for (const [id, incoming] of raw) {
+    const result = results.get(id);
+    if (!result?.ok) continue;
+    const decisionKey = portalDecisionKey({ portal: result } as TrackedApp);
+    const id32 = decisionKey ? letterKey(decisionKey) : "";
+    if (!id32 || apps.find((a) => a.id === id)?.letters?.some((l) => l.id === id32 || l.decisionKey === decisionKey)) continue;
+    const letter = cleanLetter(incoming);
+    if (!letter) continue;
+    const meta: LetterMeta = {
+      id: id32,
+      decisionKey,
+      capturedAt: result.checkedAt,
+      kind: letter.kind,
+      result: classifyOutcome(letter.text),
+      awards: findAwards(letter.text),
+      seen: false,
+    };
+    try {
+      await saveLetter(workspaceId, id, meta.id, { ...letter, capturedAt: result.checkedAt });
+      metas.set(id, meta);
+    } catch (err) {
+      console.error("decision letter save failed", err instanceof Error ? err.name : "unknown");
+    }
+  }
+  return metas;
+}
+
+/** Deletes letter bodies no saved application lists: its school was removed, its result not applied, or it was trimmed. */
+async function deleteUnlisted(workspaceId: string, apps: TrackedApp[], candidates: { appId: string; letterId: string }[]): Promise<void> {
+  for (const { appId, letterId } of candidates) {
+    if (apps.find((a) => a.id === appId)?.letters?.some((l) => l.id === letterId)) continue;
+    await deleteLetter(workspaceId, appId, letterId).catch((err) =>
+      console.error("decision letter delete failed", err instanceof Error ? err.name : "unknown"),
+    );
+  }
+}
+
+/**
  * Checks the given applications (or every one with a saved login, its own or the master) a few at a time,
  * then saves all results in one workspace write. Returns the checked applications as saved.
  *
@@ -197,15 +250,24 @@ export async function runChecks(
   if (!targets.length) return [];
   if (opts.onlyDue && !(await claimSlot(workspaceId, now))) return [];
   const results = new Map<string, PortalResult>();
+  const rawLetters = new Map<string, IncomingLetter>();
   const queue = [...targets];
   const worker = async () => {
-    for (let app = queue.shift(); app; app = queue.shift()) results.set(app.id, await checkApp(app, resolved.get(app.id)?.login));
+    for (let app = queue.shift(); app; app = queue.shift()) {
+      const { letter, ...result } = await checkApp(app, resolved.get(app.id)?.login);
+      results.set(app.id, result);
+      if (letter) rawLetters.set(app.id, letter);
+    }
   };
   await Promise.all(Array.from({ length: Math.min(opts.concurrency ?? 3, queue.length) }, worker));
+  const letters = await storeLetters(workspaceId, targets, results, rawLetters);
   const finished: string[] = [];
+  // Letter bodies this check saved or the 10-letter cap dropped; any the saved workspace doesn't list are deleted.
+  let unlisted: { appId: string; letterId: string }[] = [];
   const saved = await updateWorkspace(workspaceId, (current) => {
     let tracker = current.tracker;
     finished.length = 0;
+    unlisted = [...letters].map(([appId, meta]) => ({ appId, letterId: meta.id }));
     for (const [id, result] of results) {
       const app = tracker.apps.find((a) => a.id === id);
       if (!app) continue;
@@ -216,12 +278,21 @@ export async function runChecks(
         next = rest;
         finished.push(id);
       }
+      const meta = letters.get(id);
+      // Only when this result was the one applied, and its decision is still the one the portal shows.
+      // A letter that arrives after the student already opened its decision counts as seen.
+      if (meta && next.portal?.checkedAt === result.checkedAt && portalDecisionKey(next) === meta.decisionKey) {
+        next = withLetter(next, { ...meta, seen: next.decisionSeen === meta.decisionKey });
+        const kept = new Set(next.letters?.map((l) => l.id));
+        unlisted = [...unlisted, ...(app.letters ?? []).filter((l) => !kept.has(l.id)).map((l) => ({ appId: id, letterId: l.id }))];
+      }
       tracker = replaceApp(tracker, next);
     }
     return { ...current, tracker };
   });
   for (const id of finished) await deleteSetup(workspaceId, id).catch(() => undefined);
   await noteMasterOutcomes(workspaceId, results, resolved, master);
+  await deleteUnlisted(workspaceId, saved.tracker.apps, unlisted);
   const outcomes = new Map<string, { app: TrackedApp; outcome: CheckOutcome; before?: PortalResult }>();
   for (const [id, result] of results) {
     const app = saved.tracker.apps.find((a) => a.id === id);

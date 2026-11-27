@@ -4,13 +4,17 @@ import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
 import { clearMaster, readLogins, readMaster, saveLogins, saveMaster, setMasterFor, type PortalLogin } from "./portal-logins";
 import { catalogUrlsAllowed, loginHost, masterAllowed, trustedSchoolLink } from "./portal-check";
-import { getWorkspace, updateWorkspace, type College, type Workspace } from "./store";
+import { getWorkspace, updateWorkspace, type College, type Scholarship, type Workspace } from "./store";
 import { curatedResearchFor, interestOf, interestSignal, upcomingInterviews, type ResearchLike } from "./interest-log";
 import { isUntouchedApp } from "./list-sync";
 import { deleteSetup, readSetup } from "./portal-setup";
 import { canonicalZone, describeSchedule, isEveryHours, isTimeZone, latestSlot, normalizeSchedule, type CheckSchedule } from "./check-schedule";
 import { recipientOf } from "./notify/send";
+import { classifyOutcome, type LetterAward, type LetterResult } from "./decision-letter";
+import { readLetter } from "./decision-letters";
 import {
+  ADJUSTABLE,
+  currentLetter,
   decisionDateOf,
   decisionOf,
   editApp,
@@ -32,6 +36,8 @@ import {
   resolveFlag,
   todayIso,
   type AppEdit,
+  type LetterMeta,
+  type StatusId,
   type TrackedApp,
   type Tracker,
 } from "./tracker";
@@ -46,11 +52,31 @@ export class TrackerError extends Error {}
 
 const NO_SCORES: StudentScores = { sat: null, act: null, hasAps: false };
 
+/** The outcome of a revealed decision: the letter's when one was captured, else what the portal's words name. */
+function resultOf(app: TrackedApp, portalText: string): LetterResult {
+  return currentLetter(app)?.result || classifyOutcome(portalText);
+}
+
+/**
+ * Letter metadata the student may see: the current letter once its decision is revealed, and earlier letters
+ * whose decisions were revealed. Never a letter for a decision still covered.
+ */
+function lettersShown(app: TrackedApp, revealed: boolean) {
+  const current = revealed ? currentLetter(app) : undefined;
+  const meta = (l: LetterMeta) => ({ id: l.id, kind: l.kind, capturedAt: l.capturedAt, result: l.result, awards: l.awards });
+  return {
+    letter: current ? meta(current) : null,
+    letterHistory: (app.letters ?? []).filter((l) => l.seen && l.id !== current?.id).map(meta).reverse(),
+  };
+}
+
 /** What clients see for one application: derived dates, the decision state, and never a password. */
 export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScores = NO_SCORES, research?: ResearchLike | null) {
   const info = statusInfo(app.status);
   const testingPlan = testingPlanFor(app, scores);
-  const decision = decisionOf(app);
+  const base = decisionOf(app);
+  // `result` is present only once the student revealed the decision.
+  const decision = base.state === "revealed" ? { ...base, result: resultOf(app, base.portalText) } : base;
   const portal = shownPortal(app);
   return {
     id: app.id,
@@ -93,6 +119,7 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
     login: app.login ?? null,
     aidOffer: app.aidOffer ?? null,
     setupWaiting: !!app.setupWaiting,
+    ...lettersShown(app, base.state === "revealed"),
     lastChecked: app.lastChecked,
     updatedAt: app.updatedAt,
   };
@@ -129,7 +156,7 @@ export function shareTracker(tracker: Tracker, today = todayIso()) {
     apps: v.apps.map((a) => ({
       id: a.id, name: a.name, logo: a.logo, status: a.status, statusLabel: a.statusLabel, stage: a.stage,
       round: a.round, deadline: a.deadline, submittedAt: a.submittedAt, decisionDate: a.decisionDate, nextDate: a.nextDate,
-      decision: a.decision.state === "hidden" ? { state: "hidden" as const, portalText: "" } : a.decision,
+      decision: a.decision.state === "hidden" ? { state: "hidden" as const, portalText: "" } : { state: a.decision.state, portalText: a.decision.portalText },
       decisionNote: a.decision.state === "hidden" ? "" : a.decisionNote,
       portal: a.portal && a.portal.ok ? { checkedAt: a.portal.checkedAt, statusText: a.portal.statusText, update: a.portal.update } : null,
       missing: a.missing, followUps: a.followUps.map(({ id, text, due }) => ({ id, text, due })),
@@ -252,19 +279,76 @@ export async function removeApp(workspaceId: string, ref: string): Promise<{ rem
     removed = mustFind(tracker, ref);
     return { ...tracker, apps: tracker.apps.filter((a) => a.id !== removed!.id) };
   });
-  // The store's write (lib/app-cleanup.ts) already removed its login, master use and set-up details.
+  // The store's write (lib/app-cleanup.ts) already removed its login, master use, set-up details and decision letters.
   await syncAutocheckIndex(workspaceId, ws.tracker);
   return { removed: removed!.name };
 }
 
+/**
+ * Opens a posted decision. Its outcome is recorded as the status at the same time while the application is
+ * still pending (up to Under review, or deferred or waitlisted), never over admitted, committed, denied or withdrawn.
+ */
 export async function reveal(workspaceId: string, ref: string): Promise<AppView> {
   let id = "";
   const ws = await mutate(workspaceId, (tracker) => {
     const app = mustFind(tracker, ref);
     id = app.id;
-    return replaceApp(tracker, revealDecision(app));
+    // Only the first opening records anything, so a repeated reveal can't undo the student's correction.
+    if (decisionOf(app).state !== "hidden") return tracker;
+    const opened = revealDecision(app);
+    const result = resultOf(opened, decisionOf(opened).portalText);
+    const open = ADJUSTABLE.includes(app.status) || app.status === "deferred" || app.status === "waitlisted";
+    return replaceApp(tracker, result && open ? editApp(opened, { status: result as StatusId }) : opened);
   });
   return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
+}
+
+/** A letter's body, only for a decision the student revealed. `letterId` picks an earlier letter. */
+export async function getLetter(workspaceId: string, ref: string, letterId?: string) {
+  const app = mustFind((await getWorkspace(workspaceId)).tracker, ref);
+  const revealed = decisionOf(app).state === "revealed";
+  const meta = letterId ? app.letters?.find((l) => l.id === letterId) : revealed ? currentLetter(app) : undefined;
+  const allowed = !!meta && (meta.seen || (revealed && meta.decisionKey === app.decisionSeen));
+  const letter = allowed ? await readLetter(workspaceId, app.id, meta!.id) : null;
+  if (!meta || !letter) throw new TrackerError("No saved letter for that decision. Open the portal to read it.");
+  return {
+    id: meta.id,
+    kind: letter.kind,
+    text: letter.text,
+    ...(letter.html ? { html: letter.html } : {}),
+    ...(letter.pdfBase64 ? { pdfBase64: letter.pdfBase64 } : {}),
+    capturedAt: letter.capturedAt,
+    result: meta.result,
+    awards: meta.awards,
+  };
+}
+
+/**
+ * Adds one award from a revealed letter to the scholarships list as won, as a school award. The id is
+ * fixed per award, so adding it twice changes nothing.
+ */
+export async function addLetterAward(workspaceId: string, ref: string, index: number, letterId?: string) {
+  let added: Scholarship | undefined;
+  const ws = await updateWorkspace(workspaceId, (current) => {
+    const app = mustFind(current.tracker, ref);
+    const shown = lettersShown(app, decisionOf(app).state === "revealed");
+    const letter = letterId ? [shown.letter, ...shown.letterHistory].find((l) => l?.id === letterId) : shown.letter;
+    const award: LetterAward | undefined = letter?.awards[index];
+    if (!letter || !award) throw new TrackerError("That award isn't in a letter you've opened.");
+    const id = `letter-${app.id}-${letter.id}-${index}`.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 120);
+    added = current.scholarships.find((s) => s.id === id) ?? {
+      id,
+      name: award.name,
+      ...(award.amount ? { amount: [award.amount, award.period].filter(Boolean).join(" ") } : {}),
+      status: "won",
+      notes: `From ${app.name}'s decision letter`,
+      ...(app.slug ? { slug: app.slug } : {}),
+      kind: "school",
+    };
+    if (current.scholarships.some((s) => s.id === id)) return current;
+    return { ...current, scholarships: [...current.scholarships, added] };
+  });
+  return { scholarship: added!, scholarships: ws.scholarships };
 }
 
 /** Saves (or with null, forgets) one school's portal login. Only the username is ever shown back. */
