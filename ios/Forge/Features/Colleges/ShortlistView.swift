@@ -5,6 +5,7 @@ struct ShortlistView: View {
     @Binding var segment: CollegesSegment
 
     @Environment(WorkspaceStore.self) private var store
+    @Environment(CollegesChancesModel.self) private var chances
     @State private var filter: CollegesTierFilter = .all
     @State private var pendingRemoval: College?
     @State private var error: APIError?
@@ -42,6 +43,9 @@ struct ShortlistView: View {
             Text("Saved essay drafts will remain.")
         }
         .errorAlert($error)
+        .task(id: "\(store.workspace.draftStorageKey)/\(store.workspace.revision)") {
+            if !colleges.isEmpty { await chances.loadMetadata(store: store) }
+        }
     }
 
     private var list: some View {
@@ -57,6 +61,7 @@ struct ShortlistView: View {
             } footer: {
                 Text(disclaimer)
             }
+            ShortlistBalanceSection()
             ShortlistChancesSection()
             ForEach(sections) { section in
                 Section {
