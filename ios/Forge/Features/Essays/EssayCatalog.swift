@@ -20,6 +20,7 @@ struct EssayGroup: Hashable, Sendable, Identifiable {
     var subtitle: String?
     var kind: Kind
     var essays: [Essay]
+    var due: EssayDeadline?
 
     var id: String { key }
     /// True for a school on the list that has no prompts yet.
@@ -33,23 +34,26 @@ enum EssayCatalog {
     static let commonKey = "common"
     static let ucKey = "uc-application"
 
-    static func groups(colleges: [College], essays: EssaySet) -> [EssayGroup] {
-        var groups = [EssayGroup(key: commonKey, title: "Common App", subtitle: "Personal statement: pick one",
+    static func groups(colleges: [College], essays: EssaySet, today: String = ForgeDates.today()) -> [EssayGroup] {
+        var groups = [EssayGroup(key: commonKey, title: "Common App", subtitle: "Personal statement — pick one",
                                  kind: .common, essays: essays.commonApp)]
         let supplements = essays.supplements
         let ucs = colleges.filter(isUCCampus)
         let others = colleges.filter { !isUCCampus($0) }
+        groups[0].due = EssayDeadline.next(for: others, today: today)
         let listed = Set(colleges.map(\.slug).filter { !$0.isEmpty })
 
         if !ucs.isEmpty {
             groups.append(EssayGroup(key: ucKey, title: "UC Application",
                                      subtitle: ucs.map(displayName).joined(separator: " · "),
-                                     kind: .uc, essays: supplements[ucKey] ?? []))
+                                     kind: .uc, essays: supplements[ucKey] ?? [],
+                                     due: EssayDeadline.next(for: ucs, today: today)))
         }
         for college in others where !college.slug.isEmpty {
             let subtitle = (!college.name.isEmpty && !college.short.isEmpty && college.name != college.short) ? college.name : nil
             groups.append(EssayGroup(key: college.slug, title: displayName(college), subtitle: subtitle,
-                                     kind: .school, essays: supplements[college.slug] ?? []))
+                                     kind: .school, essays: supplements[college.slug] ?? [],
+                                     due: EssayDeadline.next(for: [college], today: today)))
         }
         for slug in supplements.keys.sorted() {
             let items = supplements[slug] ?? []
@@ -65,7 +69,12 @@ enum EssayCatalog {
             groups.append(EssayGroup(key: slug, title: slug.replacingOccurrences(of: "-", with: " "),
                                      subtitle: "Removed from list", kind: .orphan, essays: items))
         }
-        return groups
+        // Stable sort preserves shortlist order for equal or unknown deadlines.
+        return groups.sorted { lhs, rhs in
+            if lhs.kind == .common || rhs.kind == .common { return lhs.kind == .common && rhs.kind != .common }
+            if lhs.kind == .orphan || rhs.kind == .orphan { return rhs.kind == .orphan && lhs.kind != .orphan }
+            return (lhs.due?.date ?? "~") < (rhs.due?.date ?? "~")
+        }
     }
 
     static func items(in groups: [EssayGroup]) -> [EssayItem] {

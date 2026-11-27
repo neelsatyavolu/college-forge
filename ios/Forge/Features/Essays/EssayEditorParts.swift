@@ -165,3 +165,33 @@ struct EssayAdvisorNotesSheet: View {
         }
     }
 }
+
+struct EssaySuggestionPanel: View {
+    let text: String
+    let essay: Essay
+    let replace: () -> Void
+    let dismiss: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+            Text("Copilot suggestion · \(EssayMetrics.count(text, for: essay)) \(essay.unit)")
+                .font(.subheadline.weight(.semibold))
+            Text(text)
+                .font(.subheadline)
+                .foregroundStyle(Theme.body)
+                .textSelection(.enabled)
+            ViewThatFits(in: .horizontal) {
+                HStack { buttons }
+                VStack(alignment: .leading) { buttons }
+            }
+        }
+        .padding(Theme.Spacing.sm)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.medium))
+    }
+
+    @ViewBuilder private var buttons: some View {
+        Button("Replace my draft", action: replace).buttonStyle(.borderedProminent)
+        Button("Dismiss", action: dismiss).buttonStyle(.bordered)
+    }
+}

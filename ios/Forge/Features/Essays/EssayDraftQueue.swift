@@ -23,6 +23,7 @@ final class EssayDraftQueue {
 
     @ObservationIgnored private let journal: EssayDraftJournal?
     @ObservationIgnored private let debounce: Duration
+    @ObservationIgnored private var flushWaiters: [CheckedContinuation<Void, Never>] = []
     @ObservationIgnored private var debounceTask: Task<Void, Never>?
     @ObservationIgnored var save: (([String: String]) async throws -> Void)?
     @ObservationIgnored var isCurrent: () -> Bool = { true }
@@ -69,24 +70,32 @@ final class EssayDraftQueue {
         }
     }
 
-    /// Sends everything pending now. Safe to call any time; does nothing while a save is running.
+    /// Joins an in-flight save so actions that read the draft on the hub can wait for it.
     func flush() async {
         debounceTask?.cancel()
         debounceTask = nil
-        guard let save, isCurrent(), !isSaving, !pending.isEmpty else { return }
-        let sent = pending
+        if isSaving {
+            await withCheckedContinuation { flushWaiters.append($0) }
+            return
+        }
+        guard let save, isCurrent(), !pending.isEmpty else { return }
         isSaving = true
+        defer {
+            isSaving = false
+            for waiter in flushWaiters { waiter.resume() }
+            flushWaiters.removeAll()
+        }
         errorMessage = nil
         do {
-            try await save(sent)
-            for (id, text) in sent where pending[id] == text {
-                pending[id] = nil
+            while isCurrent(), !pending.isEmpty {
+                let sent = pending
+                try await save(sent)
+                for (id, text) in sent where pending[id] == text {
+                    pending[id] = nil
+                }
+                writeJournal()
             }
-            writeJournal()
-            isSaving = false
-            if !pending.isEmpty { await flush() }
         } catch {
-            isSaving = false
             let apiError = APIError.wrap(error)
             // A cancelled request isn't a failure; the text stays pending for the next flush.
             if apiError != .cancelled { errorMessage = apiError.message }

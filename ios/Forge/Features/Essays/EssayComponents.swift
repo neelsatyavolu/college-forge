@@ -43,14 +43,24 @@ struct EssayRow: View {
     let essay: Essay
     let count: Int
 
+    var group: String?
+    var isFinal = false
+
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Theme.Spacing.sm) {
-            Circle()
-                .fill(EssayLengthTone.dot(count: count, essay: essay))
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
+            if isFinal {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(Theme.ink)
+                    .accessibilityLabel("Marked final")
+            } else {
+                Circle()
+                    .fill(EssayLengthTone.dot(count: count, essay: essay))
+                    .frame(width: 8, height: 8)
+                    .accessibilityHidden(true)
+            }
             VStack(alignment: .leading, spacing: 6) {
-                Text(essay.label)
+                Text(group.map { "\($0) · \(essay.label)" } ?? essay.label)
                     .font(.body)
                     .foregroundStyle(Theme.ink)
                     .lineLimit(3)
@@ -74,6 +84,7 @@ struct EssayGroupHeader: View {
     let group: EssayGroup
     let started: Int
     let isExpanded: Bool
+    let unfinished: Bool
     let toggle: () -> Void
 
     var body: some View {
@@ -91,6 +102,16 @@ struct EssayGroupHeader: View {
                             .lineLimit(2)
                             .textCase(nil)
                     }
+                    if let due = group.due {
+                        Text("Due \(due.shortDate) · \(due.round)\(group.kind == .school ? "" : " · " + due.school)")
+                            .font(.caption)
+                            .foregroundStyle(Theme.body)
+                            .textCase(nil)
+                        if unfinished, let days = ForgeDates.daysUntil(due.date), days < 14 {
+                            Badge(text: days == 0 ? "due today" : "\(days)d left", tone: Theme.danger)
+                                .textCase(nil)
+                        }
+                    }
                 }
                 Spacer(minLength: Theme.Spacing.xs)
                 Text(group.essays.isEmpty ? "0" : "\(started)/\(group.essays.count)")
@@ -105,6 +126,7 @@ struct EssayGroupHeader: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(group.title), \(started) of \(group.essays.count) started")
+        .accessibilityValue(group.due.map { "Due \($0.shortDate), \($0.round), \($0.school)" } ?? "")
         .accessibilityHint(isExpanded ? "Collapses the section" : "Expands the section")
     }
 }
