@@ -43,6 +43,14 @@ window.cfApi = {
     return j.data;
   },
 
+  /** A list school's personalized numbers for its detail page: major fit, academic fit, logo (lib/school-detail.ts). */
+  async schoolInsights(slug) {
+    const res = await fetch("/api/workspace/school?slug=" + encodeURIComponent(slug), { credentials: "same-origin", cache: "no-store" });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || j.success === false) throw new Error((j && j.error) || "Couldn't load your fit for this school.");
+    return j.data;
+  },
+
   async deleteScattergrams() {
     const res = await fetch("/api/workspace/scattergrams", { method: "DELETE", credentials: "same-origin" });
     if (!res.ok) throw new Error("Delete failed");

@@ -258,11 +258,7 @@ function ChancesPanel({ data, onWorkspaceChange, compact }) {
   );
 }
 
-const RESEARCH_GROUPS = [
-  ["Admissions", [["admit_rate", "Admit rate"], ["ed_admit_rate", "Early admit rate"], ["sat_mid50", "SAT middle 50%"], ["act_mid50", "ACT middle 50%"], ["gpa_note", "GPA"], ["test_policy", "Testing"]]],
-  ["Cost and aid", [["sticker_cost", "Cost of attendance"], ["meets_full_need", "Need-based aid"], ["css_profile", "CSS Profile"], ["merit_aid", "Merit aid"], ["net_price_lt30k", "Net price, under $30k income"], ["net_price_30_48k", "Net price, $30–48k"], ["net_price_48_75k", "Net price, $48–75k"], ["net_price_75_110k", "Net price, $75–110k"], ["net_price_gt110k", "Net price, over $110k"]]],
-  ["Applying", [["ed_ea_options", "Early rounds"], ["interview", "Interview"], ["demonstrated_interest", "Demonstrated interest"], ["major_notes", "Your major"], ["notes", "Notes"]]],
-];
+const RESEARCH_GROUPS = window.cfSchoolDetail.RESEARCH_GROUPS;
 
 /** Sourced facts from setup research, grouped, each linked to the page it came from. */
 function ResearchFacts({ research }) {
@@ -300,14 +296,26 @@ function ResearchFacts({ research }) {
   );
 }
 
+// A click on the card's empty area opens the school, like its name; its controls keep their own clicks.
+const CARD_CONTROLS = "a, button, select, input, textarea, label, summary, details, [role='button'], [data-card-stay]";
+function openFromCard(e, slug) {
+  if (e.defaultPrevented || e.button !== 0 || (e.target.closest && e.target.closest(CARD_CONTROLS))) return;
+  const picked = window.getSelection && String(window.getSelection());
+  if (picked) return;
+  window.location.hash = window.cfSchoolDetail.hashFor(slug).slice(1);
+}
+
 function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemove, busy, error }) {
   const [confirmRemove, setConfirmRemove] = React.useState(false);
+  const round = window.cfSchoolDetail.chosenRound(s);
   return (
-    <div id={"school-" + s.slug} style={{ display: "block", background: s.priority ? "color-mix(in srgb, var(--coral) 5%, transparent)" : "transparent", borderBottom: last ? "none" : "1px solid var(--hairline)" }}>
+    <div id={"school-" + s.slug} className="cf-short-card" onClick={(e) => openFromCard(e, s.slug)} style={{ display: "block", background: s.priority ? "color-mix(in srgb, var(--coral) 5%, transparent)" : "transparent", borderBottom: last ? "none" : "1px solid var(--hairline)" }}>
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16, alignItems: "center", padding: "16px 20px" }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-            <h3 className="cf-display" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "var(--ink)" }}>{s.name || s.short}</h3>
+            <h3 className="cf-display" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "var(--ink)" }}>
+              <a className="cf-short-card__name" href={window.cfSchoolDetail.hashFor(s.slug)}>{s.name || s.short}</a>
+            </h3>
             {s.priority ? <Badge variant="coral" uppercase>Priority</Badge> : null}
             {isUcCampus(s) ? <Badge variant="teal" uppercase>UC Application</Badge> : null}
           </div>
@@ -317,9 +325,6 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <SuppPill load={s.supplementsNeeded === "no" ? "No supps" : s.supp} />
-            {s.deadline ? (
-              <span style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)" }}>{s.deadline}</span>
-            ) : null}
             {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Overall admission rate: {s.admit}</span> : null}
             {s.netPriceForYou ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Your likely cost: {s.netPriceForYou}</span> : null}
           </div>
@@ -339,9 +344,10 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
             {tracked
               ? <a href="#progress" style={{ fontSize: 12, color: "var(--workspace-accent)" }}>Applying · {tracked.statusLabel} →</a>
               : <Button variant="secondary" size="sm" disabled={busy} onClick={() => onTrack(s)}>Track application</Button>}
+            <span className="cf-short-round cf-nums" data-chosen={round ? "true" : "false"}>{window.cfSchoolDetail.roundText(s)}</span>
             {!confirmRemove ? <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirmRemove(true)}>Remove school</Button> : null}
           </div>
-          {confirmRemove ? <div style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-sm)" }}>
+          {confirmRemove ? <div data-card-stay="" style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-sm)" }}>
             <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--body)" }}>
               Remove {s.name || s.short} from your list?{" "}
               {!tracked ? "" : tracked.untouched
@@ -437,11 +443,27 @@ function ListBalance({ ambition, warnings, gaps, busy, error, onShift, onRebalan
   );
 }
 
-function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange }) {
+function Shortlist({ data, tracker, detailSlug, onTrackerChange, onAsk, onWorkspaceChange }) {
   const [filter, setFilter] = React.useState("all");
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [notice, setNotice] = React.useState("");
+  // Back from a school's page returns to where the list was scrolled.
+  const listScroll = React.useRef(0);
+  const lastOpened = React.useRef(null);
+  React.useEffect(() => {
+    if (detailSlug) { lastOpened.current = detailSlug; return undefined; }
+    window.scrollTo(0, listScroll.current);
+    if (lastOpened.current) {
+      const link = document.querySelector(`a[href="${CSS.escape(window.cfSchoolDetail.hashFor(lastOpened.current))}"]`);
+      if (link) link.focus({ preventScroll: true });
+      lastOpened.current = null;
+    }
+    const remember = () => { listScroll.current = window.scrollY; };
+    window.addEventListener("scroll", remember, { passive: true });
+    return () => window.removeEventListener("scroll", remember);
+  }, [detailSlug]);
+  React.useEffect(() => { setNotice(""); setError(null); }, [detailSlug]);
   const trackedApps = (tracker && tracker.apps) || [];
   const trackedFor = (c) => trackedApps.find((a) => a.slug === c.slug) || trackedApps.find((a) => a.name.toLowerCase() === String(c.name || "").toLowerCase());
   const byTier = {
@@ -534,6 +556,21 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
     if (!response.ok || !result.success || !result.data) throw new Error(result.error || "Could not remove this school. Please try again.");
     return result.data;
   }, "School removed from your list.");
+
+  if (detailSlug) {
+    const open = data.colleges.find((c) => c.slug === detailSlug);
+    if (!open) {
+      return (
+        <div className="cf-page cf-sd">
+          <a className="cf-sd-back" href="#shortlist">← Your shortlist</a>
+          <div className="cf-empty">That school isn’t on your list. It may have been removed or renamed.</div>
+        </div>
+      );
+    }
+    const openOdds = (data.admissionOdds || {})[open.slug];
+    return <window.SchoolDetail college={open} data={data} tracked={trackedFor(open)} odds={openOdds} oddsStale={isStaleOdds(openOdds, fingerprint)}
+      onTrack={onTrack} busy={busy} notice={error && error.slug === open.slug ? error.message : notice} />;
+  }
 
   return (
     <div className="cf-page">

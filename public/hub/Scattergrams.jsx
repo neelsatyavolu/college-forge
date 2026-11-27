@@ -328,3 +328,5 @@ function Scattergrams({ data }) {
   );
 }
 window.Scattergrams = Scattergrams;
+// A school's detail page (SchoolDetail.jsx) draws its scattergram with the same chart.
+window.cfScatter = { CollegeScatter, studentMarker };

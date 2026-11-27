@@ -616,12 +616,13 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
   const [promptForm, setPromptForm] = React.useState(null);
   const [promptSaving, setPromptSaving] = React.useState(false);
   const [promptError, setPromptError] = React.useState("");
-  // "#essays/<essay id>" (the Timeline's links) opens that essay.
-  const [linkedId] = React.useState(() => {
+  // "#essays/<essay id>" (links from the Timeline and a school's page) opens that essay.
+  const linkedId = React.useMemo(() => {
     const [view, id] = window.location.hash.slice(1).split("/");
-    const wanted = view === "essays" && id ? decodeURIComponent(id) : "";
-    return allItems.some((it) => it.id === wanted) ? wanted : null;
-  });
+    let decoded = null;
+    try { decoded = view === "essays" && id ? decodeURIComponent(id) : null; } catch (e) { decoded = null; }
+    return decoded && allItems.some((it) => it.id === decoded) ? decoded : null;
+  }, []);
   const [activeId, setActiveId] = React.useState(() => {
     if (linkedId) return linkedId;
     const first = ESSAY_PLAN.visibleItems(allItems, { hidden: data.essayHidden || {}, commonAppPrompt: data.commonAppPrompt || "" })[0] || allItems[0];
