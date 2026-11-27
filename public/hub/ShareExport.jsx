@@ -33,11 +33,17 @@ const FOLLOWER_COPY = {
     title: "Counselors", one: "counselor", label: "Counselor’s email", placeholder: "counselor@school.org", level: "full",
     intro: "Invite your college counselor by email. They create a Forge account with that same email, then see your applications at the level you choose and can leave you notes, in general or on an essay. Notes show below and next to the essay. They can’t change anything, see portal logins, or see a decision before you open it.",
   },
+  // A writing coach sees essays and drafts only and can comment on each essay: no level to pick.
+  coach: {
+    title: "Writing coach", one: "coach", label: "Coach’s email", placeholder: "coach@example.com", level: null,
+    intro: "Invite an essay coach or tutor by email. They create a Forge account with that same email. They see your essays and drafts only, including the school each supplement is for, and can leave comments on each essay, which show up next to it here. They can’t edit your drafts or see your applications, profile or decisions. Remove them at any time.",
+  },
 };
 
-/** Invite parents or counselors to their own dashboard and choose how much each one sees (app/api/parents). */
+/** Invite parents, counselors or writing coaches to their own dashboard and choose how much each one sees (app/api/parents). */
 function FollowersPanel({ role }) {
   const copy = FOLLOWER_COPY[role];
+  const leveled = copy.level !== null;
   const [links, setLinks] = React.useState(null);
   const parents = links && links.filter((p) => (p.role || "parent") === role);
   const [email, setEmail] = React.useState("");
@@ -64,7 +70,7 @@ function FollowersPanel({ role }) {
   const invite = (event) => {
     event.preventDefault();
     if (!email.trim()) return;
-    act({ action: "invite", email: email.trim(), level, role }, async (j) => {
+    act({ action: "invite", email: email.trim(), ...(leveled ? { level } : {}), role }, async (j) => {
       let copied = false;
       try { await navigator.clipboard.writeText(j.url); copied = true; } catch (e) {}
       setSent({ url: j.url, email: email.trim(), emailed: j.emailed, copied });
@@ -81,14 +87,14 @@ function FollowersPanel({ role }) {
         <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink)", flex: "1 1 240px" }}>{copy.label}
           <input type="email" required maxLength={254} autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={copy.placeholder} style={fieldStyle} />
         </label>
-        <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink)", flex: "0 1 160px" }}>They see
+        {leveled ? <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink)", flex: "0 1 160px" }}>They see
           <select value={level} onChange={(e) => setLevel(e.target.value)} style={fieldStyle}>
             {PARENT_LEVELS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
           </select>
-        </label>
+        </label> : null}
         <Button size="sm" type="submit" disabled={busy || !email.trim()} style={{ height: 40 }}>{busy ? "Sending…" : "Send invite"}</Button>
       </form>
-      <p style={{ margin: "8px 0 0", fontSize: 12, color: "var(--muted)" }}>{PARENT_LEVELS.find(([v]) => v === level)[2]}</p>
+      {leveled ? <p style={{ margin: "8px 0 0", fontSize: 12, color: "var(--muted)" }}>{PARENT_LEVELS.find(([v]) => v === level)[2]}</p> : null}
       {err ? <p role="alert" style={{ margin: "12px 0 0", fontSize: 13, color: "var(--error)" }}>{err}</p> : null}
       {sent ? (
         <div role="status" style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-md)", fontSize: 13, color: "var(--ink)" }}>
@@ -109,10 +115,10 @@ function FollowersPanel({ role }) {
                 </div>
               </div>
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <select aria-label={`What ${p.email} sees`} value={p.level} disabled={busy} onChange={(e) => act({ action: "set-level", id: p.id, level: e.target.value })} style={{ ...fieldStyle, padding: "6px 8px", fontSize: 13 }}>
+                {leveled ? <select aria-label={`What ${p.email} sees`} value={p.level} disabled={busy} onChange={(e) => act({ action: "set-level", id: p.id, level: e.target.value })} style={{ ...fieldStyle, padding: "6px 8px", fontSize: 13 }}>
                   {PARENT_LEVELS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                </select>
-                {p.status === "invited" ? <Button size="sm" variant="secondary" disabled={busy} onClick={() => act({ action: "invite", email: p.email, level: p.level, role }, async (j) => setSent({ url: j.url, email: p.email, emailed: j.emailed, copied: false }))}>Resend</Button> : null}
+                </select> : null}
+                {p.status === "invited" ? <Button size="sm" variant="secondary" disabled={busy} onClick={() => act({ action: "invite", email: p.email, ...(leveled ? { level: p.level } : {}), role }, async (j) => setSent({ url: j.url, email: p.email, emailed: j.emailed, copied: false }))}>Resend</Button> : null}
                 <Button size="sm" variant="secondary" disabled={busy} onClick={() => { if (window.confirm(p.status === "active" ? `Remove this ${copy.one}? They lose access right away.` : "Cancel this invite?")) act({ action: "remove", id: p.id }); }}>{p.status === "active" ? "Remove" : "Cancel"}</Button>
               </div>
             </li>
@@ -278,6 +284,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
 
       <FollowersPanel role="parent" />
       <FollowersPanel role="counselor" />
+      <FollowersPanel role="coach" />
 
       <Panel title="Advisor share links">
         <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
@@ -337,7 +344,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
                   <strong style={{ color: "var(--ink)" }}>{n.author}</strong>
                   {" · "}
                   {new Date(n.createdAt).toLocaleString()}
-                  {n.via === "counselor" ? " · Counselor" : ""}
+                  {n.via === "counselor" ? " · Counselor" : n.via === "coach" ? " · Writing coach" : ""}
                   {n.essayId ? ` · essay ${n.essayId}` : ""}
                 </div>
                 <p style={{ margin: 0, fontSize: 14, color: "var(--body)", lineHeight: 1.5 }}>{n.body}</p>

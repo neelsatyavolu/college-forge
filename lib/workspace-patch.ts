@@ -84,7 +84,7 @@ export type WorkspacePatch = {
   removeRecommendationId?: string;
   scholarship?: Partial<Scholarship> & { name?: string };
   removeScholarshipId?: string;
-  advisorNote?: { body: string; author?: string; essayId?: string; via?: "progress" | "full" | "counselor"; byLink?: string; authorLevel?: ParentLevel };
+  advisorNote?: { body: string; author?: string; essayId?: string; via?: "progress" | "full" | "counselor" | "coach"; byLink?: string; authorLevel?: ParentLevel };
   removeAdvisorNoteId?: string;
   /** Patch a single college by slug */
   collegePatch?: { slug: string } & Partial<Workspace["colleges"][number]>;

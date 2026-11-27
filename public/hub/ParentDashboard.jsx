@@ -82,6 +82,8 @@ function sortStudents(list, by) {
 }
 
 /** Every student at a glance: what's late, what's due in the next two weeks, open flags, then the rest. */
+const ROLE_LABEL = { parent: "Parent", counselor: "Counselor", coach: "Writing coach" };
+
 function Roster({ students, onOpen }) {
   const [query, setQuery] = React.useState("");
   const [sort, setSort] = React.useState("attention");
@@ -130,9 +132,9 @@ function Roster({ students, onOpen }) {
               return (
                 <li key={s.id}>
                   <button type="button" onClick={() => onOpen(s.id)}>
-                    <span className="cf-roster-name"><strong>{s.name}</strong><small>{[s.cycle, s.role === "counselor" ? "Counselor" : "Parent", s.levelLabel].filter(Boolean).join(" · ")}</small></span>
+                    <span className="cf-roster-name"><strong>{s.name}</strong><small>{[s.cycle, ROLE_LABEL[s.role] || "Parent", s.levelLabel].filter(Boolean).join(" · ")}</small></span>
                     <span className="cf-roster-next">{m.next ? <React.Fragment><span className="cf-nums">{inDays(next)}</span><small>{m.next.title}</small></React.Fragment> : <small>No upcoming dates</small>}</span>
-                    <span className="cf-roster-counts cf-nums">{m.submitted}/{m.applications} sent{m.decisions ? ` · ${m.decisions} decided` : ""}</span>
+                    <span className="cf-roster-counts cf-nums">{s.role === "coach" ? "Essays" : `${m.submitted}/${m.applications} sent${m.decisions ? ` · ${m.decisions} decided` : ""}`}</span>
                     <span className="cf-roster-tags">
                       {m.overdue ? <Badge variant="coral">{m.overdue} late</Badge> : null}
                       {m.dueSoon ? <Badge variant="cream">{m.dueSoon} due soon</Badge> : null}
@@ -310,8 +312,9 @@ function ParentDashboard({ account }) {
   }, []);
   React.useEffect(() => { loadList(); }, [loadList]);
   const roles = new Set((students || []).map((s) => s.role));
-  const board = roles.size === 1 && roles.has("counselor") ? "Counselor" : roles.size === 1 || !students ? (account && account.parent && account.parent.counselor ? "Counselor" : "Parent") : "Family & counselor";
-  React.useEffect(() => { document.title = `${board} dashboard · College Forge`; }, [board]);
+  const coachOnly = roles.size === 1 && roles.has("coach");
+  const board = coachOnly ? "Writing coach" : roles.size === 1 && roles.has("counselor") ? "Counselor" : roles.size === 1 || !students ? (account && account.parent && account.parent.counselor ? "Counselor" : "Parent") : "Family & counselor";
+  React.useEffect(() => { document.title = (coachOnly ? "Essays" : `${board} dashboard`) + " · College Forge"; }, [board, coachOnly]);
 
   const [attempt, setAttempt] = React.useState(0);
   React.useEffect(() => {
@@ -352,7 +355,9 @@ function ParentDashboard({ account }) {
       ) : null}
       {students && students.length > 1 && !selected ? <Roster students={students} onOpen={(id) => { setSelected(id); window.scrollTo(0, 0); }} />
         // A save that finishes after the counselor opened another student must not replace that student's view.
-        : view && view.id === selected ? <StudentView d={view} onChange={(d) => setView((cur) => (cur && cur.id === d.id ? d : cur))} />
+        : view && view.id === selected ? (view.role === "coach" && window.CoachEssays
+          ? <window.CoachEssays d={view} onChange={(d) => setView((cur) => (cur && d && cur.id === d.id ? d : cur))} />
+          : <StudentView d={view} onChange={(d) => setView((cur) => (cur && cur.id === d.id ? d : cur))} />)
         : !error && (students === null || students.length) ? <div className="cf-parent-empty" role="status">Loading…</div> : null}
 
       <footer className="cf-parent-foot">

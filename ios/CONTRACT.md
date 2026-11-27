@@ -287,3 +287,16 @@ Validated on the server by `lib/aid-validate.ts`; derived by `lib/aid-plan.ts`. 
 - `TrackedApplication.portalFromEmail`: the portal link came from a forwarded email and the student hasn't saved a new one. Never open it as a link (`openablePortalURL` is nil); show it in the edit form with a warning. Saving a login, using the master and the CLI's `/api/cli/logins` all refuse or skip such a school until the student saves a changed link. Send `portalUrl` in an edit only when it changed: resending the same link does not clear the mark. Adding a school a forwarded email already created returns that app with `portalFromEmail` true; tell the student.
 - Forwarded-email Worker (College Apps) contract for `POST /api/service/inbox`: `op: "lookup"` must send `collegeId` plus every URL it will type a password into (`portalUrl`, `link`); with no URL, or any URL off that catalog school's own hosts, no `usePassword` comes back. The Worker must not type any password after a redirect that leaves those hosts (`college.hosts`, `loginUrl`'s host); it aborts and reports `state: "todo"`. A catalog school's emailed `portalUrl` off its own hosts is replaced by the catalog `loginUrl`. `arrival.reason` is shown to the student and kept in notes as plain text, never as a link.
 - `InboxStatus` adds `useMasterForNew` (set with `.inbox(on: true, useMasterForNew:)`) and `recent: [RecentArrival {name, state, reason, receivedAt}]` (last 20, no secrets).
+
+## GPTZero AI check (web only for now)
+
+- `GET /api/gptzero` → `{connected, email?}` (email partly hidden). `POST {action:"connect", email, password}` saves the login only if GPTZero accepts it; `{action:"disconnect"}`. The password never comes back and must not be cached on the device.
+- `POST /api/gptzero/scan {essayId}` → `{data: workspace, result: {verdict: "ai"|"mixed"|"human"|"unknown", confidence, ai, mixed, human, message, sentences, flagged: [{sentence, prob}], scanId, version}}`. The server checks the saved draft, so save the draft first. Needs 50+ words. 409 = saved login no longer works, 429 = rate or GPTZero quota.
+- `Workspace.essayAiChecks?: {[essayId]: {checkedAt, verdict, ai, mixed, human, words}}`: the latest totals only. Optional; decode leniently.
+
+## Writing coaches (web only for now)
+
+- A writing coach is a follower link with `role: "coach"` on the parent invite flow: `POST /api/parents {action:"invite", role:"coach", email}` (no level; it's always `"essays"`), accepted at `/parent/accept`. Up to 3. `set-level` on a coach is refused.
+- `GET /api/parent` rows gain `role` (`"parent"` | `"coach"`); a coach's row has the first name only and no `applications`. `me.parent.coach` is `true` when any followed student made this account their coach.
+- `GET /api/parent/[id]` for a coach returns `{level:"essays", role:"coach", student:{name, cycle}, essays, schools:[{slug, name}], essayDrafts, essayStatus, notes:[{id, body, author, createdAt, essayId, mine}]}` and nothing else (no `progress`, so the current `ParentDashboard` decode fails for coaches until the iOS side handles `level == "essays"`). `POST /api/parent/[id] {action:"note", essayId, body}` / `{action:"delete-note", noteId}` are coach-only.
+- `AdvisorNote.via` can be `"coach"`, with `byLink` (the coach's link id). Show those as "Coach · <author>".

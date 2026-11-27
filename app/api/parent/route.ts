@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 /**
  * GET: the students this signed-in parent or counselor follows, each with a roster summary (next deadline,
  * what's due or overdue, open flags) cut to the level that student shares. `id` is the link id used by
- * /api/parent/[id].
+ * /api/parent/[id]. A writing coach gets the first name only, no application count and an empty summary
+ * (essays only).
  */
 export async function GET(req: NextRequest) {
   const session = getSession(req);
@@ -22,13 +23,14 @@ export async function GET(req: NextRequest) {
     const students = await Promise.all(
       (await studentsOf(session.sub)).map(async (s) => {
         const ws = await getWorkspace(s.workspaceId);
+        const full = (ws.applicant.name || "").trim();
+        const base = { id: s.linkId, cycle: ws.applicant.cycle || "", role: s.role, level: s.level, levelLabel: PARENT_LEVEL_INFO[s.level].label };
+        if (s.level === "essays") {
+          return { ...base, name: full.split(/\s+/)[0] || "Your student", summary: followerSummary({ progress: { flags: [], apps: [] }, criticalDates: [] }, today) };
+        }
         return {
-          id: s.linkId,
-          name: (ws.applicant.name || "").trim() || "Your student",
-          cycle: ws.applicant.cycle || "",
-          role: s.role,
-          level: s.level,
-          levelLabel: PARENT_LEVEL_INFO[s.level].label,
+          ...base,
+          name: full || "Your student",
           applications: ws.tracker.apps.length,
           summary: followerSummary(parentView(ws, s.level, today), today),
         };

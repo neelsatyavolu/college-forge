@@ -2,10 +2,12 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { deleteDoc, readDoc, updateDoc, writeDoc } from "./doc-store";
 
 /**
- * Parent and counselor accounts. A student invites a parent or a college counselor by email and picks how
- * much they see (a level). They accept with their own Xanom account and then see the student's dashboard on
- * the web and in the iPhone app. Parents only read; counselors can also leave notes (app/api/parent/[id]).
- * The student can change the level or remove them at any time. A link without a role is a parent's.
+ * Parent, counselor and writing-coach accounts. A student invites a parent or a college counselor by email and
+ * picks how much they see (a level), or a writing coach, who always sees essays only ("essays"). They accept
+ * with their own Xanom account and then see the student's dashboard on the web and in the iPhone app. Parents
+ * only read; counselors can also leave notes, and coaches comments on an essay (app/api/parent/[id]). The
+ * student can change a parent's or counselor's level or remove anyone at any time. A link without a role is a
+ * parent's.
  *
  * Storage (doc-store):
  *  - parents/<workspaceId>.json       the student's list of parent links: the source of truth for access
@@ -19,14 +21,21 @@ export type ParentLevel = (typeof PARENT_LEVELS)[number];
 
 export const isParentLevel = (v: unknown): v is ParentLevel => typeof v === "string" && (PARENT_LEVELS as readonly string[]).includes(v);
 
-export const FOLLOWER_ROLES = ["parent", "counselor"] as const;
+/** A coach's level: essays, drafts and their own comments, nothing else (lib/parent-view.ts). Only coaches get it. */
+export const ESSAYS_LEVEL = "essays";
+export type FollowerLevel = ParentLevel | typeof ESSAYS_LEVEL;
+
+export const FOLLOWER_ROLES = ["parent", "counselor", "coach"] as const;
 export type FollowerRole = (typeof FOLLOWER_ROLES)[number];
 export const isFollowerRole = (v: unknown): v is FollowerRole => typeof v === "string" && (FOLLOWER_ROLES as readonly string[]).includes(v);
 
 export const INVITE_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 export const MAX_PARENTS = 6;
 export const MAX_COUNSELORS = 3;
-const MAX_OF: Record<FollowerRole, number> = { parent: MAX_PARENTS, counselor: MAX_COUNSELORS };
+export const MAX_COACHES = 3;
+const MAX_OF: Record<FollowerRole, number> = { parent: MAX_PARENTS, counselor: MAX_COUNSELORS, coach: MAX_COACHES };
+const NOUN: Record<FollowerRole, string> = { parent: "parent", counselor: "counselor", coach: "writing coach" };
+const NOUNS: Record<FollowerRole, string> = { parent: "parents", counselor: "counselors", coach: "writing coaches" };
 
 export type ParentLink = {
   id: string;
@@ -34,7 +43,7 @@ export type ParentLink = {
   email: string;
   /** Absent on links made before counselors existed: those are parents. */
   role?: FollowerRole;
-  level: ParentLevel;
+  level: FollowerLevel;
   status: "invited" | "active";
   invitedAt: number;
   inviteHash?: string;
@@ -55,7 +64,10 @@ type ParentOf = { students: { linkId: string; workspaceId: string }[] };
 
 export class ParentError extends Error {}
 
-export const roleOf = (link: Pick<ParentLink, "role">): FollowerRole => (link.role === "counselor" ? "counselor" : "parent");
+export const roleOf = (link: Pick<ParentLink, "role">): FollowerRole => (link.role === "counselor" || link.role === "coach" ? link.role : "parent");
+/** A coach sees essays only, whatever the stored level says; a parent or counselor never gets the essays-only level. */
+export const levelOf = (link: Pick<ParentLink, "role" | "level">): FollowerLevel =>
+  roleOf(link) === "coach" ? ESSAYS_LEVEL : isParentLevel(link.level) ? link.level : "basic";
 
 const ID = /^[A-Za-z0-9_-]{4,80}$/;
 const safe = (id: string) => {
@@ -76,7 +88,7 @@ export function cleanEmail(v: unknown): string | null {
 
 export function publicLink(link: ParentLink, now = Date.now()): PublicParentLink {
   const { inviteHash: _h, parentSub: _s, ...base } = link;
-  const rest = { ...base, role: roleOf(link) };
+  const rest = { ...base, role: roleOf(link), level: levelOf(link) };
   return link.status === "invited" && (link.inviteExp ?? 0) < now ? { ...rest, expired: true } : rest;
 }
 
@@ -107,7 +119,8 @@ export async function inviteParent(
   now = Date.now(),
 ): Promise<{ link: PublicParentLink; token: string }> {
   const role = input.role ?? "parent";
-  const taken = `${role === "counselor" ? "That counselor" : "That parent"} already has access. Change their level instead.`;
+  const level: FollowerLevel = role === "coach" ? ESSAYS_LEVEL : input.level;
+  const taken = role === "coach" ? "That writing coach already has access." : `That ${NOUN[role]} already has access. Change their level instead.`;
   const existing = (await readList(workspaceId)).find((l) => l.email === input.email);
   if (existing?.status === "active") throw new ParentError(existing && roleOf(existing) === role ? taken : "That email already follows you. Remove it first to change its role.");
   const linkId = existing?.id ?? randomUUID();
@@ -119,10 +132,10 @@ export async function inviteParent(
     oldHash = prior?.inviteHash;
     if (!prior && links.some((l) => l.email === input.email)) throw new ParentError("That email was just invited. Refresh to see it.");
     if (links.filter((l) => l.id !== linkId && roleOf(l) === role).length >= MAX_OF[role]) {
-      throw new ParentError(`You can invite up to ${MAX_OF[role]} ${role === "counselor" ? "counselors" : "parents"}.`);
+      throw new ParentError(`You can invite up to ${MAX_OF[role]} ${NOUNS[role]}.`);
     }
     if (prior?.status === "active") throw new ParentError(taken);
-    const link: ParentLink = { id: linkId, email: input.email, role, level: input.level, status: "invited", invitedAt: now, inviteHash: hash, inviteExp: exp };
+    const link: ParentLink = { id: linkId, email: input.email, role, level, status: "invited", invitedAt: now, inviteHash: hash, inviteExp: exp };
     return { links: prior ? links.map((l) => (l.id === linkId ? link : l)) : [...links, link] };
   }).catch(async (err) => {
     await deleteDoc(inviteKey(hash)).catch(() => undefined);
@@ -135,7 +148,9 @@ export async function inviteParent(
 export async function setParentLevel(workspaceId: string, linkId: string, level: ParentLevel): Promise<PublicParentLink[]> {
   const saved = await updateDoc<ParentList>(listKey(workspaceId), (cur) => {
     const links = cur?.links ?? [];
-    if (!links.some((l) => l.id === linkId)) throw new ParentError("That parent isn't on your list.");
+    const link = links.find((l) => l.id === linkId);
+    if (!link) throw new ParentError("That parent isn't on your list.");
+    if (roleOf(link) === "coach") throw new ParentError("A writing coach always sees your essays only.");
     return { links: links.map((l) => (l.id === linkId ? { ...l, level } : l)) };
   });
   return saved.links.map((l) => publicLink(l));
@@ -193,7 +208,7 @@ export async function acceptInvite(
 ): Promise<{ linkId: string; workspaceId: string }> {
   const found = await readInvite(token, now);
   if (!found) throw new ParentError("This invite has expired or was already used. Ask your student to send a new one.");
-  if (studentSub && studentSub === parent.sub) throw new ParentError(`This invite is for your ${roleOf(found.link)}. Sign in with their own account.`);
+  if (studentSub && studentSub === parent.sub) throw new ParentError(`This invite is for your ${NOUN[roleOf(found.link)]}. Sign in with their own account.`);
   const { workspaceId, link } = found;
   if (!sameEmail(parent.email, link.email)) throw new ParentError(wrongAccount(link.email));
   // The index first: alone it grants nothing (every read re-checks the student's list), and if activation
@@ -212,7 +227,7 @@ export async function acceptInvite(
       throw new ParentError("You already follow this student.");
     }
     const accepted: ParentLink = {
-      id: current.id, email: current.email, role: roleOf(current), level: current.level, status: "active", invitedAt: current.invitedAt,
+      id: current.id, email: current.email, role: roleOf(current), level: levelOf(current), status: "active", invitedAt: current.invitedAt,
       acceptedAt: now, parentSub: parent.sub, parentName: parent.name.slice(0, 80), parentEmail: parent.email.slice(0, 254),
     };
     return { links: links.map((l) => (l.id === link.id ? accepted : l)) };
@@ -231,7 +246,7 @@ export function wrongAccount(invited: string): string {
 }
 
 /** The students a parent can see now, each re-checked against the student's own list. */
-export type Access = { linkId: string; workspaceId: string; level: ParentLevel; role: FollowerRole; name: string };
+export type Access = { linkId: string; workspaceId: string; level: FollowerLevel; role: FollowerRole; name: string };
 
 export async function studentsOf(sub: string): Promise<Access[]> {
   if (!ID.test(sub)) return [];
@@ -244,7 +259,7 @@ async function accessFor(sub: string, linkId: string, workspaceId: string): Prom
   if (!ID.test(workspaceId)) return null;
   const link = (await readList(workspaceId)).find((l) => l.id === linkId);
   return link && link.status === "active" && link.parentSub === sub
-    ? { linkId, workspaceId, level: link.level, role: roleOf(link), name: link.parentName || "" }
+    ? { linkId, workspaceId, level: levelOf(link), role: roleOf(link), name: link.parentName || "" }
     : null;
 }
 

@@ -85,7 +85,8 @@ struct ParentHomeView: View {
 
     private func load() async {
         do {
-            students = try await store.api.parentStudents()
+            // A writing coach's essays view is web-only for now.
+            students = try await store.api.parentStudents().filter { $0.role != "coach" }
             error = nil
         } catch {
             if students == nil { self.error = APIError.wrap(error) }
