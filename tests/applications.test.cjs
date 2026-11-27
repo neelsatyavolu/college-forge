@@ -651,3 +651,17 @@ test('adding an application puts the school on the list and in Essays; removing 
   assert.deepEqual([ws.colleges.length, ws.tracker.apps.length], [0, 0]);
   assert.ok(ws.essays.supplements[added.slug]?.length, 'essay prompts and drafts are kept');
 }));
+
+test('each tracked app carries the key its chance estimate is saved under', () => {
+  const { viewTracker } = require('../lib/tracker-service.ts');
+  const { emptyTracker } = require('../lib/tracker.ts');
+  const app = (id, name, slug) => ({ id, name, slug, status: 'submitted', round: 'RD', deadline: '', notes: '', followUps: [], createdAt: 1, updatedAt: 1 });
+  const tracker = { ...emptyTracker(), apps: [app('a1', 'University of Michigan', 'university-of-michigan'), app('a2', 'Ohio State University', ''), app('a3', 'Nowhere Test College', '')] };
+  const colleges = [
+    { name: 'University of Michigan--Ann Arbor', slug: 'university-of-michigan' },
+    { name: 'The Ohio State University', slug: 'the-ohio-state-university' },
+  ];
+  const keys = Object.fromEntries(viewTracker(tracker, '2026-11-27', 0, undefined, colleges).apps.map((a) => [a.name, a.oddsKey]));
+  assert.equal(keys['University of Michigan'], 'university-of-michigan');
+  assert.equal(keys['Nowhere Test College'], 'app:a3', 'not on the shortlist: its own key');
+});

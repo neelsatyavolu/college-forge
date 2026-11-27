@@ -188,6 +188,8 @@ const schoolKey = (n) => String(n || "").toLowerCase().replace(/\b(the)\b/g, " "
  */
 function oddsForApp(data, app) {
   const oddsMap = (data && data.admissionOdds) || {};
+  // The server says where this app's estimate is saved (lib/tracker-service.ts oddsKey); the rest is a fallback.
+  if (app.oddsKey && oddsMap[app.oddsKey]) return oddsMap[app.oddsKey];
   if (oddsMap["app:" + app.id]) return oddsMap["app:" + app.id];
   const name = schoolKey(app.name);
   const colleges = ((data && data.colleges) || []).filter((c) => c.slug && oddsMap[c.slug]);
