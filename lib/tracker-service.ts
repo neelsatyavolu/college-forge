@@ -78,6 +78,7 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
     notes: app.notes,
     decisionNote: app.decisionNote ?? "",
     login: app.login ?? null,
+    aidOffer: app.aidOffer ?? null,
     lastChecked: app.lastChecked,
     updatedAt: app.updatedAt,
   };
@@ -137,7 +138,7 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
   try {
     return await updateWorkspace(workspaceId, (ws) => ({ ...ws, tracker: change(ws.tracker, ws) }));
   } catch (err) {
-    if (err instanceof Error && err.message && /^(Unknown|Deadline|Decision|Portal|No application|No follow-up|No flag|Already|Write what|Due date|Submitted date|Testing)/.test(err.message)) {
+    if (err instanceof Error && err.message && /^(Unknown|Deadline|Decision|Portal|No application|No follow-up|No flag|Already|Write what|Due date|Submitted date|Testing|Aid )/.test(err.message)) {
       throw new TrackerError(err.message);
     }
     throw err;

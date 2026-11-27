@@ -87,6 +87,10 @@ struct ScholarshipEditor: View {
                         ForEach(ScholarshipStatus.all, id: \.self) { Text($0.label).tag($0) }
                     }
                     OptionalDateRow(title: "Deadline", date: optional(\.deadline))
+                    Picker("From", selection: schoolBinding) {
+                        Text("Outside scholarship").tag("")
+                        ForEach(store.workspace.colleges, id: \.slug) { Text($0.short.isEmpty ? $0.name : $0.short).tag($0.slug) }
+                    }
                 }
                 Section {
                     TextField("https://", text: optional(\.url))
@@ -120,6 +124,14 @@ struct ScholarshipEditor: View {
 
     private func optional(_ key: WritableKeyPath<Scholarship, String?>) -> Binding<String> {
         Binding { scholarship[keyPath: key] ?? "" } set: { scholarship[keyPath: key] = $0 }
+    }
+
+    /// "" is an outside scholarship; a slug ties it to that school as the school's own award.
+    private var schoolBinding: Binding<String> {
+        Binding { scholarship.slug ?? "" } set: { slug in
+            scholarship.slug = slug
+            scholarship.kind = slug.isEmpty ? "outside" : "school"
+        }
     }
 
     private func save() {

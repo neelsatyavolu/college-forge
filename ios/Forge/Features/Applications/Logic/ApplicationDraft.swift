@@ -76,7 +76,7 @@ enum ApplicationsValidation {
         !trimmed(username).isEmpty && !password.isEmpty
     }
 
-    /// Scholarship links must be web links (the server rejects anything else).
+    /// Scholarship links must be web links (PATCH /api/workspace rejects anything else; lib/aid-validate.ts).
     static func isWebLink(_ s: String) -> Bool {
         let t = trimmed(s).lowercased()
         return (t.hasPrefix("https://") || t.hasPrefix("http://")) && URL(string: trimmed(s))?.host() != nil

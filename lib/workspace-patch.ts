@@ -14,6 +14,7 @@ import type {
 } from "./store";
 import { mergeSupplements, syncEssaySupplements } from "./essay-supplements";
 import { applyEssayStatus, checkEssayStatus, checkEssaySuggestionDismissals, dismissSuggestions } from "./essay-tools";
+import { checkAidPatch, linkKind, mergeScholarshipList } from "./aid-validate";
 import { parseApplicantFields, parseProfileFields, rankActivities, toAps, toHonors, type Parsed, type WriteMode } from "./profile-fields";
 
 function assignDefined<T extends object>(base: T, patch: Record<string, unknown>): T {
@@ -156,6 +157,9 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
     const parsed = checkEssaySuggestionDismissals(patch.essaySuggestions);
     if (!parsed.ok) return parsed;
   }
+  const aid = checkAidPatch(next);
+  if (!aid.ok) return aid;
+  next = aid.value;
   return { ok: true, value: next };
 }
 
@@ -326,11 +330,14 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     };
   }
 
-  if (patch.scholarships) next = { ...next, scholarships: patch.scholarships };
+  if (patch.scholarships) next = { ...next, scholarships: mergeScholarshipList(next.scholarships, patch.scholarships) };
   if (patch.scholarship) {
     const s = patch.scholarship;
     const id = s.id || randomUUID().slice(0, 8);
     const existing = next.scholarships.find((x) => x.id === id);
+    // "" clears the school link (lib/aid-validate.ts linkKind sets the kind to match).
+    const slug = s.slug !== undefined ? s.slug : existing?.slug;
+    const kind = linkKind(s, existing);
     const row: Scholarship = {
       id,
       name: s.name || existing?.name || "Scholarship",
@@ -339,6 +346,8 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       status: s.status || existing?.status || "researching",
       url: s.url ?? existing?.url,
       notes: s.notes ?? existing?.notes,
+      ...(slug ? { slug } : {}),
+      ...(kind ? { kind } : {}),
     };
     next = {
       ...next,

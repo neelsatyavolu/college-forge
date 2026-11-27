@@ -20,6 +20,10 @@ import { editApp, findApp, isRound, isStatus, newApp, replaceApp, statusInfo } f
 import { oddsFromArgs, oddsTargets, readFromArgs } from "./admission-odds";
 import { applicationMaterial } from "./odds-plan";
 import { PROFILE_TOOL_SPECS, runProfileTool } from "./hub-profile-tools";
+import { checkAidAgainstWorkspace, checkFinancialAid, checkScholarshipList, mergeScholarshipList } from "./aid-validate";
+import { aidPlan } from "./aid-plan";
+
+class AidToolError extends Error {}
 
 type Args = Record<string, unknown>;
 
@@ -302,7 +306,7 @@ export function makeHubTools(
     {
       name: "set_scholarships",
       description:
-        "Replace the scholarship tracker. status ∈ researching | in_progress | submitted | won | lost | skipped.",
+        "Replace the scholarship tracker. status ∈ researching | in_progress | submitted | won | lost | skipped. deadline is yyyy-mm-dd or empty; url starts with https://. For a school's own award, set kind \"school\" and slug to the college's slug on the list.",
       parameters: {
         type: "object",
         properties: {
@@ -318,6 +322,8 @@ export function makeHubTools(
                 status: { type: "string" },
                 url: { type: "string" },
                 notes: { type: "string" },
+                kind: { type: "string", enum: ["outside", "school"] },
+                slug: { type: "string" },
               },
               required: ["name"],
             },
@@ -330,17 +336,24 @@ export function makeHubTools(
     {
       name: "set_financial_aid",
       description:
-        "Update FAFSA/CSS Profile checklist. fafsaStatus/cssStatus ∈ not_started | in_progress | submitted | processed (css also n_a).",
+        "Update the FAFSA / CSS Profile / IDOC checklist. fafsaStatus, cssStatus and idocStatus ∈ not_started | in_progress | submitted | processed (css and idoc also n_a). fafsaOpenDate is yyyy-mm-dd.",
       parameters: {
         type: "object",
         properties: {
           fafsaStatus: { type: "string" },
           cssStatus: { type: "string" },
+          idocStatus: { type: "string" },
           fafsaOpenDate: { type: "string" },
           notes: { type: "string" },
         },
         additionalProperties: false,
       },
+    },
+    {
+      name: "get_aid_plan",
+      description:
+        "Read which aid forms each school on the Applications tab needs (CSS Profile required / not required / unknown, IDOC), with the research source, aid and scholarship deadlines, open aid follow-ups and suggested to-dos. Read-only: add the to-dos with add_follow_up. \"unknown\" means check the school's aid page, never that it isn't required.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
     },
     {
       name: "read_application",
@@ -598,26 +611,30 @@ export function makeHubTools(
         }
         case "set_scholarships": {
           if (!Array.isArray(a.scholarships)) return "set_scholarships requires a scholarships array.";
-          const scholarships = (a.scholarships as Workspace["scholarships"]).map((s, i) => ({
-            ...s,
-            id: s.id || `sch-${i + 1}`,
-            status: s.status || "researching",
-          }));
-          await mutate((ws) => ({ ...ws, scholarships }));
-          return `Saved ${scholarships.length} scholarships.`;
+          const checked = checkScholarshipList(a.scholarships);
+          if (!checked.ok) return checked.error;
+          try {
+            await mutate((ws) => {
+              // Thrown, not returned, so a refused write doesn't save (and bump the revision).
+              const problem = checkAidAgainstWorkspace(ws, { scholarships: checked.value });
+              if (problem) throw new AidToolError(problem);
+              return { ...ws, scholarships: mergeScholarshipList(ws.scholarships, checked.value) };
+            });
+          } catch (err) {
+            if (err instanceof AidToolError) return err.message;
+            throw err;
+          }
+          return `Saved ${checked.value.length} scholarships.`;
         }
         case "set_financial_aid": {
-          await mutate((ws) => ({
-            ...ws,
-            financialAid: {
-              ...ws.financialAid,
-              ...(typeof a.fafsaStatus === "string" ? { fafsaStatus: a.fafsaStatus as Workspace["financialAid"]["fafsaStatus"] } : {}),
-              ...(typeof a.cssStatus === "string" ? { cssStatus: a.cssStatus as Workspace["financialAid"]["cssStatus"] } : {}),
-              ...(typeof a.fafsaOpenDate === "string" ? { fafsaOpenDate: a.fafsaOpenDate } : {}),
-              ...(typeof a.notes === "string" ? { notes: a.notes } : {}),
-            },
-          }));
+          // Models fill unused fields with "": those mean "not given", except notes, where "" clears.
+          const checked = checkFinancialAid(Object.fromEntries(Object.entries(a).filter(([k, v]) => v !== "" || k === "notes")));
+          if (!checked.ok) return checked.error;
+          await mutate((ws) => ({ ...ws, financialAid: { ...ws.financialAid, ...checked.value } }));
           return "Updated financial aid checklist.";
+        }
+        case "get_aid_plan": {
+          return JSON.stringify(aidPlan(await scopedWorkspace()));
         }
         case "read_application": {
           return applicationMaterial(await scopedWorkspace());

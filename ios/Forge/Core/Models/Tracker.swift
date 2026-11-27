@@ -67,6 +67,8 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     /// Milliseconds since 1970.
     var lastChecked: Double?
     var updatedAt: Double
+    /// The school's aid offer as the student entered it (see `AidOffer`). Set with `ApplicationEdit.aidOffer`.
+    var aidOffer: AidOffer?
 
     var lastCheckedDate: Date? { lastChecked.map(Date.init(milliseconds:)) }
 }
@@ -101,6 +103,7 @@ extension TrackedApplication {
         testingPlan = c.optional(TestingPlanView.self, .testingPlan)
         lastChecked = c.optionalDouble(.lastChecked)
         updatedAt = c.double(.updatedAt)
+        aidOffer = c.optional(AidOffer.self, .aidOffer)
     }
 }
 

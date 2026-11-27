@@ -53,6 +53,16 @@ const edit = z.object({
     })
     .strict()
     .optional(),
+  // Amounts are checked by lib/aid-validate.ts (through editApp); null removes the offer.
+  aidOffer: z.union([z.null(), z.object({
+    costOfAttendance: z.union([z.number(), z.string().max(20)]).optional(),
+    grants: z.union([z.number(), z.string().max(20)]).optional(),
+    loans: z.union([z.number(), z.string().max(20)]).optional(),
+    workStudy: z.union([z.number(), z.string().max(20)]).optional(),
+    notes: z.string().max(2000).optional(),
+    // Sent back by clients that echo a saved offer; the server sets its own time.
+    updatedAt: z.number().optional(),
+  }).strict()]).optional(),
 });
 const ref = z.string().min(1).max(200);
 

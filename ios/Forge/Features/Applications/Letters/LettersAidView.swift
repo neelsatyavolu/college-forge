@@ -10,6 +10,7 @@ struct LettersAidView: View {
     var body: some View {
         List {
             FinancialAidSection(error: $error)
+            AidBySchoolSection(error: $error)
             Section {
                 if store.workspace.recommendations.isEmpty {
                     Text("No recommenders yet. Add your counselor and teachers here.").foregroundStyle(Theme.muted)
