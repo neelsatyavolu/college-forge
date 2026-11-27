@@ -154,6 +154,7 @@
 .ik-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; align-items: end; }
 .ik-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .ik-field--wide { grid-column: 1 / -1; }
+.ik-group .oc-upload { margin-top: 14px; }
 .ik-label { font-size: 12px; color: var(--muted); }
 .ik-label em { margin-left: 6px; font-style: normal; color: var(--muted-soft, var(--muted)); }
 .ik-field .oc-input { min-width: 0; padding: 8px 10px; font-size: 14px; }

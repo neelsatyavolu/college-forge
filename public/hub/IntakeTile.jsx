@@ -21,6 +21,7 @@ Plans: how many colleges I want to apply to, Early Decision thoughts, deadlines 
 
 const IK_CHOICES = {
   citizenship: [["us", "US citizen"], ["permanent", "Permanent resident"], ["international", "International"], ["unsure", "Not sure"]],
+  gpaScale: [["4.0", "4.0"], ["4.33", "4.33 (A+ above 4.0)"], ["100-point", "100-point"], ["other", "Something else"], ["", "Not sure"]],
   gpaTrend: [["up", "Going up"], ["steady", "Steady"], ["down", "Going down"], ["", "Not sure"]],
   incomeBracket: [["lt30", "Under $30k"], ["30-48", "$30–48k"], ["48-75", "$48–75k"], ["75-110", "$75–110k"], ["gt110", "Over $110k"], ["unsure", "Not sure"]],
   budget: [["lt15", "Under $15k"], ["15-30", "$15–30k"], ["30-50", "$30–50k"], ["50plus", "$50k+"], ["unsure", "Not sure"]],
@@ -59,13 +60,15 @@ function IkChips({ name, value, onChange, disabled }) {
   );
 }
 
-function IkField({ label, hint, children, wide }) {
-  return (
-    <label className={"ik-field" + (wide ? " ik-field--wide" : "")}>
-      <span className="ik-label">{label}{hint && <em>{hint}</em>}</span>
-      {children}
-    </label>
-  );
+/**
+ * A labeled field. Chip rows pass `group`: a <label> forwards any click on its text or the gaps
+ * between chips to the first chip, which then looked selected next to the student's real pick.
+ */
+function IkField({ label, hint, children, wide, group }) {
+  const className = "ik-field" + (wide ? " ik-field--wide" : "");
+  const caption = <span className="ik-label">{label}{hint && <em>{hint}</em>}</span>;
+  if (group) return <div className={className} role="group" aria-label={label}>{caption}{children}</div>;
+  return <label className={className}>{caption}{children}</label>;
 }
 
 const ikStr = (v) => (v === undefined || v === null || v === "—" ? "" : String(v));
@@ -78,6 +81,7 @@ function ikInitial(data) {
   return {
     name: ikStr(a.name), gradYear: ikStr(p.gradYear), hs: ikStr(p.hs), residency: ikStr(p.residency), citizenship: lp.citizenship,
     gpaUnweighted: ikStr(a.gpaUnweighted), gpaWeighted: ikStr(a.gpaWeighted), gpaRecent: ikStr(a.gpaRecent), gpaTrend: a.gpaTrend,
+    gpaScale: ["4.0", "4.33", "100-point"].includes(a.gpaScale) ? a.gpaScale : a.gpaScale ? "other" : undefined,
     gpa9: ikStr((a.gpaByYear || {})["9"]), gpa10: ikStr((a.gpaByYear || {})["10"]), gpa11: ikStr((a.gpaByYear || {})["11"]),
     sat: ikStr(t.sat || a.sat), act: ikStr(t.act), testOptional: /optional|not submit/i.test(t.satNote || a.satNote || ""),
     intended: ikStr(p.intended),
@@ -93,16 +97,25 @@ function ikInitial(data) {
 /** The patch the form saves, and a readable summary of what was given and what was left blank. */
 function ikBuild(f) {
   const num = (v, max) => (/^\d+(\.\d+)?$/.test(String(v).trim()) && Number(v) <= max ? String(v).trim() : "");
+  const label = (k, v) => (IK_CHOICES[k].find(([x]) => x === v) || [, v])[1];
+  // GPAs go straight to the profile only on a 4.0 scale. On any other scale (or an unknown one) they
+  // go to the AI as typed, which converts them to 4.0 unweighted (lib/gpa-scale.ts) before saving.
+  const onFour = f.gpaScale === "4.0";
+  const years = [["9", f.gpa9], ["10", f.gpa10], ["11", f.gpa11]];
   const applicant = {
     ...(f.name.trim() ? { name: f.name.trim() } : {}),
-    ...(num(f.gpaUnweighted, 4) ? { gpaUnweighted: num(f.gpaUnweighted, 4) } : {}),
+    ...(f.gpaScale && f.gpaScale !== "other" ? { gpaScale: f.gpaScale } : {}),
+    ...(onFour && num(f.gpaUnweighted, 4) ? { gpaUnweighted: num(f.gpaUnweighted, 4) } : {}),
     ...(num(f.gpaWeighted, 6) ? { gpaWeighted: num(f.gpaWeighted, 6) } : {}),
-    ...(num(f.gpaRecent, 4) ? { gpaRecent: num(f.gpaRecent, 4) } : {}),
+    ...(onFour && num(f.gpaRecent, 4) ? { gpaRecent: num(f.gpaRecent, 4) } : {}),
     ...(f.gpaTrend ? { gpaTrend: f.gpaTrend } : {}),
-    ...([["9", f.gpa9], ["10", f.gpa10], ["11", f.gpa11]].some(([, v]) => num(v, 4))
-      ? { gpaByYear: Object.fromEntries([["9", f.gpa9], ["10", f.gpa10], ["11", f.gpa11]].filter(([, v]) => num(v, 4)).map(([y, v]) => [y, num(v, 4)])) }
+    ...(onFour && years.some(([, v]) => num(v, 4))
+      ? { gpaByYear: Object.fromEntries(years.filter(([, v]) => num(v, 4)).map(([y, v]) => [y, num(v, 4)])) }
       : {}),
   };
+  const raw = onFour ? [] : [["unweighted", f.gpaUnweighted], ["weighted", f.gpaWeighted], ["9th grade", f.gpa9], ["10th grade", f.gpa10], ["11th grade", f.gpa11], ["10th–11th", f.gpaRecent]]
+    .filter(([k, v]) => num(v, 100) && !(k === "weighted" && applicant.gpaWeighted)).map(([k, v]) => `${k} ${num(v, 100)}`);
+  const rawGpa = raw.length ? `GPA as my school reports it (${f.gpaScale && f.gpaScale !== "other" ? `${label("gpaScale", f.gpaScale)} scale` : f.gpaScale === "other" ? "a different scale; please ask me which" : "scale not given; please ask me"}): ${raw.join(", ")}. Please convert to 4.0 unweighted before saving.` : "";
   const testing = f.testOptional
     ? { satNote: "Test optional" }
     : { ...(num(f.sat, 1600) && Number(f.sat) >= 400 ? { sat: num(f.sat, 1600) } : {}), ...(num(f.act, 36) ? { act: num(f.act, 36) } : {}) };
@@ -132,15 +145,15 @@ function ikBuild(f) {
     ...(f.regions.length ? { regions: f.regions } : {}),
     ...(f.campusNotes.trim() ? { notes: f.campusNotes.trim().slice(0, 1000) } : {}),
   };
-  const label = (k, v) => (IK_CHOICES[k].find(([x]) => x === v) || [, v])[1];
   const said = [
     applicant.name && `Name: ${applicant.name}`, profile.hs && `High school: ${profile.hs}`, profile.gradYear && `Class of ${profile.gradYear}`,
     f.residency && `State: ${f.residency === "INTL" ? "outside the US" : f.residency}`, listPrefs.citizenship && `Citizenship: ${label("citizenship", listPrefs.citizenship)}`,
-    applicant.gpaUnweighted && `Unweighted GPA ${applicant.gpaUnweighted}`, applicant.gpaWeighted && `weighted ${applicant.gpaWeighted}`,
+    applicant.gpaScale && `Grading scale: ${label("gpaScale", applicant.gpaScale)}`,
+    applicant.gpaUnweighted && `Unweighted GPA ${applicant.gpaUnweighted}`, applicant.gpaWeighted && `weighted ${applicant.gpaWeighted}`, rawGpa,
     applicant.gpaRecent && `10th–11th GPA ${applicant.gpaRecent}`, applicant.gpaTrend && `Grades ${label("gpaTrend", applicant.gpaTrend).toLowerCase()}`,
     f.testOptional ? "Applying test-optional" : [testing.sat && `SAT ${testing.sat}`, testing.act && `ACT ${testing.act}`].filter(Boolean).join(", "),
     profile.intended && `Interested in: ${profile.intended}`,
-    listPrefs.incomeBracket && `Family income: ${label("incomeBracket", listPrefs.incomeBracket)}`, listPrefs.budget && `Budget: ${label("budget", listPrefs.budget)} a year`,
+    listPrefs.incomeBracket && `Family income: ${label("incomeBracket", listPrefs.incomeBracket)}`, listPrefs.budget && (listPrefs.budget === "unsure" ? "Budget: not sure" : `Budget: ${label("budget", listPrefs.budget)} a year`),
     listPrefs.needAid !== undefined && `Need-based aid: ${listPrefs.needAid ? "yes" : "no"}`, listPrefs.firstGen && `First-gen: ${label("firstGen", listPrefs.firstGen)}`,
     listPrefs.ambition && `Mix: ${label("ambition", listPrefs.ambition)}`,
     supp !== undefined && `${supp} schools with supplements and ${quick} without${f.recommendCounts ? " (Forge's suggestion; I wasn't sure)" : ""}`,
@@ -153,7 +166,7 @@ function ikBuild(f) {
     f.activities.trim() && `Activities and awards (one per line; please save each):\n${f.activities.trim().split("\n").map((l) => `  · ${l.trim()}`).filter((l) => l.length > 4).join("\n")}`,
   ].filter(Boolean);
   const blanks = [
-    !applicant.gpaUnweighted && !applicant.gpaWeighted && "GPA", !f.testOptional && !testing.sat && !testing.act && "test scores",
+    !applicant.gpaUnweighted && !applicant.gpaWeighted && !rawGpa && "GPA", !f.testOptional && !testing.sat && !testing.act && "test scores",
     !profile.intended && "intended major", !listPrefs.incomeBracket && "family income", !listPrefs.budget && "budget",
     listPrefs.needAid === undefined && "need-based aid", !listPrefs.ambition && "list mix", supp === undefined && "how many schools", !listPrefs.ed && "Early Decision",
     !listPrefs.settings && !listPrefs.regions && "campus preferences", !f.activities.trim() && "activities",
@@ -195,17 +208,27 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
   const [f, setF] = React.useState(() => ikInitial(data));
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
+  /** Files uploaded from this form: sent with the rest when the student saves, never on their own. */
+  const [files, setFiles] = React.useState([]);
+  /** Each upload box lists only its own files: [{ name, slot }]. */
+  const attachedTitle = (slot, fallback) => {
+    const mine = files.filter((x) => x.slot === slot).map((x) => x.name);
+    return mine.length ? `Attached ${mine.join(", ")}. Add more?` : fallback;
+  };
+  const addFiles = (slot) => (names) => setFiles((x) => [...x.filter((y) => !names.includes(y.name)), ...names.map((name) => ({ name, slot }))]);
   const set = (k) => (v) => setF((x) => ({ ...x, [k]: v && v.target ? (v.target.type === "checkbox" ? v.target.checked : v.target.value) : v }));
   const off = disabled || busy;
 
   const save = async () => {
     const { patch, said, blanks } = ikBuild(f);
-    if (!said.length) { setError("Fill in anything you know, or use one of the other ways above."); return; }
+    if (!said.length && !files.length) { setError("Fill in anything you know, or use one of the other ways above."); return; }
     setBusy(true); setError("");
     try {
       const clean = Object.fromEntries(Object.entries(patch).filter(([, v]) => Object.keys(v).length));
       if (Object.keys(clean).length) await window.cfApi.patch({ ...clean, ...(Number.isInteger(data && data.revision) ? { baseRevision: data.revision } : {}) });
-      onAnswer([`I filled in the quick start:`, ...said.map((s) => `- ${s}`), ...(blanks.length ? [`Not sure / left blank: ${blanks.join(", ")}.`] : [])].join("\n"));
+      const upload = files.length ? [`I uploaded ${files.map((x) => x.name).join(", ")}. They have my grades, activities or other details; please read them and fill in what you can.`] : [];
+      const form = said.length ? [`I filled in the quick start:`, ...said.map((s) => `- ${s}`), ...(blanks.length ? [`Not sure / left blank: ${blanks.join(", ")}.`] : [])] : [];
+      onAnswer([...upload, ...(upload.length && form.length ? [""] : []), ...form].join("\n"));
     } catch (e) {
       setError(e.status === 409 ? "Your profile changed in another tab. Reload and try again." : e.message || "That didn't save. Try again.");
     }
@@ -215,8 +238,7 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
   return (
     <div className="ik">
       <IkAgentPaste disabled={off} onAnswer={onAnswer} />
-      <window.OcUploadTile compact disabled={off} onAnswer={(msg) => onAnswer(`${msg} It has my grades, activities or other details; please read it and fill in what you can.`)} />
-      <p className="ik-or">Or fill in what you know. Skip anything you're not sure about.</p>
+      <p className="ik-or">Or fill in what you know. Skip anything you're not sure about, and upload files right where they fit.</p>
 
       <fieldset className="ik-group"><legend>You</legend>
         <div className="ik-grid">
@@ -228,13 +250,14 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
               <option value="">Choose</option>{IK_STATES.map((s) => <option key={s} value={s}>{s}</option>)}<option value="INTL">Outside the US</option>
             </select>
           </IkField>
-          <IkField label="Citizenship" wide><IkChips name="citizenship" value={f.citizenship} disabled={off} onChange={set("citizenship")} /></IkField>
+          <IkField label="Citizenship" wide group><IkChips name="citizenship" value={f.citizenship} disabled={off} onChange={set("citizenship")} /></IkField>
         </div>
       </fieldset>
 
       <fieldset className="ik-group"><legend>Grades and tests</legend>
         <div className="ik-grid">
-          <IkField label="Unweighted GPA" hint="out of 4.0"><input className="oc-input" inputMode="decimal" value={f.gpaUnweighted} disabled={off} onChange={set("gpaUnweighted")} maxLength={4} /></IkField>
+          <IkField label="Your school's grading scale" hint="your transcript's grade key shows it" wide group><IkChips name="gpaScale" value={f.gpaScale} disabled={off} onChange={set("gpaScale")} /></IkField>
+          <IkField label="Unweighted GPA" hint="as on your transcript"><input className="oc-input" inputMode="decimal" value={f.gpaUnweighted} disabled={off} onChange={set("gpaUnweighted")} maxLength={4} /></IkField>
           <IkField label="Weighted GPA"><input className="oc-input" inputMode="decimal" value={f.gpaWeighted} disabled={off} onChange={set("gpaWeighted")} maxLength={4} /></IkField>
           <IkField label="9th grade GPA" hint="unweighted, if you know it"><input className="oc-input" inputMode="decimal" value={f.gpa9} disabled={off} onChange={set("gpa9")} maxLength={4} /></IkField>
           <IkField label="10th grade GPA" hint="unweighted"><input className="oc-input" inputMode="decimal" value={f.gpa10} disabled={off} onChange={set("gpa10")} maxLength={4} /></IkField>
@@ -243,8 +266,9 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
           <IkField label="SAT"><input className="oc-input" inputMode="numeric" value={f.sat} disabled={off || f.testOptional} onChange={set("sat")} maxLength={4} /></IkField>
           <IkField label="ACT"><input className="oc-input" inputMode="numeric" value={f.act} disabled={off || f.testOptional} onChange={set("act")} maxLength={2} /></IkField>
           <label className="ik-check"><input type="checkbox" checked={f.testOptional} disabled={off} onChange={set("testOptional")} /> Not sending scores</label>
-          <IkField label="My grades are" wide><IkChips name="gpaTrend" value={f.gpaTrend} disabled={off} onChange={set("gpaTrend")} /></IkField>
+          <IkField label="My grades are" wide group><IkChips name="gpaTrend" value={f.gpaTrend} disabled={off} onChange={set("gpaTrend")} /></IkField>
         </div>
+        <window.OcUploadTile compact title={attachedTitle("grades", "Or just upload your transcripts")} disabled={off} onAnswer={onAnswer} onUploaded={addFiles("grades")} />
       </fieldset>
 
       <fieldset className="ik-group"><legend>What you want to study</legend>
@@ -253,9 +277,9 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
 
       <fieldset className="ik-group"><legend>Campus</legend>
         <div className="ik-grid">
-          <IkField label="Setting" hint="pick any" wide><IkMultiChips name="settings" value={f.settings} disabled={off} onChange={set("settings")} /></IkField>
-          <IkField label="Size" wide><IkChips name="size" value={f.size} disabled={off} onChange={set("size")} /></IkField>
-          <IkField label="Regions" hint="pick any" wide><IkMultiChips name="regions" value={f.regions} disabled={off} onChange={set("regions")} /></IkField>
+          <IkField label="Setting" hint="pick any" wide group><IkMultiChips name="settings" value={f.settings} disabled={off} onChange={set("settings")} /></IkField>
+          <IkField label="Size" wide group><IkChips name="size" value={f.size} disabled={off} onChange={set("size")} /></IkField>
+          <IkField label="Regions" hint="pick any" wide group><IkMultiChips name="regions" value={f.regions} disabled={off} onChange={set("regions")} /></IkField>
           <IkField label="Anything else that matters" hint="optional" wide><input className="oc-input" placeholder="Strong student newspaper, near home, warm weather…" value={f.campusNotes} disabled={off} onChange={set("campusNotes")} maxLength={300} /></IkField>
           <IkField label="Schools you already like" hint="optional" wide><input className="oc-input" placeholder="Northwestern, UCLA…" value={f.likedSchools} disabled={off} onChange={set("likedSchools")} maxLength={300} /></IkField>
         </div>
@@ -265,28 +289,35 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
         <IkField label="One per line: what it is, your role, grades, hours a week" hint="rough is fine" wide>
           <textarea className="oc-input" rows={4} placeholder={"Student news show, co-executive producer, 9–12, 10 hrs/wk\nRegional journalism award, 2026"} value={f.activities} disabled={off} onChange={set("activities")} maxLength={2000} />
         </IkField>
+        <window.OcUploadTile compact title={attachedTitle("activities", "Or just upload your resume or activities list")} disabled={off} onAnswer={onAnswer} onUploaded={addFiles("activities")} />
       </fieldset>
 
       <fieldset className="ik-group"><legend>Money</legend>
         <p className="ik-note">Colleges price by family income, so this is how Forge estimates what each school would really cost you. It stays in your workspace.</p>
         <div className="ik-grid">
-          <IkField label="Family income per year" wide><IkChips name="incomeBracket" value={f.incomeBracket} disabled={off} onChange={set("incomeBracket")} /></IkField>
-          <IkField label="What your family can pay per year" wide><IkChips name="budget" value={f.budget} disabled={off} onChange={set("budget")} /></IkField>
-          <IkField label="Applying for need-based aid?"><IkChips name="needAid" value={f.needAid} disabled={off} onChange={set("needAid")} /></IkField>
-          <IkField label="First in your family to go to college?"><IkChips name="firstGen" value={f.firstGen} disabled={off} onChange={set("firstGen")} /></IkField>
+          <IkField label="Family income per year" wide group><IkChips name="incomeBracket" value={f.incomeBracket} disabled={off} onChange={set("incomeBracket")} /></IkField>
+          <IkField label="What your family can pay per year" wide group><IkChips name="budget" value={f.budget} disabled={off} onChange={set("budget")} /></IkField>
+          <IkField label="Applying for need-based aid?" group><IkChips name="needAid" value={f.needAid} disabled={off} onChange={set("needAid")} /></IkField>
+          <IkField label="First in your family to go to college?" group><IkChips name="firstGen" value={f.firstGen} disabled={off} onChange={set("firstGen")} /></IkField>
         </div>
       </fieldset>
 
       <fieldset className="ik-group"><legend>Your list</legend>
         <div className="ik-grid">
-          <IkField label="Mix of schools" wide><IkChips name="ambition" value={f.ambition} disabled={off} onChange={set("ambition")} /></IkField>
+          <IkField label="Mix of schools" wide group><IkChips name="ambition" value={f.ambition} disabled={off} onChange={set("ambition")} /></IkField>
           <IkField label="Schools with supplement essays" hint="all UCs = 1"><input className="oc-input" inputMode="numeric" placeholder="6–10" value={f.recommendCounts ? "" : f.suppCount} disabled={off || f.recommendCounts} onChange={set("suppCount")} maxLength={2} /></IkField>
           <IkField label="Quick apps, no supplements"><input className="oc-input" inputMode="numeric" placeholder="2–5" value={f.recommendCounts ? "" : f.noSuppCount} disabled={off || f.recommendCounts} onChange={set("noSuppCount")} maxLength={2} /></IkField>
           <label className="ik-check"><input type="checkbox" checked={f.recommendCounts} disabled={off} onChange={set("recommendCounts")} /> Not sure: recommend for me</label>
-          <IkField label="Early Decision (binding)?" wide><IkChips name="ed" value={f.ed} disabled={off} onChange={set("ed")} /></IkField>
+          <IkField label="Early Decision (binding)?" wide group><IkChips name="ed" value={f.ed} disabled={off} onChange={set("ed")} /></IkField>
         </div>
       </fieldset>
 
+      {files.length > 0 && (
+        <div className="oc-chips" aria-label="Attached files">
+          {files.map(({ name: n }) => <button key={n} type="button" className="oc-chip" disabled={off} onClick={() => setFiles((x) => x.filter((y) => y.name !== n))} aria-label={`Don't send ${n}`}>{n} ×</button>)}
+          <span className="oc-tile-note">Sent with your answers when you save.</span>
+        </div>
+      )}
       <div className="oc-tile-row">
         <IkButton disabled={off} onClick={save}>{busy ? "Saving…" : "Save and continue"}</IkButton>
         <span className="oc-tile-note">You can change any of this later in your profile.</span>

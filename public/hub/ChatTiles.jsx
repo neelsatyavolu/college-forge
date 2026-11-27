@@ -56,7 +56,8 @@ function OcNumberTile({ q, disabled, onAnswer }) {
   );
 }
 
-function OcUploadTile({ disabled, onAnswer, compact }) {
+/** onUploaded, when given, receives the saved file names instead of sending a chat answer (the quick-start form sends them with the rest). */
+function OcUploadTile({ disabled, onAnswer, onUploaded, compact, title }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
   const [over, setOver] = React.useState(false);
@@ -72,7 +73,8 @@ function OcUploadTile({ disabled, onAnswer, compact }) {
       if (!res.ok) throw new Error(j.error || "Upload failed.");
       const names = (j.saved || []).map((s) => s.name);
       if (!names.length) throw new Error((j.errors || []).join(" · ") || "That file couldn't be read.");
-      onAnswer(`I uploaded ${names.join(", ")}.`);
+      if (onUploaded) onUploaded(names);
+      else onAnswer(`I uploaded ${names.join(", ")}.`);
     } catch (e) {
       setError(e.message);
     }
@@ -85,7 +87,7 @@ function OcUploadTile({ disabled, onAnswer, compact }) {
         onDrop={(e) => { e.preventDefault(); setOver(false); if (!disabled && !busy) upload(e.dataTransfer.files); }}>
         <input ref={inputRef} type="file" accept=".pdf,.docx,.txt,.csv" multiple hidden disabled={disabled || busy} onChange={(e) => upload(e.target.files)} />
         <span className="oc-upload-icon" aria-hidden="true">↑</span>
-        <span className="oc-upload-title">{busy ? "Reading your file…" : compact ? "Drop a resume or activities list, or choose a file" : "Drop your transcript here, or choose a file"}</span>
+        <span className="oc-upload-title">{busy ? "Reading your file…" : title || (compact ? "Drop a resume or activities list, or choose a file" : "Drop your transcript here, or choose a file")}</span>
         <span className="oc-upload-hint">PDF, Word or text · up to 15 MB</span>
       </label>
       {error && <p className="oc-error" role="alert">{error}</p>}
