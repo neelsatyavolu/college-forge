@@ -5,9 +5,12 @@ import Security
 /// unlock, so a push that wakes the app in the background can still refresh data.
 struct Keychain: Sendable {
     let service: String
+    /// A Keychain access group shared with the widget extension, or nil for the app's own.
+    let accessGroup: String?
 
-    init(service: String = "co.xanom.forge") {
+    init(service: String = "co.xanom.forge", accessGroup: String? = nil) {
         self.service = service
+        self.accessGroup = accessGroup
     }
 
     func data(for account: String) -> Data? {
@@ -60,10 +63,12 @@ struct Keychain: Sendable {
     }
 
     private func baseQuery(_ account: String) -> [String: Any] {
-        [
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
         ]
+        if let accessGroup { query[kSecAttrAccessGroup as String] = accessGroup }
+        return query
     }
 }

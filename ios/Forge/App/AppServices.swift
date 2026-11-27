@@ -11,6 +11,7 @@ final class AppServices {
     let store: WorkspaceStore
     let router: Router
     let push: PushManager
+    let widgets: WidgetSync
 
     init(config: AppConfig = .current()) {
         Keychain().clearAfterReinstall()
@@ -27,11 +28,12 @@ final class AppServices {
         store = WorkspaceStore(api: api)
         router = Router()
         push = PushManager()
+        widgets = WidgetSync(store: store)
         wire()
     }
 
     private func wire() {
-        let session = session, store = store, router = router, push = push, api = api, tokens = tokens
+        let session = session, store = store, router = router, push = push, api = api, tokens = tokens, widgets = widgets
 
         session.didSignIn = {
             await push.attach(api: api)
@@ -48,6 +50,7 @@ final class AppServices {
             await push.detach()
         }
         session.didSignOut = {
+            widgets.clear()
             store.reset()
             router.reset()
         }
@@ -62,5 +65,11 @@ final class AppServices {
             if tapped, let applicationID { router.openApplication(id: applicationID) }
             Task { await store.refreshApplications() }
         }
+    }
+
+    /// A portal push arrived while the app was in the background: reload so the widgets show it.
+    func refreshForBackgroundPush() async {
+        guard await tokens.hasSession else { return }
+        await store.refresh()
     }
 }

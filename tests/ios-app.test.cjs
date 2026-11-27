@@ -287,7 +287,7 @@ test('provider JWT is ES256, verifiable and cached', () => isolated(async () => 
 
 test('payload carries the app id for the tap', () => {
   const payload = JSON.parse(apns.buildPayload({ appId: 'app_1', title: 'Purdue University', body: 'New update in your portal.' }));
-  assert.deepEqual(payload, { aps: { alert: { title: 'Purdue University', body: 'New update in your portal.' }, sound: 'default', 'thread-id': 'app_1' }, type: 'portal_update', appId: 'app_1' });
+  assert.deepEqual(payload, { aps: { alert: { title: 'Purdue University', body: 'New update in your portal.' }, sound: 'default', 'thread-id': 'app_1', 'content-available': 1 }, type: 'portal_update', appId: 'app_1' });
 });
 
 test('no APNs settings means no push and no error', () => isolated(async () => {
