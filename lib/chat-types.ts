@@ -47,13 +47,15 @@ export type UiSchool = {
 };
 /** An early-round idea shown with the draft list; the final plan comes after research. */
 export type UiEdIdea = { school?: string; reason: string };
+/** A community-college start with a transfer agreement into a four-year college: a low-cost backstop. */
+export type UiTransferPath = { college: string; transfersTo: string; reason: string };
 export type UiStrategy = { ed?: string; ea: string[]; reasons: string };
 export type ResearchStage = "searching" | "reading" | "saved" | "done" | "needs_review";
 
 export type ChatEvent =
   | { type: "status"; stage: ChatStage; message: string; round?: number }
   | { type: "question"; question: UiQuestion }
-  | { type: "list"; schools: UiSchool[]; edIdea?: UiEdIdea; warning?: string }
+  | { type: "list"; schools: UiSchool[]; edIdea?: UiEdIdea; transferPath?: UiTransferPath; warning?: string }
   | { type: "strategy"; strategy: UiStrategy }
   | { type: "research"; slug: string; name: string; stage: ResearchStage; facts?: number }
   | { type: "tool"; name: string; path?: string; round: number }
