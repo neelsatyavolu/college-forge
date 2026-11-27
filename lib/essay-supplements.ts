@@ -210,6 +210,57 @@ export function syncEssaySupplements(ws: Workspace): Workspace {
   };
 }
 
+const EARLIER = " (earlier prompt)";
+const textKey = (e: Pick<Essay, "prompt">) => (e.prompt || "").split(/\n\n/)[0].replace(/\s+/g, " ").trim().toLowerCase();
+const labelKey = (e: Pick<Essay, "label">) => (e.label || "").replace(EARLIER, "").replace(/\s+/g, " ").trim().toLowerCase();
+const sameEssays = (a: Essay[], b: Essay[]) => JSON.stringify(a) === JSON.stringify(b);
+
+/**
+ * Brings dataset prompts in a saved workspace up to date with lib/supplements/prompts.json. Only schools whose
+ * saved prompts all came from the dataset (they carry `source`) are touched; prompts an agent or the student wrote
+ * stay as they are. A new prompt takes the id of the old prompt with the same question (or label), so drafts,
+ * final marks and hidden flags follow it. An old prompt that's gone keeps its draft as an optional
+ * "(earlier prompt)"; one without a draft is dropped.
+ */
+export function refreshScrapedSupplements(ws: Workspace): Workspace {
+  const saved = ws.essays?.supplements || {};
+  const drafts = ws.essayDrafts || {};
+  let next: Record<string, Essay[]> | null = null;
+  for (const college of ws.colleges || []) {
+    const slug = college.slug;
+    if (!slug || isUcCampus(college)) continue;
+    const old = saved[slug];
+    if (!old?.length || !old.every((e) => e.source)) continue;
+    const fresh = scrapedSupplementsFor(college);
+    if (!fresh?.length) continue;
+    const used = new Set<string>();
+    const pick = (f: Essay) =>
+      old.find((o) => !used.has(o.id) && textKey(o) === textKey(f)) ?? old.find((o) => !used.has(o.id) && labelKey(o) === labelKey(f));
+    const matched = fresh.map((f) => {
+      const o = pick(f);
+      if (o) used.add(o.id);
+      return { f, id: o?.id };
+    });
+    const keptOld = old.filter((o) => !used.has(o.id) && (drafts[o.id] || "").trim());
+    // New prompts never reuse an old id: a dropped prompt's final mark or hidden flag must not jump to them.
+    const taken = new Set(old.map((o) => o.id));
+    const freeId = (wanted: string) => {
+      let id = wanted;
+      for (let n = 2; taken.has(id); n++) id = `${wanted}-${n}`;
+      taken.add(id);
+      return id;
+    };
+    const list: Essay[] = [
+      ...matched.map(({ f, id }) => ({ ...f, id: id ?? freeId(f.id) })),
+      ...keptOld.map((o) => ({ ...o, label: o.label.endsWith(EARLIER) ? o.label : o.label + EARLIER, required: false })),
+    ];
+    if (sameEssays(list, old)) continue;
+    next = { ...(next || saved), [slug]: list };
+  }
+  if (!next) return ws;
+  return { ...ws, essays: { commonApp: ws.essays?.commonApp || [], supplements: next } };
+}
+
 const OPTIONAL_LABEL = /\(optional\)/i;
 
 /**
