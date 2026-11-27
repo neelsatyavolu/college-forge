@@ -230,3 +230,57 @@ export function composeEmail(school: string, changes: Change[], appUrl: string, 
   });
   return { subject, text, html };
 }
+
+/** One school's news in a digest. */
+export interface SchoolNews {
+  school: string;
+  changes: Change[];
+  logo?: string;
+  portalUrl?: string;
+}
+
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+function digestSubject(news: SchoolNews[]): string {
+  const decided = news.filter((n) => n.changes.some((c) => c.kind === "decision"));
+  const others = news.length - decided.length;
+  if (decided.length) {
+    const where = decided.length === 1 ? decided[0]!.school : plural(decided.length, "school", "schools");
+    return others ? `${DECISION_RECEIVED} at ${where}, and updates from ${plural(others, "more school", "more schools")}` : `${DECISION_RECEIVED} at ${where}`;
+  }
+  if (news.every((n) => n.changes.every((c) => c.kind === "problem"))) return `We couldn't check ${news.length} of your portals`;
+  return `Updates from ${plural(news.length, "school", "schools")}`;
+}
+
+/**
+ * Everything one sweep found, in one email: a section per school, decisions first. With one school it's
+ * the single-school email. Like that one, it says a decision is up but never what it is.
+ */
+export function composeDigest(news: SchoolNews[], appUrl: string, extras: { unsubscribeUrl: string }): Email {
+  if (news.length === 1) {
+    const [only] = news as [SchoolNews];
+    return composeEmail(only.school, only.changes, appUrl, { ...extras, ...(only.logo ? { logo: only.logo } : {}), ...(only.portalUrl ? { portalUrl: only.portalUrl } : {}) });
+  }
+  const decided = (n: SchoolNews) => n.changes.some((c) => c.kind === "decision");
+  const ordered = [...news].sort((a, b) => Number(decided(b)) - Number(decided(a)));
+  const subject = digestSubject(ordered);
+  const off = extras.unsubscribeUrl;
+  const host = new URL(appUrl).host;
+  const text = `${ordered.map((n) => `${n.school}\n${n.changes.map((c) => `- ${line(c)}`).join("\n")}`).join("\n\n")}\n\nSee all your schools: ${appUrl}\n\nYou get these emails because automatic checks are on in Forge. Turn them off: ${off}\n\nForge · ${host}`;
+
+  const section = (n: SchoolNews, i: number) => {
+    const problem = n.changes.every((c) => c.kind === "problem");
+    const kicker = decided(n) ? "New in your portal" : problem ? "Needs your attention" : "Application update";
+    const portal = decided(n) && n.portalUrl ? `<div style="padding-top:4px;font-size:14px"><a href="${escapeHtml(n.portalUrl)}" style="color:${C.accent}">Open your ${escapeHtml(n.school)} portal</a></div>` : "";
+    const rule = i ? `border-top:1px solid ${C.line};padding-top:28px;margin-top:12px` : "";
+    return `<div style="${rule}">${schoolHeader(n.school, kicker, n.logo)}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${n.changes.map(block).join("")}</table>${portal}</div>`;
+  };
+  const body = `${ordered.map(section).join("")}<div style="padding-top:28px">${button("See all your schools", appUrl)}</div>`;
+  const html = layout({
+    preheader: subject,
+    body,
+    footer: `You get these emails because automatic checks are on in Forge. <a href="${escapeHtml(off)}" style="color:${C.muted}">Turn them off</a>.`,
+    appUrl,
+  });
+  return { subject, text, html };
+}
