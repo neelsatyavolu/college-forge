@@ -134,7 +134,9 @@ const ROWS: Row[] = [
   { id: "usm", name: "University of Southern Mississippi", state: "MS", website: "usm.edu", portal: "https://undergrad.usm.edu/apply/status", colors: ["#000000", "#FFAB00"] },
   { id: "uta", name: "University of Texas at Arlington", state: "TX", website: "uta.edu", portal: "https://connect.uta.edu/apply/status", colors: ["#0064B1", "#F58025"], aliases: ["ut arlington"] },
   { id: "utah", name: "University of Utah", state: "UT", website: "utah.edu", portal: "https://futureu.admissions.utah.edu/apply/status", colors: ["#CC0000", "#FFFFFF"] },
-  { id: "utaustin", name: "University of Texas at Austin", state: "TX", website: "utexas.edu", portal: "https://bealonghorn.admissions.utexas.edu/apply/status", colors: ["#BF5700", "#FFFFFF"], monogram: "UT", aliases: ["ut austin"] },
+  // Freshmen sign in with a UT EID: /account/login is an email form for exchange and spring applicants only, and its
+  // "Login to MyStatus" link starts UT EID sign-in at enterprise.login.utexas.edu. Checked 2026-11-26.
+  { id: "utaustin", name: "University of Texas at Austin", state: "TX", website: "utexas.edu", portal: "https://bealonghorn.admissions.utexas.edu/manage/login?realm=&r=/portal/mystatus", platform: "slate", portalName: "MyStatus", hosts: ["enterprise.login.utexas.edu"], howToLogIn: "Sign in to MyStatus with your UT EID and password, not the email and password form, which is only for exchange and spring applicants.", colors: ["#BF5700", "#FFFFFF"], monogram: "UT", aliases: ["ut austin"] },
   { id: "utk", name: "University of Tennessee, Knoxville", state: "TN", website: "utk.edu", portal: "https://govols.utk.edu/apply/status", colors: ["#FF8200", "#FFFFFF"], aliases: ["tennessee knoxville"] },
   { id: "uvm", name: "University of Vermont", state: "VT", website: "uvm.edu", portal: "https://admissions.uvm.edu/apply/status", colors: ["#154734", "#FFD416"], aliases: ["uvm"] },
   { id: "uwm", name: "University of Wisconsin–Milwaukee", state: "WI", website: "uwm.edu", portal: "https://admissions.uwm.edu/apply/status", colors: ["#000000", "#FFBD00"], aliases: ["uw milwaukee"] },
