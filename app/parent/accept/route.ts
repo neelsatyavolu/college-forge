@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 <dl class="oa__list">
   <div><dt>You'll see</dt><dd>${esc(sees.forParent.charAt(0).toUpperCase() + sees.forParent.slice(1))}.</dd></div>
   ${coach
-    ? `<div><dt>You can't</dt><dd>Edit their drafts, or see their applications, college list, profile or decisions. ${esc(name)} can remove you at any time.</dd></div>`
+    ? `<div><dt>You can't</dt><dd>Edit their drafts, or see their applications, profile or decisions. ${esc(name)} can remove you at any time.</dd></div>`
     : `<div><dt>Level</dt><dd>${esc(sees.label)}. ${esc(name)} can change it or remove you at any time.</dd></div>
   ${counselor ? `<div><dt>You can</dt><dd>Leave ${esc(name)} notes, in general or on an essay you can see.</dd></div>\n  ` : ""}<div><dt>You can't</dt><dd>${counselor ? "Change their applications" : "Change anything"}, see portal passwords, or see a decision before ${esc(name)} opens it.</dd></div>`}
 </dl>`;

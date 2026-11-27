@@ -16,8 +16,9 @@ import { UC_APPLICATION_SLUG } from "./essay-supplements";
  *            school's own awards), financial aid and the per-school aid form checklist
  *  full      standard + profile (GPA, scores, activities, honors) and essays with drafts
  *  essays    a writing coach: essay prompts, drafts, writing status and the school name of each supplement
- *            group, plus the comments that coach left (essaysView, coachNotes). Nothing from the tracker,
- *            list or profile.
+ *            group, plus the comments that coach left (essaysView, coachNotes). Nothing else from the tracker,
+ *            list or profile. Supplement prompts, labels and ids name their school anyway, so the consent text
+ *            says the coach sees the school each supplement is for rather than claiming the list is hidden.
  */
 /** `summary` is written to the student, `forParent` to the parent. */
 export const PARENT_LEVEL_INFO: Record<FollowerLevel, { label: string; summary: string; forParent: string }> = {
@@ -38,8 +39,8 @@ export const PARENT_LEVEL_INFO: Record<FollowerLevel, { label: string; summary: 
   },
   essays: {
     label: "Essays",
-    summary: "Your essays and drafts only. They can comment on each essay.",
-    forParent: "their essays and drafts only, and you can comment on each essay",
+    summary: "Your essays and drafts only, including the school each supplement is for. They can comment on each essay.",
+    forParent: "their essays and drafts only, including the school each supplement essay is for, and you can comment on each essay",
   },
 };
 

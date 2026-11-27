@@ -223,3 +223,84 @@ test('reset deletes the GPTZero login', async () => {
   assert.equal((await workspaceRoute.POST(req)).status, 200);
   assert.equal(await readGptzero(s.account.workspaceId), null);
 });
+
+test('a refused fresh sign-in marks the saved login failed: no more GPTZero calls until it is re-entered', async () => {
+  const s = await student();
+  const ws = s.account.workspaceId;
+  await saveGptzero(ws, { email: 'a@forge.invalid', password: PASSWORD });
+  const stub = stubFetch(() => [401, { message: 'bad login' }]);
+  try {
+    await assert.rejects(withToken(ws, async () => 'never'), /login/);
+    assert.equal(stub.calls.length, 1, 'one sign-in attempt');
+    const saved = await readGptzero(ws);
+    assert.equal(saved.failed, true);
+    assert.equal(saved.password, '', 'the refused password is not kept');
+    await assert.rejects(withToken(ws, async () => 'never'), /login/);
+    assert.equal(stub.calls.length, 1, 'no automatic retry with the refused login');
+
+    const status = (await (await call(gz.GET, '/api/gptzero', s.cookie)).json()).data;
+    assert.equal(status.connected, false);
+    assert.equal(status.failed, true);
+    assert.match(status.error, /GPTZero sign-in failed/);
+    assert.match(status.email, /^a•+@forge\.invalid$/);
+
+    await updateWorkspace(ws, (w) => ({ ...w, essayDrafts: { ...w.essayDrafts, [w.essays.commonApp[0].id]: words(80) } }));
+    const essayId = (await getWorkspace(ws)).essays.commonApp[0].id;
+    const res = await call(scan.POST, '/api/gptzero/scan', s.cookie, { essayId });
+    assert.equal(res.status, 409);
+    assert.match((await res.json()).error, /GPTZero sign-in failed. Re-enter your login/);
+    assert.equal(stub.calls.length, 1, 'the scan does not call GPTZero either');
+  } finally {
+    stub.restore();
+  }
+  // Re-entering the login clears the failure.
+  const ok = stubFetch((p) => signinOk(p));
+  try {
+    assert.equal((await (await call(gz.POST, '/api/gptzero', s.cookie, { action: 'connect', email: 'a@forge.invalid', password: PASSWORD })).json()).data.connected, true);
+    assert.equal((await readGptzero(ws)).failed, undefined);
+  } finally {
+    ok.restore();
+  }
+});
+
+test('a refused sign-in does not mark a login the student re-entered meanwhile', async () => {
+  const ws = 'test-gz-ws-race';
+  await saveGptzero(ws, { email: 'a@forge.invalid', password: 'old-synthetic-password' });
+  const stub = stubFetch(async () => {
+    await saveGptzero(ws, { email: 'a@forge.invalid', password: PASSWORD });
+    return [401, {}];
+  });
+  try {
+    await assert.rejects(withToken(ws, async () => 'never'), /login/);
+  } finally {
+    stub.restore();
+  }
+  const saved = await readGptzero(ws);
+  assert.equal(saved.failed, undefined);
+  assert.equal(saved.password, PASSWORD);
+});
+
+test('workspace ids that change when cleaned are refused, so file name and AAD always match', async () => {
+  for (const bad of ['../x', 'a/b', 'ws a', 'x'.repeat(65), '', 'ws\u0000']) {
+    await assert.rejects(saveGptzero(bad, { email: 'a@forge.invalid', password: PASSWORD }), /workspace id/);
+    await assert.rejects(readGptzero(bad), /workspace id/);
+  }
+  await saveGptzero('ws_ok-1', { email: 'a@forge.invalid', password: PASSWORD });
+  assert.equal((await readGptzero('ws_ok-1')).email, 'a@forge.invalid');
+});
+
+test('an oversized GPTZero response is cut off while streaming, not after reading it all', async () => {
+  const real = globalThis.fetch;
+  let pulled = 0;
+  const chunk = new Uint8Array(64 * 1024).fill(32);
+  globalThis.fetch = async () => new Response(new ReadableStream({
+    pull(controller) { pulled += chunk.length; controller.enqueue(chunk); }, // endless, no content-length
+  }), { status: 200 });
+  try {
+    const { signIn } = require('../lib/gptzero.ts');
+    await assert.rejects(signIn('a@forge.invalid', PASSWORD), /upstream/);
+    assert.ok(pulled <= 2 * 1024 * 1024 + 4 * chunk.length, `stopped near the cap (read ${pulled} bytes)`);
+  } finally {
+    globalThis.fetch = real;
+  }
+});

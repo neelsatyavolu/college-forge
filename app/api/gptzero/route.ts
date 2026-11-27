@@ -3,13 +3,14 @@ import { getSession } from "@/lib/workspace-cookie";
 import { allow } from "@/lib/rate-limit";
 import { cleanEmail } from "@/lib/parents";
 import { GptzeroError, signIn } from "@/lib/gptzero";
-import { deleteGptzero, readGptzero, saveGptzero } from "@/lib/gptzero-login";
+import { deleteGptzero, readGptzero, saveGptzero, SIGNIN_FAILED } from "@/lib/gptzero-login";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * The student's GPTZero account. GET {connected, email (partly hidden)}; POST {action:"connect", email,
+ * The student's GPTZero account. GET {connected, email (partly hidden)}, plus {failed, error} after GPTZero refused
+ * the saved login (re-entering it with connect clears that); POST {action:"connect", email,
  * password} checks the login with GPTZero and saves it only if GPTZero accepts it; {action:"disconnect"}.
  * The password never comes back out.
  */
@@ -34,6 +35,7 @@ export async function GET(req: NextRequest) {
   if (!session) return fail("Sign in to connect GPTZero.", 401);
   try {
     const login = await readGptzero(session.workspaceId);
+    if (login?.failed) return json({ success: true, data: { connected: false, failed: true, email: maskEmail(login.email), error: SIGNIN_FAILED } });
     return json({ success: true, data: login ? { connected: true, email: maskEmail(login.email) } : { connected: false } });
   } catch (err) {
     console.error("api/gptzero GET failed", err instanceof Error ? err.name : "unknown");

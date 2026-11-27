@@ -8,11 +8,20 @@ import { GptzeroError, signIn } from "./gptzero";
  * so exports, share links, parents, coaches, the copilot and MCP never see it.
  */
 
-export type GptzeroLogin = { email: string; password: string; token?: string; tokenExp?: number };
+/** `failed`: GPTZero refused this login on a fresh sign-in. The password is dropped and nothing calls GPTZero until it's re-entered. */
+export type GptzeroLogin = { email: string; password: string; token?: string; tokenExp?: number; failed?: true };
 
-const cleanId = (workspaceId: string) => workspaceId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64);
-const docKey = (workspaceId: string) => `gptzero/${cleanId(workspaceId)}.json`;
-const aad = (workspaceId: string) => `forge-gptzero:${workspaceId}`;
+/** Shown wherever a refused login surfaces (Settings and the essay check). */
+export const SIGNIN_FAILED = "GPTZero sign-in failed. Re-enter your login in Settings.";
+
+const WORKSPACE_ID = /^[a-zA-Z0-9_-]{1,64}$/;
+/** The file name and the AAD use the same id; an id that would need cleaning is refused, never rewritten. */
+function checkedId(workspaceId: string): string {
+  if (!WORKSPACE_ID.test(workspaceId)) throw new Error("Invalid workspace id for the GPTZero login.");
+  return workspaceId;
+}
+const docKey = (workspaceId: string) => `gptzero/${checkedId(workspaceId)}.json`;
+const aad = (workspaceId: string) => `forge-gptzero:${checkedId(workspaceId)}`;
 
 export async function readGptzero(workspaceId: string): Promise<GptzeroLogin | null> {
   const sealed = await readDoc<Sealed>(docKey(workspaceId));
@@ -43,19 +52,36 @@ async function rememberToken(workspaceId: string, login: GptzeroLogin, token: st
   }).catch(() => undefined);
 }
 
+/** Marks the login failed and drops its password, only if the same login is still saved (a reconnect in between wins). */
+async function markFailed(workspaceId: string, login: GptzeroLogin): Promise<void> {
+  await updateDoc<Sealed>(docKey(workspaceId), (cur) => {
+    if (!cur) throw new Error("gone");
+    const now = openJson<GptzeroLogin>(aad(workspaceId), cur);
+    if (now.email !== login.email || now.password !== login.password) throw new Error("changed");
+    return sealJson(aad(workspaceId), { email: now.email, password: "", failed: true });
+  }).catch(() => undefined);
+}
+
 async function freshToken(workspaceId: string, login: GptzeroLogin): Promise<string> {
-  const s = await signIn(login.email, login.password);
+  let s;
+  try {
+    s = await signIn(login.email, login.password);
+  } catch (err) {
+    if (err instanceof GptzeroError && err.kind === "login") await markFailed(workspaceId, login);
+    throw err;
+  }
   await rememberToken(workspaceId, login, s.token, s.expiresAt);
   return s.token;
 }
 
 /**
  * Runs `fn` with a GPTZero token: the cached one while it's valid, else a new sign-in. A cached token GPTZero
- * refuses gets one new sign-in and one retry. Throws GptzeroError("login") when no login is saved.
+ * refuses gets one new sign-in and one retry. A refused sign-in marks the login failed. Throws GptzeroError("login")
+ * when no usable login is saved, without calling GPTZero.
  */
 export async function withToken<T>(workspaceId: string, fn: (token: string) => Promise<T>, nowSec = Date.now() / 1000): Promise<T> {
   const login = await readGptzero(workspaceId);
-  if (!login) throw new GptzeroError("login");
+  if (!login || login.failed || !login.password) throw new GptzeroError("login");
   const cached = login.token && (login.tokenExp ?? 0) - 60 > nowSec ? login.token : "";
   if (!cached) return fn(await freshToken(workspaceId, login));
   try {

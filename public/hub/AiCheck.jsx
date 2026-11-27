@@ -53,6 +53,7 @@ function GptzeroPanel({ Panel }) {
             <Button size="sm" variant="secondary" disabled={busy} onClick={() => send({ action: "disconnect" })}>{busy ? "Disconnecting…" : "Disconnect"}</Button>
           </div>
         ) : null}
+        {status && !status.connected && status.failed ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>{status.error}</p> : null}
         {status && !status.connected ? (
           <form onSubmit={(e) => { e.preventDefault(); if (email.trim() && password) send({ action: "connect", email: email.trim(), password }); }} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
             <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink)", flex: "1 1 220px" }}>GPTZero email
@@ -123,7 +124,7 @@ function AiCheckPanel({ essayId, words, check, pending, onFlush, onWorkspaceChan
         {status === null ? null : connected ? (
           <Button size="sm" variant="secondary" disabled={busy || pending || words < 50} onClick={run}>{busy ? "Checking…" : shown ? "Check again" : "Check for AI writing"}</Button>
         ) : (
-          <a className="cf-link-btn" href="#settings">Connect GPTZero in Settings</a>
+          <a className="cf-link-btn" href="#settings">{status.failed ? "GPTZero sign-in failed. Re-enter your login in Settings" : "Connect GPTZero in Settings"}</a>
         )}
       </div>
       {shown && shown.verdict ? <AiBars r={shown} /> : null}

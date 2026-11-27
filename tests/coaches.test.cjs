@@ -198,3 +198,18 @@ test('coach invites cap at MAX_COACHES, expire after 14 days, and reset removes 
   assert.equal(reset.status, 200);
   assert.equal(await readDoc(`parents/${ws}.json`), null);
 });
+
+test('coach consent text says supplements name their school and never claims the college list is hidden', async () => {
+  const { PARENT_LEVEL_INFO } = require('../lib/parent-view.ts');
+  const { coach, token } = await setup();
+  const html = await (await accept.GET(new NextRequest(`https://forge.test/parent/accept?t=${token}`, { headers: { cookie: coach.cookie } }))).text();
+  // The coach's view carries each supplement's school (its prompts, labels and ids name it), so no text may say otherwise.
+  assert.doesNotMatch(html, /college list/i, 'the accept page does not claim the list is hidden');
+  assert.match(html, /school each supplement essay is for/);
+  assert.match(PARENT_LEVEL_INFO.essays.summary, /school each supplement is for/);
+  assert.match(PARENT_LEVEL_INFO.essays.forParent, /school each supplement essay is for/);
+  const shareUi = fs.readFileSync(path.join(__dirname, '..', 'public/hub/ShareExport.jsx'), 'utf8');
+  const coachIntro = shareUi.split('\n').find((l) => l.includes('Invite an essay coach'));
+  assert.doesNotMatch(coachIntro, /\blist\b/, 'the invite card does not claim the list is hidden');
+  assert.match(coachIntro, /school each supplement is for/);
+});

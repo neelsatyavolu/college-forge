@@ -30,6 +30,36 @@ export class GptzeroError extends Error {
 
 const kindOf = (status: number): GptzeroErrorKind => (status === 401 || status === 403 ? "login" : status === 429 || status === 402 ? "quota" : "upstream");
 
+/** Reads the body as text, cancelling the stream as soon as it passes MAX_RESPONSE_BYTES (a missing or false content-length can't make Forge buffer more). */
+async function readCapped(res: Response): Promise<string> {
+  if (!res.body) return "";
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_RESPONSE_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        throw new GptzeroError("upstream", res.status);
+      }
+      chunks.push(value);
+    }
+  } catch (err) {
+    if (err instanceof GptzeroError) throw err;
+    throw new GptzeroError("upstream", res.status);
+  }
+  const all = new Uint8Array(size);
+  let at = 0;
+  for (const c of chunks) {
+    all.set(c, at);
+    at += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
 async function post(path: "/v3/auth/signin-with-password" | "/v3/ai/text", body: unknown, token?: string): Promise<unknown> {
   let res: Response;
   try {
@@ -45,8 +75,7 @@ async function post(path: "/v3/auth/signin-with-password" | "/v3/ai/text", body:
   }
   if (!res.ok) throw new GptzeroError(kindOf(res.status), res.status);
   if (Number(res.headers.get("content-length") || 0) > MAX_RESPONSE_BYTES) throw new GptzeroError("upstream", res.status);
-  const text = await res.text().catch(() => "");
-  if (text.length > MAX_RESPONSE_BYTES) throw new GptzeroError("upstream", res.status);
+  const text = await readCapped(res);
   try {
     return JSON.parse(text) as unknown;
   } catch {

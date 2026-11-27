@@ -36,7 +36,7 @@ const FOLLOWER_COPY = {
   // A writing coach sees essays and drafts only and can comment on each essay: no level to pick.
   coach: {
     title: "Writing coach", one: "coach", label: "Coach’s email", placeholder: "coach@example.com", level: null,
-    intro: "Invite an essay coach or tutor by email. They create a Forge account with that same email. They see your essays and drafts only, and can leave comments on each essay, which show up next to it here. They can’t edit your drafts or see your applications, list, profile or decisions. Remove them at any time.",
+    intro: "Invite an essay coach or tutor by email. They create a Forge account with that same email. They see your essays and drafts only, including the school each supplement is for, and can leave comments on each essay, which show up next to it here. They can’t edit your drafts or see your applications, profile or decisions. Remove them at any time.",
   },
 };
 

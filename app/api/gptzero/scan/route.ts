@@ -3,7 +3,7 @@ import { getSession } from "@/lib/workspace-cookie";
 import { allow } from "@/lib/rate-limit";
 import { getWorkspace, redactWorkspaceBody, updateWorkspace, type Workspace } from "@/lib/store";
 import { GptzeroError, scanText, summarize } from "@/lib/gptzero";
-import { withToken } from "@/lib/gptzero-login";
+import { SIGNIN_FAILED, withToken } from "@/lib/gptzero-login";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       result = summarize(await withToken(id, (token) => scanText(token, text)));
     } catch (err) {
       if (!(err instanceof GptzeroError)) throw err;
-      if (err.kind === "login") return fail("GPTZero didn't accept your saved login. Connect GPTZero again in Settings.", 409);
+      if (err.kind === "login") return fail(SIGNIN_FAILED, 409);
       if (err.kind === "quota") return fail("GPTZero says you're out of checks for now. Check your GPTZero plan, or try again later.", 429);
       return fail("GPTZero isn't answering right now. Try again later.", 502);
     }
