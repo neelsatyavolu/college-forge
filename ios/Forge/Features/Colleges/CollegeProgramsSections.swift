@@ -4,11 +4,17 @@ import SwiftUI
 struct CollegeProgramsSection: View {
     let programs: [CollegesProgram]
     let isLoading: Bool
+    /// The live Scorecard record didn't load, so programs are unknown rather than none.
+    var isUnavailable = false
 
     var body: some View {
         Section {
             if isLoading {
                 HStack { ProgressView(); Text("Loading programs…").foregroundStyle(Theme.muted) }
+            } else if isUnavailable, programs.isEmpty {
+                Text("Program data is unavailable right now. Try again later.")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.muted)
             } else if programs.isEmpty {
                 Text("No bachelor’s program data published for this school.")
                     .font(.subheadline)

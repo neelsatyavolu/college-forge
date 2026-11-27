@@ -1,12 +1,13 @@
 import SwiftUI
 
-/// The U.S. News ranking, live search over every U.S. college, setting and favorite filters.
+/// The Explore catalog (1,000+ colleges), live search, sort, filters and favorites.
 struct ExploreView: View {
     @Environment(WorkspaceStore.self) private var store
     @Environment(CollegesExploreModel.self) private var model
     @Environment(CollegesFavorites.self) private var favorites
     @State private var busySlug: String?
     @State private var error: APIError?
+    @State private var showsFilters = false
 
     var body: some View {
         @Bindable var model = model
@@ -15,7 +16,8 @@ struct ExploreView: View {
             .autocorrectionDisabled()
             .task { await model.loadBrowse(api: store.api) }
             .task(id: model.query) { await model.search(api: store.api) }
-            .toolbar { ToolbarItem(placement: .topBarTrailing) { ExploreFilterMenu() } }
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { filterButton } }
+            .sheet(isPresented: $showsFilters) { ExploreFilterSheet() }
             .errorAlert($error)
     }
 
@@ -27,7 +29,7 @@ struct ExploreView: View {
             case .failed(let apiError):
                 ErrorStateView(error: apiError) { await model.loadBrowse(api: store.api, force: true) }
             case .idle, .loading:
-                LoadingView(label: "Loading the ranking…")
+                LoadingView(label: "Loading colleges…")
             case .loaded:
                 list
             }
@@ -36,12 +38,22 @@ struct ExploreView: View {
 
     private var list: some View {
         let rows = model.rows(favorites: favorites.slugs)
+        let chips = ExploreFilters.chips(model.filters)
         return List {
+            if !chips.isEmpty {
+                ExploreChipsRow(chips: chips) { chip in
+                    model.filters = chip.cleared
+                    Haptics.selection()
+                }
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .listRowBackground(Color.clear)
+            }
             Section {
-                ForEach(rows) { college in
+                ForEach(rows) { item in
+                    let college = item.college
                     NavigationLink(value: CollegesDetailRoute(college: college)) {
                         ExploreRow(
-                            college: college,
+                            item: item,
                             isSaved: store.shortlistContains(college),
                             isFavorite: favorites.contains(college.slug),
                             config: store.config
@@ -70,7 +82,8 @@ struct ExploreView: View {
                 Text("\(count) result\(count == 1 ? "" : "s") for “\(model.query.trimmingCharacters(in: .whitespaces))”")
             } else {
                 Text("\(count) \(model.isFiltered ? "matching " : "")college\(count == 1 ? "" : "s")")
-                Text("Ranked by \(model.rankingName)").foregroundStyle(Theme.mutedSoft)
+                Text(model.filters.sort == .rank ? "Ranked by \(model.rankingName), then by size" : "Sorted by \(model.filters.sort.label.lowercased())")
+                    .foregroundStyle(Theme.mutedSoft)
             }
         }
         .font(.footnote)
@@ -86,16 +99,25 @@ struct ExploreView: View {
             } else {
                 ContentUnavailableView(
                     "No colleges match these filters",
-                    systemImage: model.favoritesOnly ? "star" : "line.3.horizontal.decrease.circle",
-                    description: Text(model.favoritesOnly ? "Swipe right on a college to add it to your favorites." : "Try another campus setting.")
+                    systemImage: model.filters.favoritesOnly ? "star" : "line.3.horizontal.decrease.circle",
+                    description: Text(model.filters.favoritesOnly ? "Swipe right on a college to add it to your favorites." : "Remove a filter or try another one.")
                 )
             }
         }
     }
 
     private var aboutFooter: some View {
-        Text("Ranks, average GPA and campus photos come from the \(model.rankingName) list. Admission rates, test ranges, cost, graduation and earnings come from the U.S. Department of Education’s College Scorecard. A rank is one publication’s judgment, not a measure of fit. Confirm deadlines and requirements with each college.")
+        let asOf = model.catalogDate.isEmpty ? "" : " (as of \(model.catalogDate))"
+        return Text("The list covers every operating four-year public and nonprofit college with at least 1,000 undergraduates in the U.S. Department of Education’s College Scorecard\(asOf), plus every school on the \(model.rankingName) and Liberal Arts lists. Ranks and average GPA come from U.S. News. Admission rates, SAT/ACT ranges, cost, graduation and earnings come from the College Scorecard. Full-need aid, admission rounds and testing policies come from Forge’s notes, sourced from each college’s own pages and Common Data Set. Campus photos are from Wikimedia Commons, credited on each school’s page, or from U.S. News. A rank is one publication’s judgment, not a measure of fit. Confirm deadlines and requirements with each college.")
             .padding(.top, Theme.Spacing.xs)
+    }
+
+    private var filterButton: some View {
+        let count = ExploreFilters.activeCount(model.filters)
+        return Button { showsFilters = true } label: {
+            Label(count > 0 ? "Filters (\(count))" : "Sort and filter",
+                  systemImage: model.isFiltered ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+        }
     }
 
     @ViewBuilder private func addButton(_ college: College) -> some View {
@@ -134,36 +156,18 @@ struct ExploreView: View {
     }
 }
 
-/// Setting filter and favorites-only, as a toolbar menu.
-private struct ExploreFilterMenu: View {
-    @Environment(CollegesExploreModel.self) private var model
-    @Environment(CollegesFavorites.self) private var favorites
-
-    var body: some View {
-        @Bindable var model = model
-        Menu {
-            Picker("Campus setting", selection: $model.setting) {
-                ForEach(CollegesExplore.settings, id: \.id) { Text($0.label).tag($0.id) }
-            }
-            Toggle(isOn: $model.favoritesOnly) {
-                Label(favorites.slugs.isEmpty ? "Favorites only" : "Favorites only (\(favorites.slugs.count))", systemImage: "star")
-            }
-        } label: {
-            Label("Filter", systemImage: model.isFiltered ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-        }
-    }
-}
-
 /// One college in the ranking or search results.
 struct ExploreRow: View {
-    let college: College
+    let item: ExploreItem
     let isSaved: Bool
     let isFavorite: Bool
     let config: AppConfig
 
+    private var college: College { item.college }
+
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.sm) {
-            CollegePhoto(name: college.name, url: config.resolve(college.photo))
+            CollegePhoto(name: college.name, url: config.resolve(item.extras.thumb ?? college.photo))
                 .frame(width: 60, height: 60)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.medium, style: .continuous))
                 .overlay(alignment: .bottomLeading) { rankTag }
@@ -192,16 +196,23 @@ struct ExploreRow: View {
     }
 
     @ViewBuilder private var rankTag: some View {
-        if let rank = college.rank, rank > 0 {
-            Text("#\(rank)")
+        if let (text, spoken) = rankLabel {
+            Text(text)
                 .font(.caption2.weight(.bold).monospacedDigit())
                 .foregroundStyle(.white)
                 .padding(.horizontal, 5)
                 .padding(.vertical, 2)
                 .background(.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 4))
                 .padding(4)
-                .accessibilityLabel("Ranked \(rank)")
+                .accessibilityLabel(spoken)
         }
+    }
+
+    /// National rank first, else the liberal arts rank.
+    private var rankLabel: (String, String)? {
+        if let rank = college.rank, rank > 0 { return ("#\(rank)", "Ranked \(rank)") }
+        if let lac = item.extras.lacRank, lac > 0 { return ("#\(lac) LAC", "Ranked \(lac) among liberal arts colleges") }
+        return nil
     }
 
     @ViewBuilder private var tags: some View {

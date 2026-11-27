@@ -347,3 +347,10 @@ Portal checks can capture the decision letter. Its body stays sealed on the serv
 - Importing is web-only (a bookmark run in Maia on a computer, public/maia/import.js); the app only views and deletes. Entry: a "Scattergrams" row on Shortlist, pushing `ScattergramsRoute`.
 - Each point is a real past applicant from the student's school: keep the doc in the screen's memory only. Never log, cache, export or put it in widgets. The AI reads it server-side (lib/scattergram-summary.ts); nothing to send from the app.
 - The student's marker follows the web page: Maia's numbers where present, else `applicant.gpaUnweighted` / `applicant.sat` (`ScattergramLogic.studentMarker`).
+
+## Explore catalog (PR #61)
+
+- `GET /api/colleges/search?browse=1` returns the Explore catalog (lib/explore-catalog.ts `toExploreCollege`), plus `catalogDate`. Search (`q`) answers from the catalog first, then College Scorecard. Catalog rows add `lacRank`, `thumb` (500px Wikimedia) and `f` facets `{admit, net, size, sat, earn, grad, kind, control, region, state, intl, nursing, testPolicy, meetsNeed, ed, ea, hbcu, women, notes}`; false and missing values are dropped. iOS keeps these in `CollegesSearchResponse.extras` (`ExploreRowExtras`), never on `College`, so they never reach the workspace.
+- Sort and filters are client-side: `ExploreFilters` mirrors public/hub/ExploreFilters.jsx. A school without data never passes a filter. Search keeps relevance order unless a sort is picked. Filters persist in UserDefaults (`forge.colleges.exploreFilters`).
+- `GET /api/colleges/detail` adds `exploreExtras`: `credit {by, license, page}`, `lacRank`, `rankings {usn, lac, forbes, niche, wsj, prPublic, prPrivate, forge}`, `research {checkedAt, notes, byIncome, deadlines, essays}` or null, `intlAid`, `nursing`, `niche`, `switching`, `earningsRange`, `hbcu`, `women`, and `partial: true` when the live Scorecard record was unavailable. iOS decodes it as `CollegesDetail.extras` (`ExploreDetailExtras`).
+- A Wikimedia photo is shown with its credit ("Photo: author, license, via Wikimedia Commons", linking to the file page) on the school page. Open only http(s) links (`ExploreLinks.safeURL`).
