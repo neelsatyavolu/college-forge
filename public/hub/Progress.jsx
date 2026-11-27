@@ -85,6 +85,7 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
           <p className="cf-page-lede">Where every application stands, by round, with follow-ups and anything flagged. This is the page parents and counselors see when you share it{links ? ` (shared with ${links} ${links === 1 ? "person" : "people"})` : ""}.</p>
         </div>
         <div className="cf-row-actions">
+          {tracker.apps.length && Chances ? <Chances compact data={data} onWorkspaceChange={onWorkspaceChange} /> : null}
           <Button size="sm" variant="secondary" onClick={() => setSharing(!sharing)}>Share progress</Button>
           <Button size="sm" onClick={() => setAddOpen(!addOpen)}>Add a school</Button>
         </div>
@@ -93,8 +94,7 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
       {error ? <div role="alert" className="cf-notice">{error}</div> : null}
       {addOpen ? <AddSchool tracked={tracker.apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setAddOpen(false)} /> : null}
       {sharing ? <SharePanel data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setSharing(false)} /> : null}
-      {tracker.apps.length && Chances ? <Chances data={data} onWorkspaceChange={onWorkspaceChange} /> : null}
-      {window.LetterTasks ? <window.LetterTasks data={data} tracker={tracker} /> : null}
+      {window.LetterTasks ? <window.LetterTasks data={data} tracker={tracker} onWorkspaceChange={onWorkspaceChange} /> : null}
       {tracker.apps.length ? (
         <React.Fragment>
           {window.InterviewsAhead ? <window.InterviewsAhead apps={tracker.apps} /> : null}
