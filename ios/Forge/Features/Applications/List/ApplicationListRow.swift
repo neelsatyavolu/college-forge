@@ -105,7 +105,7 @@ struct ApplicationRowContent: View {
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.sm) {
             SchoolLogo(name: app.name, path: app.logo, config: store.config, size: 40)
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.xxs) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(app.name)
                         .font(.body.weight(.medium))
@@ -119,7 +119,7 @@ struct ApplicationRowContent: View {
             // Rows grow to fit wrapped text instead of truncating it on narrow phones.
             .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Theme.Spacing.xxs)
         .accessibilityElement(children: .combine)
     }
 }
@@ -168,7 +168,7 @@ struct PortalSummaryLine: View {
     var checking = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.xxs) {
             if checking {
                 Label("Checking portal…", systemImage: "arrow.triangle.2.circlepath")
                     .foregroundStyle(Theme.teal)
@@ -201,13 +201,19 @@ struct PortalSummaryLine: View {
             }
         }
         .font(.footnote)
+        // Status labels line up with the text lines above them instead of taking the list's icon column.
+        .labelStyle(.inline)
     }
 }
 
 #Preview {
-    List {
+    var attention = PreviewData.tracker.apps[1]
+    attention.missing = ["Counselor recommendation", "Mid-year school report from the counseling office", "Teacher evaluation"]
+    attention.lastFailure = PortalFailure(at: 0, error: "The portal asked for a verification code")
+    return List {
         ApplicationListRow(app: PreviewData.tracker.apps[0], expanded: true)
         ApplicationListRow(app: PreviewData.tracker.apps[1])
+        ApplicationListRow(app: attention, expanded: true)
     }
     .environment(PortalCheckModel())
     .previewEnvironment()
