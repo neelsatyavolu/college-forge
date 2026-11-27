@@ -11,6 +11,12 @@
 .oc-msg { display: flex; flex-direction: column; gap: 12px; }
 .oc-msg--user { align-items: flex-end; }
 .oc-bubble { max-width: 62ch; font-size: 16px; line-height: 1.6; white-space: pre-wrap; color: var(--body-strong, var(--ink)); }
+.oc-msg--assistant .oc-bubble { white-space: normal; }
+.oc-rich-p { margin: 0 0 12px; }
+.oc-rich-p:last-child, .oc-rich-list:last-child { margin-bottom: 0; }
+.oc-rich-list { margin: 0 0 12px; padding-left: 1.2em; }
+.oc-bubble strong { font-weight: 600; color: inherit; }
+.oc-bubble a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .oc-msg--user .oc-bubble { padding: 10px 14px; border-radius: 12px 12px 4px 12px; background: var(--surface-soft); color: var(--ink); }
 .oc-status { margin: 0; font-size: 14px; color: var(--muted); }
 .oc-error { margin: 0; font-size: 14px; color: var(--error); }

@@ -125,7 +125,7 @@ function OcMessage({ m, live, busy, data, profile, revision, onAnswer, onApprove
   const content = m.role === "assistant" ? ocDedupe(m.content) : m.content;
   return (
     <div className={"oc-msg oc-msg--" + m.role}>
-      {content && <div className="oc-bubble">{content}</div>}
+      {content && <div className="oc-bubble">{m.role === "assistant" ? window.ocRich(content) : content}</div>}
       {live && ui.question && <window.OcQuestion q={ui.question} lead={content} data={data} profile={profile} revision={revision} disabled={busy} onAnswer={onAnswer} />}
       {live && ui.list && <window.OcListTiles schools={ui.list} edIdea={ui.edIdea} transferPath={ui.transferPath} warning={ui.warning} disabled={busy} onApprove={onApprove} onRevise={onRevise} />}
       {live && ui.strategy && <window.OcStrategyTiles strategy={ui.strategy} disabled={busy} onConfirm={onConfirm} onAnswer={onAnswer} />}

@@ -3,6 +3,29 @@
 // because hub scripts share one global scope.
 const { Button: OcButton } = window.CollegeForgeDesignSystem_e95e63;
 
+/** **bold** and [text](https://…) inside one line. Only http(s) links; everything else stays text. */
+function ocInline(text, key) {
+  const parts = String(text).split(/(\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^)\s]+\))/g);
+  return parts.map((seg, i) => {
+    const k = `${key}-${i}`;
+    if (/^\*\*[^*]+\*\*$/.test(seg)) return <strong key={k}>{seg.slice(2, -2)}</strong>;
+    const link = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(seg);
+    if (link) return <a key={k} href={link[2]} target="_blank" rel="noopener noreferrer">{link[1]}</a>;
+    return seg;
+  });
+}
+
+/** The AI's Markdown as React elements (no HTML): paragraphs, line breaks, "- " lists, bold, links. */
+function ocRich(md) {
+  return String(md || "").split(/\n{2,}/).filter((b) => b.trim()).map((block, i) => {
+    const lines = block.split("\n");
+    if (lines.every((l) => /^\s*[-*•]\s+/.test(l))) {
+      return <ul key={i} className="oc-rich-list">{lines.map((l, j) => <li key={j}>{ocInline(l.replace(/^\s*[-*•]\s+/, ""), `${i}-${j}`)}</li>)}</ul>;
+    }
+    return <p key={i} className="oc-rich-p">{lines.map((l, j) => <React.Fragment key={j}>{j > 0 && <br />}{ocInline(l, `${i}-${j}`)}</React.Fragment>)}</p>;
+  });
+}
+
 function OcChoiceTiles({ q, disabled, onAnswer }) {
   const multi = q.kind === "multi";
   const [picked, setPicked] = React.useState([]);
@@ -241,7 +264,7 @@ function OcSchoolTile({ s, off, disabled, onToggle }) {
         {s.aiTier && s.aiTier !== s.tier && <span className="oc-tier-note" title="Forge sets tiers from published admissions data for your GPA and scores">Forge's data</span>}
         {s.current && <span className="oc-tier-note">On your list</span>}
       </div>
-      <p>{s.reason}</p>
+      <p>{ocInline(s.reason, "r")}</p>
       <div className="oc-school-meta">
         {s.estChance && <span>Chance {s.estChance}</span>}
         {s.netPrice && <span>Net {s.netPrice}{s.fitsBudget === "no" ? " · over budget" : ""}</span>}
@@ -267,7 +290,7 @@ function OcListTiles({ schools, edIdea, transferPath, warning, disabled, onAppro
         <div className="oc-ed-idea">
           <span className="oc-ed-label">Early Decision idea</span>
           <strong>{edIdea.school || "None for now"}</strong>
-          <p>{edIdea.reason}</p>
+          <p>{ocInline(edIdea.reason, "e")}</p>
         </div>
       )}
       {warning && <p className="oc-list-warn" role="note">{warning}</p>}
@@ -284,7 +307,7 @@ function OcListTiles({ schools, edIdea, transferPath, warning, disabled, onAppro
         <div className="oc-ed-idea oc-transfer">
           <span className="oc-ed-label">Backup path: start at community college</span>
           <strong>{transferPath.college} → {transferPath.transfersTo}</strong>
-          <p>{transferPath.reason}</p>
+          <p>{ocInline(transferPath.reason, "t")}</p>
         </div>
       )}
       <div className="oc-list-actions">
@@ -305,7 +328,7 @@ function OcStrategyTiles({ strategy, disabled, onConfirm, onAnswer }) {
         <div><dt>Early Decision</dt><dd>{strategy.ed || "None"}</dd></div>
         <div><dt>Early Action</dt><dd>{strategy.ea.length ? strategy.ea.join(", ") : "None"}</dd></div>
       </dl>
-      <p>{strategy.reasons}</p>
+      <div>{ocRich(strategy.reasons)}</div>
       <div className="oc-tile-grid oc-tile-grid--two">
         <button type="button" className="oc-tile" disabled={disabled} onClick={onConfirm}><span className="oc-tile-label">Sounds right</span><span className="oc-tile-hint">Save these rounds and build my timeline</span></button>
         <button type="button" className="oc-tile" disabled={disabled} onClick={() => onAnswer("I'd like to change the early plan.")}><span className="oc-tile-label">Change something</span><span className="oc-tile-hint">Tell the AI what you'd do differently</span></button>
@@ -329,4 +352,4 @@ function OcResearchBoard({ cards }) {
   );
 }
 
-Object.assign(window, { OcUploadTile, OcQuestion, OcListTiles, OcStrategyTiles, OcResearchBoard });
+Object.assign(window, { ocRich, OcUploadTile, OcQuestion, OcListTiles, OcStrategyTiles, OcResearchBoard });
