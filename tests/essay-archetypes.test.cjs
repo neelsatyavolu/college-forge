@@ -159,3 +159,18 @@ test('markSegments splits a draft into plain and flagged runs, skipping sentence
   assert.deepEqual(markSegments('abc', []), [{ text: 'abc', mark: false }]);
   assert.deepEqual(markSegments('', ['x']), []);
 });
+
+test('audience sets: pick the college you apply to, hide the other colleges’ prompts, keep shared ones', () => {
+  const { audienceSet, audiencePatch, chosenAudience } = require('../public/hub/essay-archetypes.js');
+  const p = (id, audience) => ({ id, label: id, prompt: 'p', limit: 250, unit: 'words', ...(audience ? { audience } : {}) });
+  const items = [p('why'), p('cals-1', 'CALS'), p('cals-2', 'CALS'), p('eng-1', 'Engineering'), p('as-1', 'Arts and Sciences')];
+  const set = audienceSet(items);
+  assert.deepEqual(set.audiences, ['CALS', 'Engineering', 'Arts and Sciences']);
+  assert.equal(set.shared, true);
+  assert.deepEqual(audiencePatch(items, 'CALS'), { 'cals-1': null, 'cals-2': null, 'eng-1': true, 'as-1': true });
+  assert.deepEqual(audiencePatch(items, ''), { 'cals-1': true, 'cals-2': true, 'eng-1': true, 'as-1': true }, 'none of these hides every program prompt');
+  assert.equal(chosenAudience(items, {}), null, 'nothing chosen while every program prompt shows');
+  assert.equal(chosenAudience(items, { 'eng-1': true, 'as-1': true }), 'CALS');
+  assert.equal(chosenAudience(items, { 'cals-1': true, 'cals-2': true, 'eng-1': true, 'as-1': true }), '');
+  assert.equal(audienceSet([p('a', 'X'), p('b')]), null, 'one audience is an only-if-it-applies prompt, not a choice');
+});

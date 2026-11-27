@@ -135,6 +135,41 @@
     return out;
   }
 
+  /**
+   * A school whose prompts belong to different colleges or programs (Cornell's colleges, Tufts' schools): the
+   * audiences in prompt order, and whether some prompts are for everyone. Null with fewer than two audiences.
+   */
+  function audienceSet(items) {
+    var audiences = [];
+    var shared = false;
+    (items || []).forEach(function (it) {
+      if (!it.audience) { shared = true; return; }
+      if (audiences.indexOf(it.audience) < 0) audiences.push(it.audience);
+    });
+    return audiences.length >= 2 ? { audiences: audiences, shared: shared } : null;
+  }
+
+  /** essayHidden patch for choosing `audience` ("" for none of them): its prompts shown, other programs' hidden. */
+  function audiencePatch(items, audience) {
+    var patch = {};
+    (items || []).forEach(function (it) { if (it.audience) patch[it.id] = it.audience === audience ? null : true; });
+    return patch;
+  }
+
+  /** The audience the student chose, "" for none of them, or null while nothing is chosen. */
+  function chosenAudience(items, hidden) {
+    hidden = hidden || {};
+    var shown = [];
+    var anyHidden = false;
+    (items || []).forEach(function (it) {
+      if (!it.audience) return;
+      if (hidden[it.id]) anyHidden = true;
+      else if (shown.indexOf(it.audience) < 0) shown.push(it.audience);
+    });
+    if (!anyHidden) return null;
+    return shown.length === 1 ? shown[0] : shown.length === 0 ? "" : null;
+  }
+
   var UC_APPLICATION_SLUG = "uc-application";
 
   /** A University of California campus; they share one UC Application essay group. */
@@ -273,6 +308,9 @@
     pickSets: pickSets,
     pickPatch: pickPatch,
     markSegments: markSegments,
+    audienceSet: audienceSet,
+    audiencePatch: audiencePatch,
+    chosenAudience: chosenAudience,
     isUcCampus: isUcCampus,
     essayGroupKey: essayGroupKey,
     isSchoolSkipped: isSchoolSkipped,

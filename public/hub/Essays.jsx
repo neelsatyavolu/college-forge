@@ -444,7 +444,7 @@ function SuggestionPanel({ suggestion, unit, onUse, onDismiss, busy }) {
   );
 }
 
-function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden, aiCheck, flagged }) {
+function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden, aiCheck, flagged, option, onChooseOption }) {
   const count = essayCount(it, value);
   const over = count > it.limit;
   const underMin = /^ca-ps-/.test(it.id) && count > 0 && count < 250;
@@ -480,21 +480,7 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
         >
           {it.label}
         </h2>
-        <p
-          className="cf-essay-prompt"
-          style={{
-            margin: "10px 0 0",
-            padding: "2px 0 2px 14px",
-            borderLeft: "2px solid var(--coral)",
-            fontSize: 16,
-            color: "var(--ink)",
-            lineHeight: 1.55,
-            maxWidth: 760,
-            textWrap: "pretty",
-          }}
-        >
-          {it.prompt}
-        </p>
+        <window.EssayPrompt it={it} chosen={option} busy={statusBusy} onChoose={onChooseOption} />
         {onAsk ? (
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12 }}>
             <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "outline"))}>Outline</Button>
@@ -1036,6 +1022,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                       {g.kind === "common" && commonChoices.length > 1 ? (
                         <CommonAppChoice choices={commonChoices} chosen={commonAppPrompt} busy={statusBusy} onChoose={chooseCommonApp} />
                       ) : null}
+                      <window.AudienceControl items={g.items} hidden={hiddenMap} busy={statusBusy} onSave={(patch) => patchEssay({ essayHidden: patch })} />
                       {ESSAY_PLAN.pickSets(g.items).map((set) => (
                         <window.PickSetControl key={set.group} set={set} hidden={hiddenMap} busy={statusBusy}
                           onSave={(patch) => patchEssay({ essayHidden: patch })} />
@@ -1131,6 +1118,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                   />
                 ) : null}
                 flagged={flaggedFor && flaggedFor.id === active.id && flaggedFor.show ? flaggedFor.sentences : null}
+                option={(data.essayOption || {})[active.id]}
+                onChooseOption={(i) => patchEssay({ essayOption: { [active.id]: i } })}
               />
             ) : (
               <div className="cf-empty" style={{ border: "none", margin: "auto" }}>

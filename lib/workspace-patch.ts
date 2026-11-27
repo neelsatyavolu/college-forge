@@ -17,10 +17,12 @@ import { withWebLinks } from "./colleges";
 import {
   applyCommonAppPrompt,
   applyEssayHidden,
+  applyEssayOption,
   applyEssaySchools,
   applyEssayStatus,
   checkCommonAppPrompt,
   checkEssayHidden,
+  checkEssayOption,
   checkEssaySchools,
   checkEssayStatus,
   checkEssaySuggestionDismissals,
@@ -78,6 +80,8 @@ export type WorkspacePatch = {
   essaySuggestions?: Record<string, null>;
   /** Hide essays by id (true); null shows one again. Drafts are kept either way. */
   essayHidden?: Record<string, true | null>;
+  /** Which option of a choose-one prompt the student answers (0-based); null clears it. */
+  essayOption?: Record<string, number | null>;
   /** The chosen Common App personal essay prompt (a ca-ps-* id); null clears the choice. */
   commonAppPrompt?: string | null;
   /** Opt schools out of supplements by Essays group key (false); null makes one an essay school again. Drafts are kept. */
@@ -196,6 +200,10 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
   }
   if (patch.essayHidden !== undefined) {
     const parsed = checkEssayHidden(patch.essayHidden);
+    if (!parsed.ok) return parsed;
+  }
+  if (patch.essayOption !== undefined) {
+    const parsed = checkEssayOption(patch.essayOption);
     if (!parsed.ok) return parsed;
   }
   if (patch.essaySchools !== undefined) {
@@ -340,6 +348,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
   }
   if (patch.essayStatus) next = applyEssayStatus(next, patch.essayStatus);
   if (patch.essayHidden) next = applyEssayHidden(next, patch.essayHidden);
+  if (patch.essayOption) next = applyEssayOption(next, patch.essayOption);
   if (patch.essaySchools) next = applyEssaySchools(next, patch.essaySchools);
   if (patch.commonAppPrompt !== undefined) {
     // Only a valid choice is saved (route.ts refuses others with workspacePatchError first).
