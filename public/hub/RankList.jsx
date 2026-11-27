@@ -24,23 +24,6 @@ function useRankingSchools() {
   return state;
 }
 
-const rankText = (n) => (n == null ? "—" : `#${n}`);
-
-/** The short rank line under a school, and its longer spoken version. */
-function rankSummary(ranks) {
-  const usn = `USN ${rankText(ranks.usn)}${ranks.lac ? (ranks.usnNational ? ` LAC ≈${Math.round(ranks.usnNational)}` : " LAC") : ""}`;
-  const parts = [usn, `Niche ${rankText(ranks.niche)}`, `Forbes ${rankText(ranks.forbes)}`, `WSJ ${rankText(ranks.wsj)}`];
-  if (ranks.pr) parts.push(`PR #${ranks.pr.rank} ${ranks.pr.kind}`);
-  if (ranks.career) parts.push(`Career #${ranks.career.rank}`);
-  const title = [
-    ranks.lac ? (ranks.usnNational ? `U.S. News #${ranks.usn} liberal arts, counted as about #${Math.round(ranks.usnNational)} national` : "U.S. News liberal arts (not averaged)") : "U.S. News",
-    "Niche", "Forbes", "WSJ/College Pulse",
-    ranks.pr ? `Princeton Review Best Value #${ranks.pr.rank} ${ranks.pr.kind}${ranks.pr.national ? `, counted as about #${Math.round(ranks.pr.national)}` : ""}` : null,
-    ranks.career ? `Your career ranking (My path) #${ranks.career.rank}${ranks.career.national ? `, counted as about #${Math.round(ranks.career.national)}` : ""}` : null,
-  ].filter(Boolean).join(" · ");
-  return { text: parts.join(" · "), title };
-}
-
 function RankList({ tracker }) {
   const { SchoolMark } = window.cfApp;
   const { Button } = window.CollegeForgeDesignSystem_e95e63;
@@ -76,7 +59,7 @@ function RankList({ tracker }) {
               <span className="cf-rank-row__pos">{r.avg == null ? "" : i + 1}</span>
               <SchoolMark name={r.app.name} logo={r.app.logo} />
               <span className="cf-rank-row__name"><span className="cf-rank-row__label">{r.app.name}</span>{admitted ? <span className="cf-rank-row__tag">{r.app.status === "committed" ? "Committed" : "Admitted"}</span> : null}</span>
-              <span className="cf-rank-row__src" title={rankSummary(r.ranks).title}>{r.avg == null ? "Not ranked" : rankSummary(r.ranks).text}</span>
+              <span className="cf-rank-row__src" title={window.cfRankList.rankSummary(r.ranks).title}>{r.avg == null ? "Not ranked" : window.cfRankList.rankSummary(r.ranks).text}</span>
               <span className="cf-rank-row__avg" title="Weighted average rank">{r.avg == null ? "—" : r.avg.toFixed(1)}</span>
             </li>
             );

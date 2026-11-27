@@ -6,7 +6,7 @@ import { ownerOf } from "@/lib/session";
 import { parseCareerAi, type CareerAi } from "@/lib/career-ai";
 import { readCareerSettings, type CareerSettings } from "@/lib/career-settings";
 import { peekWorkspace, readCareerAiText, updateWorkspace } from "@/lib/store";
-import { statusInfo } from "@/lib/tracker";
+import { statusInfo, type TrackedApp } from "@/lib/tracker";
 import { anonymousWorkspaceId, getSession } from "@/lib/workspace-cookie";
 
 const SCHOOLS = (data as unknown as CareerData).schools;
@@ -34,6 +34,14 @@ export async function saveRankingsSettings(req: NextRequest, settings: CareerSet
   if (!id || !(await peekWorkspace(id))) return false;
   await updateWorkspace(id, (ws) => ({ ...ws, careerSettings: { ...(readCareerSettings(ws.careerSettings) ?? {}), ...settings } }));
   return true;
+}
+
+/** The applications on the visitor's own workspace, for the List tab; empty without one. Read only. */
+export async function readOwnApps(req: NextRequest): Promise<TrackedApp[]> {
+  const { id } = await ownWorkspaceId(req);
+  if (!id) return [];
+  const ws = await peekWorkspace(id);
+  return ws?.tracker.apps ?? [];
 }
 
 /**
