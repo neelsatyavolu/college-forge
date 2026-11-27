@@ -26,24 +26,32 @@ export function cdsUrl(research) {
 const money = (s) => (s ? Number(s.replace(/[$,]/g, "")) : null);
 
 /** Parses section H6 of a CDS text (pdftotext -layout). Returns null when the section isn't there. */
-export function parseH6(text) {
+export function parseH6(raw) {
+  // HTML pages arrive as Markdown (**H6.**, tables with | and _X_); PDFs as laid-out text. Normalize both.
+  const text = raw.replace(/\*\*/g, "").replace(/_([xX])_/g, " $1 ").replace(/\|/g, " ");
   const start = text.search(/^\s*H6\b/m);
   if (start < 0) return null;
   const rest = text.slice(start);
   const end = rest.slice(3).search(/^\s*(H7|H8|Section I|I\.\s|I1)\b/m);
   const block = end > 0 ? rest.slice(0, end + 3) : rest.slice(0, 2500);
-  const checked = (phrase) => new RegExp(`^\\s*[xX✓☒■]\\s+[^\\n]*${phrase}`, "m").test(block);
-  const needBased = checked("need-based scholarship or grant aid is available");
+  const checked = (phrase) => {
+    const line = block.split("\n").find((l) => new RegExp(phrase, "i").test(l));
+    return !!line && /(^|\s)[xX✓☒■](\s|$)/.test(line.replace(new RegExp(phrase, "i"), " "));
+  };
+  const needBased = checked("Institutional need-based scholarship or grant aid is available");
   const meritBased = checked("non-need-based scholarship or grant aid is available");
-  const none = checked("scholarship or grant aid is not available");
-  const countBlock = block.slice(Math.max(0, block.search(/provide the number/i)));
-  const awardedMatch = /(?:^|\s)(\d{1,3}(?:,\d{3})*|\d+)\s*$/m.exec(countBlock.split(/Average dollar amount/i)[0]);
+  const none = checked("scholarship (?:or|and) grant aid is not available");
+  const countBlock = block.slice(Math.max(0, block.search(/provide the number/i))).split(/Average dollar amount/i)[0];
+  const awardedMatch = /(?:^|\s)(\d{1,3}(?:,\d{3})+|\d+)\s*$/m.exec(countBlock);
   const avgMatch = /Average dollar amount[^$\n]*\$\s?([\d,]+)/i.exec(block) || /Average dollar amount[\s\S]{0,300}?\$\s?([\d,]+)/i.exec(block);
   const totalMatch = /Total dollar amount[^$\n]*\$\s?([\d,]+)/i.exec(block);
+  // An average under $500 is a stray digit from the layout, not an award.
+  const average = avgMatch && money(avgMatch[1]) >= 500 ? money(avgMatch[1]) : null;
   return {
-    needBased, meritBased, none,
+    // "Not available" is only believed when no aid box is checked and no award is reported.
+    needBased, meritBased, none: none && !needBased && !meritBased && !average,
     awarded: awardedMatch ? Number(awardedMatch[1].replace(/,/g, "")) : null,
-    average: avgMatch ? money(avgMatch[1]) : null,
+    average,
     total: totalMatch ? money(totalMatch[1]) : null,
   };
 }
