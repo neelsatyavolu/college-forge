@@ -78,6 +78,7 @@ function ikInitial(data) {
   return {
     name: ikStr(a.name), gradYear: ikStr(p.gradYear), hs: ikStr(p.hs), residency: ikStr(p.residency), citizenship: lp.citizenship,
     gpaUnweighted: ikStr(a.gpaUnweighted), gpaWeighted: ikStr(a.gpaWeighted), gpaRecent: ikStr(a.gpaRecent), gpaTrend: a.gpaTrend,
+    gpa9: ikStr((a.gpaByYear || {})["9"]), gpa10: ikStr((a.gpaByYear || {})["10"]), gpa11: ikStr((a.gpaByYear || {})["11"]),
     sat: ikStr(t.sat || a.sat), act: ikStr(t.act), testOptional: /optional|not submit/i.test(t.satNote || a.satNote || ""),
     intended: ikStr(p.intended),
     incomeBracket: lp.incomeBracket, budget: lp.budget, needAid: lp.needAid === true ? "yes" : lp.needAid === false ? "no" : undefined, firstGen: lp.firstGen,
@@ -98,6 +99,9 @@ function ikBuild(f) {
     ...(num(f.gpaWeighted, 6) ? { gpaWeighted: num(f.gpaWeighted, 6) } : {}),
     ...(num(f.gpaRecent, 4) ? { gpaRecent: num(f.gpaRecent, 4) } : {}),
     ...(f.gpaTrend ? { gpaTrend: f.gpaTrend } : {}),
+    ...([["9", f.gpa9], ["10", f.gpa10], ["11", f.gpa11]].some(([, v]) => num(v, 4))
+      ? { gpaByYear: Object.fromEntries([["9", f.gpa9], ["10", f.gpa10], ["11", f.gpa11]].filter(([, v]) => num(v, 4)).map(([y, v]) => [y, num(v, 4)])) }
+      : {}),
   };
   const testing = f.testOptional
     ? { satNote: "Test optional" }
@@ -232,6 +236,9 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
         <div className="ik-grid">
           <IkField label="Unweighted GPA" hint="out of 4.0"><input className="oc-input" inputMode="decimal" value={f.gpaUnweighted} disabled={off} onChange={set("gpaUnweighted")} maxLength={4} /></IkField>
           <IkField label="Weighted GPA"><input className="oc-input" inputMode="decimal" value={f.gpaWeighted} disabled={off} onChange={set("gpaWeighted")} maxLength={4} /></IkField>
+          <IkField label="9th grade GPA" hint="unweighted, if you know it"><input className="oc-input" inputMode="decimal" value={f.gpa9} disabled={off} onChange={set("gpa9")} maxLength={4} /></IkField>
+          <IkField label="10th grade GPA" hint="unweighted"><input className="oc-input" inputMode="decimal" value={f.gpa10} disabled={off} onChange={set("gpa10")} maxLength={4} /></IkField>
+          <IkField label="11th grade GPA" hint="unweighted"><input className="oc-input" inputMode="decimal" value={f.gpa11} disabled={off} onChange={set("gpa11")} maxLength={4} /></IkField>
           <IkField label="10th–11th GPA" hint="unweighted, if you know it"><input className="oc-input" inputMode="decimal" value={f.gpaRecent} disabled={off} onChange={set("gpaRecent")} maxLength={4} /></IkField>
           <IkField label="SAT"><input className="oc-input" inputMode="numeric" value={f.sat} disabled={off || f.testOptional} onChange={set("sat")} maxLength={4} /></IkField>
           <IkField label="ACT"><input className="oc-input" inputMode="numeric" value={f.act} disabled={off || f.testOptional} onChange={set("act")} maxLength={2} /></IkField>

@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
 import { refreshScrapedSupplements, syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
+import { withGpaFromYears } from "./gpa-years";
 import { keepValidCommonAppPrompt, visibleEssays } from "./essay-tools";
 import { linkListAndApplications, syncListAndApplications } from "./list-sync";
 import { cleanupApps, removedAppIds } from "./app-cleanup";
@@ -268,6 +269,8 @@ export type Workspace = {
     gpaTrend?: "up" | "steady" | "down";
     /** Unweighted GPA for 10th-11th grade only (what the UCs use), when the transcript shows it. */
     gpaRecent?: string;
+    /** Unweighted GPA by school year from the transcript ("9".."12"); sets gpaTrend and gpaRecent (lib/gpa-years.ts). */
+    gpaByYear?: Partial<Record<"9" | "10" | "11" | "12", string>>;
   };
   profile: {
     intended: string; hs: string; gradYear: number | string; location: string;
@@ -516,7 +519,7 @@ export function newWorkspaceId(): string {
  * lib/supplements/prompts.json, and a valid Common App choice.
  */
 function withDerived(ws: Workspace): Workspace {
-  return keepValidCommonAppPrompt(syncSuppStatus(syncEssaySupplements(refreshScrapedSupplements(ws))));
+  return withGpaFromYears(keepValidCommonAppPrompt(syncSuppStatus(syncEssaySupplements(refreshScrapedSupplements(ws)))));
 }
 
 function normalizeWorkspace(parsed: Partial<Workspace>): { workspace: Workspace; linked: boolean } {

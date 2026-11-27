@@ -276,8 +276,13 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
   }
 
   if (patch.applicant) {
-    const { sat: _sat, satNote: _note, ...rest } = patch.applicant;
+    const { sat: _sat, satNote: _note, gpaByYear, ...rest } = patch.applicant;
     next = { ...next, applicant: assignDefined(next.applicant, rest as Record<string, unknown>) };
+    // Years merge, so saving 11th grade keeps 9th and 10th; "—" clears one.
+    if (gpaByYear) {
+      const years = Object.fromEntries(Object.entries({ ...next.applicant.gpaByYear, ...gpaByYear }).filter(([, v]) => v && v !== "—"));
+      next = { ...next, applicant: { ...next.applicant, gpaByYear: years } };
+    }
   }
 
   if (patch.profile) {

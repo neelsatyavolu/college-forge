@@ -130,6 +130,8 @@ function withTestOptional(note, on) {
 }
 
 const blankStat = (v) => (v === "—" ? "" : v || "");
+/** School years with an unweighted GPA each, so the trend across high school shows (lib/gpa-years.ts). */
+const GPA_YEARS = [["9", "9th grade"], ["10", "10th grade"], ["11", "11th grade"], ["12", "12th grade"]];
 const validNumber = (value, min, max) => /^\d+(?:\.\d+)?$/.test(value) && Number(value) >= min && Number(value) <= max;
 
 /** Checks only the groups being saved and throws the first problem as a readable message. */
@@ -143,6 +145,10 @@ function checkDraft(draft, groups) {
   if (has("gpa")) {
     if (gpaUnweighted && !validNumber(gpaUnweighted, 0, 4)) throw new Error("Unweighted GPA must be a number from 0 to 4, or left blank.");
     if (gpaWeighted && !validNumber(gpaWeighted, 0, 6)) throw new Error("Weighted GPA must be a number from 0 to 6, or left blank.");
+    for (const [y, label] of GPA_YEARS) {
+      const v = String(draft.gpaByYear[y] || "").trim();
+      if (v && !validNumber(v, 0, 4)) throw new Error(`${label} GPA must be a number from 0 to 4, or left blank.`);
+    }
   }
   if (has("scores")) {
     if (sat && (!/^\d+$/.test(sat) || !validNumber(sat, 400, 1600))) throw new Error("SAT must be a whole number from 400 to 1600, or left blank.");
@@ -175,7 +181,10 @@ function sectionPatch(draft, groups, checked, baseRevision) {
   const { gpaWeighted, gpaUnweighted, sat, act, gradYear } = checked;
   const applicant = {
     ...(has("applicant") ? { name: draft.name, cycle: draft.cycle, year: draft.year } : {}),
-    ...(has("gpa") ? { gpaWeighted: gpaWeighted || "—", gpaUnweighted: gpaUnweighted || "—" } : {}),
+    ...(has("gpa") ? {
+      gpaWeighted: gpaWeighted || "—", gpaUnweighted: gpaUnweighted || "—",
+      gpaByYear: Object.fromEntries(GPA_YEARS.map(([y]) => [y, String(draft.gpaByYear[y] || "").trim() || "—"])),
+    } : {}),
     ...(has("scores") ? { sat: sat || "—", satNote: draft.satNote } : {}),
     ...(has("honors") ? { awards: draft.honors.length } : {}),
   };
@@ -227,6 +236,7 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
       year: a.year || "",
       gpaWeighted: blankStat(a.gpaWeighted),
       gpaUnweighted: blankStat(a.gpaUnweighted),
+      gpaByYear: { ...(a.gpaByYear || {}) },
       sat: blankStat(p.testing.sat),
       act: blankStat(p.testing.act),
       satNote: p.testing.satNote || "",
@@ -313,6 +323,10 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
               {shows("gpa") ? <>
                 <Input label="GPA weighted" inputMode="decimal" placeholder="4.25" hint="Optional · 0–6 scale" value={draft.gpaWeighted} onChange={(v) => setDraft((d) => ({ ...d, gpaWeighted: v }))} />
                 <Input label="GPA unweighted" inputMode="decimal" placeholder="3.80" hint="Optional · 0–4 scale" value={draft.gpaUnweighted} onChange={(v) => setDraft((d) => ({ ...d, gpaUnweighted: v }))} />
+                {GPA_YEARS.map(([y, label]) => (
+                  <Input key={y} label={`${label} GPA`} inputMode="decimal" placeholder={y === "12" ? "if you have it" : "3.70"} hint="Unweighted · sets your grade trend"
+                    value={draft.gpaByYear[y] || ""} onChange={(v) => setDraft((d) => ({ ...d, gpaByYear: { ...d.gpaByYear, [y]: v } }))} />
+                ))}
               </> : null}
               <Input label="SAT" inputMode="numeric" placeholder="1400" hint="Optional · Whole number, 400–1600" value={draft.sat} onChange={(v) => setDraft((d) => ({ ...d, sat: v }))} />
               <Input label="ACT" inputMode="numeric" placeholder="31" hint="Optional · Whole number, 1–36" value={draft.act} onChange={(v) => setDraft((d) => ({ ...d, act: v }))} />
@@ -403,6 +417,13 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
         <StatCard label="AP exams" value={String(p.testing.aps.length)} hint={p.testing.aps.length ? p.testing.aps.map((x) => x.score).join(" · ") : "none yet"} />
         <StatCard label="Honors" value={String(p.honors.length)} hint={`${topHonors} top · max ${MAX_HON} on CA`} />
       </section>
+      {GPA_YEARS.some(([y]) => (data.applicant.gpaByYear || {})[y]) ? (
+        <p className="cf-help cf-nums" style={{ margin: "-12px 0 24px", color: "var(--body)" }}>
+          Unweighted by year: {GPA_YEARS.filter(([y]) => (data.applicant.gpaByYear || {})[y]).map(([y, label]) => `${label.replace(" grade", "")} ${data.applicant.gpaByYear[y]}`).join(" · ")}
+          {data.applicant.gpaTrend ? ` · ${{ up: "trending up", steady: "steady", down: "trending down" }[data.applicant.gpaTrend]}` : ""}
+          {data.applicant.gpaRecent ? ` · 10th–11th ${data.applicant.gpaRecent}` : ""}
+        </p>
+      ) : null}
 
       <div className="cf-grid-profile">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

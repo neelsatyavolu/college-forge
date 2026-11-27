@@ -108,6 +108,13 @@ export const applicantFieldsSchema = z.object({
   /** Direction of grades over high school, as the student or transcript shows it. */
   gpaTrend: z.enum(["up", "steady", "down"]).optional(),
   gpaRecent: stat("10th-11th grade GPA", 0, 4, false).optional(),
+  /** Unweighted GPA by school year, from the transcript; "—" clears a year. */
+  gpaByYear: z.object({
+    "9": stat("9th grade GPA", 0, 4, false).optional(),
+    "10": stat("10th grade GPA", 0, 4, false).optional(),
+    "11": stat("11th grade GPA", 0, 4, false).optional(),
+    "12": stat("12th grade GPA", 0, 4, false).optional(),
+  }).strict().optional(),
 });
 
 export const testingFieldsSchema = z.object({
