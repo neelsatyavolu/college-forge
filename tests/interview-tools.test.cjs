@@ -232,3 +232,15 @@ test('past the research budget, a list Forge objects to is shown at once with it
   const ev = h.events.find((e) => e.type === 'list');
   assert.match(ev.warning, /fewer than two likely schools on this list fit your budget/);
 });
+
+test('a tight-budget list that needs aid cannot lean on out-of-state publics', () => {
+  const ws = wsWith({ budget: 'lt15', needAid: true, suppCount: 8, noSuppCount: 3 });
+  ws.profile.residency = 'TX';
+  const s = (name, tier, supplements) => ({ name, tier, reason: 'r', supplements, fitsBudget: 'yes' });
+  const grokList = [s('University of Tulsa', 'reach', 'yes'), s('Clemson University', 'reach', 'yes'), s('Auburn University', 'target', 'yes'), s('Texas A&M University', 'target', 'yes'), s('University of Alabama', 'target', 'yes'), s('University of South Carolina', 'target', 'yes'), s('University of Oklahoma', 'target', 'yes'), s('University of Arkansas', 'target', 'yes'), s('University of Texas at San Antonio', 'likely', 'no'), s('Texas State University', 'likely', 'no'), s('University of Texas at Arlington', 'likely', 'no')];
+  const problem = T.checkListProposal(ws, grokList);
+  assert.match(problem, /out-of-state public universities .*Clemson University/);
+  assert.match(T.studentWarning(problem), /rarely give need-based aid to nonresidents/);
+  ws.onboarding.listPrefs.budget = '50plus';
+  assert.doesNotMatch(T.checkListProposal(ws, grokList) || '', /out-of-state/, 'no cap, no rule');
+});

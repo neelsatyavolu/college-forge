@@ -5,7 +5,7 @@
  */
 import type { ChatEmitter, ToolSpec, UiEdIdea, UiQuestion, UiSchool, UiStrategy } from "./chat-types";
 import { dataTier, studentAcademics, testRequired } from "./college-recommendations";
-import { studentFacts } from "./list-facts";
+import { BUDGET_CAP, studentFacts } from "./list-facts";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
 import { SECTIONS, firstIncomplete, missingFields, startInterview } from "./interview-checklist";
@@ -137,12 +137,28 @@ export function applyDataTiers(ws: Workspace, schools: UiSchool[]): { schools: U
   return { schools: out, changed };
 }
 
+/**
+ * Public universities rarely give need-based aid to out-of-state students, so for a family with a tight
+ * budget that needs aid they usually cost $40-60k a year. A list built on them isn't a real list; at most
+ * one in five applications may be an out-of-state public.
+ */
+export function tooManyNonresidentPublics(ws: Workspace, schools: UiSchool[], apps: number): string | null {
+  const prefs = ws.onboarding.listPrefs;
+  const cap = prefs?.budget ? BUDGET_CAP[prefs.budget] : null;
+  if (!cap || cap > 30_000 || prefs?.needAid === false) return null;
+  const names = schools.filter((s) => !isUcCampus(s) && studentFacts(ws, s.name).outOfState).map((s) => s.name);
+  const allowed = Math.max(1, Math.floor(apps / 5));
+  if (names.length <= allowed) return null;
+  return `${names.length} out-of-state public universities (${names.join(", ")}) on a budget under $${cap.toLocaleString("en-US")} with need-based aid: publics rarely give need-based aid to nonresidents, so these usually cost $40,000-60,000 a year. Keep at most ${allowed}; use in-state publics (including regional ones), and private colleges that meet full need or give large merit aid, instead.`;
+}
+
 /** The balance problem in words for the student, shown on a list Forge accepted anyway. */
 export function studentWarning(problem: string): string {
   if (/likely schools? fit the family's budget/.test(problem)) return "Heads up: fewer than two likely schools on this list fit your budget. Run each school's net price calculator, and consider adding an in-state public or a community-college transfer path as a backstop.";
   if (/Include at least 2 likely/.test(problem)) return "Heads up: this list has fewer than two likely schools. Add a school you're very likely to get into before you finalize.";
   if (/tiers \(after Forge's data\)/.test(problem)) return `Heads up: the mix doesn't quite match what you chose. ${problem.replace(/^The tiers \(after Forge's data\) are /, "It's ").replace(/ Swap schools to fix .*$/, "")}`;
   if (/SAT or ACT scores, and this student is applying without them/.test(problem)) return `Heads up: ${problem.replace(/, and this student is applying without them\..*$/, "")}. You said you're applying without scores, so confirm each policy or drop them.`;
+  if (/out-of-state public universities/.test(problem)) return "Heads up: several schools here are out-of-state public universities, which rarely give need-based aid to nonresidents. Run each one's net price calculator before counting on it.";
   if (/applications with supplements/.test(problem)) return "Heads up: the number of schools doesn't exactly match the counts you gave. Drop or ask for schools until it does.";
   return `Heads up: ${problem}`;
 }
@@ -196,6 +212,8 @@ export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | 
       return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${yes} with, ${no} without and ${unknown} unknown (all UC campuses count as one supplement application). Check the unknown ones' requirements, then adjust.`;
     }
   } else if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
+  const nonresident = tooManyNonresidentPublics(ws, schools, apps);
+  if (nonresident) return nonresident;
   const likely = schools.filter((s) => s.tier === "likely");
   const budget = ws.onboarding.listPrefs?.budget;
   const capped = budget && !NO_PRICE_CAP.has(budget);
