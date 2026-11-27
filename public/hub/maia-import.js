@@ -9,7 +9,7 @@
   var MAIA_ORIGIN = "https://app.maialearning.com";
   var SAVE_BATCH = 25; // colleges per POST, to stay well under the request size limit
   var QUEUE_KEY = "cf.maiaQueue"; // written by Scattergrams.jsx
-  var FRESH_MS = 24 * 60 * 60 * 1000; // a school imported this recently is skipped, so clicking again resumes
+  var FRESH_MS = 14 * 24 * 60 * 60 * 1000; // a school imported in the last two weeks isn't fetched again
   var remaining = []; // what a stopped run didn't get to, for the Resume button
   var maia = window.opener;
   var colleges = null;
@@ -215,13 +215,13 @@
     var seen = {};
     var all = list.concat(readQueue()).filter(function (c) { return !seen[c.slug] && (seen[c.slug] = true); }).map(toTarget);
     if (!all.length) { finish("Your list is empty. Look up any school below, or add colleges in College Forge first."); return; }
-    // Resume: skip schools imported in the last day, never-imported ones first. If all are fresh, refresh them all.
+    // Fetch only schools never imported or imported more than two weeks ago, never-imported first.
     var age = function (c) { return known[c.slug] ? known[c.slug].fetchedAt || 0 : -1; };
     var stale = all.filter(function (c) { return Date.now() - age(c) > FRESH_MS || age(c) < 0; }).sort(function (a, b) { return age(a) - age(b); });
-    var chosen = stale.length ? stale : all;
-    var skipped = all.length - chosen.length;
-    setStatus("Importing " + chosen.length + " colleges" + (skipped ? " (" + skipped + " imported in the last day are skipped)" : "") + ". Waiting for Maia…");
-    begin(chosen, true);
+    var skipped = all.length - stale.length;
+    if (!stale.length) { finish("All " + all.length + " colleges were imported in the last two weeks, so there’s nothing to fetch. Look up any other school below."); return; }
+    setStatus("Importing " + stale.length + " colleges" + (skipped ? " (" + skipped + " imported in the last two weeks are skipped)" : "") + ". Waiting for Maia…");
+    begin(stale, true);
   }
 
   start();
