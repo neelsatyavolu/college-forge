@@ -277,6 +277,8 @@ export type Workspace = {
   admissionOdds?: Record<string, AdmissionOdds>;
   /** Scorecard admission numbers for tracked schools, by tracker id (lib/school-stats.ts). */
   schoolStats?: Record<string, SchoolStats>;
+  /** Career-ranking majors, weights and adjustments (lib/career-settings.ts), shared by the website and the app. */
+  careerSettings?: unknown;
 };
 
 export function emptyWorkspace(): Workspace {

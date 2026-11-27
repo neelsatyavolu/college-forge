@@ -44,7 +44,7 @@ export default function CareerSettings({ majors, targets, onTargets, weights, on
               </button>
             ))}
           </div>
-          <p>Each school is scored on the one you can reach where it does best against that major at other schools. A major you applied to counts directly. Otherwise it counts if switching in after you enroll is open, has a grade bar, or admits most applicants. Saved in this browser only.</p>
+          <p>Each school is scored on the one you can reach where it does best against that major at other schools. A major you applied to counts directly. Otherwise it counts if switching in after you enroll is open, has a grade bar, or admits most applicants. Saved with your list, so the app and the List tab use them too.</p>
         </div>
       )}
       <div className="rk-settings__group">

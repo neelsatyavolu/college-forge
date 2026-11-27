@@ -4,14 +4,37 @@ import { majorKeysOf, matchSchoolId, type CareerData } from "@/lib/career-rankin
 import { expandAlias } from "@/lib/college-aliases";
 import { ownerOf } from "@/lib/session";
 import { parseCareerAi, type CareerAi } from "@/lib/career-ai";
-import { peekWorkspace, readCareerAiText } from "@/lib/store";
+import { readCareerSettings, type CareerSettings } from "@/lib/career-settings";
+import { peekWorkspace, readCareerAiText, updateWorkspace } from "@/lib/store";
 import { statusInfo } from "@/lib/tracker";
 import { anonymousWorkspaceId, getSession } from "@/lib/workspace-cookie";
 
 const SCHOOLS = (data as unknown as CareerData).schools;
 export type RankingsMine = { id: number; major: string[]; admitted: boolean };
-export type RankingsMe = { workspace: boolean; account: boolean; intended: string[]; schools: RankingsMine[]; ai: CareerAi | null };
-export const NO_RANKINGS_ME: RankingsMe = { workspace: false, account: false, intended: [], schools: [], ai: null };
+export type RankingsMe = {
+  workspace: boolean; account: boolean; intended: string[]; schools: RankingsMine[]; ai: CareerAi | null;
+  /** Majors, weights and adjustments the student saved (lib/career-settings.ts); null when none. */
+  settings: CareerSettings | null;
+};
+export const NO_RANKINGS_ME: RankingsMe = { workspace: false, account: false, intended: [], schools: [], ai: null, settings: null };
+
+/** The visitor's own workspace id: the signed-in account's, else an anonymous one no account has claimed. */
+async function ownWorkspaceId(req: NextRequest): Promise<{ id: string | null; account: boolean }> {
+  const session = getSession(req);
+  const anon = session ? null : anonymousWorkspaceId(req);
+  return { id: session?.workspaceId ?? (anon && !(await ownerOf(anon)) ? anon : null), account: !!session };
+}
+
+/**
+ * Saves the visitor's career-ranking settings on their workspace. Never creates a workspace: false when the
+ * visitor has none stored yet, so the settings only apply to this request.
+ */
+export async function saveRankingsSettings(req: NextRequest, settings: CareerSettings): Promise<boolean> {
+  const { id } = await ownWorkspaceId(req);
+  if (!id || !(await peekWorkspace(id))) return false;
+  await updateWorkspace(id, (ws) => ({ ...ws, careerSettings: { ...(readCareerSettings(ws.careerSettings) ?? {}), ...settings } }));
+  return true;
+}
 
 /**
  * What the career rankings need from the visitor's own workspace: the majors they intend, the major on each
@@ -20,11 +43,8 @@ export const NO_RANKINGS_ME: RankingsMe = { workspace: false, account: false, in
  * A signed-in student also gets their own judged ranking, if they loaded one (lib/career-ai.ts).
  */
 export async function readRankingsMe(req: NextRequest): Promise<RankingsMe> {
-  const session = getSession(req);
-  const anon = session ? null : anonymousWorkspaceId(req);
-  const id = session?.workspaceId ?? (anon && !(await ownerOf(anon)) ? anon : null);
+  const { id, account } = await ownWorkspaceId(req);
   if (!id) return NO_RANKINGS_ME;
-  const account = !!session;
   try {
     const ws = await peekWorkspace(id);
     if (!ws) return { ...NO_RANKINGS_ME, account };
@@ -42,7 +62,7 @@ export async function readRankingsMe(req: NextRequest): Promise<RankingsMe> {
       add(idOf(c?.name ?? app.name, c?.scorecardId), c?.major, statusInfo(app.status).stage === "admitted");
     }
     const ai = account ? parseCareerAi(await readCareerAiText(id).catch(() => null)) : null;
-    return { workspace: true, account, intended: majorKeysOf(ws.profile?.intended), schools: [...out.values()], ai };
+    return { workspace: true, account, intended: majorKeysOf(ws.profile?.intended), schools: [...out.values()], ai, settings: readCareerSettings(ws.careerSettings) };
   } catch {
     return NO_RANKINGS_ME;
   }

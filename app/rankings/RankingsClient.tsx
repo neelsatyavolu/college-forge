@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CareerAi } from "@/lib/career-ai";
+import type { CareerSettings as SavedSettings } from "@/lib/career-settings";
 import { DEFAULT_WEIGHTS, PILLARS, createRanker, type CareerData, type Student, type Weights } from "@/lib/career-ranking";
 import AiImport from "./AiImport";
 import AiList from "./AiList";
@@ -12,8 +13,37 @@ import Methodology from "./Methodology";
 import WorkspaceShell from "./WorkspaceShell";
 import "./rankings.css";
 
-type Me = { workspace: boolean; account?: boolean; intended: string[]; schools: { id: number; major: string[]; admitted: boolean }[]; ai?: CareerAi | null };
-const EMPTY_ME: Me = { workspace: false, account: false, intended: [], schools: [], ai: null };
+type Me = { workspace: boolean; account?: boolean; intended: string[]; schools: { id: number; major: string[]; admitted: boolean }[]; ai?: CareerAi | null; settings?: SavedSettings | null };
+const EMPTY_ME: Me = { workspace: false, account: false, intended: [], schools: [], ai: null, settings: null };
+
+/**
+ * Saves setting changes on the student's workspace (PUT /api/rankings/me) a moment after the last one,
+ * so the iOS app and the List tab rank the same way. Saves go out one at a time in edit order, and a
+ * pending one is sent right away when the page is left. The browser copy still applies if saving fails.
+ */
+function useSettingsSaver(): (s: SavedSettings) => void {
+  const pending = useRef<SavedSettings>({});
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const chain = useRef<Promise<unknown>>(Promise.resolve());
+  const flush = useCallback(() => {
+    if (timer.current) { clearTimeout(timer.current); timer.current = null; }
+    if (!Object.keys(pending.current).length) return;
+    const body = JSON.stringify(pending.current);
+    pending.current = {};
+    chain.current = chain.current.then(() => fetch("/api/rankings/me", {
+      method: "PUT", credentials: "same-origin", keepalive: true, headers: { "content-type": "application/json" }, body,
+    })).catch(() => undefined);
+  }, []);
+  useEffect(() => {
+    window.addEventListener("pagehide", flush);
+    return () => { window.removeEventListener("pagehide", flush); flush(); };
+  }, [flush]);
+  return useCallback((s: SavedSettings) => {
+    pending.current = { ...pending.current, ...s };
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(flush, 600);
+  }, [flush]);
+}
 
 const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
 const isWeights = (v: unknown): v is Weights =>
@@ -30,20 +60,46 @@ export default function RankingsClient() {
   const [theme, toggleTheme] = useTheme();
   const data = useJson<CareerData>("/data/career-ranking.json");
   const [me, setMe] = useState<Me>(EMPTY_ME);
+  const [meLoaded, setMeLoaded] = useState(false);
   const [view, setViewState] = useState("path");
-  const [weights, setWeights] = useStored<Weights>("cf.career.weights", DEFAULT_WEIGHTS, isWeights);
-  const [flags, setFlags] = useStored<Flags>("cf.career.flags", DEFAULT_FLAGS, isFlags);
+  const [weights, setWeights, weightsStored] = useStored<Weights>("cf.career.weights", DEFAULT_WEIGHTS, isWeights);
+  const [flags, setFlags, flagsStored] = useStored<Flags>("cf.career.flags", DEFAULT_FLAGS, isFlags);
   const [picked, setPicked, pickedStored] = useStored<string[]>("cf.career.targets", [], isStrings);
+  const saveSettings = useSettingsSaver();
+  // Settings changed here before the workspace answered: its saved values must not replace them.
+  const edited = useRef<Set<keyof SavedSettings>>(new Set());
+  const changeWeights = useCallback((w: Weights) => { edited.current.add("weights"); setWeights(w); saveSettings({ weights: w }); }, [setWeights, saveSettings]);
+  const changeFlags = useCallback((f: Flags) => { edited.current.add("flags"); setFlags(f); saveSettings({ flags: f }); }, [setFlags, saveSettings]);
+  const changeTargets = useCallback((t: string[]) => { edited.current.add("targets"); setPicked(t); saveSettings({ targets: t }); }, [setPicked, saveSettings]);
 
   useEffect(() => {
     setViewState(readView());
     let live = true;
     fetch("/api/rankings/me", { credentials: "same-origin" })
       .then((r) => (r.ok ? r.json() : EMPTY_ME))
-      .then((m: Me) => live && setMe(m && Array.isArray(m.schools) ? m : EMPTY_ME))
+      .then((m: Me) => { if (live) { setMe(m && Array.isArray(m.schools) ? m : EMPTY_ME); setMeLoaded(true); } })
       .catch(() => undefined);
     return () => { live = false; };
   }, []);
+
+  // Once the workspace answers: its saved settings win over this browser's copy, and settings only this
+  // browser had (from before they were saved on the workspace) are saved there.
+  const synced = useRef(false);
+  useEffect(() => {
+    if (!meLoaded || synced.current) return;
+    synced.current = true;
+    const s = me.settings ?? {};
+    const touched = edited.current;
+    if (s.targets?.length && !touched.has("targets")) setPicked(s.targets);
+    if (s.weights && !touched.has("weights")) setWeights(s.weights);
+    if (s.flags && !touched.has("flags")) setFlags(s.flags);
+    const local: SavedSettings = {
+      ...(!s.targets?.length && !touched.has("targets") && pickedStored && picked.length ? { targets: picked } : {}),
+      ...(!s.weights && !touched.has("weights") && weightsStored ? { weights } : {}),
+      ...(!s.flags && !touched.has("flags") && flagsStored ? { flags } : {}),
+    };
+    if (me.workspace && Object.keys(local).length) saveSettings(local);
+  }, [meLoaded, me, picked, pickedStored, weights, weightsStored, flags, flagsStored, setPicked, setWeights, setFlags, saveSettings]);
 
   const setView = useCallback((v: string) => {
     setViewState(v);
@@ -152,11 +208,11 @@ export default function RankingsClient() {
           <CareerSettings
             majors={majors}
             targets={targets}
-            onTargets={setPicked}
+            onTargets={changeTargets}
             weights={weights}
-            onWeights={setWeights}
+            onWeights={changeWeights}
             flags={flags}
-            onFlags={setFlags}
+            onFlags={changeFlags}
             showTargets={isPath}
           >
             {me.account && <AiImport ai={me.ai ?? null} onChange={(ai) => { setMe((m) => ({ ...m, ai })); if (!ai && isAi) setView("path"); }} />}
