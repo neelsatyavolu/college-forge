@@ -6,6 +6,7 @@ import { runChecks } from "@/lib/portal-check";
 import { ImportError } from "@/lib/collegeapps-import";
 import { allow } from "@/lib/rate-limit";
 import { STATUS_IDS, ROUNDS } from "@/lib/tracker";
+import { TEST_METHODS, TEST_PLANS } from "@/lib/testing-plan";
 import {
   TrackerError,
   addApp,
@@ -43,6 +44,15 @@ const edit = z.object({
   name: z.string().max(120).optional(),
   submittedAt: date.optional(),
   ignoreAid: z.boolean().optional(),
+  testing: z
+    .object({
+      plan: z.enum(TEST_PLANS).optional(),
+      method: z.union([z.literal(""), z.enum(TEST_METHODS)]).optional(),
+      officialSent: date.optional(),
+      apSelfReported: z.boolean().optional(),
+    })
+    .strict()
+    .optional(),
 });
 const ref = z.string().min(1).max(200);
 
@@ -113,7 +123,8 @@ export async function POST(req: NextRequest) {
           return json({ success: false, error: "That's a lot of checks this hour. Forge keeps checking on its own every 12 hours." }, 429);
         }
         const checked = await runChecks(ws, { appIds: b.ids });
-        return json({ success: true, checked: checked.map((a) => viewApp(a)), data: await listApps(ws) });
+        const data = await listApps(ws);
+        return json({ success: true, checked: checked.map((a) => data.apps.find((v) => v.id === a.id) ?? viewApp(a)), data });
       }
       case "followup-add":
         return json({ success: true, app: await addFollowUpTo(ws, b.id, b.text, b.due ?? ""), data: await listApps(ws) });

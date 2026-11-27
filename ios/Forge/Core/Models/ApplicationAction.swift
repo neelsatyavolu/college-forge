@@ -12,6 +12,7 @@ struct ApplicationEdit: Encodable, Hashable, Sendable {
     var portalUrl: String?
     var name: String?
     var submittedAt: String?
+    var testing: TestingEdit?
 }
 
 /// One POST /api/applications action (app/api/applications/route.ts). The server replies with the whole

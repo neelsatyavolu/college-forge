@@ -46,6 +46,7 @@ private struct ApplicationDetailContent: View {
             }
             PortalStatusSection(app: app)
             datesSection
+            TestingPlanSection(app: app)
             if !app.notes.isEmpty {
                 Section("Notes") {
                     Text(app.notes).foregroundStyle(Theme.body).textSelection(.enabled)

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { COLLEGES, collegeById, expectedDecision, logoUrl, type College } from "./catalog";
+import { applyTestingEdit, type TestingChoice, type TestingEdit } from "./testing-plan";
 
 /**
  * The applications tracker, ported from College Apps. Each school the student applies to, where it stands,
@@ -85,6 +86,8 @@ export interface TrackedApp {
   lastFailure?: { at: number; error: string };
   /** Mirrors whether an encrypted login is saved (the login itself is never in the workspace). */
   login?: { username: string; hasPassword: boolean };
+  /** Whether to send SAT/ACT scores here, how, and when the official report went out (lib/testing-plan.ts). */
+  testing?: TestingChoice;
   createdAt: number;
   updatedAt: number;
 }
@@ -378,6 +381,7 @@ export interface AppEdit {
   portalUrl?: string;
   name?: string;
   ignoreAid?: boolean;
+  testing?: TestingEdit;
 }
 
 /** Validates and applies an edit; throws with a user-facing message on bad input. */
@@ -407,6 +411,7 @@ export function editApp(app: TrackedApp, edit: AppEdit, now = Date.now()): Track
   if (edit.portalUrl !== undefined) clean.portalUrl = edit.portalUrl.slice(0, 500);
   if (edit.ignoreAid !== undefined) clean.ignoreAid = edit.ignoreAid;
   if (edit.name !== undefined && edit.name.trim()) clean.name = edit.name.trim().slice(0, 120);
+  if (edit.testing !== undefined) clean.testing = applyTestingEdit(app.testing, edit.testing);
   return { ...app, ...clean, updatedAt: now };
 }
 

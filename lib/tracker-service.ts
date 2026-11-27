@@ -30,6 +30,7 @@ import {
   type TrackedApp,
   type Tracker,
 } from "./tracker";
+import { studentScores, testingPlanFor, withoutWithheldTests, type StudentScores } from "./testing-plan";
 
 /**
  * Everything that reads or changes the tracker goes through here: the hub's API, the AI copilot and the MCP
@@ -38,9 +39,12 @@ import {
 
 export class TrackerError extends Error {}
 
+const NO_SCORES: StudentScores = { sat: null, act: null, hasAps: false };
+
 /** What clients see for one application: derived dates, the decision state, and never a password. */
-export function viewApp(app: TrackedApp, today = todayIso()) {
+export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScores = NO_SCORES) {
   const info = statusInfo(app.status);
+  const testingPlan = testingPlanFor(app, scores);
   const decision = decisionOf(app);
   const portal = shownPortal(app);
   return {
@@ -64,7 +68,8 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
     portal: portal
       ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: countedItems(app, portal.checklist) }
       : null,
-    missing: missingItems(app, today),
+    missing: withoutWithheldTests(app, missingItems(app, today), testingPlan.policy.kind),
+    testingPlan,
     ignoreAid: !!app.ignoreAid,
     hasAidItems: !!app.portal?.checklist.some((c) => isAidItem(c.item)),
     submittedAt: app.submittedAt ?? "",
@@ -80,13 +85,13 @@ export function viewApp(app: TrackedApp, today = todayIso()) {
 export type AppView = ReturnType<typeof viewApp>;
 
 /** `revision` is the workspace's; the hub ignores a response older than one it already has. */
-export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0) {
+export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES) {
   return {
     revision,
     autocheck: tracker.autocheck,
     emails: tracker.emails,
     flags: tracker.flags.filter((f) => !f.resolvedAt),
-    apps: tracker.apps.map((a) => viewApp(a, today)),
+    apps: tracker.apps.map((a) => viewApp(a, today, scores)),
   };
 }
 
@@ -132,7 +137,7 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
   try {
     return await updateWorkspace(workspaceId, (ws) => ({ ...ws, tracker: change(ws.tracker, ws) }));
   } catch (err) {
-    if (err instanceof Error && err.message && /^(Unknown|Deadline|Decision|Portal|No application|No follow-up|No flag|Already|Write what|Due date|Submitted date)/.test(err.message)) {
+    if (err instanceof Error && err.message && /^(Unknown|Deadline|Decision|Portal|No application|No follow-up|No flag|Already|Write what|Due date|Submitted date|Testing)/.test(err.message)) {
       throw new TrackerError(err.message);
     }
     throw err;
@@ -141,7 +146,7 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
 
 export async function listApps(workspaceId: string) {
   const ws = await getWorkspace(workspaceId);
-  return viewTracker(ws.tracker, todayIso(), ws.revision);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
 }
 
 export async function addApp(
@@ -167,7 +172,7 @@ export async function addApp(
     createdId = app.id;
     return { ...tracker, apps: [...tracker.apps, app] };
   });
-  return viewApp(ws.tracker.apps.find((a) => a.id === createdId)!);
+  return viewApp(ws.tracker.apps.find((a) => a.id === createdId)!, todayIso(), studentScores(ws));
 }
 
 /**
@@ -193,7 +198,7 @@ export async function updateApp(workspaceId: string, ref: string, edit: AppEdit 
     await saveLogins(workspaceId, { [id]: null });
     await syncAutocheckIndex(workspaceId, ws.tracker);
   }
-  return viewApp(ws.tracker.apps.find((a) => a.id === id)!);
+  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
 }
 
 export async function removeApp(workspaceId: string, ref: string): Promise<{ removed: string }> {
@@ -214,7 +219,7 @@ export async function reveal(workspaceId: string, ref: string): Promise<AppView>
     id = app.id;
     return replaceApp(tracker, revealDecision(app));
   });
-  return viewApp(ws.tracker.apps.find((a) => a.id === id)!);
+  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
 }
 
 /** Saves (or with null, forgets) one school's portal login. Only the username is ever shown back. */
@@ -232,18 +237,18 @@ export async function setLogin(workspaceId: string, ref: string, login: PortalLo
     return replaceApp(tracker, { ...next, updatedAt: Date.now() });
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewApp(ws.tracker.apps.find((a) => a.id === current.id)!);
+  return viewApp(ws.tracker.apps.find((a) => a.id === current.id)!, todayIso(), studentScores(ws));
 }
 
 export async function setEmails(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, emails: on }));
-  return viewTracker(ws.tracker, todayIso(), ws.revision);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
 }
 
 export async function setAutocheck(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, autocheck: on }));
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewTracker(ws.tracker, todayIso(), ws.revision);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
 }
 
 /**
@@ -291,7 +296,7 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
   await syncAutocheckIndex(workspaceId, ws.tracker);
   // Remembered so the one-time "College Apps is now Forge" email skips this account.
   await writeDoc(`collegeapps-moved/${emailHash(email)}.json`, { at: Date.now() });
-  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision) };
+  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws)) };
 }
 
 /** Upcoming deadlines and decision dates, soonest first, plus the student's own dates from the timeline. */
@@ -323,7 +328,7 @@ async function changeApp(workspaceId: string, ref: string, change: (app: Tracked
     id = app.id;
     return replaceApp(tracker, change(app));
   });
-  return viewApp(ws.tracker.apps.find((a) => a.id === id)!);
+  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
 }
 
 export const addFollowUpTo = (workspaceId: string, ref: string, text: string, due = "") =>
@@ -334,10 +339,10 @@ export const updateFollowUp = (workspaceId: string, ref: string, id: string, cha
 
 export async function flag(workspaceId: string, text: string, scope = "") {
   const ws = await mutate(workspaceId, (tracker) => addFlag(tracker, text, scope));
-  return viewTracker(ws.tracker, todayIso(), ws.revision);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
 }
 
 export async function unflag(workspaceId: string, id: string) {
   const ws = await mutate(workspaceId, (tracker) => resolveFlag(tracker, id));
-  return viewTracker(ws.tracker, todayIso(), ws.revision);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
 }

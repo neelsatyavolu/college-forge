@@ -90,6 +90,8 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
         </div>
       </form>
 
+      {window.TestingPlan ? <window.TestingPlan key={`tp-${id}-${(app.testingPlan && app.testingPlan.choice.officialSent) || ""}`} app={app} act={act} busy={busy} /> : null}
+
       <div>
         <h3 className="cf-subhead">Follow-ups</h3>
         {app.followUps && app.followUps.length ? (
