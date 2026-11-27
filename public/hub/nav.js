@@ -6,6 +6,7 @@
   var NAV = [
     { id: "applications", label: "Portals", group: "Applications", icon: "inbox" },
     { id: "progress", label: "Progress", group: "Applications", icon: "progress" },
+    { id: "timeline", label: "Timeline", group: "Applications", icon: "calendar" },
     { id: "decisions", label: "Decisions", group: "Applications", icon: "mail" },
     { id: "board", label: "Decision board", group: "Applications", icon: "columns", needsAdmit: true },
     { id: "list", label: "Ranked list", group: "Applications", icon: "list" },

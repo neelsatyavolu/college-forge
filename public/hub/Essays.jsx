@@ -616,7 +616,14 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
   const [promptForm, setPromptForm] = React.useState(null);
   const [promptSaving, setPromptSaving] = React.useState(false);
   const [promptError, setPromptError] = React.useState("");
+  // "#essays/<essay id>" (the Timeline's links) opens that essay.
+  const [linkedId] = React.useState(() => {
+    const [view, id] = window.location.hash.slice(1).split("/");
+    const wanted = view === "essays" && id ? decodeURIComponent(id) : "";
+    return allItems.some((it) => it.id === wanted) ? wanted : null;
+  });
   const [activeId, setActiveId] = React.useState(() => {
+    if (linkedId) return linkedId;
     const first = ESSAY_PLAN.visibleItems(allItems, { hidden: data.essayHidden || {}, commonAppPrompt: data.commonAppPrompt || "" })[0] || allItems[0];
     return first ? first.id : null;
   });
@@ -639,6 +646,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
       if (hasDraft || i === 1) open.add(g.key);
     });
     Object.entries(savedOpen).forEach(([key, isOpen]) => { if (isOpen === true) open.add(key); else if (isOpen === false) open.delete(key); });
+    const linked = linkedId && allItems.find((it) => it.id === linkedId);
+    if (linked) open.add(linked._groupKey);
     return open;
   });
   React.useEffect(() => {
