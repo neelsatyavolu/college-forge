@@ -89,7 +89,7 @@ const interestFields = {
 };
 
 const Body = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("add"), name: z.string().max(120).optional(), collegeId: z.string().max(40).optional(), slug: z.string().max(120).optional(), portalUrl: z.string().max(500).optional() }).merge(edit.omit({ name: true, portalUrl: true })),
+  z.object({ action: z.literal("add"), name: z.string().max(120).optional(), collegeId: z.string().max(40).optional(), slug: z.string().max(120).optional(), portalUrl: z.union([z.literal(""), z.string().max(500).regex(/^https:\/\//)]).optional() }).merge(edit.omit({ name: true, portalUrl: true })),
   z.object({ action: z.literal("update"), id: ref, edit }),
   z.object({ action: z.literal("remove"), id: ref }),
   z.object({ action: z.literal("reveal"), id: ref }),

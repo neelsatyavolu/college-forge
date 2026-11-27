@@ -492,6 +492,23 @@ export function focusText(text: string, purpose: string | undefined, limit: numb
   return [...keep].sort((a, b) => a - b).map((i, k, all) => (k === 0 ? "" : all[k - 1] !== i - 1 ? "\n[…]\n" : "\n") + chunks[i]).join("");
 }
 
+// A page the model fetches could have told it to send the student's essays or profile out inside a URL.
+// Matching URLs against the student's own text would need their workspace here and is easy to dodge by
+// re-encoding, so this caps what any one URL can carry instead: admissions pages don't need a long query
+// string or a long path segment, and a few hundred characters is too little to ship an essay out.
+const MAX_FETCH_QUERY_CHARS = 300;
+const MAX_FETCH_SEGMENT_CHARS = 200;
+
+function smugglingUrl(raw: string): boolean {
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    return true;
+  }
+  return u.search.length > MAX_FETCH_QUERY_CHARS || u.pathname.split("/").some((seg) => seg.length > MAX_FETCH_SEGMENT_CHARS);
+}
+
 export async function runWebFetch(
   url: string,
   purpose?: string
@@ -502,6 +519,9 @@ export async function runWebFetch(
     return { ok: false, error: "web_fetch requires a full http(s) URL." };
   }
   if (!isPublicPageUrl(u)) return { ok: false, error: "Only public web pages can be fetched." };
+  if (smugglingUrl(u)) {
+    return { ok: false, error: "That URL carries too much data in its query or path. Fetch the page's plain address instead." };
+  }
 
   const tfKey = getTinyFishKey();
   let firecrawlError = "";

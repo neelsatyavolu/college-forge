@@ -157,13 +157,51 @@ test('a new school whose forward ends in todo is left without a login', () => is
   assert.equal((await logins.readLogins(ws))[app.id], undefined);
 }));
 
+test('a catalog school login is not replaced by an email whose portal or link is off the school hosts', () => isolated(async () => {
+  const service = require('../lib/tracker-service.ts');
+  const { readSetup } = require('../lib/portal-setup.ts');
+  const { ws, token } = await withAddress();
+  const existing = await service.addApp(ws, { name: 'Purdue University' });
+  await service.setLogin(ws, existing.id, { username: 'stu', password: 'Working-Pass-1' });
+  for (const over of [{ portalUrl: 'https://purdue-apply.evil.example/status' }, { link: 'https://evil.example/activate' }]) {
+    const id = crypto.randomUUID();
+    await call({ op: 'arrival', token, arrivalId: id, final: false, arrival: arrival({ ...over, state: 'set' }) });
+    await call({ op: 'arrival', token, arrivalId: id, final: true, arrival: arrival({ ...over, password: 'Phished-Pass-9' }) });
+    assert.equal((await logins.readLogins(ws))[existing.id].password, 'Working-Pass-1', JSON.stringify(over));
+    assert.equal((await readSetup(ws, existing.id)).password, 'Phished-Pass-9', 'the password stays in the set-up details');
+  }
+  await service.setMasterLogin(ws, { username: 'stu', password: 'Master-Pass-1' });
+  await service.setLogin(ws, existing.id, null);
+  await service.useMasterFor(ws, existing.id, true);
+  await call({ op: 'arrival', token, arrivalId: crypto.randomUUID(), final: true, arrival: arrival({ portalUrl: 'https://evil.example/status', password: 'Phished-Pass-8' }) });
+  assert.ok((await logins.readMaster(ws)).appIds[existing.id], 'the master association is kept');
+  assert.equal((await logins.readLogins(ws))[existing.id], undefined);
+}));
+
+test('a non-catalog school login is replaced only by an email on its own portal host', () => isolated(async () => {
+  const service = require('../lib/tracker-service.ts');
+  const { ws, token } = await withAddress();
+  const existing = await service.addApp(ws, { name: 'Tiny Slate College', portalUrl: 'https://apply.tiny.edu/apply/status' });
+  await service.setLogin(ws, existing.id, { username: 'stu', password: 'Working-Pass-1' });
+  const tiny = (over) => arrival({ collegeId: null, name: 'Tiny Slate College', portalUrl: 'https://apply.tiny.edu/apply/status', ...over });
+  for (const over of [{ portalUrl: 'https://apply.tiny-edu.example/apply/status' }, { link: 'https://evil.example/activate' }]) {
+    assert.equal((await call({ op: 'arrival', token, arrivalId: crypto.randomUUID(), final: true, arrival: tiny({ ...over, password: 'Phished-Pass-9' }) })).status, 200);
+    assert.equal((await logins.readLogins(ws))[existing.id].password, 'Working-Pass-1', JSON.stringify(over));
+  }
+  assert.equal((await store.getWorkspace(ws)).tracker.apps.length, 1);
+  await call({ op: 'arrival', token, arrivalId: crypto.randomUUID(), final: true, arrival: tiny({ link: 'https://apply.tiny.edu/activate', password: 'New-Pass-2' }) });
+  assert.equal((await logins.readLogins(ws))[existing.id].password, 'New-Pass-2');
+}));
+
 test('a forward that sets a new password replaces the saved login', () => isolated(async () => {
   const service = require('../lib/tracker-service.ts');
   const { ws, token } = await withAddress();
   const existing = await service.addApp(ws, { name: 'Purdue University' });
   await service.setLogin(ws, existing.id, { username: 'stu', password: 'Old-Pass-1' });
   const id = crypto.randomUUID();
-  await call({ op: 'arrival', token, arrivalId: id, final: false, arrival: arrival({ state: 'set', reason: 'interrupted' }) });
-  await call({ op: 'arrival', token, arrivalId: id, final: true, arrival: arrival() });
+  // Replacing a working login needs the email to come from the school's own portal host.
+  const own = { portalUrl: 'https://apply.purdue.edu/apply/status' };
+  await call({ op: 'arrival', token, arrivalId: id, final: false, arrival: arrival({ ...own, state: 'set', reason: 'interrupted' }) });
+  await call({ op: 'arrival', token, arrivalId: id, final: true, arrival: arrival(own) });
   assert.equal((await logins.readLogins(ws))[existing.id].password, 'Generated-Pass-123');
 }));

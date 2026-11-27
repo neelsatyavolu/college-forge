@@ -94,6 +94,21 @@ test('a refreshed token keeps the logins scope', () => isolated(async () => {
   assert.equal((await get(r.access_token)).status, 200);
 }));
 
+test('consent never claims essays are off-limits while /mcp exposes the essay tools', () => isolated(async () => {
+  const { TOOLS } = require('../lib/mcp-tools.ts');
+  const essayTools = TOOLS.map((t) => t.name).filter((n) => /essay/.test(n));
+  assert.ok(essayTools.includes('get_essay') && essayTools.includes('set_essays'));
+  const client = await oauth.registerClient({ client_name: 'Grok', redirect_uris: ['https://grok.com/cb'] });
+  const { challenge } = pkce();
+  const cookie = `forge_session=${session.signSession({ sub: 'xa_ESSAY', workspaceId: 'essay-consent-ws', email: 'e@b.co', name: 'E' })}`;
+  const q = new URLSearchParams({ client_id: client.client_id, redirect_uri: 'https://grok.com/cb', response_type: 'code', code_challenge: challenge, code_challenge_method: 'S256' });
+  const page = await (await authorizeRoute.GET(new NextRequest(`https://forge.test/oauth/authorize?${q}`, { headers: { cookie } }))).text();
+  const cant = page.match(/<dt>It can't<\/dt><dd>([^<]*)<\/dd>/)[1];
+  assert.doesNotMatch(cant, /essay/i);
+  assert.match(cant, /portal passwords/);
+  assert.match(page.match(/<dt>It can<\/dt><dd>([^<]*)<\/dd>/)[1], /Read your essays, including drafts/);
+}));
+
 test('the logins scope is refused for a non-loopback redirect', () => isolated(async () => {
   const client = await oauth.registerClient({ client_name: 'Grok', redirect_uris: ['https://grok.com/cb'] });
   const { challenge } = pkce();

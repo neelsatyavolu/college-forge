@@ -10,7 +10,7 @@ import type { College, InterviewSection, InterviewState, InterviewTurn, Workspac
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
 import { SECTIONS, firstIncomplete, missingFields, startInterview } from "./interview-checklist";
 import { isUcCampus } from "./seed-college-list";
-import { slugify } from "./colleges";
+import { isHttpUrl, slugify } from "./colleges";
 
 type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
@@ -301,7 +301,7 @@ export function mergeResearch(ws: Workspace, a: Args): { ws: Workspace; saved: n
     const value = text(r.value, 600);
     const sourceUrl = text(r.sourceUrl, 600);
     const cycle = text(r.cycle, 10);
-    if (!key || !value || !sourceUrl || !/^https?:\/\/\S+\.\S+/.test(sourceUrl) || !cycle || !/^\d{4}-\d{2}$/.test(cycle)) return [];
+    if (!key || !value || !isHttpUrl(sourceUrl) || !cycle || !/^\d{4}-\d{2}$/.test(cycle)) return [];
     const checkedAt = text(r.checkedAt, 10);
     return [{ key, value, sourceUrl, cycle, checkedAt: checkedAt && /^\d{4}-\d{2}-\d{2}$/.test(checkedAt) ? checkedAt : today(), thirdParty: r.thirdParty === true }];
   });

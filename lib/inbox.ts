@@ -5,10 +5,10 @@ import { arrivalEmail, notPortalEmail } from "./notify/inbox-mail";
 import { recipientOf } from "./notify/send";
 import { openJson, readLogins, readMaster, sealJson, type Sealed } from "./portal-logins";
 import { saveSetup } from "./portal-setup";
-import { catalogUrlsAllowed, masterAllowed, trustedSchoolLink } from "./portal-check";
+import { catalogUrlsAllowed, hostOf, masterAllowed, trustedSchoolLink } from "./portal-check";
 import { getWorkspace } from "./store";
 import { TrackerError, addApp, markSetupWaiting, setLogin, updateApp, useMasterFor } from "./tracker-service";
-import type { PortalResult } from "./tracker";
+import type { PortalResult, TrackedApp } from "./tracker";
 
 /**
  * Forwarding portal emails. A student gets a private address on the College Apps mail domain; the College
@@ -163,6 +163,17 @@ async function logArrival(workspaceId: string, entry: RecentArrival): Promise<vo
 }
 
 /**
+ * Whether an arrival's portal and set-up links are the school's own: a catalog school's hosts, or for any
+ * other school the host of its saved portal link. Needs at least one link.
+ */
+function sameSchoolPortal(app: TrackedApp, urls: string[]): boolean {
+  const given = urls.filter(Boolean);
+  if (app.collegeId) return catalogUrlsAllowed(app.collegeId, given);
+  const host = hostOf(app.portalUrl);
+  return !!host && given.length > 0 && given.every((u) => hostOf(u) === host);
+}
+
+/**
  * Saves the login a final arrival set: as the master login when it is the master's password, else the school's
  * own. applyArrival only passes the master's password for a school allowed to have it.
  */
@@ -204,7 +215,11 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
   const masterOk = !!tracked.collegeId && masterAllowed(tracked);
   // A host from an email gets no saved login at all; its password stays in the set-up details below.
   const emailHost = !!tracked.portalFromEmail;
-  const login = arrival.username && arrival.password && !emailHost && (!isMaster || masterOk) ? { username: arrival.username, password: arrival.password } : null;
+  // A login that works (the school's own or the master's) is replaced only by an email from that school's
+  // portal: a lookalike matched by name alone keeps its password in the set-up details below instead.
+  const working = (!!saved || !!master?.appIds[app.id]) && !prior?.placeholder;
+  const offHost = working && !sameSchoolPortal(tracked, [arrival.portalUrl, arrival.link]);
+  const login = arrival.username && arrival.password && !emailHost && !offHost && (!isMaster || masterOk) ? { username: arrival.username, password: arrival.password } : null;
   // Only a link that goes to the school itself is kept; a forged email's link is never shown as Forge's.
   const link = arrival.link && trustedSchoolLink(tracked, arrival.link) ? arrival.link : "";
 
@@ -212,8 +227,7 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
     // Before anything is typed into the portal: keep the password, but never over a login that works,
     // whether the school's own or the master login.
     const record: ArrivalRecord = { workspaceId, appId: app.id, emailed: false };
-    const working = !!saved || !!master?.appIds[app.id];
-    if (login && (!working || prior?.placeholder)) {
+    if (login && !working) {
       await setLogin(workspaceId, app.id, login);
       record.placeholder = true;
     } else if (login) {
@@ -236,7 +250,7 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
   // finish by hand, sealed, instead of throwing it away.
   // The master password is never copied in: the student already knows it, and forgetting it must stick.
   const password = isMaster ? "" : arrival.password;
-  if ((arrival.state !== "verified" || emailHost) && (arrival.pin || link || password)) {
+  if ((arrival.state !== "verified" || emailHost || offHost) && (arrival.pin || link || password)) {
     await saveSetup(workspaceId, app.id, {
       username: arrival.username, password, pin: arrival.pin, link,
       state: arrival.state === "verified" ? "set" : arrival.state, reason: arrival.reason, receivedAt: Date.now(),

@@ -28,7 +28,7 @@ function TestingPlan({ app, act, busy }) {
       <h3 className="cf-subhead">Testing plan</h3>
       <p className="cf-help" style={{ marginBottom: 8 }}>
         {policyLine(tp.policy)}
-        {tp.policy.sourceUrl ? <React.Fragment> · <a href={tp.policy.sourceUrl} target="_blank" rel="noopener noreferrer">Source ↗</a></React.Fragment> : null}
+        {/^https?:\/\//.test(tp.policy.sourceUrl || "") ? <React.Fragment> · <a href={tp.policy.sourceUrl} target="_blank" rel="noopener noreferrer">Source ↗</a></React.Fragment> : null}
       </p>
       <p className="cf-testing__advice">
         <span className="cf-badge" style={{ "--tone": TP_TONE[r.advice] || "var(--muted-soft)" }}>{r.label}</span>

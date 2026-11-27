@@ -67,7 +67,7 @@ function AidBySchool({ revision }) {
                 {row.followUps.length ? (
                   <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>To do: {row.followUps.map((f) => f.text).join("; ")}</div>
                 ) : null}
-                {row.cssSource && !row.ignoreAid ? (
+                {/^https?:\/\//.test(row.cssSource || "") && !row.ignoreAid ? (
                   <a href={row.cssSource} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--coral)" }}>
                     Source{row.cssCheckedAt ? `, checked ${row.cssCheckedAt}` : ""} →
                   </a>

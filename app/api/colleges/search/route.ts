@@ -8,8 +8,9 @@ import {
   type ScorecardCollege,
 } from "@/lib/colleges";
 import { US_NEWS_EDITION, US_NEWS_TOP_250 } from "@/lib/us-news-rankings";
-import { getWorkspace } from "@/lib/store";
+import { emptyWorkspace, peekWorkspace } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { allow, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,6 +43,8 @@ const FIELDS = [
 ].join(",");
 
 type Hit = Record<string, unknown>;
+
+const SEARCHES_PER_HOUR = 120;
 
 const num = (v: unknown): number | null => (typeof v === "number" ? v : null);
 const str = (v: unknown): string => (typeof v === "string" ? v : "");
@@ -153,7 +156,8 @@ export async function GET(req: NextRequest) {
   // Search (q ≥ 2) still hits the live College Scorecard for every school.
   if (browse && q.length < 2) {
     try {
-      const ws = await getWorkspace(id);
+      // Read only: a visitor without a stored workspace browses against an empty one, and none is created.
+      const ws = (await peekWorkspace(id)) ?? emptyWorkspace();
       const applicantSat = ws.profile.testing.sat || ws.applicant.sat;
       const onList = new Set(ws.colleges.map((c) => c.slug));
       const data = US_NEWS_TOP_250.map((u) => {
@@ -169,8 +173,8 @@ export async function GET(req: NextRequest) {
       });
       return json({ success: true, data, edition: US_NEWS_EDITION, source: "us-news-top-250" }, 200, setCookie);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Browse failed.";
-      return json({ success: false, error: message }, 502, setCookie);
+      console.error("[colleges] browse failed", err instanceof Error ? err.name : "unknown");
+      return json({ success: false, error: "Couldn't load colleges. Try again in a moment." }, 502, setCookie);
     }
   }
 
@@ -183,6 +187,11 @@ export async function GET(req: NextRequest) {
       503,
       setCookie
     );
+  }
+
+  // Each search spends the shared Scorecard key's quota, and anyone can call this without signing in.
+  if (!(await allow(`college-search:${clientIp(req)}`, SEARCHES_PER_HOUR, 60 * 60 * 1000))) {
+    return json({ success: false, error: "Too many searches from here in the last hour. Try again later." }, 429, setCookie);
   }
 
   const expanded = expandAlias(q);
@@ -199,7 +208,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Tag each result against the applicant's SAT so the list shows real fit.
-    const ws = await getWorkspace(id);
+    const ws = (await peekWorkspace(id)) ?? emptyWorkspace();
     const applicantSat = ws.profile.testing.sat || ws.applicant.sat;
     const onList = new Set(ws.colleges.map((c) => c.slug));
 
@@ -217,8 +226,8 @@ export async function GET(req: NextRequest) {
     console.log(`[colleges] q="${q}"${expanded ? ` (expanded="${expanded}")` : ""} -> ${data.length} results`);
     return json({ success: true, data, source: "scorecard" }, 200, setCookie);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Search failed.";
-    console.error(`[colleges] search failed for q="${q}":`, err);
-    return json({ success: false, error: message }, 502, setCookie);
+    // The upstream error can carry Scorecard's response text; it stays out of the logs and the reply.
+    console.error("[colleges] search failed", err instanceof Error ? err.name : "unknown");
+    return json({ success: false, error: "College search isn't working right now. Try again in a moment." }, 502, setCookie);
   }
 }
