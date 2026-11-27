@@ -6,7 +6,8 @@ struct MoreParentsSection: View {
     var role: FollowerRole = .parent
     @Environment(WorkspaceStore.self) private var store
     @State private var links: [ParentLinkInfo] = []
-    private var parents: [ParentLinkInfo] { links.filter { FollowerRole($0.role) == role } }
+    /// Writing coaches are managed on the web only (FollowerRole has no coach case).
+    private var parents: [ParentLinkInfo] { links.filter { $0.role != "coach" && FollowerRole($0.role) == role } }
     @State private var showingInvite = false
     @State private var busy = false
     @State private var sent: (url: URL, email: String, emailed: Bool)?
