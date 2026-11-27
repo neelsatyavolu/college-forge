@@ -31,6 +31,10 @@ struct WorkspacePatch: Encodable, Sendable {
     var removeAdvisorNoteId: String?
     /// Merge into one shortlist college by slug: pass the current college with your changes.
     var collegePatch: College?
+    /// Hide essays by id (`true`); a `nil` value is sent as null and shows the essay again. Never send `false`.
+    var essayHidden: [String: Bool?]?
+    /// The chosen Common App prompt id; `.some(nil)` clears the choice.
+    var commonAppPrompt: String??
 
     init() {}
 
@@ -77,6 +81,7 @@ struct WorkspacePatch: Encodable, Sendable {
         case listPrefs, applicant, profile, ed, criticalDates, colleges, essays, essayDrafts, plannerDone
         case recommendations, scholarships, financialAid, essayDraft, plannerToggle, recommendation
         case removeRecommendationId, scholarship, removeScholarshipId, removeAdvisorNoteId, collegePatch
+        case essayHidden, commonAppPrompt
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -101,6 +106,8 @@ struct WorkspacePatch: Encodable, Sendable {
         try c.encodeIfPresent(removeScholarshipId, forKey: .removeScholarshipId)
         try c.encodeIfPresent(removeAdvisorNoteId, forKey: .removeAdvisorNoteId)
         try c.encodeIfPresent(collegePatch, forKey: .collegePatch)
+        try c.encodeIfPresent(essayHidden, forKey: .essayHidden)
+        if case .some(let value) = commonAppPrompt { try c.encode(value, forKey: .commonAppPrompt) }
     }
 }
 

@@ -64,6 +64,18 @@ function App() {
     window.CF_DATA = ws;
     setData(ws);
   }, []);
+  // The server keeps the college list and the applications in step (lib/list-sync.ts), so adding or removing
+  // a school on one side reloads the other.
+  const ids = list => (list || []).map(x => x.id || x.slug).sort().join("|");
+  const reloadWorkspace = React.useCallback(() => window.cfApi.getWorkspace().then(ws => applyWorkspace(ws)).catch(() => {}), [applyWorkspace]);
+  const setTrackerAndList = React.useCallback(t => {
+    if (t && ids(t.apps) !== ids(tracker.apps)) reloadWorkspace();
+    setTracker(t);
+  }, [setTracker, reloadWorkspace, tracker]);
+  const applyWorkspaceAndTracker = React.useCallback(ws => {
+    if (ws && ids(ws.colleges) !== ids(window.CF_DATA && window.CF_DATA.colleges)) reloadTracker();
+    applyWorkspace(ws);
+  }, [applyWorkspace, reloadTracker]);
   const switchWorkspace = React.useCallback(ws => {
     setChatOpen(false);
     setChatPrompt(null);
@@ -230,15 +242,15 @@ function App() {
               <Button size="sm" onClick={() => setRunOnboarding(true)}>Finish setup</Button>
             </span>
           </div>}
-          {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTracker} />}
-          {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={applyWorkspace} />}
+          {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTrackerAndList} />}
+          {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspaceAndTracker} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} />}
           {view === "list" && <RankList tracker={tracker} />}
           {view === "official" && <OfficialRankings />}
           {view === "profile" && <Profile data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
-          {view === "recommendations" && <Recommendations data={data} onAsk={openChat} onNavigate={navigate} onWorkspaceChange={applyWorkspace} onStartSetup={() => setRunOnboarding(true)} />}
+          {view === "recommendations" && <Recommendations data={data} onAsk={openChat} onNavigate={navigate} onWorkspaceChange={applyWorkspaceAndTracker} onStartSetup={() => setRunOnboarding(true)} />}
           {view === "explore" && <Explore data={data} favorites={favorites} onToggleFavorite={toggleFav} onWorkspaceChange={refresh} />}
-          {view === "shortlist" && <Shortlist data={data} tracker={tracker} onTrackerChange={setTracker} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
+          {view === "shortlist" && <Shortlist data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onAsk={openChat} onWorkspaceChange={applyWorkspaceAndTracker} />}
           {view === "essays" && <Essays data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "track" && <Track data={data} tracker={tracker} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "share" && <ShareExport data={data} onWorkspaceChange={applyWorkspace} onWorkspaceSwitch={switchWorkspace} />}

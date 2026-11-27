@@ -9,7 +9,7 @@ import { applyWorkspacePatch, checkWorkspacePatch, setTestScores, type Workspace
 import { removeActivity, removeHonor, toolFlag, upsertActivity, upsertHonor, type Parsed } from "./profile-fields";
 import { seedRecommendedColleges } from "./college-recommendations";
 import { syncEssaySupplements } from "./essay-supplements";
-import { essayList, essayPromptsSchema, essayView, withEssayPrompts } from "./essay-tools";
+import { essayList, essayPromptsSchema, essayView, withEssayPrompts, withEssayVisibility } from "./essay-tools";
 import { isTestOptionalNote } from "./colleges";
 import { ROUNDS, STATUSES, STATUS_IDS, findApp, todayIso } from "./tracker";
 import { TEST_METHODS, TEST_PLANS, studentScores } from "./testing-plan";
@@ -248,7 +248,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "add_application",
     title: "Add an application",
-    description: `Adds a college to the student's applications (matched to Forge's catalog of 330 schools when possible, which fills in the portal link). Optional fields: status (${STATUS_HELP}), round (${ROUNDS.join(", ")}), deadline and decision_date (when the decision is expected; replaces Forge's estimate from last year) as yyyy-mm-dd, notes.`,
+    description: `Adds a college to the student's applications (matched to Forge's catalog of 330 schools when possible, which fills in the portal link). The school also joins the student's college list and its Essays group. Optional fields: status (${STATUS_HELP}), round (${ROUNDS.join(", ")}), deadline and decision_date (when the decision is expected; replaces Forge's estimate from last year) as yyyy-mm-dd, notes.`,
     input: z.object({ school: z.string().min(1).max(120), ...fields }),
     readOnly: false,
     run: async (ws, { school, ...f }) => brief(await addApp(ws, { name: school, ...toEdit(f) })),
@@ -282,7 +282,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "remove_application",
     title: "Remove an application",
-    description: "Removes a college from the student's applications, including its saved portal login. Confirm with the student first.",
+    description: "Removes a college from the student's applications, including its saved portal login. An untouched application (Not started, no login, notes or follow-ups) also leaves the college list; otherwise the school stays on the list. Essay drafts are kept. Confirm with the student first.",
     input: z.object({ school: z.string().min(1) }),
     readOnly: false,
     run: async (ws, { school }) => removeApp(ws, school),
@@ -557,7 +557,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "list_essays",
     title: "List essays",
-    description: "Every essay prompt on the student's Essays tab: Common App (school \"common\"), UC PIQs (\"uc-application\") and each school's supplements, with limit, word count and status. Draft text is left out; use get_essay for one essay.",
+    description: "Every essay prompt on the student's Essays tab: Common App (school \"common\"), UC PIQs (\"uc-application\") and each school's supplements, with limit, word count and status. `hidden: true` marks essays the student hid or Common App prompts they did not choose; skip those. `chosen: true` marks their Common App prompt. Draft text is left out; use get_essay for one essay.",
     input: z.object({}),
     readOnly: true,
     run: async (ws) => ({ essays: essayList(await getWorkspace(ws)) }),
@@ -585,6 +585,21 @@ export const TOOLS: Tool[] = [
       const saved = await updateWorkspace(ws, (w) => withEssayPrompts(w, prompts));
       const changed = new Set([...(prompts.commonApp?.length ? ["common"] : []), ...Object.keys(prompts.supplements || {})]);
       return { essays: essayList(saved).filter((e) => changed.has(e.school)) };
+    },
+  }),
+  tool({
+    name: "set_essay_visibility",
+    title: "Hide, show or choose essays",
+    description: "Only when the student asks: hide essays they won't write (`hide`, ids from list_essays), show hidden ones again (`show`), or choose their Common App personal essay prompt (`common_app_prompt`, a ca-ps-* id; null clears the choice and shows all six). Hidden essays keep their drafts.",
+    input: z.object({
+      hide: z.array(z.string().min(1).max(200)).max(100).optional(),
+      show: z.array(z.string().min(1).max(200)).max(100).optional(),
+      common_app_prompt: z.string().max(200).nullable().optional(),
+    }),
+    readOnly: false,
+    run: async (ws, { hide, show, common_app_prompt }) => {
+      const saved = await editProfile(ws, (w) => withEssayVisibility(w, { hide, show, commonAppPrompt: common_app_prompt }));
+      return { essays: essayList(saved).filter((e) => e.hidden || e.chosen).map(({ id, label, hidden, chosen }) => ({ id, label, hidden, chosen: !!chosen })) };
     },
   }),
   tool({

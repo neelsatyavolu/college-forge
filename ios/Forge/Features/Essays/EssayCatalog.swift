@@ -21,6 +21,8 @@ struct EssayGroup: Hashable, Sendable, Identifiable {
     var kind: Kind
     var essays: [Essay]
     var due: EssayDeadline?
+    /// Essays the student hid in this group (`Workspace.essayHidden`), listed apart under "Hidden".
+    var hiddenEssays: [Essay] = []
 
     var id: String { key }
     /// True for a school on the list that has no prompts yet.
@@ -34,7 +36,32 @@ enum EssayCatalog {
     static let commonKey = "common"
     static let ucKey = "uc-application"
 
-    static func groups(colleges: [College], essays: EssaySet, today: String = ForgeDates.today()) -> [EssayGroup] {
+    /// `hidden` and `commonAppPrompt` filter like the web's `visibleItems` (public/hub/essay-archetypes.js):
+    /// hidden essays move to `hiddenEssays`, and a chosen Common App prompt drops the other prompts of its set.
+    static func groups(colleges: [College], essays: EssaySet, today: String = ForgeDates.today(),
+                       hidden: [String: Bool] = [:], commonAppPrompt: String? = nil) -> [EssayGroup] {
+        visible(allGroups(colleges: colleges, essays: essays, today: today), hidden: hidden, commonAppPrompt: commonAppPrompt)
+    }
+
+    /// True when the student hid this essay, or it is a Common App prompt other than the chosen one.
+    static func isHidden(_ essay: Essay, hidden: [String: Bool], commonAppPrompt: String?) -> Bool {
+        if hidden[essay.id] == true { return true }
+        guard let chosen = commonAppPrompt, !chosen.isEmpty else { return false }
+        // The Common App choose-one set is the ca-ps-* prompts (lib/common-app-prompts.ts).
+        return essay.id.hasPrefix("ca-ps-") && essay.id != chosen
+    }
+
+    private static func visible(_ groups: [EssayGroup], hidden: [String: Bool], commonAppPrompt: String?) -> [EssayGroup] {
+        guard !hidden.isEmpty || commonAppPrompt != nil else { return groups }
+        return groups.map { group in
+            var out = group
+            out.essays = group.essays.filter { !isHidden($0, hidden: hidden, commonAppPrompt: commonAppPrompt) }
+            out.hiddenEssays = group.essays.filter { hidden[$0.id] == true }
+            return out
+        }
+    }
+
+    private static func allGroups(colleges: [College], essays: EssaySet, today: String) -> [EssayGroup] {
         var groups = [EssayGroup(key: commonKey, title: "Common App", subtitle: "Personal statement — pick one",
                                  kind: .common, essays: essays.commonApp)]
         let supplements = essays.supplements

@@ -456,7 +456,7 @@ function SuggestionPanel({ suggestion, unit, onUse, onDismiss, busy }) {
   );
 }
 
-function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion }) {
+function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden }) {
   const count = essayCount(it, value);
   const over = count > it.limit;
   const underMin = /^ca-ps-/.test(it.id) && count > 0 && count < 250;
@@ -470,6 +470,7 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
           <Badge variant="cream" uppercase>
             {badge}
           </Badge>
+          {hidden ? <Badge variant="cream">Hidden</Badge> : null}
           <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>
             Limit {it.limit} {it.unit}
           </span>
@@ -622,6 +623,12 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
           {onSetStatus ? (
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8, marginRight: 10 }}>
               {statusError ? <span role="alert" style={{ color: "var(--error)" }}>{statusError}</span> : null}
+              {onToggleHidden ? (
+                <Button variant="secondary" size="sm" disabled={statusBusy} onClick={onToggleHidden}
+                  title={hidden ? "Show this essay again and count it" : "Hide an essay you won't write. Its draft is kept."}>
+                  {hidden ? "Show essay" : "Hide essay"}
+                </Button>
+              ) : null}
               <Button
                 variant="secondary"
                 size="sm"
@@ -654,6 +661,46 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
   );
 }
 
+/** The Common App group's prompt choice: pick one of the personal essay prompts, or change it later. */
+function CommonAppChoice({ choices, chosen, busy, onChoose }) {
+  if (chosen) {
+    return (
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, padding: "4px 10px", fontSize: 12, color: "var(--muted)" }}>
+        <span>Your prompt is chosen</span>
+        <button type="button" className="cf-press" disabled={busy} onClick={() => onChoose(null)}
+          style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer", color: "var(--ink)", fontSize: 12, textDecoration: "underline" }}>
+          Change prompt
+        </button>
+      </div>
+    );
+  }
+  return (
+    <label style={{ display: "flex", flexDirection: "column", gap: 4, padding: "4px 10px 8px", fontSize: 12, color: "var(--muted)" }}>
+      Choose your prompt
+      <select aria-label="Choose your Common App prompt" value="" disabled={busy} onChange={(e) => e.target.value && onChoose(e.target.value)}
+        style={{ padding: "6px 8px", maxWidth: "100%", minWidth: 0, border: "1px solid var(--hairline)", borderRadius: "var(--radius-sm)", background: "var(--canvas)", color: "var(--ink)", fontSize: 12.5 }}>
+        <option value="">Pick one of {choices.length}…</option>
+        {choices.map((it) => <option key={it.id} value={it.id}>{it.label}</option>)}
+      </select>
+    </label>
+  );
+}
+
+/** Essays the student hid, collapsed at the bottom of their group. Opening one lets them show it again. */
+function HiddenRow({ items, open, onToggle, activeId, local, onSelect }) {
+  return (
+    <div style={{ marginTop: 4 }}>
+      <button type="button" className="cf-press" aria-expanded={open} onClick={onToggle}
+        style={{ border: "none", background: "transparent", cursor: "pointer", padding: "6px 10px", fontSize: 12, color: "var(--muted-soft)", textAlign: "left", width: "100%" }}>
+        <span className="cf-nums">{open ? "▾" : "▸"} Hidden ({items.length})</span>
+      </button>
+      {open ? items.map((it) => (
+        <SidebarItem key={it.id} it={it} active={activeId === it.id} count={essayCount(it, local[it.id] || "")} onClick={() => onSelect(it)} />
+      )) : null}
+    </div>
+  );
+}
+
 function Essays({ data, onAsk, onWorkspaceChange }) {
   const groups = React.useMemo(() => buildGroups(data), [data]);
   const allItems = React.useMemo(
@@ -681,7 +728,10 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
   const [promptForm, setPromptForm] = React.useState(null);
   const [promptSaving, setPromptSaving] = React.useState(false);
   const [promptError, setPromptError] = React.useState("");
-  const [activeId, setActiveId] = React.useState(allItems[0] ? allItems[0].id : null);
+  const [activeId, setActiveId] = React.useState(() => {
+    const first = ESSAY_PLAN.visibleItems(allItems, { hidden: data.essayHidden || {}, commonAppPrompt: data.commonAppPrompt || "" })[0] || allItems[0];
+    return first ? first.id : null;
+  });
   const active = allItems.find((it) => it.id === activeId) || allItems[0];
 
   // Collapsed university sections — default: Common App open, schools with drafts open, first school open
@@ -751,20 +801,25 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
 
   const status = data.essayStatus || {};
   const suggestions = data.essaySuggestions || {};
+  const hiddenMap = React.useMemo(() => data.essayHidden || {}, [data.essayHidden]);
+  const commonAppPrompt = data.commonAppPrompt || "";
+  const visOpts = React.useMemo(() => ({ hidden: hiddenMap, commonAppPrompt }), [hiddenMap, commonAppPrompt]);
+  const visibleItems = React.useMemo(() => ESSAY_PLAN.visibleItems(allItems, visOpts), [allItems, visOpts]);
+  const [openHidden, setOpenHidden] = React.useState(() => new Set());
   const today = todayIso();
   const [sideMode, setSideMode] = React.useState("school");
   const [statusBusy, setStatusBusy] = React.useState(false);
   const [statusError, setStatusError] = React.useState("");
   React.useEffect(() => setStatusError(""), [activeId]);
-  const totals = React.useMemo(() => ESSAY_PLAN.writingTotals(groups, local, status), [groups, local, status]);
+  const totals = React.useMemo(() => ESSAY_PLAN.writingTotals(groups, local, status, visOpts), [groups, local, status, visOpts]);
   const unfinished = (g) => {
-    const t = ESSAY_PLAN.writingTotals([g], local, status);
+    const t = ESSAY_PLAN.writingTotals([g], local, status, visOpts);
     return t.required > t.final;
   };
   const dueGroups = groups.filter((g) => g.due);
   const nextGroup = dueGroups.filter(unfinished).sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0]
     || dueGroups.slice().sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0];
-  const typeSections = React.useMemo(() => ESSAY_PLAN.byPromptType(allItems), [allItems]);
+  const typeSections = React.useMemo(() => ESSAY_PLAN.byPromptType(visibleItems), [visibleItems]);
   // Other drafts this one could start from: the same kind of prompt first.
   const startFrom = React.useMemo(() => {
     if (!active) return [];
@@ -788,6 +843,12 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     }
   };
   const setStatus = (id, next) => patchEssay({ essayStatus: { [id]: next } });
+  const setHidden = (id, hide) => patchEssay({ essayHidden: { [id]: hide ? true : null } });
+  const chooseCommonApp = async (id) => {
+    await patchEssay({ commonAppPrompt: id || null });
+    if (id) setActiveId(id);
+  };
+  const commonChoices = (data.essays && data.essays.commonApp || []).filter((it) => /^ca-ps-/.test(it.id) || it.chooseGroup === "common");
   const dismissSuggestion = (id) => patchEssay({ essaySuggestions: { [id]: null } });
   const acceptSuggestion = (id) => {
     handleChange(id, suggestions[id].text);
@@ -868,20 +929,28 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
       ) : null}
       {allItems.length === 0 && schoolCount === 0 ? (
         <div className="cf-empty">
-          No essay prompts yet. Common App prompts should load automatically — refresh, or add schools to your list so
-          supplement tabs open, then ask the copilot to load real prompts.
+          No essay prompts yet. Common App prompts load automatically. Add schools on the List or Applications tab
+          and each one gets its supplement group here; then ask the copilot to load the real prompts.
         </div>
       ) : (
         <React.Fragment>
         <WritingSummary totals={totals} next={nextGroup ? nextGroup.due : null} today={today} />
+        {commonChoices.length > 1 ? (
+          <div className="cf-mobile-essay-picker">
+            <CommonAppChoice choices={commonChoices} chosen={commonAppPrompt} busy={statusBusy} onChoose={chooseCommonApp} />
+          </div>
+        ) : null}
         <label className="cf-mobile-essay-picker">Choose an essay
           <select aria-label="Choose an essay" value={activeId || ""} onChange={(event) => {
             const item = allItems.find(essay => essay.id === event.target.value);
             if (item) selectEssay(item, item._groupKey);
           }}>
-            {groups.filter(group => group.items.length).map(group => <optgroup key={group.key} label={group.title}>
-              {group.items.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+            {groups.map(group => ({ group, items: ESSAY_PLAN.visibleItems(group.items, visOpts) })).filter(x => x.items.length).map(({ group, items }) => <optgroup key={group.key} label={group.title}>
+              {items.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
             </optgroup>)}
+            {allItems.some(item => hiddenMap[item.id]) ? <optgroup label="Hidden">
+              {allItems.filter(item => hiddenMap[item.id]).map(item => <option key={item.id} value={item.id}>{item.group} · {item.label}</option>)}
+            </optgroup> : null}
           </select>
         </label>
         <div
@@ -943,7 +1012,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
               </div>
             )) : groups.map((g) => {
               const open = openKeys.has(g.key);
-              const items = g.items || [];
+              const items = ESSAY_PLAN.visibleItems(g.items, visOpts);
+              const hiddenItems = (g.items || []).filter((it) => hiddenMap[it.id]);
               const startedCount = items.filter((it) => wordCount(local[it.id] || "") > 0).length;
               return (
                 <div
@@ -965,6 +1035,9 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                   />
                   {open ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "0 2px 6px 8px" }}>
+                      {g.kind === "common" && commonChoices.length > 1 ? (
+                        <CommonAppChoice choices={commonChoices} chosen={commonAppPrompt} busy={statusBusy} onChoose={chooseCommonApp} />
+                      ) : null}
                       {items.length === 0 ? (
                         <div
                           style={{
@@ -988,6 +1061,16 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                           />
                         ))
                       )}
+                      {hiddenItems.length ? (
+                        <HiddenRow
+                          items={hiddenItems}
+                          open={openHidden.has(g.key)}
+                          onToggle={() => setOpenHidden((prev) => { const next = new Set(prev); if (next.has(g.key)) next.delete(g.key); else next.add(g.key); return next; })}
+                          activeId={activeId}
+                          local={local}
+                          onSelect={(it) => selectEssay(it, g.key)}
+                        />
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
@@ -1030,6 +1113,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                 suggestion={suggestions[active.id]}
                 onUseSuggestion={() => acceptSuggestion(active.id)}
                 onDismissSuggestion={() => dismissSuggestion(active.id)}
+                hidden={!!hiddenMap[active.id]}
+                onToggleHidden={() => setHidden(active.id, !hiddenMap[active.id])}
               />
             ) : (
               <div className="cf-empty" style={{ border: "none", margin: "auto" }}>

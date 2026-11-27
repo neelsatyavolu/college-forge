@@ -28,6 +28,10 @@ struct Workspace: Codable, Hashable, Sendable {
     var admissionOdds: [String: AdmissionOdds]
     /// Scorecard numbers for tracked schools, by tracked app id. Passed through uninterpreted.
     var schoolStats: [String: JSONValue]
+    /// Essays the student hid, by essay id (always true). Hidden essays keep their drafts and leave every count.
+    var essayHidden: [String: Bool] = [:]
+    /// The chosen Common App personal essay prompt (a ca-ps-* id); the other prompts of that set are then hidden.
+    var commonAppPrompt: String? = nil
 
     /// True while the onboarding wizard should cover the app (mirrors `needsOnboarding` in lib/store.ts).
     var needsOnboarding: Bool {
@@ -70,6 +74,8 @@ extension Workspace {
         applicationRead = c.optional(ApplicationRead.self, .applicationRead)
         admissionOdds = c.dictionary(.admissionOdds)
         schoolStats = c.dictionary(.schoolStats)
+        essayHidden = c.dictionary(.essayHidden)
+        commonAppPrompt = c.optionalString(.commonAppPrompt)
     }
 }
 

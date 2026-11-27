@@ -6,6 +6,7 @@ import { readLogins, saveLogins, type PortalLogin } from "./portal-logins";
 import { loginHost } from "./portal-check";
 import { getWorkspace, updateWorkspace, type College, type Workspace } from "./store";
 import { curatedResearchFor, interestOf, interestSignal, upcomingInterviews, type ResearchLike } from "./interest-log";
+import { isUntouchedApp } from "./list-sync";
 import {
   decisionDateOf,
   decisionOf,
@@ -52,6 +53,10 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
     id: app.id,
     collegeId: app.collegeId,
     slug: app.slug ?? null,
+    /** The student took the school off the college list but kept the application. */
+    offList: !!app.offList,
+    /** Nothing saved yet (Not started, no login, notes or follow-ups): removing it also removes the list school. */
+    untouched: isUntouchedApp(app),
     name: app.name,
     logo: app.collegeId ? (logoUrl(app.collegeId) ?? null) : null,
     portalName: app.portalName,
@@ -172,8 +177,14 @@ export async function addApp(
     );
     if (dup) {
       createdId = dup.id;
+      // An untouched application (often the one the list sync made for a list school) takes the details given now.
+      const { name: _dn, collegeId: _dc, slug: _ds, portalUrl: dupUrl, ...dupEdit } = input;
+      const filled = isUntouchedApp(dup) && (Object.keys(dupEdit).length || dupUrl)
+        ? editApp({ ...dup, ...(dupUrl ? { portalUrl: dupUrl } : {}) }, dupEdit)
+        : dup;
       // Linking a shortlist school to an application someone already added by name.
-      return input.slug && !dup.slug ? replaceApp(tracker, { ...dup, slug: input.slug }) : tracker;
+      const linked = input.slug && !filled.slug ? { ...filled, slug: input.slug } : filled;
+      return linked === dup ? tracker : replaceApp(tracker, linked);
     }
     const slug = input.slug ?? current.colleges.find((c) => catalog && matchCatalog(c.name)?.id === catalog.id)?.slug;
     const { name: _n, collegeId: _c, slug: _s, portalUrl, ...edit } = input;
@@ -286,6 +297,19 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
     linked = 0;
     for (const { app } of incoming) {
       const existing = next.apps.find((a) => same(a, app));
+      if (existing && isUntouchedApp(existing)) {
+        // An empty application (often the one the list sync made for a list school) takes the imported one's
+        // details, keeping its id and list link.
+        const { login: _meta, ...rest } = app;
+        const login = logins[existing.id] ?? saved[existing.id];
+        next = replaceApp(next, {
+          ...rest, id: existing.id, createdAt: existing.createdAt, updatedAt: Date.now(),
+          ...(existing.slug ? { slug: existing.slug } : {}),
+          ...(login ? { login: { username: login.username, hasPassword: true } } : {}),
+        });
+        linked++;
+        continue;
+      }
       if (existing) {
         // A login saved by an earlier attempt that failed before this write counts too.
         const login = logins[existing.id] ?? saved[existing.id];

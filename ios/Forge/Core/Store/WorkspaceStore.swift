@@ -96,6 +96,24 @@ final class WorkspaceStore {
         }
     }
 
+    /// Reloads just the workspace (after an application was added, removed or imported, which changes the list).
+    func refreshWorkspace() async {
+        let started = generation
+        do {
+            let workspace = try await api.workspace()
+            if generation == started { workspaceState.receive(workspace) }
+        } catch {
+            if generation == started { handle(APIError.wrap(error)) }
+        }
+    }
+
+    static func changesList(_ action: ApplicationAction) -> Bool {
+        switch action {
+        case .add, .remove, .importCollegeApps: true
+        default: false
+        }
+    }
+
     /// POST /api/workspace {action:"reset"}. The server replies with the bare workspace (no `data` envelope),
     /// with a new revision and draft key, so onboarding starts again. The tracker is cleared too, so reload it.
     func resetHub() async throws {
@@ -147,6 +165,8 @@ final class WorkspaceStore {
             let saved = try await api.patchWorkspace(patch)
             guard generation == started else { throw APIError.cancelled }
             workspaceState.finish(saved)
+            // Replacing the college list adds or removes applications on the server too (lib/list-sync.ts).
+            if patch.colleges != nil { await refreshApplications() }
         } catch {
             guard generation == started else { throw APIError.cancelled }
             workspaceState.finish(nil)
@@ -181,6 +201,8 @@ final class WorkspaceStore {
             let response = try await api.applications(action)
             guard generation == started else { throw APIError.cancelled }
             trackerState.finish(response.data)
+            // The server adds or removes the school on the college list too (lib/list-sync.ts).
+            if Self.changesList(action) { await refreshWorkspace() }
             return response
         } catch {
             guard generation == started else { throw APIError.cancelled }

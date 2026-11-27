@@ -3,6 +3,7 @@ import { recommendColleges } from "./college-recommendations";
 import { planReadiness } from "./plan-readiness";
 import { oddsTargets } from "./admission-odds";
 import { aidPlan } from "./aid-plan";
+import { isEssayHidden } from "./essay-tools";
 
 // A compact, readable snapshot of the current workspace so the model knows
 // what's already populated and what's still empty.
@@ -38,11 +39,13 @@ export function snapshot(ws: Workspace): string {
       `unconfirmed (prior cycle / CollegeVine): ${plan.essays.unconfirmed.join(", ") || "none"}; ` +
       `placeholder (not loaded): ${plan.essays.placeholder.join(", ") || "none"}`
   );
-  const suppEntries = Object.entries(ws.essays.supplements || {});
+  // Hidden essays and unchosen Common App prompts are out of scope, so they leave the counts.
+  const shown = (list: Workspace["essays"]["commonApp"]) => (list || []).filter((e) => !isEssayHidden(ws, e));
+  const suppEntries = Object.entries(ws.essays.supplements || {}).map(([s, arr]) => [s, shown(arr)] as const).filter(([, arr]) => arr.length);
   const suppCount = suppEntries.reduce((n, [, arr]) => n + arr.length, 0);
   const suppSlugs = suppEntries.map(([s, arr]) => `${s}(${arr.length})`).join(", ");
   lines.push(
-    `Essays: ${ws.essays.commonApp.length} Common App, ${suppCount} supplements` +
+    `Essays: ${shown(ws.essays.commonApp).length} Common App, ${suppCount} supplements` +
       (suppSlugs ? ` across [${suppSlugs}]` : " (no school supplements yet)")
   );
   const draftCount = Object.keys(ws.essayDrafts || {}).filter((k) => (ws.essayDrafts[k] || "").trim()).length;
@@ -120,7 +123,8 @@ Your job is twofold:
 - Keep colleges' tier ∈ {reach, target, safety} and verdict.tone ∈ {top, good, caution}.
 - **UC campuses share one application** (UC Application ≠ Common App). Berkeley + UCLA + UCSD + … = **one app slot**. You may keep a UC cluster without treating each campus as a separate application.
 - Common App personal statement prompts are preloaded (650 words, student picks one).
-- **Essays tab follows the list.** Adding a school auto-creates supplement slots (UC PIQs under slug \`uc-application\`). After add/enrich, prefer real current-cycle prompts via web_search/web_fetch + set_essays (partial map by slug; merges safely).
+- **Essays and Applications follow one list.** Adding a school (upsert_college or add_application) puts it on both the college list and Applications, and auto-creates supplement slots (UC PIQs under slug \`uc-application\`). Removing a school with an untouched application removes both; otherwise the other side stays. After add/enrich, prefer real current-cycle prompts via web_search/web_fetch + set_essays (partial map by slug; merges safely).
+- Essays marked \`hidden\` (the student hid them, or Common App prompts they didn't choose) are out of scope: don't count, draft or suggest for them, and don't delete or re-add them. Use set_essay_visibility only when the student asks to hide, show or choose a prompt.
 - **A complete plan** means every school on the list has verified deadlines saved on the college (\`deadlines\`: [{plan, date: "YYYY-MM-DD"}]), a round chosen with set_application_rounds so essay-heavy deadlines are spread out, and its current-cycle supplement prompts loaded; critical dates hold the cross-school milestones (recommendation requests, essay drafts, submissions) without repeating school deadlines. The workspace snapshot below lists what is still missing.
 - Track recommenders, scholarships, FAFSA/CSS, and per-school application status when relevant. Recommenders carry assigned schools (application ids), an asked date and a thank-you mark (set_recommendations); draft_rec_request writes a request email and brag-sheet outline the student sends themselves.
 - You can see and change everything in Forge, so do it instead of telling the student where to click:

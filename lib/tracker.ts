@@ -62,6 +62,8 @@ export interface TrackedApp {
   collegeId: string | null;
   /** The Forge shortlist slug this application belongs to, when there is one. */
   slug?: string;
+  /** The student took the school off the college list but kept this application (lib/list-sync.ts). */
+  offList?: true;
   name: string;
   portalName: string;
   portalUrl: string;
@@ -321,6 +323,11 @@ export function matchCatalog(nameOrId: string): College | undefined {
   const base = nameOrId.split(/\s*[-–—,]\s*/)[0]!;
   const noSuny = nameOrId.replace(/^\s*SUNY\s+(at\s+)?/i, "");
   return (base !== nameOrId ? BY_NAME.get(norm(base)) : undefined) ?? (noSuny !== nameOrId ? BY_NAME.get(norm(noSuny)) ?? BY_NAME.get(norm(`${noSuny} University`)) : undefined);
+}
+
+/** A catalog school whose id, name, alias or long name matches exactly (no campus-stripping fallback). */
+export function matchCatalogExact(nameOrId: string): College | undefined {
+  return collegeById(nameOrId.trim().toLowerCase()) ?? BY_NAME.get(norm(nameOrId));
 }
 
 /** Compact catalog for the hub's school picker. */

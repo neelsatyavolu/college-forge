@@ -20,7 +20,7 @@ import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { deleteAllLogins } from "@/lib/portal-logins";
 import { createShareLink, revokeShareLink } from "@/lib/sharing";
 import { removeAllParents } from "@/lib/parents";
-import { applyWorkspacePatch, checkWorkspacePatch, isStalePatch, type WorkspacePatch } from "@/lib/workspace-patch";
+import { applyWorkspacePatch, checkWorkspacePatch, isStalePatch, workspacePatchError, type WorkspacePatch } from "@/lib/workspace-patch";
 import { checkAidAgainstWorkspace } from "@/lib/aid-validate";
 import {
   getRecovery,
@@ -86,6 +86,7 @@ type Body = {
 class OnboardingValidationError extends Error {}
 class StalePatchError extends Error {}
 class AidPatchError extends Error {}
+class PatchValidationError extends Error {}
 
 const STALE_MESSAGE = "Your profile changed while you were editing. Review the latest version and save again.";
 
@@ -99,11 +100,14 @@ async function runPatch(id: string, raw: unknown, setCookie?: string): Promise<R
       if (isStalePatch(ws, checked.value)) throw new StalePatchError(STALE_MESSAGE);
       const aidError = checkAidAgainstWorkspace(ws, checked.value);
       if (aidError) throw new AidPatchError(aidError);
+      const invalid = workspacePatchError(ws, checked.value);
+      if (invalid) throw new PatchValidationError(invalid);
       return applyWorkspacePatch(ws, checked.value);
     });
     return withCookie({ success: true, data: next }, setCookie);
   } catch (error) {
     if (error instanceof AidPatchError) return withCookie({ success: false, error: error.message }, setCookie, 400);
+    if (error instanceof PatchValidationError) return withCookie({ success: false, error: error.message }, setCookie, 400);
     if (!(error instanceof StalePatchError)) throw error;
     return withCookie({ success: false, error: STALE_MESSAGE, data: await getWorkspace(id) }, setCookie, 409);
   }

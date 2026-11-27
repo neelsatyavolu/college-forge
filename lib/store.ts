@@ -3,6 +3,8 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
 import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
+import { keepValidCommonAppPrompt } from "./essay-tools";
+import { linkListAndApplications, syncListAndApplications } from "./list-sync";
 import { listDocs } from "./doc-store";
 import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type Tracker } from "./tracker";
 import type { AdmissionOdds, ApplicationRead } from "./admission-odds";
@@ -268,9 +270,15 @@ export type Workspace = {
   /** source "student": added or edited on the Timeline; AI rewrites keep these. */
   criticalDates: { date: string; label: string; detail: string; source?: "student" }[];
   colleges: College[];
+  /** List schools whose application the student removed while keeping the school on the list (lib/list-sync.ts). */
+  noApplication?: string[];
   essays: { commonApp: Essay[]; supplements: Record<string, Essay[]> };
   /** Writing status by essay id. Missing means not marked; the Essays tab treats text as a draft. */
   essayStatus?: Record<string, EssayStatus>;
+  /** Essays the student hid (essay id → true). Hidden essays keep their drafts and leave every count. */
+  essayHidden?: Record<string, true>;
+  /** The Common App personal essay prompt the student chose (a ca-ps-* id). The other five are then hidden. */
+  commonAppPrompt?: string;
   /** Copilot suggestions by essay id (suggest_essay_edit). */
   essaySuggestions?: Record<string, EssaySuggestion>;
   /** Draft text keyed by essay id — server-persisted (not localStorage). */
@@ -476,7 +484,12 @@ export function newWorkspaceId(): string {
   return randomUUID();
 }
 
-function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
+/** What every saved workspace keeps true: Essays groups for each list school and a valid Common App choice. */
+function withDerived(ws: Workspace): Workspace {
+  return keepValidCommonAppPrompt(syncSuppStatus(syncEssaySupplements(ws)));
+}
+
+function normalizeWorkspace(parsed: Partial<Workspace>): { workspace: Workspace; linked: boolean } {
   const empty = emptyWorkspace();
   const base: Workspace = {
     ...empty,
@@ -510,8 +523,10 @@ function normalizeWorkspace(parsed: Partial<Workspace>): Workspace {
     shares: parsed.shares ?? empty.shares,
     onboarding: { ...empty.onboarding, ...(parsed.onboarding || {}) },
   };
-  // Backfill Essays groups for any college already on the list (lazy migration).
-  return syncSuppStatus(syncEssaySupplements(base));
+  // Every application gets a list school and every kept list school an application (lazy migration),
+  // then Essays groups for every college on the list.
+  const linked = linkListAndApplications(base);
+  return { workspace: withDerived(linked), linked: linked !== base };
 }
 
 type WorkspaceMutation = (workspace: Workspace) => Workspace | Promise<Workspace>;
@@ -530,9 +545,9 @@ function decodeWorkspace(raw: string | null): { workspace: Workspace; needsWrite
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
     throw new Error("Stored workspace must be a JSON object; existing data was not changed.");
   }
-  const workspace = normalizeWorkspace(parsed);
-  // A workspace from before the tracker gets its migrated tracker saved once, so ids stay stable.
-  return { workspace, needsWrite: parsed.draftStorageKey !== workspace.draftStorageKey || !parsed.tracker };
+  const { workspace, linked } = normalizeWorkspace(parsed);
+  // A workspace from before the tracker, or with applications the list sync just added, is saved once so ids stay stable.
+  return { workspace, needsWrite: parsed.draftStorageKey !== workspace.draftStorageKey || !parsed.tracker || linked };
 }
 
 async function withWorkspaceLock<T>(key: string, operation: () => Promise<T>): Promise<T> {
@@ -581,13 +596,21 @@ async function queueWorkspaceMutation(id: string, mutate?: WorkspaceMutation): P
   }
 }
 
+/**
+ * Runs a mutation, then keeps the list and applications in step (lib/list-sync.ts) and the derived essay
+ * data current, so every writer (hub, iOS, copilot, MCP, imports, rebalance) behaves the same.
+ */
+async function applyMutation(workspace: Workspace, mutate: WorkspaceMutation): Promise<Workspace> {
+  return withDerived(syncListAndApplications(workspace, await mutate(workspace)));
+}
+
 async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<Workspace> {
   const key = workspaceKey(id);
   if (!useBlob()) {
     return withWorkspaceLock(key, async () => {
       const { workspace, needsWrite } = decodeWorkspace(await readText(key));
       const revision = workspace.revision;
-      const next = mutate ? { ...await mutate(workspace), revision: revision + 1 } : workspace;
+      const next = mutate ? { ...await applyMutation(workspace, mutate), revision: revision + 1 } : workspace;
       if (mutate || needsWrite) await writeLocalText(key, JSON.stringify(next, null, 2));
       return next;
     });
@@ -601,7 +624,7 @@ async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<
     if (snapshot && !snapshot.etag) throw new Error("Workspace storage did not return an ETag; update was not attempted.");
     if (snapshot && /^W\//i.test(snapshot.etag)) throw new Error("Workspace storage returned a weak ETag; conditional update was not attempted.");
     const revision = workspace.revision;
-    const next = mutate ? { ...await mutate(workspace), revision: revision + 1 } : workspace;
+    const next = mutate ? { ...await applyMutation(workspace, mutate), revision: revision + 1 } : workspace;
     try {
       await put(key, JSON.stringify(next, null, 2), {
         access: "private",

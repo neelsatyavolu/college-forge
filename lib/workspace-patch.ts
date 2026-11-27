@@ -13,7 +13,16 @@ import type {
   Essay,
 } from "./store";
 import { mergeSupplements, syncEssaySupplements } from "./essay-supplements";
-import { applyEssayStatus, checkEssayStatus, checkEssaySuggestionDismissals, dismissSuggestions } from "./essay-tools";
+import {
+  applyCommonAppPrompt,
+  applyEssayHidden,
+  applyEssayStatus,
+  checkCommonAppPrompt,
+  checkEssayHidden,
+  checkEssayStatus,
+  checkEssaySuggestionDismissals,
+  dismissSuggestions,
+} from "./essay-tools";
 import { checkAidPatch, linkKind, mergeScholarshipList } from "./aid-validate";
 import { recExtras, recExtrasError, trackedAppIds, withoutExtras } from "./recommenders";
 import { parseApplicantFields, parseProfileFields, rankActivities, toAps, toHonors, type Parsed, type WriteMode } from "./profile-fields";
@@ -62,6 +71,10 @@ export type WorkspacePatch = {
   essayStatus?: Record<string, "draft" | "final" | null>;
   /** Dismiss copilot suggestions by id (null). Suggestions are only added by suggest_essay_edit. */
   essaySuggestions?: Record<string, null>;
+  /** Hide essays by id (true); null shows one again. Drafts are kept either way. */
+  essayHidden?: Record<string, true | null>;
+  /** The chosen Common App personal essay prompt (a ca-ps-* id); null clears the choice. */
+  commonAppPrompt?: string | null;
   /** Toggle one planner task */
   plannerToggle?: { key: string; done: boolean };
   /** Set one application status */
@@ -174,10 +187,28 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
     const parsed = checkEssaySuggestionDismissals(patch.essaySuggestions);
     if (!parsed.ok) return parsed;
   }
+  if (patch.essayHidden !== undefined) {
+    const parsed = checkEssayHidden(patch.essayHidden);
+    if (!parsed.ok) return parsed;
+  }
+  if (patch.commonAppPrompt !== undefined && patch.commonAppPrompt !== null && typeof patch.commonAppPrompt !== "string") {
+    return { ok: false, error: "Choose one of the Common App personal essay prompts." };
+  }
   const aid = checkAidPatch(next);
   if (!aid.ok) return aid;
   next = aid.value;
   return { ok: true, value: next };
+}
+
+/**
+ * The checks that need the saved workspace: a chosen Common App prompt must be one of its prompts
+ * (after any prompt replacement in the same patch). Null when the patch is fine.
+ */
+export function workspacePatchError(ws: Workspace, patch: WorkspacePatch): string | null {
+  if (patch.commonAppPrompt === undefined || patch.commonAppPrompt === null) return null;
+  const commonApp = patch.essays?.commonApp ?? ws.essays.commonApp;
+  const checked = checkCommonAppPrompt(patch.commonAppPrompt, { ...ws, essays: { ...ws.essays, commonApp } });
+  return checked.ok ? null : checked.error;
 }
 
 /** True when the patch replaces a whole profile list (activities, honors, AP scores or coursework). */
@@ -293,6 +324,12 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     };
   }
   if (patch.essayStatus) next = applyEssayStatus(next, patch.essayStatus);
+  if (patch.essayHidden) next = applyEssayHidden(next, patch.essayHidden);
+  if (patch.commonAppPrompt !== undefined) {
+    // Only a valid choice is saved (route.ts refuses others with workspacePatchError first).
+    const choice = checkCommonAppPrompt(patch.commonAppPrompt, next);
+    if (choice.ok) next = applyCommonAppPrompt(next, choice.value);
+  }
   if (patch.essaySuggestions) next = dismissSuggestions(next, patch.essaySuggestions);
 
   if (patch.plannerDone) {

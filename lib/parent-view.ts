@@ -1,5 +1,6 @@
 import type { FollowerRole, ParentLevel } from "./parents";
-import type { Workspace } from "./store";
+import type { Essay, Workspace } from "./store";
+import { isEssayHidden } from "./essay-tools";
 import { shareTracker } from "./tracker-service";
 import { sharedAidPlan } from "./aid-plan";
 import { sharedScholarship } from "./aid-validate";
@@ -55,6 +56,17 @@ export function followerView(ws: Workspace, access: { level: ParentLevel; role: 
   return access.role === "counselor" ? { ...view, role: access.role, notes: counselorNotes(ws, access.level, access.linkId) } : { ...view, role: access.role };
 }
 
+/** The essays a parent may see: everything the student hasn't hidden, without the hidden ones' drafts and statuses. */
+function visibleEssays(ws: Workspace) {
+  const all = [...ws.essays.commonApp, ...Object.values(ws.essays.supplements || {}).flat()];
+  const hidden = new Set(all.filter((e) => isEssayHidden(ws, e)).map((e) => e.id));
+  const shown = (list: Essay[]) => (list || []).filter((e) => !hidden.has(e.id));
+  const commonApp = shown(ws.essays.commonApp);
+  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements || {}).map(([k, v]) => [k, shown(v)] as const).filter(([, v]) => v.length));
+  const only = <T,>(map: Record<string, T> | undefined) => Object.fromEntries(Object.entries(map || {}).filter(([k]) => !hidden.has(k)));
+  return { essays: { commonApp, supplements }, essayDrafts: only(ws.essayDrafts), essayStatus: only(ws.essayStatus) };
+}
+
 export function parentView(ws: Workspace, level: ParentLevel, today?: string) {
   const progress = shareTracker(ws.tracker, today);
   const student = { name: (ws.applicant.name || "").trim(), cycle: ws.applicant.cycle || "" };
@@ -99,8 +111,7 @@ export function parentView(ws: Workspace, level: ParentLevel, today?: string) {
       testing: p.testing, coursework: p.coursework, activities: p.activities, honors: p.honors,
     },
     ed: ws.ed,
-    essays: ws.essays,
-    essayDrafts: ws.essayDrafts,
-    essayStatus: ws.essayStatus ?? {},
+    // Hidden essays and unchosen Common App prompts, with their drafts, never leave the server.
+    ...visibleEssays(ws),
   };
 }

@@ -34,6 +34,23 @@ function countOf(essay: Essay, text: string): number {
   return t ? t.split(/\s+/).length : 0;
 }
 
+/** In the Common App choose-one set; prompts saved before chooseGroup existed go by their ca-ps-* id. */
+const inCommonSet = (e: Essay) => e.chooseGroup === "common" || (!e.chooseGroup && /^ca-ps-/.test(e.id));
+
+/** Hidden by the student, or one of the Common App prompts they did not choose. Agents skip these. */
+export function isEssayHidden(ws: Workspace, essay: Essay): boolean {
+  if (ws.essayHidden?.[essay.id]) return true;
+  return Boolean(ws.commonAppPrompt && inCommonSet(essay) && essay.id !== ws.commonAppPrompt);
+}
+
+/** The visibility flags an agent sees on each essay. */
+function visibility(ws: Workspace, essay: Essay) {
+  return {
+    hidden: isEssayHidden(ws, essay),
+    ...(ws.commonAppPrompt && essay.id === ws.commonAppPrompt ? { chosen: true as const } : {}),
+  };
+}
+
 /** One line per essay for an agent: no draft text, just how far along it is. */
 export function essayList(ws: Workspace) {
   return allEssays(ws).map(({ essay, groupKey }) => {
@@ -48,6 +65,7 @@ export function essayList(ws: Workspace) {
       count,
       status: ws.essayStatus?.[essay.id] ?? (count > 0 ? "draft" : "not started"),
       required: essay.required ?? null,
+      ...visibility(ws, essay),
     };
   });
 }
@@ -77,6 +95,7 @@ export function essayView(ws: Workspace, id: string) {
     over_limit: count > essay.limit,
     status: ws.essayStatus?.[essay.id] ?? (count > 0 ? "draft" : "not started"),
     pending_suggestion: ws.essaySuggestions?.[essay.id]?.text ?? null,
+    ...visibility(ws, essay),
   };
 }
 
@@ -163,6 +182,69 @@ export function checkEssaySuggestionDismissals(raw: unknown): Parsed<Record<stri
 function withoutNulls<T>(base: Record<string, T>, patch: Record<string, T | null>): Record<string, T> {
   const merged = { ...base, ...patch };
   return Object.fromEntries(Object.entries(merged).filter(([, v]) => v !== null)) as Record<string, T>;
+}
+
+/** essayHidden patch: { id: true | null }, where null shows the essay again. Drafts are never touched. */
+export function checkEssayHidden(raw: unknown): Parsed<Record<string, true | null>> {
+  const map = idMap(raw, "essayHidden");
+  if (!map.ok) return map;
+  if (Object.values(map.value).some((v) => v !== true && v !== null)) return { ok: false, error: "essayHidden values must be true or null." };
+  return { ok: true, value: map.value as Record<string, true | null> };
+}
+
+/** The Common App prompts the student picks one of (the "common" choose set). */
+const commonChoices = (ws: Workspace) => ws.essays.commonApp.filter(inCommonSet);
+
+/** commonAppPrompt patch: null clears the choice; otherwise one of the Common App personal statement prompts. */
+export function checkCommonAppPrompt(raw: unknown, ws: Workspace): Parsed<string | null> {
+  if (raw === null) return { ok: true, value: null };
+  if (typeof raw !== "string" || !ID.test(raw) || !commonChoices(ws).some((e) => e.id === raw)) {
+    return { ok: false, error: "Choose one of the Common App personal essay prompts." };
+  }
+  return { ok: true, value: raw };
+}
+
+export function applyEssayHidden(ws: Workspace, patch: Record<string, true | null>): Workspace {
+  return { ...ws, essayHidden: withoutNulls(ws.essayHidden || {}, patch) as Record<string, true> };
+}
+
+export function applyCommonAppPrompt(ws: Workspace, id: string | null): Workspace {
+  const { commonAppPrompt: _old, ...rest } = ws;
+  return id ? { ...rest, commonAppPrompt: id } : rest;
+}
+
+/** Clears a saved Common App choice whose prompt no longer exists (the prompts were replaced). */
+export function keepValidCommonAppPrompt(ws: Workspace): Workspace {
+  if (!ws.commonAppPrompt || commonChoices(ws).some((e) => e.id === ws.commonAppPrompt)) return ws;
+  return applyCommonAppPrompt(ws, null);
+}
+
+/**
+ * The copilot's and MCP agents' way to hide or show essays and to choose (or with null, clear) the Common App
+ * prompt, only when the student asks. Ids must be on the Essays tab; nothing else changes, drafts included.
+ */
+export function withEssayVisibility(
+  ws: Workspace,
+  input: { hide?: unknown; show?: unknown; commonAppPrompt?: unknown },
+): Parsed<Workspace> {
+  const ids = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").map((x) => x.trim()).filter(Boolean) : []);
+  const hide = ids(input.hide);
+  const show = ids(input.show);
+  if (!hide.length && !show.length && input.commonAppPrompt === undefined) {
+    return { ok: false, error: "Nothing to change: pass hide, show or common_app_prompt." };
+  }
+  const unknown = [...hide, ...show].find((id) => !findEssay(ws, id));
+  if (unknown) return { ok: false, error: `No essay has the id "${unknown}". Use list_essays to see the ids.` };
+  const patch = Object.fromEntries([...show.map((id) => [id, null]), ...hide.map((id) => [id, true])]) as Record<string, true | null>;
+  const checkedHidden = checkEssayHidden(patch);
+  if (!checkedHidden.ok) return checkedHidden;
+  let next = Object.keys(patch).length ? applyEssayHidden(ws, checkedHidden.value) : ws;
+  if (input.commonAppPrompt !== undefined) {
+    const choice = checkCommonAppPrompt(input.commonAppPrompt === "" ? null : input.commonAppPrompt, next);
+    if (!choice.ok) return choice;
+    next = applyCommonAppPrompt(next, choice.value);
+  }
+  return { ok: true, value: next };
 }
 
 export function applyEssayStatus(ws: Workspace, patch: Record<string, EssayStatus | null>): Workspace {
