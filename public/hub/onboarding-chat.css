@@ -68,6 +68,13 @@
 .oc-strategy dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .oc-strategy dt { font-size: 12px; color: var(--muted); }
 .oc-strategy dd { margin: 2px 0 0; font-size: 15px; font-weight: 500; }
+.oc-round { padding: 1px 8px; font-size: 12px; border: 1px solid var(--hairline); border-radius: 999px; color: var(--ink); }
+.oc-rounds { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 20px; }
+.oc-rounds-group h5 { margin: 0 0 4px; font-size: 13px; font-weight: 600; }
+.oc-rounds-group h5 span { color: var(--muted); font-weight: 400; margin-left: 4px; }
+.oc-rounds-group ul { margin: 0; padding: 0; list-style: none; }
+.oc-rounds-group li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; font-size: 14px; border-bottom: 1px solid var(--hairline); }
+.oc-rounds-group li em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .oc-strategy p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--body); white-space: pre-wrap; }
 
 .oc-research { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }

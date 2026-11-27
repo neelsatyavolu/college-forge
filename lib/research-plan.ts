@@ -9,6 +9,8 @@ import { isUcCampus } from "./seed-college-list";
 
 export const CURRENT_CYCLE = "2026-27";
 export const MAX_ATTEMPTS = 3;
+/** A curated file checked this recently, with current-cycle deadlines, needs no AI re-check. */
+export const FRESH_DAYS = 14;
 const PROMPT_BUDGET = 7_000;
 
 export type ResearchStep = { slug: string; name: string; attempt: number; prompt: string };
@@ -51,7 +53,7 @@ function curatedEssays(slug: string, name: string, r: SchoolResearch): Essay[] {
  * Copies curated research into the list: facts onto each school, current-cycle deadlines when the school
  * has none, and current prompts when the school only has placeholders. Never overwrites the student's work.
  */
-export function importCurated(ws: Workspace, load: (slug: string) => SchoolResearch | null = loadSchoolResearch): Workspace {
+export function importCurated(ws: Workspace, load: (slug: string) => SchoolResearch | null = loadSchoolResearch, now = Date.now()): Workspace {
   let supplements = ws.essays.supplements;
   const colleges = ws.colleges.map((c) => {
     if (c.research?.facts.length) return c;
@@ -62,10 +64,12 @@ export function importCurated(ws: Workspace, load: (slug: string) => SchoolResea
       const essays = curatedEssays(c.slug, c.short || c.name, r);
       if (essays.length) supplements = { ...supplements, [c.slug]: essays };
     }
-    // Curated files are a starting point: the step re-checks them, so complete waits for that.
+    // A complete file checked in the last FRESH_DAYS with this cycle's deadlines is used as is (no AI step).
+    // Older or partial files are a starting point the step re-checks.
+    const fresh = r.complete && deadlines.length > 0 && now - Date.parse(r.checkedAt) <= FRESH_DAYS * 86_400_000;
     return {
       ...c,
-      research: { ...r, slug: c.slug, complete: false },
+      research: { ...r, slug: c.slug, complete: fresh },
       ...(!c.deadlines?.length && deadlines.length ? { deadlines } : {}),
     };
   });

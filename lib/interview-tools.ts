@@ -107,6 +107,7 @@ export function parseSchools(raw: unknown): UiSchool[] {
       ...(supp ? { supplements: supp } : {}),
       name, tier, reason: text(r.reason, 280) ?? "",
       ...(text(r.slug, 120) ? { slug: text(r.slug, 120) } : {}),
+      ...(text(r.round, 20) ? { round: text(r.round, 20) } : {}),
       ...(text(r.estChance, 40) ? { estChance: text(r.estChance, 40) } : {}),
       ...(text(r.netPrice, 40) ? { netPrice: text(r.netPrice, 40) } : {}),
       ...(fits ? { fitsBudget: fits } : {}),
@@ -382,7 +383,7 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   {
     name: "propose_list",
     description:
-      "Show the draft college list as school tiles and END YOUR TURN. Match the student's counts: suppCount applications with supplemental essays and noSuppCount without (all UC campuses = one supplement application). Mix tiers by their ambition, at least 2 likely schools whose net price fits the budget (fitsBudget 'yes' only when you know it does). Each school: name, tier, supplements (yes/no), a one-line reason specific to this student, estChance and netPrice when known. Forge replaces your tier with its data-based tier where it has admissions numbers. Include every school already on their list, and an edIdea.",
+      "Show the draft college list as school tiles and END YOUR TURN. Match the student's counts: suppCount applications with supplemental essays and noSuppCount without (all UC campuses = one supplement application). Mix tiers by their ambition, at least 2 likely schools whose net price fits the budget (fitsBudget 'yes' only when you know it does). Each school: name, tier, round (the round you'd plan, from deadlines still open today), supplements (yes/no), a one-line reason specific to this student, estChance and netPrice when known. Forge replaces your tier with its data-based tier where it has admissions numbers. Include every school already on their list, and an edIdea.",
     parameters: {
       type: "object",
       properties: {
@@ -390,7 +391,7 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
           type: "array",
           items: {
             type: "object",
-            properties: { slug: str, name: str, tier: { type: "string", enum: TIERS }, reason: str, estChance: str, netPrice: str, fitsBudget: { type: "string", enum: ["yes", "no", "unknown"] }, supplements: { type: "string", enum: ["yes", "no", "unknown"], description: "Does this application need supplemental essays this cycle? UC = yes (PIQs)." } },
+            properties: { slug: str, name: str, tier: { type: "string", enum: TIERS }, reason: str, round: { type: "string", description: "The round you'd plan here from deadlines still open today: ED I, ED II, EA, REA, RD or Rolling" }, estChance: str, netPrice: str, fitsBudget: { type: "string", enum: ["yes", "no", "unknown"] }, supplements: { type: "string", enum: ["yes", "no", "unknown"], description: "Does this application need supplemental essays this cycle? UC = yes (PIQs)." } },
             required: ["name", "tier", "reason"],
             additionalProperties: false,
           },
@@ -404,8 +405,16 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   },
   {
     name: "recommend_strategy",
-    description: "After research, recommend an Early Decision school (or none) and Early Action schools, with the trade-offs (ED is binding; compare aid first). Shown with confirm tiles; END YOUR TURN.",
-    parameters: { type: "object", properties: { ed: str, ea: { type: "array", items: str }, reasons: str }, required: ["ea", "reasons"], additionalProperties: false },
+    description: "After research, recommend an Early Decision school (or none) and Early Action schools, with the trade-offs (ED is binding; compare aid first), and the round for EVERY school on the list (rounds: one entry per school with its round and that round's deadline, using only deadlines still open today). Shown with confirm tiles; END YOUR TURN.",
+    parameters: {
+      type: "object",
+      properties: {
+        ed: str, ea: { type: "array", items: str }, reasons: str,
+        rounds: { type: "array", items: { type: "object", properties: { school: str, round: str, deadline: { type: "string", description: "yyyy-mm-dd" } }, required: ["school", "round", "deadline"], additionalProperties: false } },
+      },
+      required: ["ea", "reasons", "rounds"],
+      additionalProperties: false,
+    },
   },
   {
     name: "set_school_research",
@@ -551,7 +560,14 @@ export function makeInterviewTools(
       case "recommend_strategy": {
         const reasons = text(a.reasons, 1500);
         if (!reasons) return "recommend_strategy needs reasons.";
-        const strategy: UiStrategy = { ...(text(a.ed, 120) ? { ed: text(a.ed, 120) } : {}), ea: (Array.isArray(a.ea) ? a.ea : []).flatMap((s) => (text(s, 120) ? [text(s, 120)!] : [])).slice(0, 10), reasons };
+        const rounds = (Array.isArray(a.rounds) ? a.rounds : []).flatMap((x) => {
+          const r = (x ?? {}) as Args;
+          const school = text(r.school, 120);
+          const round = text(r.round, 20);
+          const deadline = typeof r.deadline === "string" && /^\d{4}-\d{2}-\d{2}$/.test(r.deadline) ? r.deadline : undefined;
+          return school && round ? [{ school, round, ...(deadline ? { deadline } : {}) }] : [];
+        }).slice(0, 40);
+        const strategy: UiStrategy = { ...(text(a.ed, 120) ? { ed: text(a.ed, 120) } : {}), ea: (Array.isArray(a.ea) ? a.ea : []).flatMap((s) => (text(s, 120) ? [text(s, 120)!] : [])).slice(0, 10), reasons, ...(rounds.length ? { rounds } : {}) };
         await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "strategy", strategy: { ...strategy, confirmed: false } }));
         emit({ type: "strategy", strategy });
         stop({ strategy });

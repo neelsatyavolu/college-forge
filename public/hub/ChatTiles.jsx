@@ -262,6 +262,7 @@ function OcSchoolTile({ s, off, disabled, onToggle }) {
       <div className="oc-school-tags">
         <span className={"oc-tier oc-tier--" + s.tier}>{OC_TIER_LABEL[s.tier]}</span>
         {s.aiTier && s.aiTier !== s.tier && <span className="oc-tier-note" title="Forge sets tiers from published admissions data for your GPA and scores">Forge's data</span>}
+        {s.round && <span className="oc-round" title="Planned round; confirmed after research">{s.round}</span>}
         {s.current && <span className="oc-tier-note">On your list</span>}
       </div>
       <p>{ocInline(s.reason, "r")}</p>
@@ -321,6 +322,28 @@ function OcListTiles({ schools, edIdea, transferPath, warning, disabled, onAppro
   );
 }
 
+const OC_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const ocShortDate = (iso) => { const m = /^\d{4}-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${OC_MONTHS[Number(m[1]) - 1]} ${Number(m[2])}` : ""; };
+
+/** Every school's recommended round, grouped by round and ordered by deadline. */
+function OcRoundList({ rounds }) {
+  const groups = new Map();
+  for (const r of [...rounds].sort((a, b) => (a.deadline || "9").localeCompare(b.deadline || "9"))) {
+    if (!groups.has(r.round)) groups.set(r.round, []);
+    groups.get(r.round).push(r);
+  }
+  return (
+    <div className="oc-rounds">
+      {[...groups].map(([round, list]) => (
+        <div key={round} className="oc-rounds-group">
+          <h5>{round} <span>{list.length}</span></h5>
+          <ul>{list.map((r) => <li key={r.school}><span>{r.school}</span>{r.deadline && <em>{ocShortDate(r.deadline)}</em>}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function OcStrategyTiles({ strategy, disabled, onConfirm, onAnswer }) {
   return (
     <div className="oc-strategy">
@@ -328,6 +351,7 @@ function OcStrategyTiles({ strategy, disabled, onConfirm, onAnswer }) {
         <div><dt>Early Decision</dt><dd>{strategy.ed || "None"}</dd></div>
         <div><dt>Early Action</dt><dd>{strategy.ea.length ? strategy.ea.join(", ") : "None"}</dd></div>
       </dl>
+      {strategy.rounds && strategy.rounds.length > 0 && <OcRoundList rounds={strategy.rounds} />}
       <div>{ocRich(strategy.reasons)}</div>
       <div className="oc-tile-grid oc-tile-grid--two">
         <button type="button" className="oc-tile" disabled={disabled} onClick={onConfirm}><span className="oc-tile-label">Sounds right</span><span className="oc-tile-hint">Save these rounds and build my timeline</span></button>
@@ -345,7 +369,7 @@ function OcResearchBoard({ cards }) {
       {cards.map((c) => (
         <article key={c.slug} className={"oc-research-card is-" + c.stage}>
           <div className="oc-research-top"><h5>{c.name}</h5><span>{OC_STAGE[c.stage] || c.stage}</span></div>
-          <p>{c.facts ? `${c.facts} facts saved` : c.note || " "}</p>
+          <p>{[c.facts ? `${c.facts} facts saved` : c.note, c.round].filter(Boolean).join(" · ") || " "}</p>
         </article>
       ))}
     </div>
