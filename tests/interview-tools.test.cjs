@@ -244,3 +244,14 @@ test('a tight-budget list that needs aid cannot lean on out-of-state publics', (
   ws.onboarding.listPrefs.budget = '50plus';
   assert.doesNotMatch(T.checkListProposal(ws, grokList) || '', /out-of-state/, 'no cap, no rule');
 });
+
+test('an international student who needs aid is not required to have likely US schools', () => {
+  const s = (name, tier) => ({ name, tier, reason: 'r', supplements: 'yes' });
+  const schools = [s('A', 'reach'), s('B', 'reach'), s('C', 'reach'), ...['D', 'E', 'F', 'G', 'H', 'I', 'J'].map((n) => s(n, 'target'))];
+  const intl = wsWith({ budget: '30-50', needAid: true, citizenship: 'international', suppCount: 10, noSuppCount: 0 });
+  assert.equal(T.needsInternationalAid(intl), true);
+  assert.equal(T.checkListProposal(intl, schools), null);
+  assert.equal(T.checkMix(intl, schools), null);
+  const us = wsWith({ budget: '30-50', needAid: true, citizenship: 'us', suppCount: 10, noSuppCount: 0 });
+  assert.match(T.checkListProposal(us, schools) || T.checkMix(us, schools) || '', /likely/);
+});

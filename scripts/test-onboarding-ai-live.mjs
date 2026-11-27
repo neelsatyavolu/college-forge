@@ -96,7 +96,7 @@ try {
     const ui = r.events.find((e) => e.type === 'question') ? { question: r.events.find((e) => e.type === 'question').question } : null;
     const list = r.events.find((e) => e.type === 'list');
     log(`turn ${turnCount} ${((Date.now() - t0) / 1000).toFixed(0)}s [${r.calls.join(',')}] finish=${r.finish}`);
-    log('  AI:', r.text.replace(/\s+/g, ' ').slice(0, 220), ui ? `<${ui.question.kind}: ${ui.question.prompt}>` : '');
+    log('  AI:', r.text.replace(/\s+/g, ' ').slice(0, list ? 3000 : 220), ui ? `<${ui.question.kind}: ${ui.question.prompt}>` : '');
     if (!r.text.trim() && !ui && !list) problems.push(`turn ${turnCount}: empty reply`);
     history.push({ role: 'assistant', content: r.text });
     if (list) { listShown = list.schools; break; }

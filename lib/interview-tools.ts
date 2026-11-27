@@ -187,10 +187,17 @@ export function checkMix(ws: Workspace, schools: UiSchool[]): string | null {
   const count = (t: UiSchool["tier"]) => schools.filter((s) => s.tier === t).length;
   const goal = { reach: Math.round(n * reachShare), target: Math.round(n * targetShare), likely: n - Math.round(n * reachShare) - Math.round(n * targetShare) };
   const slack = Math.max(2, Math.round(n / 4));
-  const off = (["reach", "target", "likely"] as const).filter((t) => Math.abs(count(t) - goal[t]) > slack);
+  const tiers = needsInternationalAid(ws) ? (["reach", "target"] as const) : (["reach", "target", "likely"] as const);
+  const off = tiers.filter((t) => Math.abs(count(t) - goal[t]) > slack && !(t === "target" && needsInternationalAid(ws) && count(t) > goal[t]));
   if (count("reach") === 0 && !(ambition === "conservative" && n < 8)) off.push("reach");
   if (!off.length) return null;
   return `The tiers (after Forge's data) are ${count("reach")} reach / ${count("target")} target / ${count("likely")} likely; a ${ambition} list of ${n} should be about ${goal.reach} / ${goal.target} / ${goal.likely}. Swap schools to fix ${[...new Set(off)].join(" and ")}.`;
+}
+
+/** An international student who will apply for aid. */
+export function needsInternationalAid(ws: Workspace): boolean {
+  const prefs = ws.onboarding.listPrefs;
+  return prefs?.citizenship === "international" && prefs?.needAid !== false;
 }
 
 /** Why a proposed list breaks the balance rules, or null when it is acceptable. */
@@ -214,6 +221,9 @@ export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | 
   } else if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
   const nonresident = tooManyNonresidentPublics(ws, schools, apps);
   if (nonresident) return nonresident;
+  // US colleges that fund international students are almost all selective, so their real backups are
+  // universities at home or elsewhere abroad (named in the reply), not two likely US schools.
+  if (needsInternationalAid(ws)) return null;
   const likely = schools.filter((s) => s.tier === "likely");
   const budget = ws.onboarding.listPrefs?.budget;
   const capped = budget && !NO_PRICE_CAP.has(budget);
