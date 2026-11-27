@@ -498,6 +498,8 @@ export function focusText(text: string, purpose: string | undefined, limit: numb
 // string or a long path segment, and a few hundred characters is too little to ship an essay out.
 const MAX_FETCH_QUERY_CHARS = 300;
 const MAX_FETCH_SEGMENT_CHARS = 200;
+const MAX_FETCH_PATH_AND_QUERY_CHARS = 600;
+const MAX_FETCH_HOST_CHARS = 100;
 
 function smugglingUrl(raw: string): boolean {
   let u: URL;
@@ -506,7 +508,13 @@ function smugglingUrl(raw: string): boolean {
   } catch {
     return true;
   }
-  return u.search.length > MAX_FETCH_QUERY_CHARS || u.pathname.split("/").some((seg) => seg.length > MAX_FETCH_SEGMENT_CHARS);
+  return (
+    u.search.length > MAX_FETCH_QUERY_CHARS ||
+    u.pathname.split("/").some((seg) => seg.length > MAX_FETCH_SEGMENT_CHARS) ||
+    // Many short segments or long subdomain labels can carry the same text, so the totals are capped too.
+    u.pathname.length + u.search.length > MAX_FETCH_PATH_AND_QUERY_CHARS ||
+    u.hostname.length > MAX_FETCH_HOST_CHARS
+  );
 }
 
 export async function runWebFetch(

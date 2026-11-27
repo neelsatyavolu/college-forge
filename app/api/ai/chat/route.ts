@@ -35,7 +35,8 @@ function sanitize(messages: unknown): ChatTurn[] {
   return cleaned;
 }
 
-const CHAT_PER_HOUR_ANONYMOUS = 60;
+// Signed-out students on one school or carrier network share an address, so the address cap is generous.
+const CHAT_PER_HOUR_ANONYMOUS = 400;
 const CHAT_PER_HOUR_SIGNED_IN = 200;
 
 export async function POST(req: NextRequest) {

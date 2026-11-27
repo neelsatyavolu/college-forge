@@ -28,7 +28,7 @@ const chat = (headers) => chatRoute.POST(new NextRequest('http://localhost/api/a
 }));
 
 test('AI chat is capped per address when signed out, before any model call', async () => {
-  await fill('ai-chat:ip:203.0.113.9', 60);
+  await fill('ai-chat:ip:203.0.113.9', 400);
   const res = await chat({ 'x-forwarded-for': '203.0.113.9' });
   assert.equal(res.status, 429);
   assert.match((await res.json()).error, /try again/i);
@@ -46,7 +46,7 @@ test('college search is capped per address before the Scorecard fetch', async ()
   let fetched = 0;
   globalThis.fetch = async () => { fetched++; return Response.json({ results: [] }); };
   try {
-    await fill('college-search:203.0.113.20', 120);
+    await fill('college-search:203.0.113.20', 600);
     const res = await searchRoute.GET(new NextRequest('http://localhost/api/colleges/search?q=rice', { headers: { 'x-forwarded-for': '203.0.113.20' } }));
     assert.equal(res.status, 429);
     assert.equal(fetched, 0);

@@ -72,3 +72,9 @@ test('hub pages only link research sources that start with http(s)', () => {
   assert.match(hub('AidBySchool.jsx'), /\/\^https\?:\\\/\\\/\/\.test\(row\.cssSource/);
   assert.match(hub('TestingPlan.jsx'), /\/\^https\?:\\\/\\\/\/\.test\(tp\.policy\.sourceUrl/);
 });
+
+test('bare Scorecard hosts become https links instead of being dropped', () => {
+  const out = withWebLinks({ name: 'X', url: 'www.harvard.edu/', priceCalcUrl: 'javascript:alert(1)' });
+  assert.equal(out.url, 'https://www.harvard.edu/');
+  assert.equal(out.priceCalcUrl, undefined);
+});

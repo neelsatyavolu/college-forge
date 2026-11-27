@@ -44,7 +44,8 @@ const FIELDS = [
 
 type Hit = Record<string, unknown>;
 
-const SEARCHES_PER_HOUR = 120;
+// Per address, and a whole class can share one school network, so this is generous.
+const SEARCHES_PER_HOUR = 600;
 
 const num = (v: unknown): number | null => (typeof v === "number" ? v : null);
 const str = (v: unknown): string => (typeof v === "string" ? v : "");

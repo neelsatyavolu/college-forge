@@ -22,7 +22,12 @@ export const isHttpUrl = (s: unknown): s is string => typeof s === "string" && /
 export function withWebLinks<T extends Partial<College>>(c: T): T {
   const next: T = { ...c };
   for (const k of ["url", "priceCalcUrl"] as const) {
-    if (next[k] !== undefined && next[k] !== null && !isHttpUrl(next[k])) delete next[k];
+    const v = next[k];
+    if (v === undefined || v === null) continue;
+    // Scorecard gives bare hosts like "www.harvard.edu/": make those https rather than dropping them.
+    const fixed = typeof v === "string" && /^[a-z0-9.-]+\.[a-z]{2,}(\/\S*)?$/i.test(v.trim()) ? `https://${v.trim()}` : v;
+    if (isHttpUrl(fixed)) next[k] = fixed as T[typeof k];
+    else delete next[k];
   }
   const r = c.research;
   if (r && typeof r === "object") {

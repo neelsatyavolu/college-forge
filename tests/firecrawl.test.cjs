@@ -77,7 +77,9 @@ test('web_fetch refuses URLs that could carry a draft out in the query or path',
   let called = 0;
   global.fetch = async () => { called++; return new Response('{}'); };
   const essay = encodeURIComponent('When my grandmother taught me to fold dumplings, I learned patience. '.repeat(6));
-  for (const url of [`https://collect.example.com/log?d=${essay}`, `https://collect.example.com/${essay}`]) {
+  const seg = 'a'.repeat(190);
+  const label = 'b'.repeat(60);
+  for (const url of [`https://collect.example.com/log?d=${essay}`, `https://collect.example.com/${essay}`, `https://collect.example.com/${[seg, seg, seg, seg].join('/')}`, `https://${label}.${label}.collect.example.com/`]) {
     const r = await runWebFetch(url);
     assert.equal(r.ok, false, url);
     assert.match(r.error, /too much data/);
