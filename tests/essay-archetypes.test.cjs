@@ -132,3 +132,17 @@ test('hidden essays and unchosen Common App prompts leave the totals', () => {
   assert.equal(writingTotals([groups[0]], {}, {}, { commonAppPrompt: 'ca-ps-2' }).required, 1);
   assert.deepEqual(visibleItems(groups[0].items, { commonAppPrompt: 'ca-ps-2' }).map((i) => i.id), ['ca-ps-2', 'ca-additional-info']);
 });
+
+test('pickSets finds choose-N sets with more than one pick, and pickPatch hides the prompts not picked', () => {
+  const { pickSets, pickPatch } = require('../public/hub/essay-archetypes.js');
+  const piq = (n) => ({ id: `uc-piq-${n}`, label: `PIQ ${n}`, prompt: 'p', limit: 350, unit: 'words' });
+  const items = [...Array.from({ length: 8 }, (_, i) => piq(i + 1)), { id: 'ca-ps-1', label: 'PS 1', prompt: 'p', limit: 650, unit: 'words' }];
+  const sets = pickSets(items);
+  assert.equal(sets.length, 1, 'the Common App set picks one, so it has its own control');
+  assert.equal(sets[0].choose, 4);
+  assert.deepEqual(sets[0].items.map((i) => i.id), Array.from({ length: 8 }, (_, i) => `uc-piq-${i + 1}`));
+  assert.deepEqual(pickPatch(sets[0].items, ['uc-piq-1', 'uc-piq-3', 'uc-piq-5', 'uc-piq-8']), {
+    'uc-piq-1': null, 'uc-piq-2': true, 'uc-piq-3': null, 'uc-piq-4': true,
+    'uc-piq-5': null, 'uc-piq-6': true, 'uc-piq-7': true, 'uc-piq-8': null,
+  });
+});
