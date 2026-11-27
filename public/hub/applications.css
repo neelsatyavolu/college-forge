@@ -533,3 +533,10 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-essay-sheet__body { padding: 0 20px 20px; }
 .cf-audience--toggle { display: flex; align-items: flex-start; gap: 8px; color: var(--body); cursor: pointer; }
 .cf-audience--toggle input { flex: none; margin-top: 1px; accent-color: var(--coral); }
+
+/* Final essays and fully finished schools get a check. */
+.cf-essay-check { flex: none; color: var(--accent-teal); }
+.cf-essay-nav > .cf-essay-check { margin-top: 3px; margin-left: -2px; }
+.cf-essay-group__done { display: inline-flex; flex: none; align-self: center; }
+.cf-essay-group__top { justify-content: flex-start; }
+.cf-essay-group__count { margin-left: auto; }
