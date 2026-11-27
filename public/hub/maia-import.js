@@ -11,6 +11,7 @@
   var QUEUE_KEY = "cf.maiaQueue"; // written by Scattergrams.jsx
   var FRESH_MS = 14 * 24 * 60 * 60 * 1000; // a school imported in the last two weeks isn't fetched again
   var remaining = []; // what a stopped run didn't get to, for the Resume button
+  var countdown = null; // ticks the "trying again in N seconds" status
   var maia = window.opener;
   var colleges = null;
   var busy = false;
@@ -26,6 +27,7 @@
 
   /** A run ended: show the result and offer a lookup while Maia is still open. */
   function finish(text, isError) {
+    clearInterval(countdown);
     busy = false;
     stopping = false;
     setStatus(text, isError);
@@ -136,6 +138,12 @@
     if (event.origin !== MAIA_ORIGIN || event.source !== maia) return;
     var msg = event.data || {};
     if (msg.type === "cf-maia:ping") { if (colleges && busy) send("cf-maia:hello", colleges); return; }
+    // The Maia tab is in the background, where Chrome slows its timers; this window times its pauses.
+    if (msg.type === "cf-maia:sleep") {
+      var ms = Math.min(Math.max(Number(msg.ms) || 0, 0), 300000);
+      setTimeout(function () { if (maiaOpen()) maia.postMessage({ type: "cf-maia:wake", id: msg.id }, MAIA_ORIGIN); }, ms);
+      return;
+    }
     if (!busy) return;
     if (msg.type === "cf-maia:college") {
       received(msg.college, msg.classOfYears, msg.student);
@@ -144,8 +152,17 @@
       var pct = msg.total ? Math.round((msg.done / msg.total) * 100) : 0;
       el("bar").style.width = pct + "%";
       var saved = savedCount ? " · " + savedCount + " saved" : "";
-      if (msg.waitSeconds) setStatus("Maia asked us to slow down. Waiting " + msg.waitSeconds + " seconds, then trying " + msg.name + " again…" + saved);
-      else setStatus((msg.name ? "Checking " + msg.name + " (" + (msg.done + 1) + " of " + msg.total + ")…" : "Finishing up…") + saved);
+      clearInterval(countdown);
+      if (msg.waitSeconds) {
+        var until = Date.now() + msg.waitSeconds * 1000;
+        var show = function () {
+          var left = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+          if (!stopping && busy) setStatus("Maia asked us to slow down. Trying " + msg.name + " again in " + left + " seconds…" + saved);
+          if (!left) clearInterval(countdown);
+        };
+        show();
+        countdown = setInterval(show, 1000);
+      } else setStatus((msg.name ? "Checking " + msg.name + " (" + (msg.done + 1) + " of " + msg.total + ")…" : "Finishing up…") + saved);
     } else if (msg.type === "cf-maia:error") {
       // Keep whatever already arrived before reporting the error.
       flush().then(function () { finish(String(msg.error || "Something went wrong in Maia.") + (savedCount ? " " + savedCount + " colleges were saved." : ""), true); });
