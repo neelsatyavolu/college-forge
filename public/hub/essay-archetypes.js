@@ -146,7 +146,9 @@
       if (!it.audience) { shared = true; return; }
       if (audiences.indexOf(it.audience) < 0) audiences.push(it.audience);
     });
-    return audiences.length >= 2 ? { audiences: audiences, shared: shared } : null;
+    if (audiences.length >= 2) return { audiences: audiences, shared: shared };
+    // One program beside prompts for everyone (an honors college): the student opts in or out.
+    return audiences.length === 1 && shared ? { audiences: audiences, shared: true, single: true } : null;
   }
 
   /** essayHidden patch for choosing `audience` ("" for none of them): its prompts shown, other programs' hidden. */
@@ -189,6 +191,23 @@
     }
     var tag = optional ? "Optional" : applies && !forCollege ? "If it applies" : "";
     return { text: text, tag: tag };
+  }
+
+  /**
+   * A school's sidebar title and subtitle: the full name when the stored short name is cut mid-word, and no
+   * subtitle when it only repeats the title. "--" in catalog names reads as an en dash.
+   */
+  function schoolTitle(c) {
+    var name = String((c && c.name) || "").replace(/\s*--\s*/g, "–").trim();
+    var short = String((c && c.short) || "").trim();
+    if (!short) return { title: name, subtitle: null };
+    var raw = String(c.name || "");
+    if (raw && raw.indexOf(short) === 0 && raw.length > short.length) {
+      var next = raw.charAt(short.length);
+      var cutMidWord = /[A-Za-z0-9]/.test(next);
+      return { title: cutMidWord ? name : short, subtitle: null };
+    }
+    return { title: short, subtitle: name && name !== short ? name : null };
   }
 
   var UC_APPLICATION_SLUG = "uc-application";
@@ -330,6 +349,7 @@
     pickPatch: pickPatch,
     markSegments: markSegments,
     sidebarLabel: sidebarLabel,
+    schoolTitle: schoolTitle,
     audienceSet: audienceSet,
     audiencePatch: audiencePatch,
     chosenAudience: chosenAudience,

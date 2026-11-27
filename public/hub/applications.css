@@ -529,3 +529,5 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-essay-sheet__scroll { max-height: inherit; overflow-y: auto; }
 .cf-essay-sheet__head--row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .cf-essay-sheet__body { padding: 0 20px 20px; }
+.cf-audience--toggle { display: flex; align-items: flex-start; gap: 8px; color: var(--body); cursor: pointer; }
+.cf-audience--toggle input { flex: none; margin-top: 1px; accent-color: var(--coral); }

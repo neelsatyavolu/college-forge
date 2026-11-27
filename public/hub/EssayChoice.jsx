@@ -124,6 +124,15 @@ function AudienceControl({ items, hidden, busy, onSave }) {
   const set = plan.audienceSet(items);
   if (!set) return null;
   const chosen = plan.chosenAudience(items, hidden);
+  if (set.single) {
+    const program = set.audiences[0];
+    return (
+      <label className="cf-audience cf-audience--toggle">
+        <input type="checkbox" checked={chosen !== ""} disabled={busy} onChange={(e) => onSave(plan.audiencePatch(items, e.target.checked ? program : ""))} />
+        <span>I’m applying to {program}</span>
+      </label>
+    );
+  }
   return (
     <label className={"cf-audience" + (chosen === null ? " is-open" : "")}>
       <span>{chosen === null ? "Which college or program are you applying to?" : "Applying to"}</span>

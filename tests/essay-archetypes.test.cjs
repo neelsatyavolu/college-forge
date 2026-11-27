@@ -172,7 +172,7 @@ test('audience sets: pick the college you apply to, hide the other colleges’ p
   assert.equal(chosenAudience(items, {}), null, 'nothing chosen while every program prompt shows');
   assert.equal(chosenAudience(items, { 'eng-1': true, 'as-1': true }), 'CALS');
   assert.equal(chosenAudience(items, { 'cals-1': true, 'cals-2': true, 'eng-1': true, 'as-1': true }), '');
-  assert.equal(audienceSet([p('a', 'X'), p('b')]), null, 'one audience is an only-if-it-applies prompt, not a choice');
+  assert.equal(audienceSet([p('a', 'X'), p('b')]).single, true, 'one program beside shared prompts is an opt-in');
 });
 
 test('sidebarLabel drops the college prefix and turns optional / only-if notes into tags', () => {
@@ -182,4 +182,24 @@ test('sidebarLabel drops the college prefix and turns optional / only-if notes i
   assert.deepEqual(sidebarLabel({ label: 'Written supplement (optional)' }), { text: 'Written supplement', tag: 'Optional' });
   assert.deepEqual(sidebarLabel({ label: 'Why Wake?' }), { text: 'Why Wake?', tag: '' });
   assert.deepEqual(sidebarLabel({ label: 'College of Arts and Sciences (only if this applies to you)', audience: 'College of Arts and Sciences' }), { text: 'College of Arts and Sciences', tag: '' });
+});
+
+test('schoolTitle uses the full name when the short one is cut mid-word, and drops a subtitle that repeats it', () => {
+  const { schoolTitle } = require('../public/hub/essay-archetypes.js');
+  assert.deepEqual(schoolTitle({ short: 'University of Southern Calif', name: 'University of Southern California' }), { title: 'University of Southern California', subtitle: null });
+  assert.deepEqual(schoolTitle({ short: 'University of Illinois Urban', name: 'University of Illinois Urbana-Champaign' }), { title: 'University of Illinois Urbana-Champaign', subtitle: null });
+  assert.deepEqual(schoolTitle({ short: 'University of Michigan', name: 'University of Michigan--Ann Arbor' }), { title: 'University of Michigan', subtitle: null });
+  assert.deepEqual(schoolTitle({ short: 'UCLA', name: 'University of California, Los Angeles' }), { title: 'UCLA', subtitle: 'University of California, Los Angeles' });
+  assert.deepEqual(schoolTitle({ name: 'Binghamton University--SUNY' }), { title: 'Binghamton University–SUNY', subtitle: null });
+});
+
+test('a single program (an honors college) is an opt-in set; chosenAudience reads it as on or off', () => {
+  const { audienceSet, audiencePatch, chosenAudience } = require('../public/hub/essay-archetypes.js');
+  const p = (id, audience) => ({ id, label: id, prompt: 'p', limit: 250, unit: 'words', ...(audience ? { audience } : {}) });
+  const items = [p('why'), p('h1', 'Honors College'), p('h2', 'Honors College')];
+  assert.deepEqual(audienceSet(items), { audiences: ['Honors College'], shared: true, single: true });
+  assert.deepEqual(audiencePatch(items, ''), { h1: true, h2: true });
+  assert.equal(chosenAudience(items, {}), null);
+  assert.equal(chosenAudience(items, { h1: true, h2: true }), '');
+  assert.equal(audienceSet([p('a', 'X'), p('b', 'X')]), null, 'every prompt for one program is just that school, not an opt-in');
 });
