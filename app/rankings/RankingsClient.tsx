@@ -18,22 +18,31 @@ const EMPTY_ME: Me = { workspace: false, account: false, intended: [], schools: 
 
 /**
  * Saves setting changes on the student's workspace (PUT /api/rankings/me) a moment after the last one,
- * so the iOS app and the List tab rank the same way. The browser copy still applies if saving fails.
+ * so the iOS app and the List tab rank the same way. Saves go out one at a time in edit order, and a
+ * pending one is sent right away when the page is left. The browser copy still applies if saving fails.
  */
 function useSettingsSaver(): (s: SavedSettings) => void {
   const pending = useRef<SavedSettings>({});
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const chain = useRef<Promise<unknown>>(Promise.resolve());
+  const flush = useCallback(() => {
+    if (timer.current) { clearTimeout(timer.current); timer.current = null; }
+    if (!Object.keys(pending.current).length) return;
+    const body = JSON.stringify(pending.current);
+    pending.current = {};
+    chain.current = chain.current.then(() => fetch("/api/rankings/me", {
+      method: "PUT", credentials: "same-origin", keepalive: true, headers: { "content-type": "application/json" }, body,
+    })).catch(() => undefined);
+  }, []);
+  useEffect(() => {
+    window.addEventListener("pagehide", flush);
+    return () => { window.removeEventListener("pagehide", flush); flush(); };
+  }, [flush]);
   return useCallback((s: SavedSettings) => {
     pending.current = { ...pending.current, ...s };
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      const body = pending.current;
-      pending.current = {};
-      fetch("/api/rankings/me", {
-        method: "PUT", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify(body),
-      }).catch(() => undefined);
-    }, 600);
-  }, []);
+    timer.current = setTimeout(flush, 600);
+  }, [flush]);
 }
 
 const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
@@ -57,9 +66,11 @@ export default function RankingsClient() {
   const [flags, setFlags, flagsStored] = useStored<Flags>("cf.career.flags", DEFAULT_FLAGS, isFlags);
   const [picked, setPicked, pickedStored] = useStored<string[]>("cf.career.targets", [], isStrings);
   const saveSettings = useSettingsSaver();
-  const changeWeights = useCallback((w: Weights) => { setWeights(w); saveSettings({ weights: w }); }, [setWeights, saveSettings]);
-  const changeFlags = useCallback((f: Flags) => { setFlags(f); saveSettings({ flags: f }); }, [setFlags, saveSettings]);
-  const changeTargets = useCallback((t: string[]) => { setPicked(t); saveSettings({ targets: t }); }, [setPicked, saveSettings]);
+  // Settings changed here before the workspace answered: its saved values must not replace them.
+  const edited = useRef<Set<keyof SavedSettings>>(new Set());
+  const changeWeights = useCallback((w: Weights) => { edited.current.add("weights"); setWeights(w); saveSettings({ weights: w }); }, [setWeights, saveSettings]);
+  const changeFlags = useCallback((f: Flags) => { edited.current.add("flags"); setFlags(f); saveSettings({ flags: f }); }, [setFlags, saveSettings]);
+  const changeTargets = useCallback((t: string[]) => { edited.current.add("targets"); setPicked(t); saveSettings({ targets: t }); }, [setPicked, saveSettings]);
 
   useEffect(() => {
     setViewState(readView());
@@ -78,13 +89,14 @@ export default function RankingsClient() {
     if (!meLoaded || synced.current) return;
     synced.current = true;
     const s = me.settings ?? {};
-    if (s.targets?.length) setPicked(s.targets);
-    if (s.weights) setWeights(s.weights);
-    if (s.flags) setFlags(s.flags);
+    const touched = edited.current;
+    if (s.targets?.length && !touched.has("targets")) setPicked(s.targets);
+    if (s.weights && !touched.has("weights")) setWeights(s.weights);
+    if (s.flags && !touched.has("flags")) setFlags(s.flags);
     const local: SavedSettings = {
-      ...(!s.targets?.length && pickedStored && picked.length ? { targets: picked } : {}),
-      ...(!s.weights && weightsStored ? { weights } : {}),
-      ...(!s.flags && flagsStored ? { flags } : {}),
+      ...(!s.targets?.length && !touched.has("targets") && pickedStored && picked.length ? { targets: picked } : {}),
+      ...(!s.weights && !touched.has("weights") && weightsStored ? { weights } : {}),
+      ...(!s.flags && !touched.has("flags") && flagsStored ? { flags } : {}),
     };
     if (me.workspace && Object.keys(local).length) saveSettings(local);
   }, [meLoaded, me, picked, pickedStored, weights, weightsStored, flags, flagsStored, setPicked, setWeights, setFlags, saveSettings]);

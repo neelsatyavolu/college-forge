@@ -8,15 +8,17 @@ function useRankingSchools() {
     // The official lists only fill in schools the career file doesn't cover, so the list still shows without them.
     // They also hold the WSJ and Princeton Review lists the average adds.
     const official = load("/data/official-rankings.json").catch(() => null);
-    // The student's own career ranking (My path, with the majors and weights saved on the Career rankings page).
-    // Without it the list still shows, averaged on the published rankings alone.
-    const career = fetch("/api/rankings/path", { credentials: "same-origin" })
-      .then((r) => (r.ok ? r.json() : null)).then((j) => (j && Array.isArray(j.ranks) ? j.ranks : null)).catch(() => null);
-    Promise.all([load("/data/career-ranking.json"), official, career])
-      .then(([j, o, c]) => {
-        if (live) setState({ schools: Array.isArray(j.schools) ? j.schools : [], official: o ? window.cfRankList.officialSchools(o) : [], extra: (o && o.extra) || null, career: c, error: false });
+    Promise.all([load("/data/career-ranking.json"), official])
+      .then(([j, o]) => {
+        if (live) setState((s) => ({ ...s, schools: Array.isArray(j.schools) ? j.schools : [], official: o ? window.cfRankList.officialSchools(o) : [], extra: (o && o.extra) || null, error: false }));
       })
-      .catch(() => { if (live) setState({ schools: null, official: [], extra: null, career: null, error: true }); });
+      .catch(() => { if (live) setState((s) => ({ ...s, schools: null, official: [], extra: null, error: true })); });
+    // The student's own career ranking (My path, with the majors and weights saved on the Career rankings page)
+    // joins the average when it arrives; until then, or without it, the list averages the published rankings.
+    fetch("/api/rankings/path", { credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (live && j && Array.isArray(j.ranks)) setState((s) => ({ ...s, career: j.ranks })); })
+      .catch(() => undefined);
     return () => { live = false; };
   }, []);
   return state;

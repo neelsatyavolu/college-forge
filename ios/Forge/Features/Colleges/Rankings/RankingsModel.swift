@@ -44,6 +44,9 @@ final class RankingsModel {
             let response = try await api.rankingsView(sent)
             guard !Task.isCancelled else { return }
             state = .loaded(response)
+            // Saved on the workspace now: stop sending these, so a later change on the website isn't overwritten.
+            // Edits made while this request ran stay pending.
+            if sent.save == true, request == sent { request = RankingsRequest(view: sent.view) }
         } catch {
             let apiError = APIError.wrap(error)
             guard apiError != .cancelled, !Task.isCancelled else { return }
