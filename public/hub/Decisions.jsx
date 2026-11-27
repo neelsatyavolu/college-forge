@@ -90,7 +90,7 @@ function Decisions({ tracker, onTrackerChange }) {
                   {fresh || (a.decision.state === "revealed" && !recorded) ? (
                     <div className="cf-decision__reveal">
                       {fresh ? <p className={"cf-decision__words" + (suggested === "admitted" ? " is-admit" : "")}>{words || "Your decision is in the portal."}</p> : null}
-                      {!words ? <a href={a.portalUrl} target="_blank" rel="noopener noreferrer" className="cf-link-btn">Open {a.portalName || "the portal"} ↗</a> : null}
+                      {!words && a.portalUrl && !a.portalFromEmail ? <a href={a.portalUrl} target="_blank" rel="noopener noreferrer" className="cf-link-btn">Open {a.portalName || "the portal"} ↗</a> : null}
                       <RecordButtons app={a} suggested={suggested} act={record} busy={busy} />
                     </div>
                   ) : null}

@@ -32,7 +32,18 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
     case autocheck(on: Bool)
     case emails(on: Bool)
     /// `on == nil` reads the inbox status without changing it.
-    case inbox(on: Bool? = nil, newAddress: Bool? = nil, birthdate: String? = nil)
+    case inbox(on: Bool? = nil, newAddress: Bool? = nil, birthdate: String? = nil, useMasterForNew: Bool? = nil)
+    /// When automatic checks run: every 8, 12 or 24 hours from `startHour` (0-23) in `timeZone`.
+    case schedule(everyHours: Int, startHour: Int, timeZone: String)
+    /// Set or replace the master login; an empty username means the account email.
+    case masterLogin(username: String, password: String)
+    case forgetMaster
+    /// Use (or stop using) the master login for one school.
+    case useMaster(id: String, on: Bool)
+    /// Use the master login for every catalog portal without a login.
+    case applyMasterAll
+    /// The PIN, link and password a forwarded set-up email left (`TrackedApplication.setupWaiting`).
+    case setupDetails(id: String)
     /// Check portals now; nil checks every app with a saved login. Can take up to two minutes.
     case check(ids: [String]? = nil)
     case importCollegeApps(email: String, password: String)
@@ -56,6 +67,12 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
         case .autocheck: "autocheck"
         case .emails: "emails"
         case .inbox: "inbox"
+        case .schedule: "schedule"
+        case .masterLogin: "master-login"
+        case .forgetMaster: "forget-master"
+        case .useMaster: "use-master"
+        case .applyMasterAll: "apply-master-all"
+        case .setupDetails: "setup-details"
         case .check: "check"
         case .importCollegeApps: "import-collegeapps"
         case .followUpAdd: "followup-add"
@@ -99,8 +116,19 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
             try put("id", id); try put("username", username); try put("password", password)
         case let .autocheck(on), let .emails(on):
             try put("on", on)
-        case let .inbox(on, newAddress, birthdate):
+        case let .inbox(on, newAddress, birthdate, useMasterForNew):
             try put("on", on); try put("newAddress", newAddress); try put("birthdate", birthdate)
+            try put("useMasterForNew", useMasterForNew)
+        case let .schedule(everyHours, startHour, timeZone):
+            try put("everyHours", everyHours); try put("startHour", startHour); try put("timeZone", timeZone)
+        case let .masterLogin(username, password):
+            try put("username", username); try put("password", password)
+        case .forgetMaster, .applyMasterAll:
+            break
+        case let .useMaster(id, on):
+            try put("id", id); try put("on", on)
+        case let .setupDetails(id):
+            try put("id", id)
         case let .check(ids):
             try put("ids", ids)
         case let .importCollegeApps(email, password):
@@ -133,8 +161,14 @@ struct ApplicationsResponse: Decodable, Sendable {
     var added: Int?
     var linked: Int?
     var total: Int?
+    /// The master login's state (GET and the master actions).
+    var master: MasterLoginStatus?
+    /// `.applyMasterAll`: schools it was turned on for.
+    var applied: Int?
+    /// `.setupDetails` reply.
+    var setup: SetupDetails?
 
-    private enum CodingKeys: String, CodingKey { case data, app, checked, inbox, added, linked, total }
+    private enum CodingKeys: String, CodingKey { case data, app, checked, inbox, added, linked, total, master, applied, setup }
 
     init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -145,5 +179,8 @@ struct ApplicationsResponse: Decodable, Sendable {
         added = c.optionalInt(.added)
         linked = c.optionalInt(.linked)
         total = c.optionalInt(.total)
+        master = c.optional(MasterLoginStatus.self, .master)
+        applied = c.optionalInt(.applied)
+        setup = c.optional(SetupDetails.self, .setup)
     }
 }

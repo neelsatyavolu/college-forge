@@ -47,7 +47,7 @@ enum ApplicationsMode: String, CaseIterable, Identifiable {
 
 /// Sheets the Applications screen can present.
 enum ApplicationsSheet: String, Identifiable {
-    case add, importCollegeApps, forwardEmails
+    case add, importCollegeApps, forwardEmails, masterLogin
     var id: String { rawValue }
 }
 
@@ -71,6 +71,7 @@ private struct ApplicationsHome: View {
             case .add: AddSchoolSheet { id in router.applicationsPath.append(ApplicationRoute(id: id)) }
             case .importCollegeApps: ImportCollegeAppsSheet()
             case .forwardEmails: ForwardEmailsSheet()
+            case .masterLogin: MasterLoginSheet()
             }
         }
     }
@@ -120,7 +121,7 @@ private struct ApplicationsEmptyView: View {
                     Image(systemName: "tray").foregroundStyle(Theme.accent)
                 }
             } description: {
-                Text("Add each school you apply to and save its portal login. Forge checks the portal every 12 hours and tells you what changed.")
+                Text("Add each school you apply to and save its portal login. Forge checks the portal on your schedule and tells you what changed.")
                     .foregroundStyle(Theme.muted)
             } actions: {
                 VStack(spacing: Theme.Spacing.sm) {

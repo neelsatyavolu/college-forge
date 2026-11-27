@@ -110,7 +110,39 @@ function ImportCollegeApps({ onImported, onClose }) {
   );
 }
 
-function ForwardEmails({ onClose }) {
+const ARRIVAL_STATES = { verified: "Set up", set: "Set up, sign-in not confirmed", todo: "Needs you" };
+
+/** The last forwarded emails and what happened to each. No PINs or passwords are kept in this list. */
+function RecentForwards({ recent }) {
+  if (!recent || !recent.length) return null;
+  const { ago } = window.cfApp;
+  return (
+    <div>
+      <h3 className="cf-subhead">Recent forwarded emails</h3>
+      <ul className="cf-forward-recent">
+        {recent.map((r, i) => (
+          <li key={`${r.receivedAt}-${i}`}>
+            <b>{r.name}</b> · {ARRIVAL_STATES[r.state] || r.state} · {ago(r.receivedAt)}
+            {r.reason && r.state !== "verified" ? <span className="cf-help"> {r.reason}</span> : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Short steps for a mail filter that forwards set-up emails on its own. */
+function ForwardFilterHelp({ address }) {
+  return (
+    <details className="cf-forward-help">
+      <summary>Forward these emails automatically</summary>
+      <p className="cf-help"><b>Gmail:</b> Settings, See all settings, Forwarding and POP/IMAP, Add a forwarding address: <span className="cf-mono">{address}</span>. Gmail asks you to confirm that address first; if it can’t be confirmed, keep forwarding these emails by hand. Then create a filter with From <span className="cf-mono">*.edu</span> and Has the words <span className="cf-mono">portal OR PIN OR activate</span>, and choose Forward it to that address.</p>
+      <p className="cf-help"><b>Outlook:</b> Settings, Mail, Rules, Add new rule. Condition: From contains <span className="cf-mono">.edu</span> and Subject includes <span className="cf-mono">portal</span>, <span className="cf-mono">PIN</span> or <span className="cf-mono">activate</span>. Action: Forward to <span className="cf-mono">{address}</span>.</p>
+    </details>
+  );
+}
+
+function ForwardEmails({ onClose, master }) {
   const [inbox, setInbox] = React.useState(null);
   const [birthdate, setBirthdate] = React.useState("");
   const [busy, setBusy] = React.useState(false);
@@ -157,6 +189,14 @@ function ForwardEmails({ onClose }) {
             </label>
             <div><Button type="submit" size="sm" variant="secondary" disabled={busy || !birthdate}>Save birthdate</Button></div>
           </form>
+          {master && master.on ? (
+            <label className="cf-check" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input type="checkbox" checked={!!inbox.useMasterForNew} disabled={busy} onChange={(e) => run({ on: true, useMasterForNew: e.target.checked })} />
+              <span>Set new portals to my master password (when the school allows it; otherwise Forge makes a strong one)</span>
+            </label>
+          ) : null}
+          <ForwardFilterHelp address={inbox.address} />
+          <RecentForwards recent={inbox.recent} />
         </React.Fragment>
       ) : (
         <div><Button size="sm" disabled={busy} onClick={() => run({ on: true })}>Get my forwarding address</Button></div>

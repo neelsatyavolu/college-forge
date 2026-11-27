@@ -71,7 +71,9 @@ function brief(a: AppView) {
     submitted: a.submittedAt || null,
     follow_ups: a.followUps.map((f) => ({ id: f.id, text: f.text, due: f.due || null })),
     interest: { counts: a.interestSignal.counts, interview: a.interestSignal.interview, logged: a.interestSignal.logged, nudge: a.interestSignal.nudge ?? null },
-    portal_link: a.portalUrl || null,
+    // A link from a forwarded email isn't offered as the portal until the student saves it in Forge.
+    portal_link: a.portalFromEmail ? null : a.portalUrl || null,
+    ...(a.portalFromEmail ? { portal_link_unchecked: "The portal link came from a forwarded email. Ask the student to check it and save it in Forge." } : {}),
     portal_login_saved: !!a.login?.hasPassword,
     notes: a.notes || null,
     decision_note: a.decisionNote || null,
@@ -226,6 +228,7 @@ export const TOOLS: Tool[] = [
       return {
         today: todayIso(),
         automatic_portal_checks: t.autocheck,
+        portal_check_times: { times: t.schedule.times, time_zone: t.schedule.timeZone, every_hours: t.schedule.everyHours },
         count: apps.length,
         flags: t.flags.map((f) => ({ id: f.id, text: f.text, scope: f.scope || null })),
         applications: apps,
@@ -342,7 +345,7 @@ export const TOOLS: Tool[] = [
         ids = [app.id];
       }
       if (!(await allow(`check-ws:${ws}`, 120, 60 * 60 * 1000))) {
-        throw new TrackerError("That's a lot of portal checks this hour. Forge also checks every 12 hours on its own.");
+        throw new TrackerError("That's a lot of portal checks this hour. Forge also checks on its own schedule.");
       }
       // The assistant may not tell the student what it found, so news from this check is emailed as usual.
       const checked = await runChecks(ws, { appIds: ids, concurrency: 4, notify: true });

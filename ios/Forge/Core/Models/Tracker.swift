@@ -4,13 +4,15 @@ import Foundation
 struct TrackerView: Codable, Hashable, Sendable {
     /// The workspace revision this snapshot came from; newer responses have a higher number.
     var revision: Int
-    /// Automatic portal checks every 12 hours.
+    /// Automatic portal checks, on `schedule`.
     var autocheck: Bool
     /// Email the student when a check finds something new.
     var emails: Bool
     /// Open (unresolved) flags.
     var flags: [TrackerFlag]
     var apps: [TrackedApplication]
+    /// When automatic checks run. Nil from a server older than the schedule.
+    var schedule: CheckSchedule?
 
     static let empty = TrackerView(revision: -1, autocheck: true, emails: true, flags: [], apps: [])
 
@@ -25,6 +27,7 @@ extension TrackerView {
         emails = c.bool(.emails, true)
         flags = c.array(.flags)
         apps = c.array(.apps)
+        schedule = c.optional(CheckSchedule.self, .schedule)
     }
 }
 
@@ -76,6 +79,10 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     /// Visits, sessions, interviews and contact, by date (lib/interest-log.ts).
     var interest: [InterestEvent] = []
     var interestSignal: InterestSignal?
+    /// A forwarded set-up email left a PIN, link or password to finish with (`.setupDetails`).
+    var setupWaiting: Bool = false
+    /// The portal link came from a forwarded email and the student hasn't saved it: never offer it as a link.
+    var portalFromEmail: Bool = false
 
     var lastCheckedDate: Date? { lastChecked.map(Date.init(milliseconds:)) }
 }
@@ -115,6 +122,8 @@ extension TrackedApplication {
         aidOffer = c.optional(AidOffer.self, .aidOffer)
         interest = c.array(.interest)
         interestSignal = c.optional(InterestSignal.self, .interestSignal)
+        setupWaiting = c.bool(.setupWaiting)
+        portalFromEmail = c.bool(.portalFromEmail)
     }
 }
 
@@ -225,6 +234,10 @@ extension PortalFailure {
 struct PortalLogin: Codable, Hashable, Sendable {
     var username: String
     var hasPassword: Bool
+    /// "master" when the school uses the student's master login; nil means its own.
+    var source: String?
+
+    var isMaster: Bool { source == "master" }
 }
 
 extension PortalLogin {
@@ -232,6 +245,7 @@ extension PortalLogin {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         username = c.string(.username)
         hasPassword = c.bool(.hasPassword)
+        source = c.optionalString(.source)
     }
 }
 

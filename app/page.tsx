@@ -55,7 +55,7 @@ const FEATURES = [
   },
   {
     title: "Every application, tracked",
-    body: "Each school’s status, round, deadline and decision date in one list. Save a portal login and Forge checks it every 12 hours, flags missing documents, and keeps a posted decision covered until you choose to open it.",
+    body: "Each school’s status, round, deadline and decision date in one list. Save a portal login and Forge checks it up to three times a day, on your schedule, flags missing documents, and keeps a posted decision covered until you choose to open it.",
   },
   {
     title: "Your counselor, in the loop",

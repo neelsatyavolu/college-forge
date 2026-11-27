@@ -25,7 +25,14 @@ import {
   updateFollowUp,
   flag,
   unflag,
+  setSchedule,
+  setMasterLogin,
+  useMasterFor,
+  applyMasterToAll,
+  masterStatus,
+  setupDetails,
 } from "@/lib/tracker-service";
+import { isTimeZone } from "@/lib/check-schedule";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -88,7 +95,18 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("forget-login"), id: ref }),
   z.object({ action: z.literal("autocheck"), on: z.boolean() }),
   z.object({ action: z.literal("emails"), on: z.boolean() }),
-  z.object({ action: z.literal("inbox"), on: z.boolean().optional(), newAddress: z.boolean().optional(), birthdate: date.optional() }),
+  z.object({ action: z.literal("inbox"), on: z.boolean().optional(), newAddress: z.boolean().optional(), birthdate: date.optional(), useMasterForNew: z.boolean().optional() }),
+  z.object({
+    action: z.literal("schedule"),
+    everyHours: z.union([z.literal(8), z.literal(12), z.literal(24)]),
+    startHour: z.number().int().min(0).max(23),
+    timeZone: z.string().max(64).refine(isTimeZone, "Unknown time zone."),
+  }),
+  z.object({ action: z.literal("master-login"), username: z.string().max(254), password: z.string().min(1, "Enter the master password.").max(256) }),
+  z.object({ action: z.literal("forget-master") }),
+  z.object({ action: z.literal("use-master"), id: ref, on: z.boolean() }),
+  z.object({ action: z.literal("apply-master-all") }),
+  z.object({ action: z.literal("setup-details"), id: ref }),
   z.object({ action: z.literal("check"), ids: z.array(ref).max(100).optional() }),
   z.object({ action: z.literal("import-collegeapps"), email: z.string().max(254), password: z.string().max(256) }),
   z.object({ action: z.literal("followup-add"), id: ref, text: z.string().min(1).max(300), due: date.optional() }),
@@ -107,7 +125,8 @@ function sameSite(req: NextRequest): boolean {
 export async function GET(req: NextRequest) {
   const session = getSession(req);
   if (!session) return json({ success: false, error: "Sign in to see your applications.", signedOut: true }, 401);
-  return json({ success: true, data: await listApps(session.workspaceId) });
+  const [data, master] = await Promise.all([listApps(session.workspaceId), masterStatus(session.workspaceId)]);
+  return json({ success: true, data, master });
 }
 
 export async function POST(req: NextRequest) {
@@ -142,10 +161,31 @@ export async function POST(req: NextRequest) {
       case "emails":
         return json({ success: true, data: await setEmails(ws, b.on) });
       case "inbox":
-        return json({ success: true, inbox: b.on === undefined ? await inboxStatus(ws) : await setInbox(ws, { on: b.on, newAddress: b.newAddress, birthdate: b.birthdate }) });
+        return json({
+          success: true,
+          inbox: b.on === undefined ? await inboxStatus(ws) : await setInbox(ws, { on: b.on, newAddress: b.newAddress, birthdate: b.birthdate, useMasterForNew: b.useMasterForNew }),
+        });
+      case "schedule":
+        return json({ success: true, data: await setSchedule(ws, { everyHours: b.everyHours, startHour: b.startHour, timeZone: b.timeZone }) });
+      case "master-login":
+        return json({ success: true, master: await setMasterLogin(ws, { username: b.username, password: b.password }), data: await listApps(ws) });
+      case "forget-master":
+        return json({ success: true, master: await setMasterLogin(ws, null), data: await listApps(ws) });
+      case "use-master":
+        return json({ success: true, app: await useMasterFor(ws, b.id, b.on), master: await masterStatus(ws), data: await listApps(ws) });
+      case "apply-master-all": {
+        const r = await applyMasterToAll(ws);
+        return json({ success: true, applied: r.applied, master: await masterStatus(ws), data: await listApps(ws) });
+      }
+      case "setup-details": {
+        if (!(await allow(`setup-details:${session.sub}`, 30, 60 * 60 * 1000))) {
+          return json({ success: false, error: "Too many tries. Wait an hour, then try again." }, 429);
+        }
+        return json({ success: true, setup: await setupDetails(ws, b.id) });
+      }
       case "check": {
         if (!(await allow(`check:${session.sub}`, 120, 60 * 60 * 1000))) {
-          return json({ success: false, error: "That's a lot of checks this hour. Forge keeps checking on its own every 12 hours." }, 429);
+          return json({ success: false, error: "That's a lot of checks this hour. Forge keeps checking on its own schedule." }, 429);
         }
         const checked = await runChecks(ws, { appIds: b.ids });
         const data = await listApps(ws);

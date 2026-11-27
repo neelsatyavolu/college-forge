@@ -21,7 +21,9 @@ const arrival = z.object({
   portal: z.unknown().optional(),
 });
 const input = z.discriminatedUnion("op", [
-  z.object({ op: z.literal("lookup"), token }),
+  // The school the email is about, read before the lookup, so the master password is offered only for its own hosts.
+  // The Worker sends every URL it will type into; with none, no master. It must not type after a redirect off them.
+  z.object({ op: z.literal("lookup"), token, collegeId: z.string().max(40).nullable().optional(), portalUrl: text(1000).optional(), link: text(1000).optional() }),
   z.object({ op: z.literal("arrival"), token, arrivalId: z.string().uuid(), final: z.boolean(), arrival }),
   z.object({ op: z.literal("not-portal"), token, subject: text(300) }),
 ]);
@@ -36,7 +38,7 @@ export async function POST(req: Request) {
   const b = parsed.data;
   try {
     if (b.op === "lookup") {
-      const found = await lookupInbox(b.token);
+      const found = await lookupInbox(b.token, Date.now(), { collegeId: b.collegeId, portalUrl: b.portalUrl, link: b.link });
       return found ? json(found) : json({ error: "No such address." }, 404);
     }
     if (b.op === "arrival") {

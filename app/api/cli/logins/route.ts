@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { verifyAccess } from "@/lib/oauth";
-import { readLogins } from "@/lib/portal-logins";
+import { readLogins, readMaster, resolveLogin } from "@/lib/portal-logins";
+import { loginHost, masterAllowed } from "@/lib/portal-check";
 import { allow } from "@/lib/rate-limit";
 import { getWorkspace } from "@/lib/store";
 
@@ -20,12 +21,18 @@ export async function GET(req: NextRequest) {
   if (!(await allow(`cli-logins:${auth.grantId}`, 30, 60 * 1000))) return json({ error: "Too many requests. Wait a minute." }, 429);
   try {
     const ids = (req.nextUrl.searchParams.get("ids") ?? "").split(",").map((s) => s.trim()).filter(Boolean).slice(0, 200);
-    const [ws, logins] = await Promise.all([getWorkspace(auth.workspaceId), readLogins(auth.workspaceId)]);
+    const [ws, logins, master] = await Promise.all([getWorkspace(auth.workspaceId), readLogins(auth.workspaceId), readMaster(auth.workspaceId)]);
     const out: Record<string, { username: string; password: string; portalUrl: string }> = {};
     for (const app of ws.tracker.apps) {
-      const login = logins[app.id];
-      if (!login || (ids.length && !ids.includes(app.id))) continue;
-      out[app.id] = { username: login.username, password: login.password, portalUrl: app.portalUrl };
+      // A portal host from a forwarded email is the email's word: no login goes out for it until the student saves the link.
+      if (!masterAllowed(app)) continue;
+      // A school using the master login gets it here too, under the same host rules as checks.
+      const resolved = resolveLogin(app.id, loginHost(app), logins, master, { allowFailed: true });
+      if (!resolved || (ids.length && !ids.includes(app.id))) continue;
+      const { login, source } = resolved;
+      // The master's website is the host it was pinned to, never an edited link.
+      const portalUrl = source === "master" && login.host ? `https://${login.host}/` : app.portalUrl;
+      out[app.id] = { username: login.username, password: login.password, portalUrl };
     }
     return json({ logins: out });
   } catch (err) {

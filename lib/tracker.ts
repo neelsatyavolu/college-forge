@@ -3,6 +3,7 @@ import { COLLEGES, collegeById, expectedDecision, logoUrl, type College } from "
 import { applyTestingEdit, type TestingChoice, type TestingEdit } from "./testing-plan";
 import { checkAidOffer, type AidOffer } from "./aid-validate";
 import type { InterestEvent } from "./interest-log";
+import { normalizeSchedule, type CheckSchedule } from "./check-schedule";
 
 /**
  * The applications tracker, ported from College Apps. Each school the student applies to, where it stands,
@@ -90,12 +91,22 @@ export interface TrackedApp {
   interest?: InterestEvent[];
   /** The latest check that failed after an earlier one worked; the earlier result stays in `portal`. */
   lastFailure?: { at: number; error: string };
-  /** Mirrors whether an encrypted login is saved (the login itself is never in the workspace). */
-  login?: { username: string; hasPassword: boolean };
+  /**
+   * Mirrors whether an encrypted login is saved (the login itself is never in the workspace). `source` is
+   * "master" when this school uses the student's master login rather than one of its own; missing means its own.
+   */
+  login?: { username: string; hasPassword: boolean; source?: "own" | "master" };
+  /** A forwarded set-up email left a PIN, link or password for the student to finish with (sealed in lib/portal-setup.ts). */
+  setupWaiting?: boolean;
   /** Whether to send SAT/ACT scores here, how, and when the official report went out (lib/testing-plan.ts). */
   testing?: TestingChoice;
   /** The school's financial aid offer as the student entered it (lib/aid-validate.ts AidOffer). Private to the student. */
   aidOffer?: AidOffer;
+  /**
+   * The portal link came from a forwarded email, which anyone who knows the address can send, for a school
+   * outside the catalog. Such a host never gets the master login; the student saving the link clears it.
+   */
+  portalFromEmail?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -121,11 +132,15 @@ export interface Flag {
 
 export interface Tracker {
   apps: TrackedApp[];
-  /** Automatic portal checks every 12 hours. */
+  /** Automatic portal checks, on `schedule`. */
   autocheck: boolean;
   /** Email the student when an automatic check finds something new. */
   emails: boolean;
   flags: Flag[];
+  /** When automatic checks run (lib/check-schedule.ts); missing means the default, every 12 hours from 7:00 Pacific. */
+  schedule?: CheckSchedule;
+  /** The start of the last schedule slot an automatic sweep claimed. Manual checks never touch it. */
+  lastSlotAt?: number;
 }
 
 export const emptyTracker = (): Tracker => ({ apps: [], autocheck: true, emails: true, flags: [] });
@@ -502,7 +517,14 @@ export function normalizeTracker(raw: unknown): Tracker {
     ? t.apps.filter((a): a is TrackedApp => !!a && typeof a.id === "string" && typeof a.name === "string" && isStatus(a.status)).map(relink)
     : [];
   const flags = Array.isArray(t.flags) ? t.flags.filter((f): f is Flag => !!f && typeof f.id === "string" && typeof f.text === "string") : [];
-  return { apps, autocheck: t.autocheck !== false, emails: t.emails !== false, flags };
+  return {
+    apps,
+    autocheck: t.autocheck !== false,
+    emails: t.emails !== false,
+    flags,
+    ...(t.schedule ? { schedule: normalizeSchedule(t.schedule) } : {}),
+    ...(typeof t.lastSlotAt === "number" && Number.isFinite(t.lastSlotAt) ? { lastSlotAt: t.lastSlotAt } : {}),
+  };
 }
 
 // ── Follow-ups and flags ──────────────────────────────────────────────────

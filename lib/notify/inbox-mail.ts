@@ -19,8 +19,11 @@ function compose(subject: string, title: string, lines: string[], appUrl: string
   return { subject, text, html: layout({ preheader: lines[0] ?? title, body, appUrl, footer: "You got this because you forwarded an email to your Forge forwarding address." }) };
 }
 
-export function arrivalEmail(arrival: Arrival, appUrl: string): Email {
-  const where = "The login is saved in Forge, encrypted, and Forge will check this portal for you every 12 hours.";
+export function arrivalEmail(arrival: Arrival, appUrl: string, opts: { saved: boolean } = { saved: true }): Email {
+  const waiting = "The PIN, link and password from the school's email are waiting on this school in Forge, under Finish setup.";
+  // No login is saved for a school whose portal link came from the email itself: say so instead of "saved".
+  const unsaved = "Forge didn't save this login because the portal link came from the email, not from Forge. Check the portal link on this school in Forge, then save the login there.";
+  const where = opts.saved ? "The login is saved in Forge, encrypted, and Forge will check this portal for you on your check schedule." : `${unsaved} ${waiting}`;
   if (arrival.state === "verified") {
     return compose(`${arrival.name}: your portal is set up`, `${arrival.name}: your portal is set up`, [
       `We set a new password on your ${arrival.name} portal and signed in with it to make sure it works. The username is ${arrival.username}.`,
@@ -30,12 +33,15 @@ export function arrivalEmail(arrival: Arrival, appUrl: string): Email {
   if (arrival.state === "set") {
     return compose(`${arrival.name}: check your new portal password`, `${arrival.name}: check your new portal password`, [
       `We set a new password on your ${arrival.name} portal, but signing in with it afterwards didn't work.`,
-      "Forge saved that password and will try it on its next check. If the check can't sign in, reset the password from the portal's sign-in page and save the new one in Forge.",
+      ...(opts.saved
+        ? ["Forge saved that password and will try it on its next check. If the check can't sign in, reset the password from the portal's sign-in page and save the new one in Forge.", waiting]
+        : [unsaved, waiting]),
     ], appUrl, { title: "Signing in didn't work yet", body: arrival.reason, tone: "hold" });
   }
   return compose(`${arrival.name}: finish setting up your portal`, `${arrival.name}: finish setting up your portal`, [
     `We read the email from ${arrival.name} but couldn't set up the portal for you, so Forge didn't save a new password. The school is on your Portals page.`,
     `Use the link in the school's email${arrival.pin ? " and its PIN" : ""} to choose a password, then save that username and password on ${arrival.name} in Forge so it can check the portal for you.`,
+    ...(arrival.pin || arrival.link ? [waiting] : []),
   ], appUrl, { title: "Why it stopped", body: arrival.reason, tone: "hold" });
 }
 

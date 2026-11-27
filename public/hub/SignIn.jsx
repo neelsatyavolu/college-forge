@@ -23,7 +23,7 @@ function SignIn() {
         <a className="cf-signin__go" href={"/api/xanom/start?return=" + encodeURIComponent(back)}>Continue with Xanom</a>
         <small>Forge uses your Xanom account, the same one as Mullwell, Lodestar and Tare. New here? You can create one on the next screen. Anything you already started in this browser stays with you.</small>
         <ul className="cf-signin__list">
-          <li><Check /><span>Portal checks every 12 hours, with logins kept encrypted</span></li>
+          <li><Check /><span>Portal checks on your schedule, with logins kept encrypted</span></li>
           <li><Check /><span>Bring your schools over from College Apps in one step</span></li>
           <li><Check /><span>Let Grok, ChatGPT or Claude read and update your list</span></li>
         </ul>

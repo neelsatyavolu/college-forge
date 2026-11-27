@@ -44,7 +44,7 @@ struct ApplicationListRow: View {
                     Label("Check portal now", systemImage: "arrow.triangle.2.circlepath")
                 }
             }
-            if let url = URL(string: app.portalUrl), ApplicationDraft.isHTTPS(app.portalUrl) {
+            if let url = app.openablePortalURL {
                 Link(destination: url) { Label("Open \(app.portalName)", systemImage: "arrow.up.right.square") }
             }
             Divider()

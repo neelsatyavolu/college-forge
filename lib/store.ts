@@ -5,6 +5,7 @@ import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
 import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
 import { keepValidCommonAppPrompt } from "./essay-tools";
 import { linkListAndApplications, syncListAndApplications } from "./list-sync";
+import { cleanupApps, removedAppIds } from "./app-cleanup";
 import { listDocs } from "./doc-store";
 import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type Tracker } from "./tracker";
 import type { AdmissionOdds, ApplicationRead } from "./admission-odds";
@@ -604,6 +605,21 @@ async function applyMutation(workspace: Workspace, mutate: WorkspaceMutation): P
   return withDerived(syncListAndApplications(workspace, await mutate(workspace)));
 }
 
+/**
+ * After a write: applications it removed (by any writer, including the list sync dropping an untouched one)
+ * lose their saved login, master-login use and set-up details. The write already happened, so a failure here
+ * is logged rather than reported as a failed write.
+ */
+async function cleanupRemoved(id: string, before: Workspace, after: Workspace): Promise<void> {
+  const removed = removedAppIds(before, after);
+  if (!removed.length) return;
+  try {
+    await cleanupApps(id, removed);
+  } catch (error) {
+    console.error("[store] cleanup of removed applications failed", { count: removed.length, error: error instanceof Error ? error.name : "unknown" });
+  }
+}
+
 async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<Workspace> {
   const key = workspaceKey(id);
   if (!useBlob()) {
@@ -612,6 +628,7 @@ async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<
       const revision = workspace.revision;
       const next = mutate ? { ...await applyMutation(workspace, mutate), revision: revision + 1 } : workspace;
       if (mutate || needsWrite) await writeLocalText(key, JSON.stringify(next, null, 2));
+      await cleanupRemoved(id, workspace, next);
       return next;
     });
   }
@@ -632,6 +649,7 @@ async function mutateWorkspace(id: string, mutate?: WorkspaceMutation): Promise<
         addRandomSuffix: false,
         ...(snapshot ? { allowOverwrite: true, ifMatch: snapshot.etag } : { allowOverwrite: false }),
       });
+      await cleanupRemoved(id, workspace, next);
       return next;
     } catch (error) {
       const versionConflict = error instanceof BlobPreconditionFailedError;

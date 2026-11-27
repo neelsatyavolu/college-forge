@@ -57,6 +57,11 @@ extension APIClient {
         try await get("/api/applications", as: DataEnvelope<TrackerView>.self).data
     }
 
+    /// The master login's state, from the same GET (`master` beside `data`).
+    func masterLogin() async throws -> MasterLoginStatus? {
+        try await get("/api/applications", as: ApplicationsResponse.self).master
+    }
+
     /// Portal checks and imports can take up to two minutes, so those get a longer timeout.
     func applications(_ action: ApplicationAction) async throws -> ApplicationsResponse {
         let slow: Bool = switch action {
