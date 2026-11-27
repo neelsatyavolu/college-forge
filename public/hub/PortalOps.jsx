@@ -15,8 +15,8 @@ function clockLabel(hhmm) {
 
 const listOf = (items) => (items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`);
 
-/** How often automatic checks run and from what hour, with the times they land on. */
-function CheckSchedule({ schedule, act, busy, disabled }) {
+/** How often automatic checks run and from what hour, inline in the toolbar; the times they land on are the next label's tooltip. */
+function CheckSchedule({ schedule, act, busy }) {
   if (!schedule) return null;
   const zone = browserZone();
   const save = (change) => act({
@@ -28,24 +28,19 @@ function CheckSchedule({ schedule, act, busy, disabled }) {
   }, "Check schedule saved.");
   const next = schedule.nextAt ? new Date(schedule.nextAt).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit", ...(zone ? {} : { timeZone: schedule.timeZone }) }) : "";
   const otherZone = zone && zone !== schedule.timeZone;
+  const times = `Checks around ${listOf(schedule.times.map(clockLabel))}${otherZone ? ` (${schedule.timeZone} time)` : ""}. Checking by hand doesn’t change these times.`;
   return (
-    <div className="cf-apps-schedule">
-      <label className="cf-apps-auto">How often
-        <select value={schedule.everyHours} disabled={busy || disabled} onChange={(e) => save({ everyHours: Number(e.target.value) })}>
-          {[8, 12, 24].map((h) => <option key={h} value={h}>{h === 24 ? "Once a day" : `Every ${h} hours`}</option>)}
-        </select>
-      </label>
-      <label className="cf-apps-auto">First check
-        <select value={schedule.startHour} disabled={busy || disabled} onChange={(e) => save({ startHour: Number(e.target.value) })}>
-          {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{clockLabel(`${h}:00`)}</option>)}
-        </select>
-      </label>
-      <p className="cf-help">
-        {disabled ? "Automatic checks are off. " : `Forge checks around ${listOf(schedule.times.map(clockLabel))}${otherZone ? ` (${schedule.timeZone} time)` : ""}. Next: ${next}. `}
-        Checking by hand doesn’t change these times.
-        {otherZone ? <React.Fragment>{" "}<button type="button" className="cf-link-btn" disabled={busy} onClick={() => save({ timeZone: zone })}>Use my time zone</button></React.Fragment> : null}
-      </p>
-    </div>
+    <span className="cf-apps-schedule">
+      <select aria-label="How often to check" value={schedule.everyHours} disabled={busy} onChange={(e) => save({ everyHours: Number(e.target.value) })}>
+        {[8, 12, 24].map((h) => <option key={h} value={h}>{h === 24 ? "once a day" : `every ${h} hours`}</option>)}
+      </select>
+      <span>from</span>
+      <select aria-label="First check of the day" value={schedule.startHour} disabled={busy} onChange={(e) => save({ startHour: Number(e.target.value) })}>
+        {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{clockLabel(`${h}:00`)}</option>)}
+      </select>
+      {next ? <span className="cf-apps-schedule__next cf-nums" title={times}>· next {next}</span> : null}
+      {otherZone ? <button type="button" className="cf-link-btn" disabled={busy} onClick={() => save({ timeZone: zone })}>Use my time zone</button> : null}
+    </span>
   );
 }
 
