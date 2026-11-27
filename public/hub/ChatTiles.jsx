@@ -85,10 +85,10 @@ function OcUploadTile({ disabled, onAnswer, onUploaded, compact, title }) {
       <label className={"oc-upload" + (compact ? " oc-upload--compact" : "") + (over ? " is-over" : "")}
         onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); if (!disabled && !busy) upload(e.dataTransfer.files); }}>
-        <input ref={inputRef} type="file" accept=".pdf,.docx,.txt,.csv" multiple hidden disabled={disabled || busy} onChange={(e) => upload(e.target.files)} />
+        <input ref={inputRef} type="file" accept=".pdf,.docx,.txt,.md,.markdown,.csv" multiple hidden disabled={disabled || busy} onChange={(e) => upload(e.target.files)} />
         <span className="oc-upload-icon" aria-hidden="true">↑</span>
         <span className="oc-upload-title">{busy ? "Reading your file…" : title || (compact ? "Drop a resume or activities list, or choose a file" : "Drop your transcript here, or choose a file")}</span>
-        <span className="oc-upload-hint">PDF, Word or text · up to 15 MB</span>
+        <span className="oc-upload-hint">PDF, Word, Markdown or text · up to 15 MB</span>
       </label>
       {error && <p className="oc-error" role="alert">{error}</p>}
       {!compact && <button type="button" className="oc-link" disabled={disabled || busy} onClick={() => onAnswer("I don't have my transcript handy. Let's do it by hand.")}>I'll type my grades instead</button>}

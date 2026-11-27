@@ -743,7 +743,7 @@ function TranscriptCard({ transcript, onUploaded }) {
       <input
         ref={fileRef}
         type="file"
-        accept=".pdf,.docx,.txt"
+        accept=".pdf,.docx,.txt,.md,.markdown"
         style={{ display: "none" }}
         onChange={(e) => upload(e.target.files)}
       />
