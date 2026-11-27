@@ -4688,33 +4688,60 @@
     "university-of-maryland-college-park": {
       "name": "University of Maryland, College Park",
       "scorecardId": 163286,
-      "source": "collegevine",
-      "url": "https://www.collegevine.com/schools/university-of-maryland-college-park-maryland/essay-prompts",
-      "cycle": "2024-25",
+      "source": "official",
+      "url": "https://www.commonapp.org/explore/university-maryland",
+      "cycle": "2026-27",
       "prompts": [
         {
-          "label": "Diversity Essay",
-          "prompt": "Because we know that diversity benefits the educational experience of all students, the University of Maryland values diversity in all of its many forms. This includes (but is not limited to) racial, socio-economic, gender, geographical, and sexual orientation. We are interested in hearing about your own individual life experiences. In a few sentences, will you please describe how you have learned, grown, been inspired or developed skills through one or more components of diversity.",
-          "limit": 650,
           "unit": "characters",
           "required": true,
-          "options": []
+          "options": [],
+          "label": "Short Answer 1",
+          "prompt": "If I could travel anywhere, I would go to…",
+          "limit": 650
         },
         {
-          "label": "Select-A-Prompt Essay",
-          "prompt": "At the University of Maryland, we encourage our students to go beyond the classroom to engage in opportunities that further both their academic and personal growth.\n\nTo tell us more about yourself, please complete the following prompts using only the space provided.",
-          "limit": 650,
           "unit": "characters",
           "required": true,
-          "options": [
-            "If I could travel anywhere, I would go to...",
-            "The most interesting fact I ever learned from research was...",
-            "In addition to my major, my academic interests include...",
-            "My favorite thing about last Friday was...",
-            "Something you might not know about me is..."
-          ]
+          "options": [],
+          "label": "Short Answer 2",
+          "prompt": "The most interesting fact I ever learned from research was…",
+          "limit": 650
+        },
+        {
+          "unit": "characters",
+          "required": true,
+          "options": [],
+          "label": "Short Answer 3",
+          "prompt": "In addition to my major, my academic interests include…",
+          "limit": 650
+        },
+        {
+          "unit": "characters",
+          "required": true,
+          "options": [],
+          "label": "Short Answer 4",
+          "prompt": "My favorite thing about last Tuesday was…",
+          "limit": 650
+        },
+        {
+          "unit": "characters",
+          "required": true,
+          "options": [],
+          "label": "Short Answer 5",
+          "prompt": "Something you might not know about me is…",
+          "limit": 650
+        },
+        {
+          "unit": "characters",
+          "required": true,
+          "options": [],
+          "label": "Diversity Short Answer",
+          "prompt": "Because we know that diversity benefits the educational experience of all students, the University of Maryland values diversity in all of its many forms. This includes (but is not limited to) racial, socio-economic, gender, geographical, and sexual orientation. We are interested in hearing about your own individual life experiences. In a few sentences, will you please describe how you have learned, grown, been inspired or developed skills through one or more components of diversity.",
+          "limit": 650
         }
-      ]
+      ],
+      "note": "Copied by hand from the school's page"
     },
     "university-of-massachusetts-amherst": {
       "name": "University of Massachusetts--Amherst",
