@@ -101,7 +101,7 @@
 
 .cf-plist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
 .cf-prow { border-bottom: 1px solid var(--hairline); padding: 6px 2px; }
-.cf-prow__main { display: grid; grid-template-columns: 24px minmax(0, 1fr) 44px minmax(112px, 160px) 112px 140px; gap: 12px; align-items: center; }
+.cf-prow__main { display: grid; grid-template-columns: 24px minmax(0, 1fr) 44px minmax(112px, 160px) minmax(112px, 184px) 140px; gap: 12px; align-items: center; }
 .cf-prow__main .cf-school-mark { width: 24px; height: 24px; }
 .cf-prow__name { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 0; border: 0; background: none; text-align: left; font: 500 16px/1.3 var(--font-display); color: var(--ink); cursor: default; min-width: 0; overflow-wrap: anywhere; }
 button.cf-prow__name { cursor: pointer; }
@@ -117,7 +117,7 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-prow__when.is-late { color: var(--error); }
 .cf-prow__status { justify-self: end; }
 .cf-prow__status .cf-badge--select select { min-height: 30px; }
-.cf-prow__signal { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cf-prow__signal { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cf-prow__signal.is-alert { color: var(--coral); font-weight: 500; }
 .cf-prow__signal .is-alert { color: var(--coral); font-weight: 500; }
 .cf-prow__sub { padding-left: 36px; padding-bottom: 4px; }
