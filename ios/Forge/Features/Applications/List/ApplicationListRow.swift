@@ -114,7 +114,8 @@ struct ApplicationRowContent: View {
                     StatusBadge(status: app.status)
                 }
                 ApplicationMetaLine(app: app)
-                PortalSummaryLine(app: app, expanded: expanded, checking: checking)
+                PortalSummaryLine(app: app, expanded: expanded, checking: checking,
+                                  odds: CollegesOdds.forApp(app, in: store.workspace))
             }
             // Rows grow to fit wrapped text instead of truncating it on narrow phones.
             .fixedSize(horizontal: false, vertical: true)
@@ -162,10 +163,18 @@ struct ApplicationMetaLine: View {
 }
 
 /// What the portal last said. A posted decision replaces the portal's words, which could give it away.
+/// The chance estimate follows the portal's words, or stands alone when there's no portal check yet.
 struct PortalSummaryLine: View {
     let app: TrackedApplication
     var expanded = false
     var checking = false
+    var odds: AdmissionOdds?
+
+    private var chance: String? { odds.map(CollegesOdds.chanceText) }
+
+    private func withChance(_ text: String) -> String {
+        chance.map { "\(text) · \($0)" } ?? text
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xxs) {
@@ -182,12 +191,16 @@ struct PortalSummaryLine: View {
                     Label("\(portal.error) · tried \(ForgeDates.ago(milliseconds: portal.checkedAt))", systemImage: "exclamationmark.triangle")
                         .foregroundStyle(Theme.danger)
                 } else if expanded || !portal.statusText.isEmpty {
-                    Text(portal.statusText.isEmpty ? "Checked \(ForgeDates.ago(milliseconds: portal.checkedAt))" : "“\(portal.statusText)” · \(ForgeDates.ago(milliseconds: portal.checkedAt))")
+                    Text(withChance(portal.statusText.isEmpty ? "Checked \(ForgeDates.ago(milliseconds: portal.checkedAt))" : "“\(portal.statusText)” · \(ForgeDates.ago(milliseconds: portal.checkedAt))"))
                         .foregroundStyle(Theme.body)
                         .lineLimit(expanded ? 3 : 1)
+                } else if let chance {
+                    Text(chance).foregroundStyle(Theme.muted)
                 }
             } else if app.login != nil {
-                Text("Login saved. The next check fills this in.").foregroundStyle(Theme.muted)
+                Text(withChance("Login saved. The next check fills this in.")).foregroundStyle(Theme.muted)
+            } else if let chance {
+                Text(chance).foregroundStyle(Theme.muted)
             }
             if !checking, let failure = app.lastFailure, app.portal?.ok != false {
                 Label("Latest check didn't finish: \(failure.error)", systemImage: "exclamationmark.triangle")

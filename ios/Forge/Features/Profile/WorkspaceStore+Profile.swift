@@ -7,6 +7,8 @@ struct ProfileIdentityDraft: Equatable {
     var yearLabel = ""
     var gpaWeighted = ""
     var gpaUnweighted = ""
+    /// Unweighted GPA by school year ("9".."12"), as typed.
+    var gpaByYear: [String: String] = [:]
     var sat = ""
     var satNote = ""
     var intended = ""
@@ -25,6 +27,7 @@ struct ProfileIdentityDraft: Equatable {
         yearLabel = a.year
         gpaWeighted = ProfileRules.editable(a.gpaWeighted)
         gpaUnweighted = ProfileRules.editable(a.gpaUnweighted)
+        gpaByYear = a.gpaByYear
         sat = ProfileRules.editable(p.testing.sat.isPresentStat ? p.testing.sat : a.sat)
         satNote = p.testing.satNote.isEmpty ? a.satNote : p.testing.satNote
         intended = p.intended
@@ -39,6 +42,7 @@ struct ProfileIdentityDraft: Equatable {
     var error: String? {
         ProfileRules.unweightedGPAError(gpaUnweighted)
             ?? ProfileRules.weightedGPAError(gpaWeighted)
+            ?? GPAYears.firstError(gpaByYear)
             ?? ProfileRules.satError(sat)
             ?? ProfileRules.gradYearError(gradYear)
     }
@@ -52,7 +56,7 @@ extension WorkspaceStore {
         let applicant = WorkspacePatch.ApplicantPatch(
             name: d.name.profileTrimmed, cycle: d.cycle.profileTrimmed, year: d.yearLabel.profileTrimmed,
             gpaWeighted: ProfileRules.stored(d.gpaWeighted), gpaUnweighted: ProfileRules.stored(d.gpaUnweighted),
-            sat: sat, satNote: d.satNote.profileTrimmed
+            sat: sat, satNote: d.satNote.profileTrimmed, gpaByYear: GPAYears.patch(d.gpaByYear)
         )
         var testing = workspace.profile.testing
         testing.sat = sat
@@ -68,6 +72,7 @@ extension WorkspaceStore {
             ws.applicant.year = applicant.year ?? ""
             ws.applicant.gpaWeighted = applicant.gpaWeighted ?? "—"
             ws.applicant.gpaUnweighted = applicant.gpaUnweighted ?? "—"
+            ws.applicant.gpaByYear = GPAYears.stored(d.gpaByYear)
             ws.applicant.sat = sat
             ws.applicant.satNote = testing.satNote
             ws.profile.intended = profile.intended ?? ""

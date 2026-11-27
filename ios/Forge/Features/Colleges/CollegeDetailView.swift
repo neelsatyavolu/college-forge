@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// One school: photo, admissions numbers, cost and outcomes, plans, programs and earnings by field.
+/// One school: photo, admissions numbers, rankings, Forge's notes, cost and outcomes, plans, essays,
+/// programs and earnings by field.
 /// Shows the tapped row at once and fills in the full College Scorecard record when it arrives.
 struct CollegeDetailView: View {
     let college: College
@@ -32,20 +33,28 @@ struct CollegeDetailView: View {
 
     var body: some View {
         let d = shown
+        let extras = detail?.extras
+        let research = extras?.research
         List {
-            CollegeDetailHero(college: d, config: store.config)
+            CollegeDetailHero(college: d, config: store.config, extras: extras)
             if let loadError {
                 ErrorBanner(message: loadError.message, retry: { Task { await load() } }, dismiss: { self.loadError = nil })
                     .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                     .listRowBackground(Color.clear)
             }
             CollegeAdmissionsSection(college: d)
-            CollegeGlanceSection(college: d)
+            CollegeRankingsSection(rankings: extras?.rankings ?? [:], rank: d.rank, lacRank: extras?.lacRank)
+            CollegeGlanceSection(college: d, extras: extras)
+            CollegeNotesSection(research: research)
+            CollegeSpecialNotesSection(intlAid: extras?.intlAid, nursing: extras?.nursing)
             CollegeCostSection(college: d, isLoading: isLoading)
-            CollegePlansSection(college: d)
-            CollegeProgramsSection(programs: detail?.programs ?? [], isLoading: isLoading && detail == nil)
+            CollegeIncomeSection(research: research, earningsRange: extras?.earningsRange)
+            CollegePlansSection(college: d, researchDeadlines: research?.deadlines ?? [])
+            CollegeEssaysSection(essays: research?.essays ?? [])
+            CollegeCampusLifeSection(niche: extras?.niche)
+            CollegeProgramsSection(programs: detail?.programs ?? [], isLoading: isLoading && detail == nil, isUnavailable: detail?.partial == true)
             CollegeEarningsSection(programs: detail?.programs ?? [], isLoading: isLoading && detail == nil)
-            CollegeTransferSection(college: d)
+            CollegeTransferSection(college: d, switching: extras?.switching ?? [])
         }
         .listStyle(.insetGrouped)
         .listSectionSpacing(.compact)

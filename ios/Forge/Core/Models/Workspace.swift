@@ -35,6 +35,8 @@ struct Workspace: Codable, Hashable, Sendable {
     /// Schools the student is not writing supplements for, by Essays group key (a slug or "uc-application"),
     /// always false. Every other school is an essay school.
     var essaySchools: [String: Bool] = [:]
+    /// Which option (0-based) of a choose-one prompt the student answers, by essay id.
+    var essayOption: [String: Int] = [:]
 
     /// True while the onboarding wizard should cover the app (mirrors `needsOnboarding` in lib/store.ts).
     var needsOnboarding: Bool {
@@ -80,6 +82,7 @@ extension Workspace {
         essayHidden = c.dictionary(.essayHidden)
         commonAppPrompt = c.optionalString(.commonAppPrompt)
         essaySchools = c.dictionary(.essaySchools)
+        essayOption = c.dictionary(.essayOption)
     }
 }
 
@@ -93,6 +96,12 @@ struct Applicant: Codable, Hashable, Sendable {
     var sat = "—"
     var satNote = ""
     var awards = 0
+    /// Unweighted GPA by school year ("9".."12"), from the transcript. The server derives the two below from it.
+    var gpaByYear: [String: String] = [:]
+    /// "up", "steady" or "down"; set by the server from `gpaByYear` when two or more years are on file.
+    var gpaTrend: String?
+    /// The 10th-11th grade unweighted GPA (what the UCs use).
+    var gpaRecent: String?
 }
 
 extension Applicant {
@@ -106,6 +115,9 @@ extension Applicant {
         sat = c.string(.sat, "—")
         satNote = c.string(.satNote)
         awards = c.int(.awards)
+        gpaByYear = c.dictionary(.gpaByYear, of: String.self).filter { $0.value.isPresentStat }
+        gpaTrend = c.optionalString(.gpaTrend)
+        gpaRecent = c.optionalString(.gpaRecent)
     }
 }
 

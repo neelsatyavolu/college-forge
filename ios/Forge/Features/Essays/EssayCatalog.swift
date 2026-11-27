@@ -23,6 +23,8 @@ struct EssayGroup: Hashable, Sendable, Identifiable {
     var due: EssayDeadline?
     /// Essays the student hid in this group (`Workspace.essayHidden`), listed apart under "Hidden".
     var hiddenEssays: [Essay] = []
+    /// Every prompt in this group in prompt order, hidden ones included (for the pick-N and college pickers).
+    var allEssays: [Essay] = []
 
     var id: String { key }
     /// True for a school on the list that has no prompts yet.
@@ -39,11 +41,17 @@ enum EssayCatalog {
     /// `hidden` and `commonAppPrompt` filter like the web's `visibleItems` (public/hub/essay-archetypes.js):
     /// hidden essays move to `hiddenEssays`, and a chosen Common App prompt drops the other prompts of its set.
     /// `essaySchools` drops the groups of schools the student isn't writing for (`Workspace.essaySchools`).
+    /// `essayOption` applies a picked option's own limit (`withChosenOption`).
     static func groups(colleges: [College], essays: EssaySet, today: String = ForgeDates.today(),
                        hidden: [String: Bool] = [:], commonAppPrompt: String? = nil,
-                       essaySchools: [String: Bool] = [:]) -> [EssayGroup] {
+                       essaySchools: [String: Bool] = [:], essayOption: [String: Int] = [:]) -> [EssayGroup] {
         let all = allGroups(colleges: colleges, essays: essays, today: today)
             .filter { $0.kind == .orphan || !isSkipped($0.key, essaySchools: essaySchools) }
+            .map { group in
+                var out = group
+                out.essays = group.essays.map { EssayChoiceRules.withChosenOption($0, choice: essayOption[$0.id]) }
+                return out
+            }
         return visible(all, hidden: hidden, commonAppPrompt: commonAppPrompt)
     }
 
@@ -92,9 +100,9 @@ enum EssayCatalog {
     }
 
     private static func visible(_ groups: [EssayGroup], hidden: [String: Bool], commonAppPrompt: String?) -> [EssayGroup] {
-        guard !hidden.isEmpty || commonAppPrompt != nil else { return groups }
-        return groups.map { group in
+        groups.map { group in
             var out = group
+            out.allEssays = group.essays
             out.essays = group.essays.filter { !isHidden($0, hidden: hidden, commonAppPrompt: commonAppPrompt) }
             out.hiddenEssays = group.essays.filter { hidden[$0.id] == true }
             return out
@@ -117,8 +125,8 @@ enum EssayCatalog {
                                      due: EssayDeadline.next(for: ucs, today: today)))
         }
         for college in others where !college.slug.isEmpty {
-            let subtitle = (!college.name.isEmpty && !college.short.isEmpty && college.name != college.short) ? college.name : nil
-            groups.append(EssayGroup(key: college.slug, title: displayName(college), subtitle: subtitle,
+            let named = EssayLabels.schoolTitle(name: college.name, short: college.short)
+            groups.append(EssayGroup(key: college.slug, title: named.title.isEmpty ? college.slug : named.title, subtitle: named.subtitle,
                                      kind: .school, essays: supplements[college.slug] ?? [],
                                      due: EssayDeadline.next(for: [college], today: today)))
         }

@@ -14,27 +14,41 @@ enum CollegesLoad<Value> {
     }
 }
 
-/// Explore: the ranking browse list, live search and filters. Owned by `CollegesView` so it survives
-/// switching segments.
+/// Explore: the catalog browse list, live search, filters and sort. Owned by `CollegesView` so it survives
+/// switching segments. The filters persist across launches, as the web keeps them in localStorage.
 @MainActor
 @Observable
 final class CollegesExploreModel {
+    private static let filtersKey = "forge.colleges.exploreFilters"
+
     private(set) var browse: CollegesLoad<CollegesSearchResponse> = .idle
-    private(set) var results: [College]?
+    private(set) var results: [ExploreItem]?
     private(set) var isSearching = false
     private(set) var searchError: APIError?
     var query = ""
-    var setting = "all"
-    var favoritesOnly = false
+    var filters: ExploreFilterState {
+        didSet { save() }
+    }
+
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        filters = defaults.data(forKey: Self.filtersKey)
+            .flatMap { try? JSONDecoder().decode(ExploreFilterState.self, from: $0) } ?? .defaults
+    }
 
     var edition: String { browse.value?.edition ?? "" }
+    var catalogDate: String { browse.value?.catalogDate ?? "" }
     var isSearchMode: Bool { CollegesExplore.searchTerm(query) != nil }
     var rankingName: String { "U.S. News \(edition.isEmpty ? "" : edition + " ")National Universities" }
-    var isFiltered: Bool { setting != "all" || favoritesOnly }
+    var isFiltered: Bool { !ExploreFilters.chips(filters).isEmpty }
+    var browseItems: [ExploreItem] { browse.value?.items ?? [] }
+    var states: [String] { ExploreFilters.states(browseItems) }
 
-    func rows(favorites: Set<String>) -> [College] {
-        let source = isSearchMode ? (results ?? []) : (browse.value?.colleges ?? [])
-        return CollegesExplore.filter(source, setting: setting, favoritesOnly: favoritesOnly, favorites: favorites)
+    func rows(favorites: Set<String>) -> [ExploreItem] {
+        let source = isSearchMode ? (results ?? []) : browseItems
+        return ExploreFilters.apply(source, filters, ExploreFilterContext(favorites: favorites, searchMode: isSearchMode))
     }
 
     func loadBrowse(api: APIClient, force: Bool = false) async {
@@ -60,7 +74,7 @@ final class CollegesExploreModel {
         do {
             try await Task.sleep(for: .milliseconds(280))
             let found = try await api.collegesSearch(term)
-            results = found
+            results = found.items
             searchError = nil
             isSearching = false
         } catch {
@@ -70,6 +84,11 @@ final class CollegesExploreModel {
             results = []
             isSearching = false
         }
+    }
+
+    private func save() {
+        guard let data = try? JSONEncoder().encode(filters) else { return }
+        defaults.set(data, forKey: Self.filtersKey)
     }
 }
 

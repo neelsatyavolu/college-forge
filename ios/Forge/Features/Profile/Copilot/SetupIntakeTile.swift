@@ -41,6 +41,11 @@ struct SetupIntakeTile: View {
                     field("Unweighted GPA", hint: "out of 4.0") { TextField("3.8", text: $form.gpaUnweighted).keyboardType(.decimalPad) }
                     field("Weighted GPA") { TextField("4.2", text: $form.gpaWeighted).keyboardType(.decimalPad) }
                 }
+                field("9th grade GPA", hint: "unweighted, if you know it") { TextField("", text: $form.gpa9).keyboardType(.decimalPad) }
+                HStack(spacing: Theme.Spacing.sm) {
+                    field("10th grade GPA", hint: "unweighted") { TextField("", text: $form.gpa10).keyboardType(.decimalPad) }
+                    field("11th grade GPA", hint: "unweighted") { TextField("", text: $form.gpa11).keyboardType(.decimalPad) }
+                }
                 field("10th–11th GPA", hint: "unweighted, if you know it") { TextField("", text: $form.gpaRecent).keyboardType(.decimalPad) }
                 HStack(spacing: Theme.Spacing.sm) {
                     field("SAT") { TextField("", text: $form.sat).keyboardType(.numberPad).disabled(form.testOptional) }

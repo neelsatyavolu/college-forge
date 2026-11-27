@@ -59,11 +59,17 @@ struct EssayRow: View {
                     .frame(width: 8, height: 8)
                     .accessibilityHidden(true)
             }
+            let short = EssayLabels.sidebarLabel(essay)
             VStack(alignment: .leading, spacing: 6) {
-                Text(group.map { "\($0) · \(essay.label)" } ?? essay.label)
+                Text(group.map { "\($0) · \(short.text)" } ?? short.text)
                     .font(.body)
                     .foregroundStyle(Theme.ink)
                     .lineLimit(3)
+                if let tag = short.tag {
+                    Text(tag)
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
+                }
                 HStack(spacing: Theme.Spacing.xs) {
                     EssayLengthBar(count: count, essay: essay)
                         .frame(maxWidth: 140)
@@ -85,16 +91,26 @@ struct EssayGroupHeader: View {
     let started: Int
     let isExpanded: Bool
     let unfinished: Bool
+    /// Every essay this school requires is marked final.
+    var done = false
     let toggle: () -> Void
 
     var body: some View {
         Button(action: toggle) {
             HStack(alignment: .firstTextBaseline, spacing: Theme.Spacing.xs) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(group.title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(group.kind == .orphan ? Theme.mutedSoft : Theme.ink)
-                        .textCase(nil)
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(group.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(group.kind == .orphan ? Theme.mutedSoft : Theme.ink)
+                            .textCase(nil)
+                        if done {
+                            Image(systemName: "checkmark")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(Theme.ink)
+                                .accessibilityHidden(true)
+                        }
+                    }
                     if let subtitle = group.subtitle {
                         Text(subtitle)
                             .font(.caption)
@@ -125,7 +141,7 @@ struct EssayGroupHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(group.title), \(started) of \(group.essays.count) started")
+        .accessibilityLabel("\(group.title), \(started) of \(group.essays.count) started\(done ? ", all essays final" : "")")
         .accessibilityValue(group.due.map { "Due \($0.shortDate), \($0.round), \($0.school)" } ?? "")
         .accessibilityHint(isExpanded ? "Collapses the section" : "Expands the section")
     }

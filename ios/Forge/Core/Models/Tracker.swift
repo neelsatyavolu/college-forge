@@ -87,6 +87,9 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     var setupWaiting: Bool = false
     /// The portal link came from a forwarded email and the student hasn't saved it: never offer it as a link.
     var portalFromEmail: Bool = false
+    /// Where this app's chance estimate is saved in `Workspace.admissionOdds`: the shortlist slug the server
+    /// matched to it, or "app:<id>" (lib/tracker-service.ts). Nil from servers that predate it.
+    var oddsKey: String? = nil
 
     var lastCheckedDate: Date? { lastChecked.map(Date.init(milliseconds:)) }
 }
@@ -130,6 +133,7 @@ extension TrackedApplication {
         interestSignal = c.optional(InterestSignal.self, .interestSignal)
         setupWaiting = c.bool(.setupWaiting)
         portalFromEmail = c.bool(.portalFromEmail)
+        oddsKey = c.optionalString(.oddsKey)
     }
 }
 

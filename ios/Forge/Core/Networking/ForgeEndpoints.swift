@@ -12,14 +12,19 @@ struct WorkspaceActionResponse: Decodable, Sendable {
     var code: String?
     /// `create-share`: the new share token.
     var token: String?
+    /// `assess-tiers`: list schools given a tier, and those Forge couldn't place.
+    var assessed: [String] = []
+    var unknown: [String] = []
 
-    private enum CodingKeys: String, CodingKey { case data, code, token }
+    private enum CodingKeys: String, CodingKey { case data, code, token, assessed, unknown }
 
     init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         data = c.optional(Workspace.self, .data)
         code = c.optionalString(.code)
         token = c.optionalString(.token)
+        assessed = c.array(.assessed)
+        unknown = c.array(.unknown)
     }
 }
 

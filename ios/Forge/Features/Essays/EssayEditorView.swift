@@ -7,7 +7,8 @@ struct EssayEditorView: View {
     @Environment(WorkspaceStore.self) private var store
 
     var body: some View {
-        let groups = EssayCatalog.groups(colleges: store.workspace.colleges, essays: store.workspace.essays)
+        let groups = EssayCatalog.groups(colleges: store.workspace.colleges, essays: store.workspace.essays,
+                                         essayOption: store.workspace.essayOption)
         if let item = EssayCatalog.items(in: groups).first(where: { $0.id == id }) {
             EssayEditorContent(item: item, groups: groups, queue: EssayDraftQueues.queue(for: store))
         } else {
@@ -85,7 +86,8 @@ private struct EssayEditorContent: View {
 
     private var editorHeader: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-            EssayEditorHeader(item: item, expanded: $promptExpanded)
+            EssayEditorHeader(item: item, expanded: $promptExpanded, chosenOption: store.workspace.essayOption[item.id],
+                              onChooseOption: chooseOption)
             if !writing { draftActions }
             if queue.errorMessage != nil || (queue.storageUnavailable && queue.hasUnsaved) {
                 EssaySaveErrorBanner(queue: queue)
@@ -159,6 +161,13 @@ private struct EssayEditorContent: View {
         }
     }
 
+    private func chooseOption(_ index: Int) {
+        performAction {
+            try await store.setEssayOption(id: item.id, option: index)
+            Haptics.selection()
+        }
+    }
+
     private func update(_ patch: EssaysMetadataPatch) {
         performAction {
             guard queue.isCurrent() else { return }
@@ -203,7 +212,7 @@ private struct EssayEditorContent: View {
     private func toolbar(count: Int) -> some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
             Menu {
-                Button { promptForm = .editing(item) } label: { Label("Edit prompt", systemImage: "pencil") }
+                Button { promptForm = store.editingDraft(item) } label: { Label("Edit prompt", systemImage: "pencil") }
                 if !notes.isEmpty {
                     Button { showingNotes = true } label: {
                         Label("Advisor notes (\(notes.count))", systemImage: "text.bubble")

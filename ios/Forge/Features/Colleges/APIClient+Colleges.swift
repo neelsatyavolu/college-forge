@@ -3,14 +3,15 @@ import Foundation
 /// College search, detail, recommendations and the chance-estimate AI steps. None of this lives in the
 /// store, so screens call these directly through `store.api`.
 extension APIClient {
-    /// The U.S. News top 250, with fit tags for this student.
+    /// The Explore catalog (every 4-year public/nonprofit college with 1,000+ undergrads plus every
+    /// U.S. News national and liberal arts school), with fit tags for this student.
     func collegesBrowse() async throws -> CollegesSearchResponse {
         try await get("/api/colleges/search", query: [URLQueryItem(name: "browse", value: "1")])
     }
 
-    /// Live College Scorecard search. Needs at least two characters.
-    func collegesSearch(_ query: String) async throws -> [College] {
-        try await get("/api/colleges/search", query: [URLQueryItem(name: "q", value: query)], as: CollegesSearchResponse.self).colleges
+    /// Search: the catalog first, then College Scorecard. Needs at least two characters.
+    func collegesSearch(_ query: String) async throws -> CollegesSearchResponse {
+        try await get("/api/colleges/search", query: [URLQueryItem(name: "q", value: query)])
     }
 
     /// The full record for one school, keyed by its College Scorecard id.

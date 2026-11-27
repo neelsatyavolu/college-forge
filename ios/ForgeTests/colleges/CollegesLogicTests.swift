@@ -90,10 +90,11 @@ struct CollegesExploreTests {
     @Test func filtersBySettingAndFavorites() {
         var a = college("a"); a.setting = "urban"
         var b = college("b"); b.setting = "rural"
-        let rows = [a, b]
-        #expect(CollegesExplore.filter(rows, setting: "all", favoritesOnly: false, favorites: []).count == 2)
-        #expect(CollegesExplore.filter(rows, setting: "rural", favoritesOnly: false, favorites: []).map(\.slug) == ["b"])
-        #expect(CollegesExplore.filter(rows, setting: "all", favoritesOnly: true, favorites: ["a"]).map(\.slug) == ["a"])
+        let rows = [a, b].map { ExploreItem(college: $0, extras: ExploreRowExtras(slug: $0.slug)) }
+        let search = ExploreFilterContext(favorites: ["a"], searchMode: true)
+        #expect(ExploreFilters.apply(rows, .defaults, search).count == 2)
+        #expect(ExploreFilters.apply(rows, ExploreFilterState.defaults.with(\.setting, "rural"), search).map(\.id) == ["b"])
+        #expect(ExploreFilters.apply(rows, ExploreFilterState.defaults.with(\.favoritesOnly, true), search).map(\.id) == ["a"])
     }
 
     @Test func searchNeedsTwoCharacters() {

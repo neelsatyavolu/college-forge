@@ -93,11 +93,17 @@ private struct ProfileStatsGrid: View {
     var body: some View {
         let columns = Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.sm, alignment: .topLeading),
                             count: typeSize.isAccessibilitySize ? 1 : 2)
-        LazyVGrid(columns: columns, alignment: .leading, spacing: Theme.Spacing.md) {
-            Stat(label: "Weighted GPA", value: applicant.gpaWeighted, hint: "\(applicant.gpaUnweighted.isPresentStat ? applicant.gpaUnweighted : "—") unweighted")
-            Stat(label: "SAT", value: profile.testing.sat, hint: profile.testing.satNote.isEmpty ? "From testing" : profile.testing.satNote)
-            Stat(label: "AP exams", value: "\(profile.testing.aps.count)", hint: profile.testing.aps.isEmpty ? "None yet" : "Scores on file")
-            Stat(label: "Honors", value: "\(profile.honors.count)", hint: "\(profile.honors.filter { $0.top == true }.count) highlighted")
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: Theme.Spacing.md) {
+                Stat(label: "Weighted GPA", value: applicant.gpaWeighted, hint: "\(applicant.gpaUnweighted.isPresentStat ? applicant.gpaUnweighted : "—") unweighted")
+                Stat(label: "SAT", value: profile.testing.sat, hint: profile.testing.satNote.isEmpty ? "From testing" : profile.testing.satNote)
+                Stat(label: "AP exams", value: "\(profile.testing.aps.count)", hint: profile.testing.aps.isEmpty ? "None yet" : "Scores on file")
+                Stat(label: "Honors", value: "\(profile.honors.count)", hint: "\(profile.honors.filter { $0.top == true }.count) highlighted")
+            }
+            // GPA by year, with the trend and 10th–11th GPA the server derives from it.
+            if let years = GPAYears.summary(applicant) {
+                Text(years).font(.footnote).monospacedDigit().foregroundStyle(Theme.body)
+            }
         }
         .padding(.vertical, Theme.Spacing.xs)
     }

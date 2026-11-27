@@ -61,8 +61,19 @@ struct ShortlistView: View {
             } footer: {
                 Text(disclaimer)
             }
+            Section {
+                NavigationLink(value: ScattergramsRoute()) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Scattergrams").font(.body.weight(.medium)).foregroundStyle(Theme.ink)
+                        Text("Where past applicants from your high school landed, from Maia Learning")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
+                }
+            }
             ShortlistBalanceSection()
             ShortlistChancesSection()
+            ShortlistAssessStatusSection()
             ForEach(sections) { section in
                 Section {
                     ForEach(section.colleges) { college in
@@ -112,12 +123,18 @@ struct ShortlistView: View {
 
     private func sectionHeader(_ section: CollegesTierSection) -> some View {
         HStack(spacing: Theme.Spacing.xs) {
-            Circle().fill(section.tier?.tone ?? Theme.mutedSoft).frame(width: 8, height: 8)
-            Text(section.title).font(.forgeDisplay(.title3)).foregroundStyle(Theme.ink)
-            Text("\(section.colleges.count)").font(.forgeNumber(.subheadline)).foregroundStyle(Theme.muted)
+            HStack(spacing: Theme.Spacing.xs) {
+                Circle().fill(section.tier?.tone ?? Theme.mutedSoft).frame(width: 8, height: 8)
+                Text(section.title).font(.forgeDisplay(.title3)).foregroundStyle(Theme.ink)
+                Text("\(section.colleges.count)").font(.forgeNumber(.subheadline)).foregroundStyle(Theme.muted)
+            }
+            .accessibilityElement(children: .combine)
+            if section.tier == nil {
+                Spacer(minLength: Theme.Spacing.sm)
+                ShortlistAssessButton(count: section.colleges.count)
+            }
         }
         .textCase(nil)
-        .accessibilityElement(children: .combine)
     }
 
     private var filterMenu: some View {
