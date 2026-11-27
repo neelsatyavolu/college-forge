@@ -271,3 +271,31 @@ test('a transfer path must lead to a different college', () => {
   assert.deepEqual(T.parseTransferPath({ college: 'San Antonio College', transfersTo: 'Texas State University', reason: 'r' }), { college: 'San Antonio College', transfersTo: 'Texas State University', reason: 'r' });
   assert.equal(T.parseTransferPath({ college: 'X', reason: 'r' }), undefined);
 });
+
+test('likely schools stay in the regions the student chose (at most one outside)', () => {
+  const ws = wsWith({ budget: 'lt15', needAid: true, regions: ['south'], suppCount: 6, noSuppCount: 4 });
+  ws.profile.residency = 'TX';
+  const s = (name, tier) => ({ name, tier, reason: 'r', supplements: 'unknown', fitsBudget: 'yes' });
+  const maria = [s('University of the Incarnate Word', 'target'), s('Texas Lutheran University', 'target'), s('Texas State University', 'likely'), s('Texas A&M University–College Station', 'target'), s('Texas Christian University', 'target'), s('University of Tulsa', 'reach'), s('Baylor University', 'target'), s('D’Youville University', 'likely'), s('Gannon University', 'likely'), s('San Antonio College', 'likely')];
+  assert.match(T.farLikelySchools(ws, maria), /D’Youville University \(NY\), Gannon University \(PA\)/);
+  assert.match(T.studentWarning(T.farLikelySchools(ws, maria)), /outside the regions you chose/);
+  assert.equal(T.farLikelySchools(ws, maria.filter((x) => x.name !== 'Gannon University')), null, 'one far likely school is fine');
+  assert.equal(T.farLikelySchools(wsWith({ regions: ['any'] }), maria), null, 'no region chosen, no rule');
+});
+
+test('a list far shorter than requested is never shown, even after refusals or when time is short', async () => {
+  const ws = complete(wsWith({ budget: 'lt15', needAid: true, suppCount: 8, noSuppCount: 3 }));
+  const h = harness(ws, () => true);
+  const four = list(4, 2, 'yes');
+  for (let i = 0; i < 4; i++) assert.match(await h.tools.execute('propose_list', JSON.stringify({ schools: four })), /^Not shown: this list has 4 applications and the student asked for \d+; Forge won't show fewer than \d+/);
+  assert.equal(h.events.some((e) => e.type === 'list'), false);
+  assert.equal(T.tooShort(ws, list(8, 2, 'yes')), null, 'two short is allowed');
+  assert.match(T.tooShort(ws, list(5, 2, 'yes')), /fewer than 8/);
+});
+
+test('out of time, half the requested list is enough to show', () => {
+  const ws = complete(wsWith({ budget: 'lt15', needAid: true, suppCount: 8, noSuppCount: 2 }));
+  assert.match(T.tooShort(ws, list(6, 2, 'yes')), /fewer than 8/);
+  assert.equal(T.tooShort(ws, list(6, 2, 'yes'), true), null);
+  assert.match(T.tooShort(ws, list(4, 2, 'yes'), true), /fewer than 5/);
+});

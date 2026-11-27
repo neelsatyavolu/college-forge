@@ -37,7 +37,7 @@ export type AcademicFit = {
   cautions: string[];
 };
 
-const REGIONS: Record<string, string[]> = {
+export const REGIONS: Record<string, string[]> = {
   northeast: ["ME", "NH", "VT", "MA", "RI", "CT"],
   "mid-atlantic": ["NY", "NJ", "PA", "DE", "MD", "DC"],
   south: ["VA", "WV", "KY", "TN", "NC", "SC", "GA", "FL", "AL", "MS", "LA", "AR", "OK", "TX"],
