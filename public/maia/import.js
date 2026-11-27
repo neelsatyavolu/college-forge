@@ -228,7 +228,22 @@
   var running = false;
   function active() { return !cancelled && !popup.closed && current(); }
   function send(msg) { if (!popup.closed && current()) popup.postMessage(msg, FORGE); }
-  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  // Chrome slows timers in a background tab (this Maia tab, while the student
+  // watches the popup) to as little as once a minute. So the popup, which is in
+  // front, times each pause and wakes this page with a message. A timer here is
+  // only the fallback.
+  var sleepers = {};
+  var sleepSeq = 0;
+  function wake(id) { var r = sleepers[id]; if (r) { delete sleepers[id]; r(); } }
+  function wakeAll() { Object.keys(sleepers).forEach(wake); }
+  function sleep(ms) {
+    return new Promise(function (resolve) {
+      var id = ++sleepSeq;
+      sleepers[id] = resolve;
+      if (!popup.closed && current()) popup.postMessage({ type: "cf-maia:sleep", id: id, ms: ms }, FORGE);
+      setTimeout(function () { wake(id); }, popup.closed ? ms : ms + 30000);
+    });
+  }
 
   function api(session, method, path, body) {
     return fetch(API + "/" + path, {
@@ -255,8 +270,7 @@
       try { return await fn(); } catch (e) {
         if (!e.busy || attempt >= BUSY_WAITS_MS.length || !active()) throw e;
         onWait(BUSY_WAITS_MS[attempt]);
-        // Wait in short steps so Stop doesn't hang for the whole pause.
-        for (var waited = 0; waited < BUSY_WAITS_MS[attempt] && active(); waited += 1000) await sleep(1000);
+        await sleep(BUSY_WAITS_MS[attempt]); // Stop wakes it early
         if (!active()) throw e;
       }
     }
@@ -365,8 +379,11 @@
       started = true;
       clearInterval(ping);
       run(cleanList(msg.colleges));
+    } else if (msg.type === "cf-maia:wake") {
+      wake(msg.id);
     } else if (msg.type === "cf-maia:cancel") {
       cancelled = true;
+      wakeAll();
     }
   }
   window.addEventListener("message", onMessage);
