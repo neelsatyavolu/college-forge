@@ -48,6 +48,7 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
           properties: { "9": { type: "string" }, "10": { type: "string" }, "11": { type: "string" }, "12": { type: "string" } },
           additionalProperties: false,
         },
+        gpaScale: { type: "string", description: "The high school's own grading scale, as the transcript legend, school profile or student says: '4.0', '4.33' (A+ above 4.0), '100-point', '5.0 weighted', etc. Save it whenever you save a GPA. gpaUnweighted, gpaRecent and gpaByYear are always on a 4.0 unweighted scale: convert first (see the copilot rules), never save a raw 4.33-scale or 100-point number there." },
         gpaTrend: { type: "string", enum: ["up", "steady", "down"], description: "Grades across high school: 'up' only for a clear upward trend (e.g. 3.3 in 9th grade to 3.9 in 11th), from the transcript or the student's own account." },
       },
       additionalProperties: false,
@@ -235,7 +236,7 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
   if (!PROFILE_TOOL_NAMES.has(name)) return null;
   switch (name) {
     case "set_applicant_snapshot":
-      return savePatch(mutate, { applicant: pick(a, ["name", "cycle", "year", "gpaWeighted", "gpaUnweighted", "sat", "satNote", "gpaTrend", "gpaRecent", "gpaByYear"]) }, "Updated the applicant snapshot.");
+      return savePatch(mutate, { applicant: pick(a, ["name", "cycle", "year", "gpaWeighted", "gpaUnweighted", "sat", "satNote", "gpaScale", "gpaTrend", "gpaRecent", "gpaByYear"]) }, "Updated the applicant snapshot.");
     case "set_profile_identity":
       return savePatch(mutate, { profile: pick(a, ["intended", "switchTo", "pathNote", "hs", "gradYear", "location", "counselor", "residency"]) }, "Updated profile identity.");
     case "set_testing": {

@@ -136,6 +136,8 @@ export type InterviewState = {
   noActivities?: boolean;
   /** Merit-aid interest from the money section. */
   meritInterest?: "yes" | "no" | "unsure";
+  /** The find-your-major quiz for an undecided student: "done" once suggest_majors ran, "declined" when they said no. */
+  majorFinder?: "done" | "declined";
   /** The AI's ED/EA recommendation once the student confirmed it. */
   strategy?: { ed?: string; ea: string[]; reasons: string; confirmed: boolean };
   /** The last draft list the AI proposed (UiSchool[] from lib/chat-types.ts). */
@@ -265,6 +267,8 @@ export type Workspace = {
   applicant: {
     name: string; cycle: string; year: string;
     gpaWeighted: string; gpaUnweighted: string; sat: string; satNote: string; awards: number;
+    /** The high school's own grading scale as the transcript or student gave it ("4.0", "4.33", "100-point", "5.0 weighted"); GPAs above are always converted to 4.0 unweighted. */
+    gpaScale?: string;
     /** Grades rising, steady or falling across high school (lib/college-recommendations.ts uses "up"). */
     gpaTrend?: "up" | "steady" | "down";
     /** Unweighted GPA for 10th-11th grade only (what the UCs use), when the transcript shows it. */

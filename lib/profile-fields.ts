@@ -105,6 +105,8 @@ export const applicantFieldsSchema = z.object({
   gpaUnweighted: stat("Unweighted GPA", 0, 4, false).optional(),
   sat: stat("SAT", 400, 1600, true).optional(),
   satNote: text("SAT note").optional(),
+  /** The high school's own grading scale ("4.33", "100-point"); GPAs are stored converted to 4.0 unweighted. */
+  gpaScale: text("Grading scale", 60).optional(),
   /** Direction of grades over high school, as the student or transcript shows it. */
   gpaTrend: z.enum(["up", "steady", "down"]).optional(),
   gpaRecent: stat("10th-11th grade GPA", 0, 4, false).optional(),

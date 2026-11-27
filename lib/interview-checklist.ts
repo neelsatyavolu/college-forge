@@ -27,6 +27,12 @@ const has = (v: unknown): boolean => {
   return t !== "" && t !== "—" && t !== "-" && t !== "0";
 };
 
+/** "Undecided", "not sure", "no clue"… (and an empty major). */
+export function isUndecided(intended: string | undefined): boolean {
+  const t = (intended ?? "").trim().toLowerCase();
+  return !t || t === "—" || /\b(undecided|not sure|unsure|no idea|no clue|don'?t know|idk|exploring|open)\b/.test(t);
+}
+
 export function startInterview(now: number): InterviewState {
   return { phase: "interview", section: "basics", transcript: [], notes: {}, deep: [], startedAt: now };
 }
@@ -49,6 +55,8 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
     case "school": {
       const readTranscript = ws.uploads.length > 0 && (p.coursework.aps.length + p.coursework.honors.length + p.coursework.senior.length) > 0;
       if (!has(ws.applicant.gpaUnweighted) && !readTranscript) out.push("unweighted GPA or a transcript");
+      // A GPA means little until Forge knows the school's scale (4.33, 100-point…) it was converted from.
+      if ((has(ws.applicant.gpaUnweighted) || has(ws.applicant.gpaWeighted)) && !has(ws.applicant.gpaScale)) out.push("the high school's grading scale (4.0, 4.33, 100-point…)");
       break;
     }
     case "testing": {
@@ -59,6 +67,8 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
     }
     case "activities":
       if (p.activities.length === 0 && !iv?.noActivities) out.push('at least one activity (or "none yet")');
+      // An undecided student is offered the find-your-major quiz here, once activities show what they do.
+      if (isUndecided(p.intended) && !iv?.majorFinder) out.push("offer the find-your-major quiz (suggest_majors), or record that they declined it");
       break;
     case "campus":
       if (!prefs?.settings?.length) out.push("campus setting");
