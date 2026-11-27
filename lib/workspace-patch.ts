@@ -42,6 +42,8 @@ export type WorkspacePatch = {
   applicant?: Partial<Workspace["applicant"]>;
   profile?: Partial<{
     intended: string;
+    switchTo: string;
+    pathNote: string;
     hs: string;
     gradYear: number | string;
     location: string;
@@ -266,6 +268,8 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       profile: {
         ...next.profile,
         ...(p.intended !== undefined ? { intended: p.intended } : {}),
+        ...(p.switchTo !== undefined ? { switchTo: p.switchTo } : {}),
+        ...(p.pathNote !== undefined ? { pathNote: p.pathNote } : {}),
         ...(p.hs !== undefined ? { hs: p.hs } : {}),
         ...(p.gradYear !== undefined ? { gradYear: p.gradYear } : {}),
         ...(p.location !== undefined ? { location: p.location } : {}),

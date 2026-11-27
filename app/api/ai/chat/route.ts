@@ -8,6 +8,7 @@ import { ONBOARDING_WRAP_UP } from "@/lib/tool-budget";
 import { dedupeParagraphs, makeInterviewTools, recordTurn } from "@/lib/interview-tools";
 import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
 import { sensitiveRefusal, toolAllowed } from "@/lib/tool-policy";
+import { DECISION_SYSTEM } from "@/lib/decision-plan";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
 export const runtime = "nodejs";
@@ -74,7 +75,8 @@ export async function POST(req: NextRequest) {
   const codexModel = typeof body.codexModel === "string" ? body.codexModel : undefined;
   const grokModel = typeof body.grokModel === "string" ? body.grokModel : undefined;
 
-  const mode = body.mode === "onboarding" || body.mode === "research" ? body.mode : "hub";
+  // "decision": the Decision board's picks (lib/decision-plan.ts), with set_decision_picks as the only tool.
+  const mode = body.mode === "onboarding" || body.mode === "research" || body.mode === "decision" ? body.mode : "hub";
 
   const encoder = new TextEncoder();
   const startedAt = Date.now();
@@ -106,7 +108,9 @@ export async function POST(req: NextRequest) {
         const setup = mode !== "hub";
         const instructions = mode === "onboarding"
           ? buildInterviewPrompt(ws)
-          : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}` : buildHubSystemPrompt(ws);
+          : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`
+          // The picks request carries its own data; no workspace snapshot, so a note can't make the model copy it.
+          : mode === "decision" ? DECISION_SYSTEM : buildHubSystemPrompt(ws);
         const interviewNames = new Set(interview.tools.map((t) => t.name));
         const tools = (setup ? [...hub.tools.filter((t) => !interviewNames.has(t.name)), ...interview.tools] : hub.tools)
           .filter((t) => toolAllowed(mode, t.name));

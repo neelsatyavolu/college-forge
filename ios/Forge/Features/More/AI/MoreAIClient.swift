@@ -47,6 +47,7 @@ struct MoreAIClient: Sendable {
 
     /// Opens the NDJSON event stream for a reply (`/api/ai/chat`).
     /// `mode` is "onboarding" or "research" for the setup interview; nil is the copilot.
+    /// "decision" runs the Decision board's picks, where saving picks is the only tool.
     func chat(_ turns: [ChatTurn], provider: MoreAIProvider?, model: String?, mode: String? = nil) async throws -> URLSession.AsyncBytes {
         var body: [String: JSONValue] = ["messages": .array(turns.map { .object(["role": .string($0.role), "content": .string($0.content)]) })]
         if let mode { body["mode"] = .string(mode) }

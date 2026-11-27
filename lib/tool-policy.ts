@@ -3,7 +3,7 @@
  * The AI reads web pages, and a page can carry instructions meant for it, so tools that reveal,
  * share, sign in or delete only run when the student's latest message asks for that.
  */
-export type ChatMode = "hub" | "onboarding" | "research";
+export type ChatMode = "hub" | "onboarding" | "research" | "decision";
 
 const PROFILE = ["set_applicant_snapshot", "set_profile_identity", "set_testing", "set_coursework", "set_activities", "upsert_activity", "remove_activity", "set_honors", "upsert_honor", "remove_honor", "set_list_preferences"];
 const INTERVIEW = ["ask_question", "interview_status", "save_section_note", "save_deep_answer", "set_interview_facts", "advance_section", "propose_list", "recommend_strategy", "set_school_research"];
@@ -15,9 +15,15 @@ const ALLOWED: Record<Exclude<ChatMode, "hub">, ReadonlySet<string>> = {
   onboarding: new Set([...PROFILE, ...INTERVIEW, "read_upload", "get_college_recommendations", "web_search", "web_fetch", "set_early_decision", "set_application_rounds"]),
   // One school's research: reading the web and saving facts, deadlines and prompts. Nothing else.
   research: new Set(["web_search", "web_fetch", "set_school_research", "upsert_college", "set_essays", "get_essay"]),
+  // The Decision board's picks: its request carries the student's notes as data, so saving picks is all it can do.
+  decision: new Set(["set_decision_picks"]),
 };
 
+/** Tools only their own mode may call: a page the hub copilot reads must not overwrite the Decision board. */
+const MODE_ONLY: Record<string, ChatMode> = { set_decision_picks: "decision" };
+
 export function toolAllowed(mode: ChatMode, name: string): boolean {
+  if (MODE_ONLY[name]) return MODE_ONLY[name] === mode;
   return mode === "hub" || ALLOWED[mode].has(name);
 }
 

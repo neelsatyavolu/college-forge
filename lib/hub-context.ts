@@ -4,6 +4,7 @@ import { planReadiness } from "./plan-readiness";
 import { oddsTargets } from "./admission-odds";
 import { aidPlan } from "./aid-plan";
 import { isEssayHidden } from "./essay-tools";
+import { readSavedPicks } from "./decision-picks";
 
 // A compact, readable snapshot of the current workspace so the model knows
 // what's already populated and what's still empty.
@@ -20,6 +21,7 @@ export function snapshot(ws: Workspace): string {
   lines.push(
     `Profile: intended=${p.intended || "—"}, hs=${p.hs || "—"}, gradYear=${p.gradYear || "—"}, location=${p.location || "—"}, residency=${p.residency || "—"}`
   );
+  if (p.switchTo) lines.push(`Plans to switch to: ${p.switchTo}`);
   lines.push(`Testing APs: ${p.testing.aps.length}; Activities: ${p.activities.length}; Honors: ${p.honors.length}`);
   lines.push(
     `Colleges (${ws.colleges.length}): ${ws.colleges.map((c) => {
@@ -62,6 +64,12 @@ export function snapshot(ws: Workspace): string {
   if (tracked.length) {
     // Statuses only: a decision a portal posted stays hidden until the student reveals it.
     lines.push(`Applications (Applications tab): ${tracked.map((a) => `${a.name}: ${a.status}${a.round ? ` ${a.round}` : ""}${a.deadline ? ` due ${a.deadline}` : ""}`).join("; ")}`);
+  }
+  const picks = readSavedPicks(ws.decisionBoard);
+  if (picks) {
+    const nameOf = (id: string) => tracked.find((t) => t.id === id)?.name ?? "a school no longer tracked";
+    // School names only: the picks' own words came from a request that carried free-text notes.
+    lines.push(`Decision board picks (${picks.madeAt.slice(0, 10)}): ${picks.picks.map((p) => nameOf(p.appId)).join(", ")}`);
   }
   const read = ws.applicationRead;
   if (read) {

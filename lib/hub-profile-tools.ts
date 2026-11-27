@@ -54,6 +54,8 @@ export const PROFILE_TOOL_SPECS: ToolSpec[] = [
       type: "object",
       properties: {
         intended: { type: "string", description: "Intended major / academic path" },
+        switchTo: { type: "string", description: "Majors the student plans to switch into after starting in `intended` (e.g. 'Computer Science'). Only when they say so." },
+        pathNote: { type: "string", description: "Why they'd switch, in a sentence or two." },
         hs: { type: "string", description: "High school name" },
         gradYear: { type: "number", description: "Four-digit year" }, location: str,
         counselor: str, residency: { type: "string", description: "State of residence as a 2-letter code, e.g. CA" },
@@ -229,7 +231,7 @@ export async function runProfileTool(name: string, a: Args, mutate: Mutate): Pro
     case "set_applicant_snapshot":
       return savePatch(mutate, { applicant: pick(a, ["name", "cycle", "year", "gpaWeighted", "gpaUnweighted", "sat", "satNote", "gpaTrend", "gpaRecent"]) }, "Updated the applicant snapshot.");
     case "set_profile_identity":
-      return savePatch(mutate, { profile: pick(a, ["intended", "hs", "gradYear", "location", "counselor", "residency"]) }, "Updated profile identity.");
+      return savePatch(mutate, { profile: pick(a, ["intended", "switchTo", "pathNote", "hs", "gradYear", "location", "counselor", "residency"]) }, "Updated profile identity.");
     case "set_testing": {
       // An empty aps array is how some models fill an optional list, so it keeps the saved exams.
       const testing = pick(a, ["sat", "satNote", "act", ...(Array.isArray(a.aps) && a.aps.length ? ["aps"] : [])]);

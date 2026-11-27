@@ -11,6 +11,13 @@ struct DecisionsList: View {
         let sections = DecisionLogic.sections(store.applications)
         List {
             Section { picker }
+            if store.applications.filter({ $0.status.stage == .admitted }).count >= 2 {
+                Section {
+                    NavigationLink(value: ApplicationsDestination.decisionBoard) {
+                        Label("Compare your offers", systemImage: "rectangle.split.2x1")
+                    }
+                }
+            }
             if sections.isEmpty {
                 ContentUnavailableView(
                     "No decisions yet",

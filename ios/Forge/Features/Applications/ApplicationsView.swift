@@ -17,6 +17,7 @@ struct ApplicationsView: View {
                 .navigationDestination(for: ApplicationsDestination.self) { destination in
                     switch destination {
                     case .lettersAid: LettersAidView()
+                    case .decisionBoard: DecisionBoardView()
                     }
                 }
         }
@@ -29,6 +30,7 @@ struct ApplicationsView: View {
 /// Screens inside the Applications tab other than one application.
 enum ApplicationsDestination: Hashable {
     case lettersAid
+    case decisionBoard
 }
 
 /// Which presentation of the list is showing.
