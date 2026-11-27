@@ -16,6 +16,8 @@ struct MeResponse: Codable, Hashable, Sendable {
         var students = 0
         /// The parent dashboard opens instead of the tabs: they follow someone and have no applications of their own.
         var home = false
+        /// Some student invited this account as their counselor: the dashboard reads as a counselor's.
+        var counselor = false
     }
 }
 
@@ -33,6 +35,7 @@ extension MeResponse.Parent {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         students = c.int(.students)
         home = c.bool(.home)
+        counselor = c.bool(.counselor)
     }
 }
 

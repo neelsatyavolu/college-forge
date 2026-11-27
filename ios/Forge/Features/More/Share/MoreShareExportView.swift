@@ -6,7 +6,8 @@ struct MoreShareExportView: View {
 
     var body: some View {
         List {
-            MoreParentsSection()
+            MoreParentsSection(role: .parent)
+            MoreParentsSection(role: .counselor)
             MoreShareLinksSection()
             MoreExportSection()
             MoreAdvisorNotesSection()

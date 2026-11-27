@@ -1,3 +1,4 @@
+import type { ParentLevel } from "./parents";
 import { randomUUID } from "node:crypto";
 import type {
   Workspace,
@@ -68,7 +69,7 @@ export type WorkspacePatch = {
   removeRecommendationId?: string;
   scholarship?: Partial<Scholarship> & { name?: string };
   removeScholarshipId?: string;
-  advisorNote?: { body: string; author?: string; essayId?: string; via?: "progress" | "full" };
+  advisorNote?: { body: string; author?: string; essayId?: string; via?: "progress" | "full" | "counselor"; byLink?: string; authorLevel?: ParentLevel };
   removeAdvisorNoteId?: string;
   /** Patch a single college by slug */
   collegePatch?: { slug: string } & Partial<Workspace["colleges"][number]>;
@@ -98,6 +99,11 @@ export function setTestScores(ws: Workspace, scores: { sat?: string; satNote?: s
  */
 export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "form"): Parsed<WorkspacePatch> {
   let next: WorkspacePatch = { ...patch };
+  if (patch.advisorNote !== undefined) {
+    // Only the server routes say where a note came from (share links, counselors), never a client patch.
+    const { via: _via, byLink: _byLink, authorLevel: _level, ...note } = patch.advisorNote ?? { body: "" };
+    next = { ...next, advisorNote: note };
+  }
   if (patch.baseRevision !== undefined && !(Number.isSafeInteger(patch.baseRevision) && patch.baseRevision >= 0)) {
     return { ok: false, error: "baseRevision must be a whole number." };
   }
@@ -360,6 +366,8 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       createdAt: Date.now(),
       essayId: patch.advisorNote.essayId,
       ...(patch.advisorNote.via ? { via: patch.advisorNote.via } : {}),
+      ...(patch.advisorNote.byLink ? { byLink: patch.advisorNote.byLink } : {}),
+      ...(patch.advisorNote.authorLevel ? { authorLevel: patch.advisorNote.authorLevel } : {}),
     };
     next = { ...next, advisorNotes: [...next.advisorNotes, note] };
   }

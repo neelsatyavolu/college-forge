@@ -130,7 +130,7 @@ test('invite → accept → parent sees the student at the chosen level; changes
   assert.equal((await view((await cookieFor(OTHER)).cookie)).status, 404, 'another account cannot open it');
 
   const meBody = await (await call(me.GET, '/api/me', parent.cookie)).json();
-  assert.deepEqual(meBody.parent, { students: 1, home: true });
+  assert.deepEqual(meBody.parent, { students: 1, home: true, counselor: false });
 
   const shown = await (await call(parentsRoute.GET, '/api/parents', student.cookie)).json();
   assert.equal(shown.data[0].status, 'active');
@@ -162,4 +162,138 @@ test('re-inviting the same address replaces the old link', async () => {
   const parent = await cookieFor({ ...PARENT, sub: 'test-parent-resend', email: 'p3@forge.invalid' });
   assert.equal((await acceptPost(parent.cookie, tokenOf(first.url))).status, 404);
   assert.equal((await acceptPost(parent.cookie, tokenOf(second.url))).status, 200);
+});
+
+// ── Counselors ──────────────────────────────────────────────────────────────
+const COUNSELOR = { sub: 'test-counselor-dddd', email: 'counselor@forge.invalid', name: 'Casey Counselor' };
+const { followerSummary } = require('../lib/follower-summary.ts');
+
+test('a counselor invite starts at full, reads as a counselor invite, and the roster shows a summary', async () => {
+  const student = await cookieFor({ ...STUDENT, sub: 'test-student-coun' });
+  const counselor = await cookieFor(COUNSELOR);
+  await updateWorkspace(student.account.workspaceId, seed);
+  const invited = await (await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: COUNSELOR.email, role: 'counselor' })).json();
+  assert.equal(invited.success, true);
+  assert.equal(invited.data[0].role, 'counselor');
+  assert.equal(invited.data[0].level, 'full', 'counselors start at full');
+  const token = tokenOf(invited.url);
+  const page = await accept.GET(new NextRequest(`https://forge.test/parent/accept?t=${token}`, { headers: { cookie: counselor.cookie } }));
+  assert.match(await page.text(), /counselor/i);
+  assert.equal((await acceptPost(counselor.cookie, token)).status, 200);
+  const list = await (await call(parentList.GET, '/api/parent', counselor.cookie)).json();
+  const s = list.data.students[0];
+  assert.equal(s.role, 'counselor');
+  assert.equal(s.summary.applications, 3);
+  assert.equal(typeof s.summary.dueSoon, 'number');
+  const meBody = await (await call(me.GET, '/api/me', counselor.cookie)).json();
+  assert.equal(meBody.parent.counselor, true);
+});
+
+test('a counselor leaves notes the student sees; a parent cannot; access ends notes', async () => {
+  const student = await cookieFor({ ...STUDENT, sub: 'test-student-notes' });
+  const counselor = await cookieFor({ ...COUNSELOR, sub: 'test-counselor-notes', email: 'c2@forge.invalid' });
+  const parent = await cookieFor({ ...PARENT, sub: 'test-parent-notes', email: 'p9@forge.invalid' });
+  await updateWorkspace(student.account.workspaceId, seed);
+  const c = await (await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'c2@forge.invalid', role: 'counselor' })).json();
+  const p = await (await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'p9@forge.invalid', level: 'full' })).json();
+  await acceptPost(counselor.cookie, tokenOf(c.url));
+  await acceptPost(parent.cookie, tokenOf(p.url));
+  const cid = (await (await call(parentList.GET, '/api/parent', counselor.cookie)).json()).data.students[0].id;
+  const pid = (await (await call(parentList.GET, '/api/parent', parent.cookie)).json()).data.students[0].id;
+  const post = (cookie, id, body, extra = {}) => call(parentOne.POST, `/api/parent/${id}`, cookie, body, 'POST', { ctx: { params: Promise.resolve({ id }) }, ...extra });
+  const view = (cookie, id) => call(parentOne.GET, `/api/parent/${id}`, cookie, null, 'GET', { ctx: { params: Promise.resolve({ id }) } });
+
+  assert.equal((await post(parent.cookie, pid, { action: 'note', body: 'Hi' })).status, 403, 'parents read only');
+  assert.equal((await post(counselor.cookie, cid, { action: 'note', body: '' })).status, 400);
+  assert.equal((await post(counselor.cookie, cid, { action: 'note', body: 'x' }, { origin: 'https://evil.xanom.co' })).status, 403, 'no cross-site writes');
+  const saved = await (await post(counselor.cookie, cid, { action: 'note', body: 'Tighten the opening.', essayId: 'ca-ps-1', author: 'Spoofed Name' })).json();
+  assert.equal(saved.success, true);
+  assert.equal(saved.data.notes.length, 1);
+  assert.equal(saved.data.notes[0].author, 'Casey Counselor', 'author comes from the account, not the body');
+  assert.equal(saved.data.notes[0].essayId, 'ca-ps-1');
+
+  const ws = await (await call(workspaceRoute.GET, '/api/workspace', student.cookie)).json();
+  const note = (ws.data || ws).advisorNotes.find((n) => n.body === 'Tighten the opening.');
+  assert.equal(note.via, 'counselor');
+  assert.equal(note.essayId, 'ca-ps-1');
+  assert.equal((await (await view(parent.cookie, pid)).json()).data.notes, undefined, 'parents do not see counselor notes');
+
+  // Below full the counselor can't see essays, so a note can't point at one.
+  const links = (await (await call(parentsRoute.GET, '/api/parents', student.cookie)).json()).data;
+  const link = links.find((l) => l.role === 'counselor');
+  await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'set-level', id: link.id, level: 'standard' });
+  const plain = await (await post(counselor.cookie, cid, { action: 'note', body: 'General note', essayId: 'ca-ps-1' })).json();
+  assert.equal(plain.data.notes.find((n) => n.body === 'General note').essayId, undefined);
+
+  const removed = await (await post(counselor.cookie, cid, { action: 'delete-note', noteId: note.id })).json();
+  assert.equal(removed.data.notes.some((n) => n.id === note.id), false, 'a counselor can delete their own note');
+
+  await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'remove', id: link.id });
+  assert.equal((await post(counselor.cookie, cid, { action: 'note', body: 'After removal' })).status, 404);
+});
+
+test('roster summary: overdue, due soon and next deadline from what the level shows', () => {
+  const view = {
+    level: 'standard',
+    progress: {
+      flags: [{ id: 'g1', text: 'Missing transcript', scope: '' }],
+      apps: [
+        { id: 'a', name: 'Late U', stage: 'working', deadline: '2026-11-20', decision: { state: 'none' }, status: 'in_progress' },
+        { id: 'b', name: 'Soon College', stage: 'working', deadline: '2026-12-01', decision: { state: 'none' }, status: 'planning' },
+        { id: 'c', name: 'Far U', stage: 'working', deadline: '2027-01-15', decision: { state: 'none' }, status: 'planning' },
+        { id: 'd', name: 'Done U', stage: 'admitted', deadline: '2026-11-01', submittedAt: '2026-10-30', decision: { state: 'revealed' }, status: 'admitted' },
+      ],
+    },
+    criticalDates: [{ date: '2026-11-28', label: 'CSS Profile' }],
+  };
+  const s = followerSummary(view, '2026-11-26');
+  assert.equal(s.applications, 4);
+  assert.equal(s.submitted, 1);
+  assert.equal(s.decisions, 1);
+  assert.equal(s.overdue, 1);
+  assert.equal(s.dueSoon, 2, 'Soon College and the CSS Profile date are within 14 days');
+  assert.equal(s.flags, 1);
+  assert.deepEqual(s.next, { date: '2026-11-28', title: 'CSS Profile' });
+  assert.equal(s.upcoming.length, 2);
+  assert.ok(s.attention > followerSummary({ ...view, progress: { flags: [], apps: [] }, criticalDates: [] }, '2026-11-26').attention);
+});
+
+test('review fixes: notes follow the reader level, client patches cannot forge counselor notes, levels are validated', async () => {
+  const student = await cookieFor({ ...STUDENT, sub: 'test-student-fix' });
+  const full = await cookieFor({ ...COUNSELOR, sub: 'test-counselor-full', email: 'cf@forge.invalid' });
+  const basic = await cookieFor({ ...COUNSELOR, sub: 'test-counselor-basic', email: 'cb@forge.invalid', name: 'Bo Basic' });
+  await updateWorkspace(student.account.workspaceId, seed);
+  assert.equal((await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'x@forge.invalid', role: 'counselor', level: 'Basic' })).status, 400, 'an unknown level is refused, not widened to full');
+  assert.equal((await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'x@forge.invalid', role: 'teacher' })).status, 400);
+  const a = await (await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'cf@forge.invalid', role: 'counselor' })).json();
+  const b = await (await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'cb@forge.invalid', role: 'counselor', level: 'basic' })).json();
+  await acceptPost(full.cookie, tokenOf(a.url));
+  await acceptPost(basic.cookie, tokenOf(b.url));
+  const idOf = async (c) => (await (await call(parentList.GET, '/api/parent', c.cookie)).json()).data.students[0].id;
+  const fid = await idOf(full), bid = await idOf(basic);
+  const post = (c, id, body) => call(parentOne.POST, `/api/parent/${id}`, c.cookie, body, 'POST', { ctx: { params: Promise.resolve({ id }) } });
+  await post(full, fid, { action: 'note', body: 'Quoting your draft: Synthetic draft text' });
+  const mine = await (await post(basic, bid, { action: 'note', body: 'General reminder' })).json();
+  assert.deepEqual(mine.data.notes.map((n) => n.body), ['General reminder'], 'a basic counselor does not see a full counselor\'s note');
+  const fullView = await (await post(full, fid, { action: 'note', body: 'Second' })).json();
+  assert.equal(fullView.data.notes.length, 3, 'a full counselor sees all counselor notes');
+
+  // The student's own patch path can't make a note look like a counselor's.
+  await call(workspaceRoute.POST, '/api/workspace', student.cookie, { action: 'patch', patch: { advisorNote: { body: 'Forged', author: 'Casey', via: 'counselor', byLink: fid } } });
+  const ws = await (await call(workspaceRoute.GET, '/api/workspace', student.cookie)).json();
+  const forged = (ws.data || ws).advisorNotes.find((n) => n.body === 'Forged');
+  assert.ok(forged, 'the patch landed');
+  assert.ok(forged.via !== 'counselor' && !forged.byLink, 'provenance comes only from server routes');
+});
+
+test('changing a pending invite to another role respects that role\'s cap', async () => {
+  const student = await cookieFor({ ...STUDENT, sub: 'test-student-cap' });
+  for (const n of [1, 2, 3]) {
+    const r = await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: `c${n}cap@forge.invalid`, role: 'counselor' });
+    assert.equal(r.status, 200);
+  }
+  await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'pcap@forge.invalid' });
+  const r = await call(parentsRoute.POST, '/api/parents', student.cookie, { action: 'invite', email: 'pcap@forge.invalid', role: 'counselor' });
+  assert.equal(r.status, 400);
+  assert.match((await r.json()).error, /up to 3 counselors/);
 });

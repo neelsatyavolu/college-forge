@@ -5,14 +5,16 @@ import { allow } from "@/lib/rate-limit";
 import { appOrigin } from "@/lib/origin";
 import { sendEmail } from "@/lib/email";
 import { PARENT_LEVEL_INFO } from "@/lib/parent-view";
-import { ParentError, cleanEmail, inviteParent, isParentLevel, listParents, removeParent, setParentLevel, type ParentLevel } from "@/lib/parents";
+import { ParentError, cleanEmail, inviteParent, isFollowerRole, isParentLevel, listParents, removeParent, setParentLevel, type FollowerRole, type ParentLevel } from "@/lib/parents";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * The student's parents: GET the list; POST {action:"invite", email, level}, {action:"set-level", id, level}
- * or {action:"remove", id}. Signed-in students only, on the web and in the iPhone app (same session).
+ * The student's parents and counselors: GET the list; POST {action:"invite", email, level, role?},
+ * {action:"set-level", id, level} or {action:"remove", id}. `role` is "parent" (the default) or "counselor";
+ * a counselor starts at full unless a level is given. Signed-in students only, on the web and in the iPhone
+ * app (same session).
  */
 
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "cache-control": "no-store" } });
@@ -22,7 +24,7 @@ const inviteUrl =(origin: string, token: string) => `${origin}/parent/accept?t=$
 
 export async function GET(req: NextRequest) {
   const session = getSession(req);
-  if (!session) return fail("Sign in to invite parents.", 401);
+  if (!session) return fail("Sign in to invite parents or counselors.", 401);
   return json({ success: true, data: await listParents(session.workspaceId) });
 }
 
@@ -35,7 +37,7 @@ function crossSite(req: NextRequest): boolean {
 
 export async function POST(req: NextRequest) {
   const session = getSession(req);
-  if (!session) return fail("Sign in to invite parents.", 401);
+  if (!session) return fail("Sign in to invite parents or counselors.", 401);
   if (crossSite(req)) return fail("Not allowed.", 403);
   let body: Record<string, unknown>;
   try {
@@ -49,14 +51,18 @@ export async function POST(req: NextRequest) {
   const id = typeof body.id === "string" ? body.id : "";
   try {
     if (body.action === "invite") {
+      const role: FollowerRole = isFollowerRole(body.role) ? body.role : "parent";
+      const who = role === "counselor" ? "counselor" : "parent";
       const email = cleanEmail(body.email);
-      if (!email) return fail("Enter your parent's email address.");
-      if (email === session.email.toLowerCase()) return fail("That's your own email. Enter your parent's.");
-      const level: ParentLevel = isParentLevel(body.level) ? body.level : "basic";
+      if (!email) return fail(`Enter your ${who}'s email address.`);
+      if (email === session.email.toLowerCase()) return fail(`That's your own email. Enter your ${who}'s.`);
+      if (body.level !== undefined && !isParentLevel(body.level)) return fail("Choose basic, standard or full.");
+      if (body.role !== undefined && !isFollowerRole(body.role)) return fail("Choose parent or counselor.");
+      const level: ParentLevel = isParentLevel(body.level) ? body.level : role === "counselor" ? "full" : "basic";
       if (!(await allow(`parent-invite:${session.sub}`, 10, 60 * 60 * 1000))) return fail("Too many invites. Try again in an hour.", 429);
-      const { token } = await inviteParent(ws, { email, level });
+      const { token } = await inviteParent(ws, { email, level, role });
       const url = inviteUrl(appOrigin(req), token);
-      const emailed = await sendInvite(email, url, await studentName(ws, session.name), level);
+      const emailed = await sendInvite(email, url, await studentName(ws, session.name), level, role);
       return json({ success: true, url, emailed, data: await listParents(ws) });
     }
     if (body.action === "set-level") {
@@ -82,13 +88,16 @@ async function studentName(workspaceId: string, accountName: string): Promise<st
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 /** The email is a convenience: the student also gets the link to send themselves, so a failure isn't an error. */
-async function sendInvite(to: string, url: string, name: string, level: ParentLevel): Promise<boolean> {
+async function sendInvite(to: string, url: string, name: string, level: ParentLevel, role: FollowerRole): Promise<boolean> {
   const sees = PARENT_LEVEL_INFO[level].forParent;
+  const counselor = role === "counselor";
+  const invited = counselor ? `${name} invited you to be their college counselor on Forge` : `${name} invited you to follow their college applications on Forge`;
+  const notes = counselor ? " You can also leave them notes, on an essay or in general." : "";
   try {
     await sendEmail(to, {
-      subject: `${name} invited you to follow their college applications on Forge`,
-      text: `${name} invited you to follow their college applications on Forge.\n\nYou'll see ${sees}.\n\nAccept the invite (it works for 14 days):\n${url}\n\nYou'll sign in or create a free account. After that, open Forge on the web or in the iPhone app with the same account.`,
-      html: `<p>${esc(name)} invited you to follow their college applications on Forge.</p><p>You'll see ${esc(sees)}.</p><p><a href="${esc(url)}">Accept the invite</a> (it works for 14 days).</p><p>You'll sign in or create a free account. After that, open Forge on the web or in the iPhone app with the same account.</p>`,
+      subject: invited,
+      text: `${invited}.\n\nYou'll see ${sees}.${notes}\n\nAccept the invite (it works for 14 days):\n${url}\n\nYou'll sign in or create a free account. After that, open Forge on the web or in the iPhone app with the same account.`,
+      html: `<p>${esc(invited)}.</p><p>You'll see ${esc(sees)}.${esc(notes)}</p><p><a href="${esc(url)}">Accept the invite</a> (it works for 14 days).</p><p>You'll sign in or create a free account. After that, open Forge on the web or in the iPhone app with the same account.</p>`,
     });
     return true;
   } catch (err) {

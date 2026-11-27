@@ -24,17 +24,30 @@ async function parentsApi(body) {
   return j;
 }
 
-/** Invite parents to their own read-only dashboard and choose how much each one sees (app/api/parents). */
-function ParentsPanel() {
-  const [parents, setParents] = React.useState(null);
+const FOLLOWER_COPY = {
+  parent: {
+    title: "Parents", one: "parent", label: "Parent’s email", placeholder: "parent@example.com", level: "basic",
+    intro: "Invite a parent by email. They create a Forge account with that same email, then see your applications read-only on the web or the iPhone app, at the level you choose. They never see portal logins or a decision before you open it. Change a level or remove a parent at any time.",
+  },
+  counselor: {
+    title: "Counselors", one: "counselor", label: "Counselor’s email", placeholder: "counselor@school.org", level: "full",
+    intro: "Invite your college counselor by email. They create a Forge account with that same email, then see your applications at the level you choose and can leave you notes, in general or on an essay. Notes show below and next to the essay. They can’t change anything, see portal logins, or see a decision before you open it.",
+  },
+};
+
+/** Invite parents or counselors to their own dashboard and choose how much each one sees (app/api/parents). */
+function FollowersPanel({ role }) {
+  const copy = FOLLOWER_COPY[role];
+  const [links, setLinks] = React.useState(null);
+  const parents = links && links.filter((p) => (p.role || "parent") === role);
   const [email, setEmail] = React.useState("");
-  const [level, setLevel] = React.useState("basic");
+  const [level, setLevel] = React.useState(copy.level);
   const [busy, setBusy] = React.useState(false);
   const [err, setErr] = React.useState("");
   const [sent, setSent] = React.useState(null);
 
   React.useEffect(() => {
-    parentsApi().then((j) => setParents(j.data), (e) => { setParents([]); setErr(e.message); });
+    parentsApi().then((j) => setLinks(j.data), (e) => { setLinks([]); setErr(e.message); });
   }, []);
 
   const act = async (body, after) => {
@@ -42,7 +55,7 @@ function ParentsPanel() {
     setErr("");
     try {
       const j = await parentsApi(body);
-      setParents(j.data);
+      setLinks(j.data);
       if (after) await after(j);
     } catch (e) { setErr(e.message); }
     setBusy(false);
@@ -51,7 +64,7 @@ function ParentsPanel() {
   const invite = (event) => {
     event.preventDefault();
     if (!email.trim()) return;
-    act({ action: "invite", email: email.trim(), level }, async (j) => {
+    act({ action: "invite", email: email.trim(), level, role }, async (j) => {
       let copied = false;
       try { await navigator.clipboard.writeText(j.url); copied = true; } catch (e) {}
       setSent({ url: j.url, email: email.trim(), emailed: j.emailed, copied });
@@ -62,13 +75,11 @@ function ParentsPanel() {
   const fieldStyle = { padding: "9px 10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", color: "var(--ink)", fontSize: 14 };
 
   return (
-    <Panel title="Parents">
-      <p style={{ margin: "0 0 14px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
-        Invite a parent by email. They create a Forge account with that same email, then see your applications read-only on the web or the iPhone app, at the level you choose. They never see portal logins or a decision before you open it. Change a level or remove a parent at any time.
-      </p>
+    <Panel title={copy.title}>
+      <p style={{ margin: "0 0 14px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>{copy.intro}</p>
       <form onSubmit={invite} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
-        <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink)", flex: "1 1 240px" }}>Parent’s email
-          <input type="email" required maxLength={254} autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="parent@example.com" style={fieldStyle} />
+        <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink)", flex: "1 1 240px" }}>{copy.label}
+          <input type="email" required maxLength={254} autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={copy.placeholder} style={fieldStyle} />
         </label>
         <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink)", flex: "0 1 160px" }}>They see
           <select value={level} onChange={(e) => setLevel(e.target.value)} style={fieldStyle}>
@@ -101,8 +112,8 @@ function ParentsPanel() {
                 <select aria-label={`What ${p.email} sees`} value={p.level} disabled={busy} onChange={(e) => act({ action: "set-level", id: p.id, level: e.target.value })} style={{ ...fieldStyle, padding: "6px 8px", fontSize: 13 }}>
                   {PARENT_LEVELS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                 </select>
-                {p.status === "invited" ? <Button size="sm" variant="secondary" disabled={busy} onClick={() => act({ action: "invite", email: p.email, level: p.level }, async (j) => setSent({ url: j.url, email: p.email, emailed: j.emailed, copied: false }))}>Resend</Button> : null}
-                <Button size="sm" variant="secondary" disabled={busy} onClick={() => { if (window.confirm(p.status === "active" ? "Remove this parent? They lose access right away." : "Cancel this invite?")) act({ action: "remove", id: p.id }); }}>{p.status === "active" ? "Remove" : "Cancel"}</Button>
+                {p.status === "invited" ? <Button size="sm" variant="secondary" disabled={busy} onClick={() => act({ action: "invite", email: p.email, level: p.level, role }, async (j) => setSent({ url: j.url, email: p.email, emailed: j.emailed, copied: false }))}>Resend</Button> : null}
+                <Button size="sm" variant="secondary" disabled={busy} onClick={() => { if (window.confirm(p.status === "active" ? `Remove this ${copy.one}? They lose access right away.` : "Cancel this invite?")) act({ action: "remove", id: p.id }); }}>{p.status === "active" ? "Remove" : "Cancel"}</Button>
               </div>
             </li>
           ))}
@@ -191,7 +202,8 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
       {err ? <div role="alert" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--error) 12%, transparent)", color: "var(--error)", fontSize: 13 }}>{err}</div> : null}
       {msg ? <div role="status" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--accent-teal) 12%, transparent)", color: "var(--ink)", fontSize: 13 }}>{msg}</div> : null}
 
-      <ParentsPanel />
+      <FollowersPanel role="parent" />
+      <FollowersPanel role="counselor" />
 
       <Panel title="Advisor share links">
         <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
@@ -249,6 +261,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
                   <strong style={{ color: "var(--ink)" }}>{n.author}</strong>
                   {" · "}
                   {new Date(n.createdAt).toLocaleString()}
+                  {n.via === "counselor" ? " · Counselor" : ""}
                   {n.essayId ? ` · essay ${n.essayId}` : ""}
                 </div>
                 <p style={{ margin: 0, fontSize: 14, color: "var(--body)", lineHeight: 1.5 }}>{n.body}</p>
