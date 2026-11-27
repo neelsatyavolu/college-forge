@@ -10,7 +10,7 @@
     { id: "board", label: "Decision board", group: "Applications", icon: "columns", needsAdmit: true },
     { id: "list", label: "Ranked list", group: "Applications", icon: "list" },
     { id: "essays", label: "Essays", group: "Materials", icon: "edit" },
-    { id: "track", label: "Recs, aid & scholarships", group: "Materials", icon: "folder" },
+    { id: "track", label: "Recs & aid", group: "Materials", icon: "folder" },
     { id: "recommendations", label: "Colleges for you", group: "Find colleges", icon: "spark" },
     { id: "explore", label: "Explore colleges", group: "Find colleges", icon: "search" },
     { id: "shortlist", label: "Your shortlist", group: "Find colleges", icon: "bookmark" },

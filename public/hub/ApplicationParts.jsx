@@ -112,7 +112,9 @@ function attentionOf(app) {
 /** A short note for a collapsed row naming what its expanded view holds, such as "Testing plan · Interest log (2)". */
 function detailsHint(app) {
   const logged = (app.interest || []).length;
-  return [app.testingPlan ? "Testing plan" : "", logged ? `Interest log (${logged})` : ""].filter(Boolean).join(" · ");
+  // Every app has a testing plan view, so only a decided one is worth pointing at.
+  const decided = app.testingPlan?.choice?.plan && app.testingPlan.choice.plan !== "undecided";
+  return [decided ? "Testing plan" : "", logged ? `Interest log (${logged})` : ""].filter(Boolean).join(" · ");
 }
 
 function Chevron() {
