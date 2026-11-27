@@ -53,6 +53,7 @@ private struct ApplicationDetailContent: View {
                 }
             }
             FollowUpsSection(app: app)
+            InterestLogSection(app: app)
             PortalLoginSection(app: app)
             Section {
                 Button("Remove \(app.name)", role: .destructive) { confirmRemove = true }

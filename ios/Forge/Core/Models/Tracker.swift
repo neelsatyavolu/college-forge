@@ -69,6 +69,9 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     var updatedAt: Double
     /// The school's aid offer as the student entered it (see `AidOffer`). Set with `ApplicationEdit.aidOffer`.
     var aidOffer: AidOffer?
+    /// Visits, sessions, interviews and contact, by date (lib/interest-log.ts).
+    var interest: [InterestEvent] = []
+    var interestSignal: InterestSignal?
 
     var lastCheckedDate: Date? { lastChecked.map(Date.init(milliseconds:)) }
 }
@@ -104,6 +107,8 @@ extension TrackedApplication {
         lastChecked = c.optionalDouble(.lastChecked)
         updatedAt = c.double(.updatedAt)
         aidOffer = c.optional(AidOffer.self, .aidOffer)
+        interest = c.array(.interest)
+        interestSignal = c.optional(InterestSignal.self, .interestSignal)
     }
 }
 

@@ -115,6 +115,8 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
         </form>
       </div>
 
+      {window.InterestLog ? <window.InterestLog app={app} act={act} busy={busy} /> : null}
+
       <form onSubmit={(e) => { e.preventDefault(); act({ action: "login", id, username: login.username, password: login.password }, "Login saved. Forge will check this portal for you.").then((ok) => ok && setLogin({ ...login, password: "" })); }}>
         <h3 className="cf-subhead">Portal login</h3>
         <p className="cf-help" style={{ marginBottom: 10 }}>

@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { COLLEGES, collegeById, expectedDecision, logoUrl, type College } from "./catalog";
 import { applyTestingEdit, type TestingChoice, type TestingEdit } from "./testing-plan";
 import { checkAidOffer, type AidOffer } from "./aid-validate";
+import type { InterestEvent } from "./interest-log";
 
 /**
  * The applications tracker, ported from College Apps. Each school the student applies to, where it stands,
@@ -83,6 +84,8 @@ export interface TrackedApp {
   ignoreAid?: boolean;
   /** Small to-dos for this school ("Counselor uploads the SUNY form by Nov 1"). */
   followUps?: FollowUp[];
+  /** Visits, info sessions, interviews and admissions-officer contact (lib/interest-log.ts). */
+  interest?: InterestEvent[];
   /** The latest check that failed after an earlier one worked; the earlier result stays in `portal`. */
   lastFailure?: { at: number; error: string };
   /** Mirrors whether an encrypted login is saved (the login itself is never in the workspace). */

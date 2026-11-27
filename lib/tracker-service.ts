@@ -4,7 +4,8 @@ import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
 import { readLogins, saveLogins, type PortalLogin } from "./portal-logins";
 import { loginHost } from "./portal-check";
-import { getWorkspace, updateWorkspace, type Workspace } from "./store";
+import { getWorkspace, updateWorkspace, type College, type Workspace } from "./store";
+import { curatedResearchFor, interestOf, interestSignal, upcomingInterviews, type ResearchLike } from "./interest-log";
 import {
   decisionDateOf,
   decisionOf,
@@ -42,7 +43,7 @@ export class TrackerError extends Error {}
 const NO_SCORES: StudentScores = { sat: null, act: null, hasAps: false };
 
 /** What clients see for one application: derived dates, the decision state, and never a password. */
-export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScores = NO_SCORES) {
+export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScores = NO_SCORES, research?: ResearchLike | null) {
   const info = statusInfo(app.status);
   const testingPlan = testingPlanFor(app, scores);
   const decision = decisionOf(app);
@@ -74,6 +75,8 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
     hasAidItems: !!app.portal?.checklist.some((c) => isAidItem(c.item)),
     submittedAt: app.submittedAt ?? "",
     followUps: (app.followUps ?? []).filter((f) => !f.done).sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999")),
+    interest: interestOf(app),
+    interestSignal: interestSignal(app, research ?? curatedResearchFor(app)),
     lastFailure: app.lastFailure ?? null,
     notes: app.notes,
     decisionNote: app.decisionNote ?? "",
@@ -85,14 +88,19 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
 }
 export type AppView = ReturnType<typeof viewApp>;
 
+/** A shortlist school's own research facts, when the workspace has them for this application. */
+export const researchOf = (colleges: College[] | undefined, app: TrackedApp): ResearchLike | null =>
+  (app.slug ? colleges?.find((c) => c.slug === app.slug)?.research : undefined) ?? null;
+
 /** `revision` is the workspace's; the hub ignores a response older than one it already has. */
-export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES) {
+/** `colleges` lends each school's workspace research (when it has some) to the interest signal. */
+export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES, colleges?: College[]) {
   return {
     revision,
     autocheck: tracker.autocheck,
     emails: tracker.emails,
     flags: tracker.flags.filter((f) => !f.resolvedAt),
-    apps: tracker.apps.map((a) => viewApp(a, today, scores)),
+    apps: tracker.apps.map((a) => viewApp(a, today, scores, researchOf(colleges, a))),
   };
 }
 
@@ -147,7 +155,7 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
 
 export async function listApps(workspaceId: string) {
   const ws = await getWorkspace(workspaceId);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
 }
 
 export async function addApp(
@@ -243,13 +251,13 @@ export async function setLogin(workspaceId: string, ref: string, login: PortalLo
 
 export async function setEmails(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, emails: on }));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
 }
 
 export async function setAutocheck(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, autocheck: on }));
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
 }
 
 /**
@@ -297,7 +305,7 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
   await syncAutocheckIndex(workspaceId, ws.tracker);
   // Remembered so the one-time "College Apps is now Forge" email skips this account.
   await writeDoc(`collegeapps-moved/${emailHash(email)}.json`, { at: Date.now() });
-  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws)) };
+  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges) };
 }
 
 /** Upcoming deadlines and decision dates, soonest first, plus the student's own dates from the timeline. */
@@ -313,6 +321,9 @@ export function upcoming(ws: Workspace, today = todayIso(), days = 120) {
       const d = decisionDateOf(app, today);
       if (d) rows.push({ date: d.date, kind: "Decision", school: app.name, label: `${app.name} decision${d.estimated ? " (estimated from last year)" : ""}`, estimated: d.estimated });
     }
+  }
+  for (const { school, event } of upcomingInterviews(ws.tracker, today)) {
+    rows.push({ date: event.date, kind: "Interview", school, label: `${school} interview${event.time ? ` at ${event.time}` : ""}`, estimated: false });
   }
   for (const d of ws.criticalDates) {
     if (/^\d{4}-\d{2}-\d{2}$/.test(d.date)) rows.push({ date: d.date, kind: "Date", label: d.label, estimated: false });
@@ -340,10 +351,10 @@ export const updateFollowUp = (workspaceId: string, ref: string, id: string, cha
 
 export async function flag(workspaceId: string, text: string, scope = "") {
   const ws = await mutate(workspaceId, (tracker) => addFlag(tracker, text, scope));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
 }
 
 export async function unflag(workspaceId: string, id: string) {
   const ws = await mutate(workspaceId, (tracker) => resolveFlag(tracker, id));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws));
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
 }
