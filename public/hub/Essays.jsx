@@ -846,7 +846,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
             borderRadius: "var(--radius-lg)",
             overflow: "hidden",
             background: "var(--canvas)",
-            height: "max(560px, calc(100dvh - 92px))",
+            height: "max(560px, calc(100dvh - 24px))",
           }}
         >
           <aside
