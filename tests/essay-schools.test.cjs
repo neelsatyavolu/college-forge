@@ -137,6 +137,20 @@ test('turning off the UC Application also covers supplements saved under a campu
   assert.equal(parentView(ws, 'full').essayDrafts['ucla-extra'], undefined);
 });
 
+test('a campus slug named like a UC campus is covered, and an agent turning off a campus turns off the UC Application', () => {
+  const base = sample();
+  const colleges = [...base.colleges, college('uc-irvine', 'UC Irvine')];
+  const ws = { ...base, colleges, essays: { ...base.essays, supplements: { ...base.essays.supplements, 'uc-irvine': [essay('uci-extra')], ucla: [essay('ucla-extra')] } }, essayDrafts: { 'uci-extra': 'irvine draft' }, essaySchools: { 'uc-application': false } };
+  assert.equal(tools.isSchoolSkipped(ws, 'uc-irvine'), true);
+  assert.equal(essaysView(ws).essayDrafts['uci-extra'], undefined);
+  const on = { ...ws, essaySchools: {} };
+  const off = tools.withEssayVisibility(on, { skipSchools: ['ucla'] });
+  assert.equal(off.ok, true);
+  assert.deepEqual(off.value.essaySchools, { 'uc-application': false });
+  const back = tools.withEssayVisibility({ ...on, essaySchools: { ucla: false, 'uc-application': false } }, { writeSchools: ['ucla'] });
+  assert.deepEqual(back.value.essaySchools, {}, 'writing again clears the campus alias too');
+});
+
 test('two list rows on one slug give one pick row', () => {
   const rows = plan.essaySchools([college('rice-university', 'Rice'), college('rice-university', 'Rice University')], {});
   assert.deepEqual(rows.map((r) => r.key), ['rice-university']);

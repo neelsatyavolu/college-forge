@@ -117,7 +117,9 @@ private struct EssayEditorContent: View {
 
         if !text.contains(where: { !$0.isWhitespace }) {
             let drafts = store.workspace.essayDrafts.merging(queue.pending) { _, local in local }
-            let sources = EssayArchetype.copySources(for: item.essay, items: EssayCatalog.items(in: groups), drafts: drafts)
+            // A turned-off school's drafts aren't offered as copy sources.
+            let shown = groups.filter { $0.kind == .orphan || !EssayCatalog.isSkipped($0.key, essaySchools: store.workspace.essaySchools) }
+            let sources = EssayArchetype.copySources(for: item.essay, items: EssayCatalog.items(in: shown), drafts: drafts)
             if !sources.isEmpty {
                 Menu("Start from a copy of another draft") {
                     ForEach(sources) { source in

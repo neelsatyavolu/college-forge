@@ -43,8 +43,8 @@ const inCommonSet = (e: Essay) => e.chooseGroup === "common" || (!e.chooseGroup 
  */
 export function isSchoolSkipped(ws: Workspace, groupKey: string): boolean {
   if (groupKey === "common") return false;
-  // Supplements saved under a UC campus slug belong to the shared UC Application.
-  const key = essayGroupKey({ slug: groupKey, name: "" }) ?? groupKey;
+  // Supplements saved under a UC campus slug belong to the shared UC Application; the list's college gives its name.
+  const key = essayGroupKey(ws.colleges.find((c) => c.slug === groupKey) ?? { slug: groupKey, name: "" }) ?? groupKey;
   return ws.essaySchools?.[groupKey] === false || ws.essaySchools?.[key] === false;
 }
 
@@ -289,7 +289,11 @@ export function withEssayVisibility(
   const schoolKeys = essaySchoolKeys(ws);
   const unknownSchool = [...skip, ...write].find((key) => !schoolKeys.has(key));
   if (unknownSchool) return { ok: false, error: `No school on the Essays tab has the key "${unknownSchool}". Use the school field from list_essays.` };
-  const schools = checkEssaySchools(Object.fromEntries([...write.map((k) => [k, null]), ...skip.map((k) => [k, false])]));
+  // A UC campus key stands for the shared UC Application; writing again also clears a stored campus alias.
+  const groupOf = (k: string) => essayGroupKey(ws.colleges.find((c) => c.slug === k) ?? { slug: k, name: "" }) ?? k;
+  const aliases = (k: string) => Object.keys(ws.essaySchools || {}).filter((s) => groupOf(s) === k);
+  const writeKeys = [...new Set(write.flatMap((k) => [groupOf(k), ...aliases(groupOf(k))]))];
+  const schools = checkEssaySchools(Object.fromEntries([...writeKeys.map((k) => [k, null]), ...skip.map((k) => [groupOf(k), false])]));
   if (!schools.ok) return schools;
   const patch = Object.fromEntries([...show.map((id) => [id, null]), ...hide.map((id) => [id, true])]) as Record<string, true | null>;
   const checkedHidden = checkEssayHidden(patch);
