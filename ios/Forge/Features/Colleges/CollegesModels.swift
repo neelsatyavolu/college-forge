@@ -3,23 +3,38 @@ import Foundation
 // Response shapes for the college routes (app/api/colleges/*, app/api/ai/odds-plan). Rows from search and
 // browse are `College` records, so adding one to the shortlist keeps every field the web keeps.
 
-/// GET /api/colleges/search: `{success, data: [College], edition?}`.
+/// GET /api/colleges/search: `{success, data: [College], edition?, catalogDate?}`. Catalog rows also carry
+/// `lacRank`, `thumb` and filter facets (`f`), kept beside the College records in `extras`.
 struct CollegesSearchResponse: Decodable, Sendable {
     var colleges: [College]
     /// U.S. News edition year ("2027"), only on browse.
     var edition: String
+    /// When the Explore catalog was built ("2026-11-20"), only on browse.
+    var catalogDate: String
+    /// Catalog extras by slug.
+    var extras: [String: ExploreRowExtras]
 
-    private enum CodingKeys: String, CodingKey { case data, edition }
+    private enum CodingKeys: String, CodingKey { case data, edition, catalogDate }
 
-    init(colleges: [College], edition: String = "") {
+    init(colleges: [College], edition: String = "", catalogDate: String = "", extras: [String: ExploreRowExtras] = [:]) {
         self.colleges = colleges
         self.edition = edition
+        self.catalogDate = catalogDate
+        self.extras = extras
     }
 
     init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         colleges = c.array(.data)
         edition = c.string(.edition)
+        catalogDate = c.string(.catalogDate)
+        let rows: [ExploreRowExtras] = c.array(.data)
+        extras = Dictionary(rows.filter { !$0.slug.isEmpty }.map { ($0.slug, $0) }, uniquingKeysWith: { first, _ in first })
+    }
+
+    /// Each row with its extras; rows outside the catalog get empty facets.
+    var items: [ExploreItem] {
+        colleges.map { ExploreItem(college: $0, extras: extras[$0.slug] ?? ExploreRowExtras(slug: $0.slug)) }
     }
 }
 
@@ -58,21 +73,29 @@ struct CollegesProgram: Decodable, Hashable, Sendable, Identifiable {
     }
 }
 
-/// GET /api/colleges/detail `data`: the full college record plus its programs.
+/// GET /api/colleges/detail `data`: the full college record, its programs and Forge's sourced extras.
 struct CollegesDetail: Decodable, Sendable {
     var college: College
     var programs: [CollegesProgram]
+    var extras: ExploreDetailExtras
+    /// The live Scorecard record was unavailable; programs are missing, not empty.
+    var partial: Bool
 
-    private enum CodingKeys: String, CodingKey { case programs }
+    private enum CodingKeys: String, CodingKey { case programs, partial }
 
-    init(college: College, programs: [CollegesProgram] = []) {
+    init(college: College, programs: [CollegesProgram] = [], extras: ExploreDetailExtras = ExploreDetailExtras(), partial: Bool = false) {
         self.college = college
         self.programs = programs
+        self.extras = extras
+        self.partial = partial
     }
 
     init(from decoder: any Decoder) throws {
         college = try College(from: decoder)
-        programs = try decoder.container(keyedBy: CodingKeys.self).array(.programs)
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        programs = c.array(.programs)
+        partial = c.bool(.partial)
+        extras = (try? ExploreDetailExtras(from: decoder)) ?? ExploreDetailExtras()
     }
 }
 

@@ -148,17 +148,8 @@ enum CollegesShortlist {
     }
 }
 
+/// Filters and sort live in `ExploreFilters`.
 enum CollegesExplore {
-    static let settings: [(id: String, label: String)] = [
-        ("all", "Any setting"), ("urban", "Urban"), ("suburban", "Suburban"), ("town", "Town"), ("rural", "Rural"),
-    ]
-
-    static func filter(_ rows: [College], setting: String, favoritesOnly: Bool, favorites: Set<String>) -> [College] {
-        rows.filter { row in
-            (setting == "all" || row.setting == setting) && (!favoritesOnly || favorites.contains(row.slug))
-        }
-    }
-
     /// Search runs once the trimmed query has two or more characters.
     static func searchTerm(_ query: String) -> String? {
         let term = query.trimmingCharacters(in: .whitespacesAndNewlines)

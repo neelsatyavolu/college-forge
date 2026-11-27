@@ -1,12 +1,14 @@
 import SwiftUI
 
-/// Photo, rank eyebrow, name, place and badges.
+/// Photo and its credit, rank eyebrow, name, place and badges.
 struct CollegeDetailHero: View {
     let college: College
     let config: AppConfig
+    var extras: ExploreDetailExtras?
 
     private var eyebrow: String {
         if let rank = college.rank, rank > 0 { return "U.S. News #\(rank) · National Universities" }
+        if let lac = extras?.lacRank, lac > 0 { return "U.S. News #\(lac) · Liberal Arts Colleges" }
         return "U.S. Dept. of Education data"
     }
 
@@ -18,6 +20,7 @@ struct CollegeDetailHero: View {
                     .frame(height: 190)
                     .clipped()
                 VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    CollegePhotoCreditLine(credit: extras?.credit)
                     Eyebrow(text: eyebrow)
                     Text(college.name)
                         .font(.forgeDisplay(.title))
@@ -78,6 +81,7 @@ struct CollegeAdmissionsSection: View {
 /// "At a glance": only the values that are known, plus the school's links.
 struct CollegeGlanceSection: View {
     let college: College
+    var extras: ExploreDetailExtras?
 
     private var rows: [(String, String)] {
         let place = college.location?.components(separatedBy: " · ").first
@@ -87,6 +91,9 @@ struct CollegeGlanceSection: View {
             ("Type", college.ownership),
             ("SAT/ACT policy", college.testPolicy),
             ("Pell grant recipients", college.pellRate),
+            ("Meets full need", extras?.facets.meetsNeed == true ? "Yes" : nil),
+            ("HBCU", extras?.hbcu == true || extras?.facets.hbcu == true ? "Yes" : nil),
+            ("Women’s college", extras?.women == true || extras?.facets.women == true ? "Yes" : nil),
         ]
         return pairs.compactMap { label, value in value?.isEmpty == false ? (label, value!) : nil }
     }
@@ -141,12 +148,17 @@ struct CollegeCostSection: View {
 
 struct CollegePlansSection: View {
     let college: College
+    /// Deadlines from Forge's notes, used when nothing is saved for the school.
+    var researchDeadlines: [ExploreDeadline] = []
 
     var body: some View {
         let plans = college.plans ?? []
         let deadlines = college.deadlines ?? []
+        let fromNotes = plans.isEmpty && deadlines.isEmpty ? researchDeadlines : []
         Section {
-            if plans.isEmpty, deadlines.isEmpty {
+            if !fromNotes.isEmpty {
+                ExploreDeadlineRows(deadlines: fromNotes)
+            } else if plans.isEmpty, deadlines.isEmpty {
                 Text("Plan-specific admit rates and deadlines aren’t in the federal dataset. The overall admit rate (\(CollegesFormat.dash(college.admit))) describes a past applicant pool, not your odds. Confirm plans and deadlines on the college’s admissions website.")
                     .font(.subheadline)
                     .foregroundStyle(Theme.muted)
@@ -159,24 +171,28 @@ struct CollegePlansSection: View {
             }
         } header: {
             Text("Admission plans & deadlines")
+        } footer: {
+            if !fromNotes.isEmpty { Text("From the college’s site, via Forge’s notes.") }
         }
     }
 }
 
 struct CollegeTransferSection: View {
     let college: College
+    var switching: [ExploreSwitch] = []
 
     var body: some View {
         Section {
+            ExploreSwitchingRows(switching: switching)
             if let transfer = college.transfer, !transfer.isEmpty {
                 Text(transfer).font(.subheadline).foregroundStyle(Theme.ink)
-            } else {
+            } else if switching.isEmpty {
                 Text("Check \(college.short.isEmpty ? college.name : college.short)’s official department and admissions pages for restrictions on changing majors or colleges.")
                     .font(.subheadline)
                     .foregroundStyle(Theme.muted)
             }
         } header: {
-            Text("Internal transfer policy")
+            Text(switching.isEmpty ? "Switching majors" : "Switching majors · Forge’s read of each school’s rules")
         } footer: {
             Text("A dash means the data is unavailable. Verify testing policies and deadlines for your application year.")
                 .padding(.bottom, Theme.Spacing.md)
