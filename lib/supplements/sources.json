@@ -3127,6 +3127,72 @@
     "url": "https://www.usf.edu/admissions/freshmen/admission-information/academic-requirements.aspx",
     "noSupplementsFor": "2026-27"
   },
+  "university-of-southern-california": {
+    "url": "https://www.collegeessayguy.com/blog/university-southern-california-usc-supplemental-essays",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Academic interests",
+        "prompt": "Describe how you plan to pursue your academic interests and why you want to explore them at USC specifically. Please feel free to address your first- and second-choice major selections.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Disagreement",
+        "prompt": "The USC Student Commitment charges Trojans to “value honest, open communication and robust debate,” and to “champion ideological diversity and embrace freedom of expression.” Describe a time when you disagreed with someone you know about something important to you. Did you change your mind or reach common ground?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Gap in your education",
+        "prompt": "Starting with the beginning of high school/secondary school, if you have had a gap where you were not enrolled in school during a fall or spring term, please address this gap in your educational history. You do not need to address a summer break.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Short answers",
+        "prompt": "Answer all ten. Describe yourself in three words (25 characters each); the rest are up to 100 characters each.\n\n1. Describe yourself in three words.\n\n2. What is your favorite snack?\n\n3. Best movie of all time\n\n4. Dream job\n\n5. If your life had a theme song, what would it be?\n\n6. Dream trip\n\n7. What TV show will you binge watch next?\n\n8. Which well-known person or fictional character would be your ideal roommate?\n\n9. Favorite book\n\n10. If you could teach a class on any topic, what would it be?",
+        "options": [],
+        "limit": 975,
+        "unit": "characters",
+        "required": true
+      },
+      {
+        "label": "Dornsife Short Response",
+        "prompt": "Many of us have at least one issue or passion that we care deeply about – a topic on which we would love to share our opinions and insights in hopes of sparking intense interest and continued conversation. If you had ten minutes and the attention of a million people, what would your talk be about?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true,
+        "audience": "Dornsife College of Letters, Arts and Sciences"
+      },
+      {
+        "label": "Viterbi School of Engineering Short Response 1",
+        "prompt": "Your Unique Contributions to USC Viterbi: The student body at the USC Viterbi School of Engineering is a diverse group of unique engineers and computer scientists who work together to engineer a better world for all humanity. Describe how your contributions to the USC Viterbi student body may be distinct from others. Please feel free to touch on any part of your background, traits, skills, experiences, challenges, and/or personality in helping us better understand you.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true,
+        "audience": "Viterbi School of Engineering"
+      },
+      {
+        "label": "Viterbi School of Engineering Short Response 2",
+        "prompt": "The Engineering Grand Challenges: The National Academy of Engineering (NAE) and their 14 Grand Challenges go hand-in-hand with our vision to engineer a better world for all humanity. Engineers and computer scientists are challenged to solve these problems in order to improve life on the planet. Learn more about the NAE Grand Challenges at http://engineeringchallenges.org and tell us which challenge is most important to you, and why.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true,
+        "audience": "Viterbi School of Engineering"
+      }
+    ]
+  },
   "university-of-st-thomas-mn": {
     "url": "https://www.stthomas.edu/admissions/undergraduate/first-year/application-process/",
     "cycle": "2026-27",
