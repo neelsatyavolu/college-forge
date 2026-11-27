@@ -20,7 +20,7 @@ import { essayView, withSuggestion } from "./essay-tools";
 import { applyRounds, workloadSummary, type RoundChoice } from "./application-rounds";
 import { editApp, findApp, isRound, isStatus, newApp, replaceApp, statusInfo } from "./tracker";
 import { oddsFromArgs, oddsTargets, readFromArgs } from "./admission-odds";
-import { applicationMaterial } from "./odds-plan";
+import { applicationMaterial, schoolMaterial } from "./odds-plan";
 import { PROFILE_TOOL_SPECS, runProfileTool } from "./hub-profile-tools";
 import { checkAidAgainstWorkspace, checkFinancialAid, checkScholarshipList, mergeScholarshipList } from "./aid-validate";
 import { aidPlan } from "./aid-plan";
@@ -365,8 +365,8 @@ export function makeHubTools(
     },
     {
       name: "read_application",
-      description: "Read the student's profile, essay drafts and list of uploads in one go. Used by the 'Estimate my chances' read step.",
-      parameters: { type: "object", properties: {}, additionalProperties: false },
+      description: "Read the student's profile, essay drafts and list of uploads in one go (the 'Estimate my chances' read step). With school set to a school's key, read instead the supplements the student is writing for that school, with drafts and status, and their logged demonstrated interest (the per-school estimate step).",
+      parameters: { type: "object", properties: { school: { type: "string", description: "A school's key from the estimate step, e.g. a shortlist slug or app:<id>." } }, additionalProperties: false },
     },
     {
       name: "set_application_read",
@@ -660,6 +660,7 @@ export function makeHubTools(
           return JSON.stringify(aidPlan(await scopedWorkspace()));
         }
         case "read_application": {
+          if (typeof a.school === "string" && a.school.trim()) return schoolMaterial(await scopedWorkspace(), a.school.trim().slice(0, 120));
           return applicationMaterial(await scopedWorkspace());
         }
         case "set_application_read": {
