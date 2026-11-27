@@ -1,0 +1,696 @@
+{
+ "source": "Common Data Set section H6 (institutional aid to nonresident undergraduates)",
+ "generatedAt": "2026-11-27",
+ "colleges": {
+  "case-western-reserve-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 275,
+   "average": 43200,
+   "total": 11880036,
+   "cdsYear": "2026-02",
+   "source": "https://case.edu/ir/sites/default/files/2026-02/CDS%202025-26%20Adjusted%20Final.pdf"
+  },
+  "duke-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 215,
+   "average": 87841,
+   "total": 18885746,
+   "cdsYear": "2025-2026",
+   "source": "https://ir.provost.duke.edu/sites/default/files/CDS_PDF_2025-2026-20260622-website-published-version.pdf"
+  },
+  "university-of-rochester": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 510,
+   "average": 40057,
+   "total": 20428748,
+   "cdsYear": "2025-26",
+   "source": "https://www.rochester.edu/provost/wp-content/uploads/2026/06/CDS-2025-26-completed-for-web.pdf"
+  },
+  "barnard-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 31,
+   "average": 80574,
+   "total": 2497802,
+   "cdsYear": "2026-09",
+   "source": "https://barnard.edu/sites/default/files/2026-09/Barnard_CDS_2025-2026.pdf"
+  },
+  "bates-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 106,
+   "average": 84952,
+   "total": 9000952,
+   "cdsYear": "2025-2026",
+   "source": "https://www.bates.edu/research/files/2026/06/CDS_2025-2026.pdf"
+  },
+  "baylor-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 340,
+   "average": 36455,
+   "total": 12394551,
+   "cdsYear": "2026-04",
+   "source": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf"
+  },
+  "boston-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 26,
+   "average": 40681,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://www.bc.edu/content/dam/bc1/offices/irp/ir/cds/CDS_2025-2026-PDF_FINAL.pdf"
+  },
+  "bowdoin-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 102,
+   "average": 84882,
+   "total": 8657920,
+   "cdsYear": "2025-2026",
+   "source": "https://www.bowdoin.edu/ir/pdf/bowdoin-cds_2025-2026.pdf"
+  },
+  "brandeis-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 146,
+   "average": 57906,
+   "total": 8454245,
+   "cdsYear": "2025-26",
+   "source": "https://www.brandeis.edu/institutional-research/docs/cds-2025-26.pdf"
+  },
+  "bryn-mawr-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 99,
+   "average": 72352,
+   "total": 7162802,
+   "cdsYear": "2024-12",
+   "source": "https://www.brynmawr.edu/sites/default/files/media/documents/2024-12/CDS-2024-2025-Bryn%20Mawr%20Read%20Only.pdf"
+  },
+  "bucknell-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 815,
+   "average": 71387,
+   "total": 9280357,
+   "cdsYear": "2025-26",
+   "source": "https://www.bucknell.edu/sites/default/files/institutional-research/common_data_set_2025-26.pdf"
+  },
+  "california-institute-of-technology": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 59,
+   "average": 85696,
+   "total": 5056044,
+   "cdsYear": "2025-26",
+   "source": "https://iro.caltech.edu/documents/35129/Caltech_CDS_2025-26_August_2026.pdf"
+  },
+  "carleton-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 63,
+   "average": 81596,
+   "total": 5140528,
+   "cdsYear": "2025-2026",
+   "source": "https://carleton-wp-production.s3.amazonaws.com/uploads/sites/292/2026/04/CDS-PDF-2025-2026_PDF_Carleton_041426.pdf"
+  },
+  "claremont-mckenna-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 50,
+   "average": 72273,
+   "total": 3613633,
+   "cdsYear": "2025-26",
+   "source": "https://www.cmc.edu/sites/default/files/CDS_2025-26_Annotated%28Updated20260605%29.pdf"
+  },
+  "colgate-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 119,
+   "average": 86649,
+   "total": 10311209,
+   "cdsYear": "2026-07",
+   "source": "https://www.colgate.edu/sites/default/files/2026-07/CDS-PDF-2025-2026.pdf"
+  },
+  "colorado-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 73,
+   "average": 52713,
+   "total": 5113171,
+   "cdsYear": "2025-2026",
+   "source": "https://www.coloradocollege.edu/offices/ipe/documents/CDS-2025-2026_PDF_Final.pdf"
+  },
+  "colorado-school-of-mines": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 67,
+   "average": 12096,
+   "total": 810450,
+   "cdsYear": "2025-2026",
+   "source": "https://ir.mines.edu/wp-content/uploads/sites/66/2026/11/CDS-PDF-2025-2026_CSM_V2.pdf"
+  },
+  "columbia-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 244,
+   "average": 88789,
+   "total": 21664444,
+   "cdsYear": "2024-25",
+   "source": "https://opir.columbia.edu/sites/opir.columbia.edu/files/content/Common%20Data%20Set/2024-25_Columbia_College_and_Columbia_Engineering_CDS.pdf"
+  },
+  "connecticut-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 411,
+   "average": 69638,
+   "total": 7729861,
+   "cdsYear": "2025-26",
+   "source": "https://www.conncoll.edu/media/Common-Data-Set-2025-26.pdf"
+  },
+  "cornell-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 318,
+   "average": 88263,
+   "total": 28067649,
+   "cdsYear": "2025-26",
+   "source": "http://irp.cornell.edu/wp-content/uploads/2026/09/Cornell-Common-Data-Set-2025-26.pdf"
+  },
+  "dartmouth-college": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": 483,
+   "average": null,
+   "total": 42292307,
+   "cdsYear": "2025-26",
+   "source": "https://www.dartmouth.edu/oir/pdfs/cds_2025-26.pdf"
+  },
+  "denison-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 358,
+   "average": 55613,
+   "total": 19909430,
+   "cdsYear": "2026-08",
+   "source": "https://denison.edu/sites/default/files/forms/2026-08/cds_du_20252026_published_updated2026.08.14.pdf"
+  },
+  "depauw-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 385,
+   "average": 41241,
+   "total": 15877883,
+   "cdsYear": null,
+   "source": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf"
+  },
+  "drexel-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 1038,
+   "average": 32937,
+   "total": 34188924,
+   "cdsYear": "2025-2026",
+   "source": "https://drexel.edu/institutionalresearch/~/media/Drexel/Provost-Group/InstitutionalResearch/Documents/Factbook/CDS_2025-2026.pdf"
+  },
+  "george-washington-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 157,
+   "average": 39344,
+   "total": 6177003,
+   "cdsYear": "2026-08",
+   "source": "https://irp.gwu.edu/sites/g/files/zaxdzs6056/files/2026-08/CDS-2025-2026.pdf"
+  },
+  "harvard-university": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": 805,
+   "average": 83013,
+   "total": 66826244,
+   "cdsYear": "2025-2026",
+   "source": "https://bpb-us-e1.wpmucdn.com/sites.harvard.edu/dist/6/210/files/2026/07/CDS_2025-2026.pdf"
+  },
+  "harvey-mudd-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 38,
+   "average": 32564,
+   "total": 1237421,
+   "cdsYear": null,
+   "source": "https://www.hmc.edu/institutional-research/wp-content/uploads/sites/42/2026/03/CDS-HMC-2025.2026_shared.pdf"
+  },
+  "haverford-college": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": 394,
+   "average": 92126,
+   "total": 5066953,
+   "cdsYear": "2025-26",
+   "source": "https://www.haverford.edu/sites/default/files/Office/President/CDS-2025-26.pdf"
+  },
+  "howard-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 447,
+   "average": 27544,
+   "total": 12312337,
+   "cdsYear": "2026-06",
+   "source": "https://ira.howard.edu/sites/ira.howard.edu/files/2026-06/CDS%20PDF%202526_06.25.26.pdf"
+  },
+  "johns-hopkins-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 183,
+   "average": 43101,
+   "total": 7887392,
+   "cdsYear": "2025-2026",
+   "source": "https://oira.jhu.edu/wp-content/uploads/2025-2026-CDS-Johns-Hopkins-University-v2.pdf"
+  },
+  "lafayette-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 111,
+   "average": 64791,
+   "total": 7191808,
+   "cdsYear": "2025-2026",
+   "source": "https://oir.lafayette.edu/wp-content/uploads/sites/196/2026/01/CDS2025-2026.pdf"
+  },
+  "lehigh-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 1296,
+   "average": 62165,
+   "total": 11224906,
+   "cdsYear": "2025-26",
+   "source": "https://data.lehigh.edu/sites/data.lehigh.edu/files/682026_CDS-2025-26_Revised_Published.pdf"
+  },
+  "macalester-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 287,
+   "average": 59839,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://www.macalester.edu/institutional-research/wp-content/uploads/sites/515/CDS_2025-2026_Macalester-College_completed-1.pdf"
+  },
+  "michigan-state-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 1054,
+   "average": 18450,
+   "total": 19445834,
+   "cdsYear": "2025-2026",
+   "source": "https://edge.sitecorecloud.io/michiganstab57e-msustrategi129d-prod9868-7e5e/media/project/msu/ir/docs/cds/cds-2025-2026.pdf"
+  },
+  "middlebury-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 4,
+   "average": 83697,
+   "total": 16572104,
+   "cdsYear": "2026-06",
+   "source": "https://www.middlebury.edu/sites/default/files/2026-06/Fall%202025%20CDS%20FINAL.pdf?fv=XbZmhGZl"
+  },
+  "new-york-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 342,
+   "average": 36562,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://www.nyu.edu/content/dam/nyu/institutionalResearch/documents/cds-2025-2026/CDS%202025-2026%20FINAL%28including%20G%20July_2026%29.pdf"
+  },
+  "north-carolina-state-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 169,
+   "average": 21931,
+   "total": 3706377,
+   "cdsYear": "2025-26",
+   "source": "https://report.isa.ncsu.edu/ir/cds/pdfs/CDS_2025-26.v1.pdf"
+  },
+  "rochester-institute-of-technology": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 437,
+   "average": 25163,
+   "total": 10996406,
+   "cdsYear": "2025_26",
+   "source": "https://www.rit.edu/institutionalresearch/sites/rit.edu.institutionalresearch/files/documents/Common%20Data%20Set%20PDFs/RIT_CDS_2025_26_FINAL_20260603.pdf"
+  },
+  "rutgers-university-camden": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 82,
+   "average": 15131,
+   "total": 1240728,
+   "cdsYear": "2025-2026",
+   "source": "https://irds.rutgers.edu/PDFs/CDS/Camden%20CDS_2025-2026.pdf"
+  },
+  "rutgers-university-new-brunswick": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 387,
+   "average": 17812,
+   "total": 6893304,
+   "cdsYear": "2025-2026",
+   "source": "https://irds.rutgers.edu/PDFs/CDS/New%20Brunswick%20CDS_2025-2026.pdf"
+  },
+  "rutgers-university-newark": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 36,
+   "average": 10517,
+   "total": 378602,
+   "cdsYear": "2025-2026",
+   "source": "https://irds.rutgers.edu/PDFs/CDS/Newark%20CDS_2025-2026.pdf"
+  },
+  "santa-clara-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 57,
+   "average": null,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://www.scu.edu/media/offices/institutional-research/ff/common-data-set/rba13-Common_Data_Set_2025-2026.pdf"
+  },
+  "scripps-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 15,
+   "average": 60832,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://www.scrippscollege.edu/assessir/wp-content/uploads/sites/30/CDS_2025-2026_FINAL_V3.pdf"
+  },
+  "skidmore-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 97,
+   "average": 81400,
+   "total": null,
+   "cdsYear": "2025-26",
+   "source": "https://www.skidmore.edu/ir/facts/common/cds-2025-26.pdf"
+  },
+  "spelman-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 10,
+   "average": 48041,
+   "total": 432372,
+   "cdsYear": "2025-2026",
+   "source": "https://www.spelman.edu/_1_Docs-and-Files/about/institutional-research/common-data-set/cds_2025-2026_spelman_college_1.26.2026.pdf"
+  },
+  "stevens-institute-of-technology": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 122,
+   "average": 24895,
+   "total": 3037197,
+   "cdsYear": "2025-2026",
+   "source": "https://assets.stevens.edu/mviowpldu823/3UEOxHKHu8NfqyLxwqBmZP/86f651ed176aae469c805a50cee0d4ee/CDS-2025-2026-PDF_3.12_updated.pdf"
+  },
+  "swarthmore-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 75,
+   "average": 87434,
+   "total": 6557536,
+   "cdsYear": "2025-26",
+   "source": "https://www.swarthmore.edu/sites/default/files/assets/documents/institutional-effectiveness-research-assessment/Swarthmore-CDS-2025-26.pdf"
+  },
+  "syracuse-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 682,
+   "average": 14262,
+   "total": 9726387,
+   "cdsYear": "2025-26",
+   "source": "https://effectiveness.syr.edu/wp-content/uploads/2026/09/CDS_2025-26_Complete.pdf"
+  },
+  "texas-christian-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 2236,
+   "average": 57638,
+   "total": 24150348,
+   "cdsYear": "2025-26",
+   "source": "https://ir.tcu.edu/wp-content/uploads/2026/03/CDS-2025-26-TCU.pdf"
+  },
+  "the-pennsylvania-state-university-university-park": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 0,
+   "average": 0,
+   "total": 0,
+   "cdsYear": "2025_2026",
+   "source": "https://opair.psu.edu/files/2026/09/CDS_2025_2026_UniversityPark_v3.pdf"
+  },
+  "trinity-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 295,
+   "average": 70437,
+   "total": 20779007,
+   "cdsYear": "2025-2026",
+   "source": "https://www.trincoll.edu/asic/wp-content/uploads/sites/125/2026/06/CDS-2025-2026-Trinity-College.pdf"
+  },
+  "tufts-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 214,
+   "average": 83901,
+   "total": 17954997,
+   "cdsYear": "2025-2026",
+   "source": "https://provost.tufts.edu/institutionalresearch/wp-content/uploads/sites/5/CDS_2025-2026.pdf"
+  },
+  "university-of-california-davis": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 195,
+   "average": 14753,
+   "total": 2876871,
+   "cdsYear": null,
+   "source": "https://aggiedata.ucdavis.edu/sites/g/files/dgvnsk1841/files/media/documents/CDS_UCD_0.pdf"
+  },
+  "university-of-california-irvine": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 52,
+   "average": 24494,
+   "total": 1273698,
+   "cdsYear": "2025-26",
+   "source": "https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/2/5478/files/2026/05/2025-26-CDS-PDF-Upload.pdf"
+  },
+  "university-of-california-riverside": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 288,
+   "average": 14131,
+   "total": null,
+   "cdsYear": "2026-05",
+   "source": "https://ir.ucr.edu/sites/default/files/2026-05/cds-2025-2026.pdf"
+  },
+  "university-of-chicago": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 269,
+   "average": 74765,
+   "total": 20111859,
+   "cdsYear": "2025-2026",
+   "source": "https://bpb-us-w2.wpmucdn.com/voices.uchicago.edu/dist/8/2077/files/2026/08/CDS_2025-2026_to_publish-1.pdf"
+  },
+  "university-of-connecticut": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 641,
+   "average": 18754,
+   "total": 12021279,
+   "cdsYear": "2025_2026",
+   "source": "https://bpir.media.uconn.edu/wp-content/uploads/sites/3452/2026/08/UConn_CDS_2025_2026_WEB.pdf"
+  },
+  "university-of-florida": {
+   "needBased": false,
+   "meritBased": false,
+   "none": true,
+   "awarded": null,
+   "average": null,
+   "total": null,
+   "cdsYear": "2025-26",
+   "source": "https://data-apps.ir.aa.ufl.edu/public/cds/CDS%202025-26_v8_08.14.2026.pdf"
+  },
+  "university-of-illinois-chicago": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 173,
+   "average": 3918,
+   "total": 677734,
+   "cdsYear": "2025_26",
+   "source": "http://oir.uic.edu/wp-content/uploads/sites/213/2026/06/CDS_Final_2025_26.pdf"
+  },
+  "university-of-minnesota-twin-cities": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 386,
+   "average": 3783,
+   "total": 1460177,
+   "cdsYear": "2025_2026",
+   "source": "https://idr.umn.edu/sites/idr.umn.edu/files/cds_2025_2026_tc_0.pdf"
+  },
+  "university-of-pittsburgh": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": null,
+   "average": null,
+   "total": null,
+   "cdsYear": "2026-02",
+   "source": "https://www.ir.pitt.edu/sites/default/files/2026-02/CDS_2025-2026_PGH-UA_0.pdf"
+  },
+  "vassar-college": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 57,
+   "average": 88709,
+   "total": 5056441,
+   "cdsYear": "2025-2026",
+   "source": "https://offices.vassar.edu/institutional-research/wp-content/uploads/sites/23/2026/03/Vassar_College_CDS_2025-2026.pdf"
+  },
+  "villanova-university": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 25,
+   "average": 67815,
+   "total": 5560824,
+   "cdsYear": "2025-2026",
+   "source": "https://www.villanova.edu/content/dam/villanova/provost/decision_support/CDS-2025-2026-v3.pdf"
+  },
+  "wake-forest-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 40,
+   "average": 20528,
+   "total": 821128,
+   "cdsYear": "2025-2026",
+   "source": "https://prod.wp.cdn.aws.wfu.edu/sites/202/2026/06/CDS_2025-2026-PDF_Template_WFU.pdf"
+  },
+  "washington-university-in-st-louis": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 30,
+   "average": 71003,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://washu.edu/app/uploads/2026/06/2025-2026-WashU-CDS.pdf"
+  },
+  "wellesley-college": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": 555,
+   "average": 94053,
+   "total": 6677733,
+   "cdsYear": "2025-2026",
+   "source": "https://wellesley-college.files.svdcdn.com/production/administrative-departments/OIR/CDS_2025-2026-FINAL.pdf?dm=1773253066"
+  },
+  "williams-college": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": 123,
+   "average": 94807,
+   "total": 11661308,
+   "cdsYear": "2025-2026",
+   "source": "https://www.williams.edu/institutional-research/files/2026/04/Williams-CDS-2025-2026-V2.pdf"
+  },
+  "worcester-polytechnic-institute": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 325,
+   "average": 26749,
+   "total": null,
+   "cdsYear": "2026-05",
+   "source": "https://www.wpi.edu/sites/default/files/2026-05/WPI_CDS_2025-2026.pdf"
+  },
+  "yale-university": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": 459,
+   "average": 84185,
+   "total": null,
+   "cdsYear": "2025-26",
+   "source": "https://oir.yale.edu/sites/default/files/yale_cds_2025-26_md_20260616.pdf"
+  }
+ }
+}
