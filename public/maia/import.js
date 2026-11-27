@@ -13,6 +13,7 @@
   // Maia answers "not able to respond, Please try after some time" when we go too fast:
   // wait this long before each retry of the same call, then give up for this run.
   var BUSY_WAITS_MS = [10000, 30000, 60000, 120000];
+  var SEARCH_BUSY = "Maia's college search is busy; the next run tries again";
   var JWT = /^[\w-]+\.[\w-]+\.[\w-]+$/;
 
   // ── Pure helpers (exercised by tests/maia-import.test.cjs) ──────────────
@@ -284,9 +285,13 @@
       : Promise.resolve(null);
     return byUnit.then(function (hit) {
       if (hit) return hit;
+      // Maia rate-limits this name search (about 40 a session), so it's the last resort.
       return api(session, "POST", "college_search_for_add", { search: college.name }).then(function (d) {
         var best = pickSearchHit(d, college.name);
         return best ? { nid: best.nid, title: best.title || null } : null;
+      }, function (e) {
+        if (e.busy) e.searchBusy = true;
+        throw e;
       });
     });
   }
@@ -314,7 +319,16 @@
         send({ type: "cf-maia:progress", done: i, total: colleges.length, name: c.name });
         var waiting = function (ms) { send({ type: "cf-maia:progress", done: i, total: colleges.length, name: c.name, waitSeconds: Math.round(ms / 1000) }); };
         try {
-          var hit = await patiently(function () { return collegeNid(session, c); }, waiting);
+          var hit;
+          try {
+            hit = await collegeNid(session, c);
+          } catch (lookupError) {
+            if (!lookupError.searchBusy) throw lookupError;
+            // Don't stall the run on a throttled search: skip this school; the next click retries it.
+            missing.push({ slug: c.slug, name: c.name, reason: SEARCH_BUSY });
+            await sleep(DELAY_MS);
+            continue;
+          }
           if (!hit) { missing.push({ slug: c.slug, name: c.name, reason: "Not found in Maia" }); continue; }
           var raw = await patiently(function () {
             return api(session, "POST", "scattergram-colleges-by-name", {
