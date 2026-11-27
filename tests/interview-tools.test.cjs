@@ -73,7 +73,7 @@ test('propose_list waits for the interview to be complete', async () => {
 });
 
 function complete(ws) {
-  ws.applicant = { ...ws.applicant, name: 'Sam', gpaUnweighted: '3.8', sat: '1400' };
+  ws.applicant = { ...ws.applicant, name: 'Sam', gpaUnweighted: '3.8', gpaScale: '4.0', sat: '1400' };
   ws.profile = { ...ws.profile, hs: 'HS', gradYear: 2027, intended: 'Biology', residency: 'OH', activities: [{ rank: 1, name: 'Robotics', type: 'Academic' }] };
   ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, settings: ['any'], regions: ['any'], budget: 'unsure', needAid: false, ed: 'no', ambitionChosen: true, suppCount: 10, noSuppCount: 0, citizenship: 'us', incomeBracket: 'unsure' };
   ws.onboarding.interview = { phase: 'interview', section: 'deep', transcript: [], notes: {}, deep: [1, 2, 3].map((i) => ({ prompt: 'q', answer: 'a' })), startedAt: 1 };

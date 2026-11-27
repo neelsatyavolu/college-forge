@@ -6,7 +6,7 @@
 export type ChatMode = "hub" | "onboarding" | "research" | "decision";
 
 const PROFILE = ["set_applicant_snapshot", "set_profile_identity", "set_testing", "set_coursework", "set_activities", "upsert_activity", "remove_activity", "set_honors", "upsert_honor", "remove_honor", "set_list_preferences"];
-const INTERVIEW = ["ask_question", "interview_status", "save_section_note", "save_deep_answer", "set_interview_facts", "advance_section", "propose_list", "recommend_strategy", "set_school_research"];
+const INTERVIEW = ["ask_question", "interview_status", "save_section_note", "save_deep_answer", "set_interview_facts", "suggest_majors", "advance_section", "propose_list", "recommend_strategy", "set_school_research"];
 
 /** Tools allowed per setup mode. Hub mode allows every tool (sensitive ones are gated below). */
 const ALLOWED: Record<Exclude<ChatMode, "hub">, ReadonlySet<string>> = {

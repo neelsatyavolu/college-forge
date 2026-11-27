@@ -11,6 +11,7 @@ import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-res
 import { SECTIONS, firstIncomplete, missingFields, startInterview } from "./interview-checklist";
 import { isUcCampus } from "./seed-college-list";
 import { isHttpUrl, slugify } from "./colleges";
+import { ACTIVITIES, INTERESTS, readAnswers, suggestMajors } from "./major-finder";
 
 type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
@@ -339,6 +340,21 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
     },
   },
   {
+    name: "suggest_majors",
+    description:
+      `For an undecided student: ranks broad majors (offered at most colleges) against what they enjoy and would rather avoid, and the courses, AP scores and activities on their profile. Pass tile picks as interest keys and anything they typed, however vague ("i like reading and stuff", "idk, art maybe, not math"), word for word as said: Forge reads it. Each result has the major's label (save that exact label as intended), the interests it matches, readiness (strong | some | none) with the evidence, how many colleges offer it, and a caution where admission to the major is competitive; heard lists the interests Forge took from their answers. Interest keys, each with the activity to show on its tile: ${Object.keys(INTERESTS).map((k) => `${k} ("${ACTIVITIES[k]}"; ${INTERESTS[k]})`).join("; ")}.`,
+    parameters: {
+      type: "object",
+      properties: {
+        interests: { type: "array", items: { type: "string", enum: Object.keys(INTERESTS) }, description: "Tiles they picked as enjoyable" },
+        dislikes: { type: "array", items: { type: "string", enum: Object.keys(INTERESTS) }, description: "Tiles they picked to avoid" },
+        said: { type: "string", description: "Everything they typed about what they like, dislike and their favorite classes, word for word" },
+      },
+      required: ["interests", "dislikes", "said"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "interview_status",
     description: "Current section, every section's missing required fields, the deeper-answer count and your saved section notes. Call it at the start of each turn you're unsure about.",
     parameters: { type: "object", properties: {}, additionalProperties: false },
@@ -355,8 +371,8 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   },
   {
     name: "set_interview_facts",
-    description: "Record answers the profile tools don't hold: noActivities ('yes' when they truly have none yet), meritInterest ('yes' | 'no' | 'unsure').",
-    parameters: { type: "object", properties: { noActivities: { type: "string", enum: ["yes", "no"] }, meritInterest: { type: "string", enum: ["yes", "no", "unsure"] } }, additionalProperties: false },
+    description: "Record answers the profile tools don't hold: noActivities ('yes' when they truly have none yet), meritInterest ('yes' | 'no' | 'unsure'), majorFinder ('declined' when an undecided student doesn't want help finding a major).",
+    parameters: { type: "object", properties: { noActivities: { type: "string", enum: ["yes", "no"] }, meritInterest: { type: "string", enum: ["yes", "no", "unsure"] }, majorFinder: { type: "string", enum: ["declined"] } }, additionalProperties: false },
   },
   {
     name: "advance_section",
@@ -453,6 +469,15 @@ export function makeInterviewTools(
         stop({ question: q });
         return "Shown to the student. Stop now and wait for their answer.";
       }
+      case "suggest_majors": {
+        const answers = { interests: a.interests, dislikes: a.dislikes, said: a.said };
+        const heard = readAnswers(answers);
+        const ws = await mutate((w) => withInterview(w, { ...interviewOf(w), majorFinder: "done" }));
+        const majors = suggestMajors(ws, answers);
+        return majors.length
+          ? JSON.stringify({ heard: { likes: heard.likes.map((k) => INTERESTS[k]), dislikes: heard.dislikes.map((k) => INTERESTS[k]) }, majors })
+          : "No broad major matches those answers yet. Ask one easy follow-up with examples (what do they do when they have a free day, which class felt least like work), or let them stay Undecided.";
+      }
       case "interview_status":
         return JSON.stringify(statusOf(await read()));
       case "save_section_note": {
@@ -480,7 +505,7 @@ export function makeInterviewTools(
         const merit = ["yes", "no", "unsure"].find((m) => m === a.meritInterest) as InterviewState["meritInterest"];
         await mutate((ws) => {
           const iv = interviewOf(ws);
-          return withInterview(ws, { ...iv, ...(noActivities !== undefined ? { noActivities } : {}), ...(merit ? { meritInterest: merit } : {}) });
+          return withInterview(ws, { ...iv, ...(noActivities !== undefined ? { noActivities } : {}), ...(merit ? { meritInterest: merit } : {}), ...(a.majorFinder === "declined" ? { majorFinder: "declined" as const } : {}) });
         });
         return "Saved.";
       }

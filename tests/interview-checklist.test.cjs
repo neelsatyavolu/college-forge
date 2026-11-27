@@ -8,7 +8,7 @@ const { SECTIONS, missingFields, firstIncomplete, startInterview } = require('..
 
 function filled() {
   const ws = emptyWorkspace();
-  ws.applicant = { ...ws.applicant, name: 'Sam Rivera', gpaUnweighted: '3.8' };
+  ws.applicant = { ...ws.applicant, name: 'Sam Rivera', gpaUnweighted: '3.8', gpaScale: '4.0' };
   ws.profile = { ...ws.profile, hs: 'Lincoln High', gradYear: 2027, intended: 'Biology', residency: 'OH' };
   ws.profile.testing = { ...ws.profile.testing, sat: '1400' };
   ws.profile.activities = [{ rank: 1, name: 'Robotics', type: 'Academic' }];
@@ -107,4 +107,11 @@ test('a student who has not tested yet can finish the testing section', () => {
   assert.deepEqual(C.missingFields(ws, 'testing'), []);
   for (const n of ["haven't taken the SAT", 'taking the ACT in April', 'SAT scheduled for March', 'planning to take the SAT']) assert.equal(isNotYetTestedNote(n), true, n);
   assert.equal(isTestOptionalNote('Not taken yet: SAT in March'), false, 'not the same as applying without scores');
+});
+
+test('a GPA needs the high school grading scale it came from', () => {
+  const ws = filled();
+  delete ws.applicant.gpaScale;
+  assert.equal(firstIncomplete(ws), 'school');
+  assert.match(missingFields(ws, 'school').join(), /grading scale/);
 });
