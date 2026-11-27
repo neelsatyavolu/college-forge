@@ -286,13 +286,13 @@ function SidebarItem({ it, active, count, onClick, label, final }) {
   return (
     <button type="button" onClick={onClick} className={"cf-press cf-essay-nav" + (active ? " is-active" : "")} aria-current={active ? "true" : undefined}
       title={`${it.label}. ${stateWords}.`}>
-      <span className={"cf-essay-nav__dot is-" + state} aria-hidden />
+      {state === "final" ? <svg className="cf-essay-check" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12"><path d="M3.5 8.4 6.6 11.4 12.5 4.8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg> : <span className={"cf-essay-nav__dot is-" + state} aria-hidden />}
       <span className="cf-essay-nav__text">
         <span className="cf-essay-nav__label">{text}</span>
         {short.tag ? <span className="cf-essay-nav__tag">{short.tag}</span> : null}
       </span>
       <span className={"cf-essay-nav__meta cf-nums" + (over ? " is-over" : "")}>
-        {final ? "Final" : started ? count : ""}
+        {final ? "" : started ? count : ""}
         <span className="cf-sr-only">{stateWords}</span>
       </span>
     </button>
@@ -300,7 +300,7 @@ function SidebarItem({ it, active, count, onClick, label, final }) {
 }
 
 /** A school's row in the Essays sidebar: its name, how many prompts are started, campuses, and the deadline. */
-function GroupHeader({ group, open, onToggle, startedCount, totalCount, unfinished, today }) {
+function GroupHeader({ group, open, onToggle, startedCount, totalCount, unfinished, today, done }) {
   const days = group.due ? daysUntil(group.due.date, today) : null;
   return (
     <button type="button" onClick={onToggle} aria-expanded={open} className={"cf-press cf-essay-group" + (group.kind === "orphan" ? " is-orphan" : "")}>
@@ -310,6 +310,7 @@ function GroupHeader({ group, open, onToggle, startedCount, totalCount, unfinish
       <span className="cf-essay-group__body">
         <span className="cf-essay-group__top">
           <span className="cf-essay-group__title">{group.title}</span>
+          {done ? <span className="cf-essay-group__done" title="Every essay for this school is marked final"><svg className="cf-essay-check" aria-hidden="true" viewBox="0 0 16 16" width="13" height="13"><path d="M3.5 8.4 6.6 11.4 12.5 4.8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg><span className="cf-sr-only">All essays final</span></span> : null}
           {totalCount > 0 ? <span className="cf-essay-group__count cf-nums">{startedCount} of {totalCount}</span> : null}
         </span>
         {group.subtitle ? <span className="cf-essay-group__sub" title={group.subtitle}>{group.subtitle}</span> : null}
@@ -699,6 +700,11 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     const t = ESSAY_PLAN.writingTotals([g], local, status, visOpts);
     return t.required > t.final;
   };
+  // Every essay the school requires (after picks and hidden ones) is marked final.
+  const allFinal = (g) => {
+    const t = ESSAY_PLAN.writingTotals([g], local, status, visOpts);
+    return t.required > 0 && t.final >= t.required;
+  };
   const dueGroups = groups.filter((g) => g.due);
   const nextGroup = dueGroups.filter(unfinished).sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0]
     || dueGroups.slice().sort((a, b) => (a.due.date < b.due.date ? -1 : 1))[0];
@@ -922,6 +928,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                     startedCount={startedCount}
                     totalCount={items.length}
                     unfinished={unfinished(g)}
+                    done={allFinal(g)}
                     today={today}
                   />
                   {open ? (
