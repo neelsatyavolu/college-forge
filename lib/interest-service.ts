@@ -1,4 +1,5 @@
 import { getWorkspace, updateWorkspace, type Workspace } from "./store";
+import { isEssayHidden } from "./essay-tools";
 import { findApp, replaceApp, todayIso, type TrackedApp } from "./tracker";
 import { TrackerError, researchOf, viewApp, type AppView } from "./tracker-service";
 import { studentScores } from "./testing-plan";
@@ -91,7 +92,7 @@ export async function interviewPrepBrief(workspaceId: string, ref: string, event
     .map((f) => ({ key: f.key, value: clip(f.value, 400), source: f.sourceUrl }));
   const slug = app.slug ?? ws.colleges.find((c) => c.name.toLowerCase() === app.name.toLowerCase())?.slug;
   const whyUs = (slug ? ws.essays.supplements[slug] ?? [] : [])
-    .filter((e) => WHY_US.test(`${e.label} ${e.prompt}`))
+    .filter((e) => WHY_US.test(`${e.label} ${e.prompt}`) && !isEssayHidden(ws, e, slug!))
     .map((e) => ({ prompt: clip(e.prompt, 400), draft: clip(ws.essayDrafts[e.id], 2500) }))
     .filter((e) => e.draft);
   const activities = ws.profile.activities.slice(0, 10).map((a) => ({

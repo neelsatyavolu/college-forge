@@ -110,19 +110,7 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-function isUcCampus(c) {
-  if (!c) return false;
-  const slug = (c.slug || "").toLowerCase();
-  const name = `${c.name || ""} ${c.short || ""}`.toLowerCase();
-  if (slug.startsWith("university-of-california-")) return true;
-  if (slug === "ucla" || slug === "ucb" || slug === "ucsd" || slug === "uc-berkeley") return true;
-  if (/\buniversity of california\b/.test(name)) return true;
-  if (/\buc\s+(berkeley|los angeles|san diego|davis|irvine|santa barbara|santa cruz|riverside|merced)\b/.test(name)) {
-    return true;
-  }
-  if (name.trim() === "ucla") return true;
-  return false;
-}
+const isUcCampus = ESSAY_PLAN.isUcCampus;
 
 /**
  * Build sidebar groups:
@@ -703,7 +691,13 @@ function HiddenRow({ items, open, onToggle, activeId, local, onSelect }) {
 }
 
 function Essays({ data, onAsk, onWorkspaceChange }) {
-  const groups = React.useMemo(() => buildGroups(data), [data]);
+  // Schools the student isn't writing for leave the sidebar and every count; NotWritingFor lists them.
+  const allGroups = React.useMemo(() => buildGroups(data), [data]);
+  const groups = React.useMemo(
+    () => allGroups.filter((g) => g.kind === "orphan" || !ESSAY_PLAN.isSchoolSkipped(g.key, { essaySchools: data.essaySchools })),
+    [allGroups, data.essaySchools]
+  );
+  const [picking, setPicking] = React.useState(false);
   const allItems = React.useMemo(
     () =>
       groups.flatMap((g) =>
@@ -804,7 +798,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
   const suggestions = data.essaySuggestions || {};
   const hiddenMap = React.useMemo(() => data.essayHidden || {}, [data.essayHidden]);
   const commonAppPrompt = data.commonAppPrompt || "";
-  const visOpts = React.useMemo(() => ({ hidden: hiddenMap, commonAppPrompt }), [hiddenMap, commonAppPrompt]);
+  const visOpts = React.useMemo(() => ({ hidden: hiddenMap, commonAppPrompt, essaySchools: data.essaySchools }), [hiddenMap, commonAppPrompt, data.essaySchools]);
   const visibleItems = React.useMemo(() => ESSAY_PLAN.visibleItems(allItems, visOpts), [allItems, visOpts]);
   const [openHidden, setOpenHidden] = React.useState(() => new Set());
   const today = todayIso();
@@ -901,11 +895,13 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
         </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
           <Button variant="secondary" size="sm" onClick={() => onAsk(active ? essayAsk(active, "help") : undefined)}>Ask copilot ✱</Button>
+          {(data.colleges || []).length ? <Button variant="secondary" size="sm" onClick={() => setPicking(true)}>Pick essay schools</Button> : null}
           <Button size="sm" onClick={()=>{setPromptError("");setPromptForm({groupKey:active ? active._groupKey : "common",label:"",prompt:"",limit:250,unit:"words"});}}>Add prompt</Button>
           {active ? <Button variant="secondary" size="sm" onClick={()=>{setPromptError("");setPromptForm({...active,groupKey:active._groupKey});}}>Edit prompt</Button> : null}
         </div>
       </header>
 
+      {picking ? <window.EssaySchoolsSheet data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setPicking(false)} /> : null}
       {promptForm ? (
         <form onSubmit={savePrompt} style={{padding:20,border:"1px solid var(--hairline)",borderRadius:"var(--radius-md)",display:"grid",gap:12,marginBottom:20}}>
           <h2 className="cf-display" style={{margin:0,fontSize:20}}>{promptForm.id ? "Edit essay prompt" : "Add essay prompt"}</h2>
@@ -936,6 +932,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
       ) : (
         <React.Fragment>
         <WritingSummary totals={totals} next={nextGroup ? nextGroup.due : null} today={today} />
+        <window.NotWritingFor data={data} onWorkspaceChange={onWorkspaceChange} />
         {commonChoices.length > 1 ? (
           <div className="cf-mobile-essay-picker">
             <CommonAppChoice choices={commonChoices} chosen={commonAppPrompt} busy={statusBusy} onChoose={chooseCommonApp} />

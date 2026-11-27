@@ -99,7 +99,7 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
         <React.Fragment>
           {window.InterviewsAhead ? <window.InterviewsAhead apps={tracker.apps} /> : null}
           <ProgressView tracker={tracker} editable act={act} busy={busy} openId={open} oddsFor={oddsFor} onToggle={(id) => setOpen(open === id ? null : id)}
-            renderDetails={(app) => <AppDetails key={app.id} app={app} act={act} busy={busy} checking={false} onCheck={() => act({ action: "check", ids: [app.id] }, "Checked.")} />} />
+            renderDetails={(app) => <AppDetails key={app.id} app={app} act={act} busy={busy} checking={false} onCheck={() => act({ action: "check", ids: [app.id] }, "Checked.")} data={data} onWorkspaceChange={onWorkspaceChange} />} />
           <div className="cf-apps-footer">
             <form className="cf-flag-form" onSubmit={(e) => { e.preventDefault(); act({ action: "flag-add", text: flagText }, "Flag added.").then((ok) => ok && setFlagText("")); }}>
               <label className="cf-sr-only" htmlFor="new-flag">Flag something that needs attention</label>

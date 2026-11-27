@@ -43,7 +43,7 @@ function PortalLine({ app }) {
   );
 }
 
-function AppDetails({ app, act, busy, checking, onCheck, master }) {
+function AppDetails({ app, act, busy, checking, onCheck, master, data, onWorkspaceChange }) {
   const { APP_ROUNDS, fmtDate } = window.cfApp;
   const initial = { round: app.roundFromPortal ? "" : app.round || "", deadline: app.deadline || "", decisionDate: app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "", submittedAt: app.submittedAt || "", notes: app.notes || "", portalUrl: app.portalUrl || "" };
   const [form, setForm] = React.useState(initial);
@@ -84,6 +84,10 @@ function AppDetails({ app, act, busy, checking, onCheck, master }) {
             <span>Not applying for aid here: ignore FAFSA, CSS Profile and tax forms</span>
           </label>
         ) : null}
+        {data && app.slug && window.EssaySchoolToggle ? (() => {
+          const college = (data.colleges || []).find((c) => c.slug === app.slug);
+          return college ? <window.EssaySchoolToggle data={data} school={college} onWorkspaceChange={onWorkspaceChange} className="cf-check" label="Writing supplements for this school (they show on Essays)" /> : null;
+        })() : null}
         <label className="cf-field" style={{ gridColumn: "1 / -1" }}>Notes
           <textarea value={form.notes} onChange={set("notes")} maxLength={4000} />
         </label>
@@ -161,7 +165,7 @@ function AppDetails({ app, act, busy, checking, onCheck, master }) {
 }
 
 /** One school. Compact rows fit on one line and keep the portal's full message for the expanded view. */
-function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, master }) {
+function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, master, data, onWorkspaceChange }) {
   const { SchoolMark, StatusSelect, fmtDate, daysUntil, relDays, ago, Chevron } = window.cfApp;
   const next = app.nextDate;
   const soon = next && daysUntil(next.date) <= 7;
@@ -187,7 +191,7 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, ma
         </button>
       </div>
       {!compact || open ? <PortalLine app={app} /> : null}
-      {open ? <div id={`app-${app.id}`} className="cf-app-row__more"><AppDetails app={app} act={act} busy={busy} checking={checking} onCheck={onCheck} master={master} /></div> : null}
+      {open ? <div id={`app-${app.id}`} className="cf-app-row__more"><AppDetails app={app} act={act} busy={busy} checking={checking} onCheck={onCheck} master={master} data={data} onWorkspaceChange={onWorkspaceChange} /></div> : null}
     </li>
   );
 }
@@ -246,7 +250,7 @@ function DatesView({ apps, criticalDates, colleges, scholarships }) {
  * Portals: the schools whose applicant portal you've added, which means everything you've submitted or saved
  * a login for. Schools you haven't submitted yet live on Progress.
  */
-function Applications({ data, tracker, onTrackerChange }) {
+function Applications({ data, tracker, onTrackerChange, onWorkspaceChange }) {
   const { APP_STAGES } = window.cfApp;
   const apps = tracker.apps.filter((a) => a.stage !== "working" || (a.login && a.login.hasPassword));
   const notYet = tracker.apps.length - apps.length;
@@ -387,7 +391,7 @@ function Applications({ data, tracker, onTrackerChange }) {
               <section key={group.id} className="cf-apps-group" aria-labelledby={`stage-${group.id}`}>
                 <div className="cf-apps-group__head"><h2 id={`stage-${group.id}`}>{group.label}</h2><span>{list.length}</span></div>
                 <ul className="cf-apps-list">
-                  {list.map((a) => <AppRow key={a.id} app={a} compact={group.compact} open={!!open && open.id === a.id} onToggle={() => setOpen(open && open.id === a.id ? null : { id: a.id, attention: !group.compact })} act={act} busy={busy} checking={!!checking[a.id]} onCheck={() => checkSome([a])} master={master} />)}
+                  {list.map((a) => <AppRow key={a.id} app={a} compact={group.compact} open={!!open && open.id === a.id} onToggle={() => setOpen(open && open.id === a.id ? null : { id: a.id, attention: !group.compact })} act={act} busy={busy} checking={!!checking[a.id]} onCheck={() => checkSome([a])} master={master} data={data} onWorkspaceChange={onWorkspaceChange} />)}
                 </ul>
               </section>
             );

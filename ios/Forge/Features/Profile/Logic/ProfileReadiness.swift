@@ -62,7 +62,12 @@ struct ProfileReadiness {
         items.append(.init(id: "colleges", title: "College list", detail: ws.colleges.isEmpty ? "No schools yet" : "\(ws.colleges.count) school\(ws.colleges.count == 1 ? "" : "s")",
                            isDone: !ws.colleges.isEmpty, target: .tab(.colleges)))
 
-        let essays = ws.essays.all
+        // Supplements of schools the student turned off on Essays aren't part of the work.
+        let essays = ws.essays.commonApp + ws.essays.supplements.keys.sorted().flatMap { slug -> [Essay] in
+            let key = ws.colleges.first { $0.slug == slug }.flatMap(EssayCatalog.groupKey(for:)) ?? slug
+            let off = EssayCatalog.isSkipped(slug, essaySchools: ws.essaySchools) || EssayCatalog.isSkipped(key, essaySchools: ws.essaySchools)
+            return off ? [] : ws.essays.supplements[slug] ?? []
+        }
         let drafted = essays.filter { !(ws.essayDrafts[$0.id] ?? "").profileTrimmed.isEmpty }.count
         items.append(.init(id: "essays", title: "Essays", detail: essays.isEmpty ? "No prompts yet" : "\(drafted) of \(essays.count) started",
                            isDone: !essays.isEmpty && drafted == essays.count, target: .tab(.essays)))

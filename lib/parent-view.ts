@@ -69,10 +69,10 @@ export function essaysView(ws: Workspace) {
   const first = (ws.applicant.name || "").trim().split(/\s+/)[0] || "";
   const pick = ({ id, label, prompt, limit, unit, required, chooseGroup, choose, options, audience }: Workspace["essays"]["commonApp"][number]) =>
     ({ id, label, prompt, limit, unit, required, chooseGroup, choose, options, audience });
-  // An essay the student hid is not shown to the coach, nor its draft, status or comments.
-  const shown = (list: Essay[]) => (list || []).filter((e) => !isEssayHidden(ws, e)).map(pick);
-  const commonApp = shown(ws.essays.commonApp);
-  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements).map(([slug, items]) => [slug, shown(items)] as const).filter(([, items]) => items.length));
+  // An essay the student hid, or one for a school they turned off, is not shown to the coach, nor its draft, status or comments.
+  const shown = (list: Essay[], key: string) => (list || []).filter((e) => !isEssayHidden(ws, e, key)).map(pick);
+  const commonApp = shown(ws.essays.commonApp, "common");
+  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements).map(([slug, items]) => [slug, shown(items, slug)] as const).filter(([, items]) => items.length));
   const ids = new Set([...commonApp, ...Object.values(supplements).flat()].map((e) => e.id));
   const named = (slug: string) => {
     if (slug === UC_APPLICATION_SLUG) return "UC Application";
@@ -110,10 +110,13 @@ export function followerView(ws: Workspace, access: { level: FollowerLevel; role
   return access.role === "counselor" ? { ...view, role: access.role, notes: counselorNotes(ws, level, access.linkId) } : { ...view, role: access.role };
 }
 
-/** The essays a parent may see: everything the student hasn't hidden, without the hidden ones' drafts and statuses. */
+/** The essays a parent may see: everything the student hasn't hidden (or whose school they opted out of), without the hidden ones' drafts and statuses. */
 function visibleEssays(ws: Workspace) {
-  const all = [...ws.essays.commonApp, ...Object.values(ws.essays.supplements || {}).flat()];
-  const hidden = new Set(all.filter((e) => isEssayHidden(ws, e)).map((e) => e.id));
+  const all = [
+    ...ws.essays.commonApp.map((e) => [e, "common"] as const),
+    ...Object.entries(ws.essays.supplements || {}).flatMap(([key, list]) => (list || []).map((e) => [e, key] as const)),
+  ];
+  const hidden = new Set(all.filter(([e, key]) => isEssayHidden(ws, e, key)).map(([e]) => e.id));
   const shown = (list: Essay[]) => (list || []).filter((e) => !hidden.has(e.id));
   const commonApp = shown(ws.essays.commonApp);
   const supplements = Object.fromEntries(Object.entries(ws.essays.supplements || {}).map(([k, v]) => [k, shown(v)] as const).filter(([, v]) => v.length));

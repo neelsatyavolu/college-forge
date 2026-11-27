@@ -9,6 +9,7 @@ import type { Workspace } from "./store";
 import type { BuildStep } from "./build-plan";
 import { baselineFor, boundsFor, chosenRound, knownDecisions, oddsTargets, type OddsTarget } from "./admission-odds";
 import { decisionOf, statusInfo } from "./tracker";
+import { skippedEssayIds } from "./essay-tools";
 
 export const ODDS_SCHOOLS_PER_STEP = 2;
 const ESSAY_CHARS = 24_000;
@@ -24,11 +25,13 @@ function essayText(ws: Workspace): string {
   const labels = new Map<string, string>();
   for (const e of ws.essays.commonApp) labels.set(e.id, `Common App: ${e.label}`);
   for (const [slug, list] of Object.entries(ws.essays.supplements || {})) for (const e of list) labels.set(e.id, `${slug}: ${e.label}`);
+  // Supplements for schools the student turned off are not part of the application.
+  const off = skippedEssayIds(ws);
   let left = ESSAY_CHARS;
   const blocks: string[] = [];
   for (const [id, body] of Object.entries(ws.essayDrafts || {})) {
     const t = (body || "").trim();
-    if (!t || left <= 0) continue;
+    if (!t || left <= 0 || off.has(id)) continue;
     const piece = t.slice(0, left);
     left -= piece.length;
     blocks.push(`### ${labels.get(id) || id}\n${piece}`);

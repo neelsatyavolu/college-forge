@@ -46,9 +46,12 @@ function crossSite(req: NextRequest): boolean {
   return !(req.headers.get("content-type") ?? "").toLowerCase().startsWith("application/json");
 }
 
-// Only essays the student hasn't hidden can take a comment: a hidden essay isn't in any follower's view.
+// Only essays the student hasn't hidden (nor for a school they turned off) can take a comment: those aren't in any follower's view.
 const essayIds = (ws: Workspace) =>
-  new Set([...ws.essays.commonApp, ...Object.values(ws.essays.supplements).flat()].filter((e) => !isEssayHidden(ws, e)).map((e) => e.id));
+  new Set([
+    ...ws.essays.commonApp.filter((e) => !isEssayHidden(ws, e, "common")),
+    ...Object.entries(ws.essays.supplements).flatMap(([key, list]) => (list || []).filter((e) => !isEssayHidden(ws, e, key))),
+  ].map((e) => e.id));
 
 class AccessEnded extends Error {}
 class NoEssay extends Error {}

@@ -37,7 +37,8 @@ export function planReadiness(ws: Workspace): PlanReadiness {
   const colleges = ws.colleges.filter((c) => c.slug);
   const essays: PlanReadiness["essays"] = { current: [], unconfirmed: [], placeholder: [] };
   // UC campuses share the fixed Personal Insight Questions.
-  for (const c of colleges.filter((c) => !isUcCampus(c))) {
+  // Schools the student isn't writing supplements for need no prompts.
+  for (const c of colleges.filter((c) => !isUcCampus(c) && ws.essaySchools?.[c.slug] !== false)) {
     const group = ws.essays.supplements[c.slug];
     if (group?.length) essays[essayStatus(group)].push(c.slug);
   }

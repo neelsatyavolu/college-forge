@@ -16,9 +16,11 @@ import { mergeSupplements, syncEssaySupplements } from "./essay-supplements";
 import {
   applyCommonAppPrompt,
   applyEssayHidden,
+  applyEssaySchools,
   applyEssayStatus,
   checkCommonAppPrompt,
   checkEssayHidden,
+  checkEssaySchools,
   checkEssayStatus,
   checkEssaySuggestionDismissals,
   dismissSuggestions,
@@ -77,6 +79,8 @@ export type WorkspacePatch = {
   essayHidden?: Record<string, true | null>;
   /** The chosen Common App personal essay prompt (a ca-ps-* id); null clears the choice. */
   commonAppPrompt?: string | null;
+  /** Opt schools out of supplements by Essays group key (false); null makes one an essay school again. Drafts are kept. */
+  essaySchools?: Record<string, false | null>;
   /** Toggle one planner task */
   plannerToggle?: { key: string; done: boolean };
   /** Set one application status */
@@ -191,6 +195,10 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
   }
   if (patch.essayHidden !== undefined) {
     const parsed = checkEssayHidden(patch.essayHidden);
+    if (!parsed.ok) return parsed;
+  }
+  if (patch.essaySchools !== undefined) {
+    const parsed = checkEssaySchools(patch.essaySchools);
     if (!parsed.ok) return parsed;
   }
   if (patch.commonAppPrompt !== undefined && patch.commonAppPrompt !== null && typeof patch.commonAppPrompt !== "string") {
@@ -329,6 +337,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
   }
   if (patch.essayStatus) next = applyEssayStatus(next, patch.essayStatus);
   if (patch.essayHidden) next = applyEssayHidden(next, patch.essayHidden);
+  if (patch.essaySchools) next = applyEssaySchools(next, patch.essaySchools);
   if (patch.commonAppPrompt !== undefined) {
     // Only a valid choice is saved (route.ts refuses others with workspacePatchError first).
     const choice = checkCommonAppPrompt(patch.commonAppPrompt, next);

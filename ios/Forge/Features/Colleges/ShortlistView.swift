@@ -72,7 +72,10 @@ struct ShortlistView: View {
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) { pendingRemoval = college } label: { Label("Remove", systemImage: "trash") }
                         }
-                        .swipeActions(edge: .leading) { trackAction(college) }
+                        .swipeActions(edge: .leading) {
+                            trackAction(college)
+                            EssaySchoolButton(college: college) { self.error = $0 }.tint(Theme.muted)
+                        }
                         .contextMenu {
                             ShortlistRowMenu(
                                 college: college,
@@ -80,6 +83,7 @@ struct ShortlistView: View {
                                 track: { Task { await track(college) } },
                                 setTier: { tier in Task { await setTier(tier, college) } }
                             )
+                            EssaySchoolButton(college: college) { self.error = $0 }
                         }
                     }
                     .onMove { from, to in Task { await move(section.colleges, from: from, to: to) } }

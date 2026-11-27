@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { Essay, EssayStatus, Workspace } from "./store";
-import { mergeSupplements } from "./essay-supplements";
+import { essayGroupKey, mergeSupplements } from "./essay-supplements";
 import type { Parsed } from "./profile-fields";
 
 /**
@@ -37,16 +37,37 @@ function countOf(essay: Essay, text: string): number {
 /** In the Common App choose-one set; prompts saved before chooseGroup existed go by their ca-ps-* id. */
 const inCommonSet = (e: Essay) => e.chooseGroup === "common" || (!e.chooseGroup && /^ca-ps-/.test(e.id));
 
-/** Hidden by the student, or one of the Common App prompts they did not choose. Agents skip these. */
-export function isEssayHidden(ws: Workspace, essay: Essay): boolean {
+/**
+ * A school (an Essays group key: a college slug or "uc-application") the student is not writing supplements
+ * for. Every school is an essay school until the student opts it out; the Common App is always written.
+ */
+export function isSchoolSkipped(ws: Workspace, groupKey: string): boolean {
+  if (groupKey === "common") return false;
+  // Supplements saved under a UC campus slug belong to the shared UC Application; the list's college gives its name.
+  const key = essayGroupKey(ws.colleges.find((c) => c.slug === groupKey) ?? { slug: groupKey, name: "" }) ?? groupKey;
+  return ws.essaySchools?.[groupKey] === false || ws.essaySchools?.[key] === false;
+}
+
+/**
+ * Hidden by the student, one of the Common App prompts they did not choose, or (given its group key) in a
+ * school they are not writing for. Agents skip these.
+ */
+export function isEssayHidden(ws: Workspace, essay: Essay, groupKey?: string): boolean {
+  if (groupKey && isSchoolSkipped(ws, groupKey)) return true;
   if (ws.essayHidden?.[essay.id]) return true;
   return Boolean(ws.commonAppPrompt && inCommonSet(essay) && essay.id !== ws.commonAppPrompt);
 }
 
+/** Ids of the supplements of schools the student turned off: their drafts leave counts and reads. */
+export function skippedEssayIds(ws: Workspace): Set<string> {
+  return new Set(allEssays(ws).filter((x) => isSchoolSkipped(ws, x.groupKey)).map((x) => x.essay.id));
+}
+
 /** The visibility flags an agent sees on each essay. */
-function visibility(ws: Workspace, essay: Essay) {
+function visibility(ws: Workspace, essay: Essay, groupKey: string) {
   return {
-    hidden: isEssayHidden(ws, essay),
+    hidden: isEssayHidden(ws, essay, groupKey),
+    ...(isSchoolSkipped(ws, groupKey) ? { not_writing: true as const } : {}),
     ...(ws.commonAppPrompt && essay.id === ws.commonAppPrompt ? { chosen: true as const } : {}),
   };
 }
@@ -65,7 +86,7 @@ export function essayList(ws: Workspace) {
       count,
       status: ws.essayStatus?.[essay.id] ?? (count > 0 ? "draft" : "not started"),
       required: essay.required ?? null,
-      ...visibility(ws, essay),
+      ...visibility(ws, essay, groupKey),
     };
   });
 }
@@ -95,7 +116,7 @@ export function essayView(ws: Workspace, id: string) {
     over_limit: count > essay.limit,
     status: ws.essayStatus?.[essay.id] ?? (count > 0 ? "draft" : "not started"),
     pending_suggestion: ws.essaySuggestions?.[essay.id]?.text ?? null,
-    ...visibility(ws, essay),
+    ...visibility(ws, essay, groupKey),
   };
 }
 
@@ -192,6 +213,34 @@ export function checkEssayHidden(raw: unknown): Parsed<Record<string, true | nul
   return { ok: true, value: map.value as Record<string, true | null> };
 }
 
+/**
+ * essaySchools patch: { groupKey: false | null }. false opts a school out of supplements (its essays hide and
+ * leave every count; drafts are kept); null makes it an essay school again. The Common App can't be opted out.
+ */
+export function checkEssaySchools(raw: unknown): Parsed<Record<string, false | null>> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, error: "essaySchools must be an object keyed by school." };
+  const entries = Object.entries(raw);
+  if (entries.length > MAX_KEYS) return { ok: false, error: "essaySchools has too many entries." };
+  if (entries.some(([k]) => !ID.test(k))) return { ok: false, error: "essaySchools has an invalid school key." };
+  if (entries.some(([k]) => k === "common")) return { ok: false, error: "The Common App essay can't be turned off." };
+  if (entries.some(([, v]) => v !== false && v !== null)) return { ok: false, error: "essaySchools values must be false or null." };
+  return { ok: true, value: raw as Record<string, false | null> };
+}
+
+export function applyEssaySchools(ws: Workspace, patch: Record<string, false | null>): Workspace {
+  return { ...ws, essaySchools: withoutNulls(ws.essaySchools || {}, patch) as Record<string, false> };
+}
+
+/** Every school key that can be an essay school: each list school's group and any saved supplement group. */
+export function essaySchoolKeys(ws: Workspace): Set<string> {
+  const keys = new Set(Object.keys(ws.essays.supplements || {}));
+  for (const c of ws.colleges) {
+    const key = essayGroupKey(c);
+    if (key) keys.add(key);
+  }
+  return keys;
+}
+
 /** The Common App prompts the student picks one of (the "common" choose set). */
 const commonChoices = (ws: Workspace) => ws.essays.commonApp.filter(inCommonSet);
 
@@ -225,20 +274,32 @@ export function keepValidCommonAppPrompt(ws: Workspace): Workspace {
  */
 export function withEssayVisibility(
   ws: Workspace,
-  input: { hide?: unknown; show?: unknown; commonAppPrompt?: unknown },
+  input: { hide?: unknown; show?: unknown; commonAppPrompt?: unknown; skipSchools?: unknown; writeSchools?: unknown },
 ): Parsed<Workspace> {
   const ids = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").map((x) => x.trim()).filter(Boolean) : []);
   const hide = ids(input.hide);
   const show = ids(input.show);
-  if (!hide.length && !show.length && input.commonAppPrompt === undefined) {
-    return { ok: false, error: "Nothing to change: pass hide, show or common_app_prompt." };
+  const skip = ids(input.skipSchools);
+  const write = ids(input.writeSchools);
+  if (!hide.length && !show.length && !skip.length && !write.length && input.commonAppPrompt === undefined) {
+    return { ok: false, error: "Nothing to change: pass hide, show, not_writing_for, writing_for or common_app_prompt." };
   }
   const unknown = [...hide, ...show].find((id) => !findEssay(ws, id));
   if (unknown) return { ok: false, error: `No essay has the id "${unknown}". Use list_essays to see the ids.` };
+  const schoolKeys = essaySchoolKeys(ws);
+  const unknownSchool = [...skip, ...write].find((key) => !schoolKeys.has(key));
+  if (unknownSchool) return { ok: false, error: `No school on the Essays tab has the key "${unknownSchool}". Use the school field from list_essays.` };
+  // A UC campus key stands for the shared UC Application; writing again also clears a stored campus alias.
+  const groupOf = (k: string) => essayGroupKey(ws.colleges.find((c) => c.slug === k) ?? { slug: k, name: "" }) ?? k;
+  const aliases = (k: string) => Object.keys(ws.essaySchools || {}).filter((s) => groupOf(s) === k);
+  const writeKeys = [...new Set(write.flatMap((k) => [groupOf(k), ...aliases(groupOf(k))]))];
+  const schools = checkEssaySchools(Object.fromEntries([...writeKeys.map((k) => [k, null]), ...skip.map((k) => [groupOf(k), false])]));
+  if (!schools.ok) return schools;
   const patch = Object.fromEntries([...show.map((id) => [id, null]), ...hide.map((id) => [id, true])]) as Record<string, true | null>;
   const checkedHidden = checkEssayHidden(patch);
   if (!checkedHidden.ok) return checkedHidden;
   let next = Object.keys(patch).length ? applyEssayHidden(ws, checkedHidden.value) : ws;
+  if (Object.keys(schools.value).length) next = applyEssaySchools(next, schools.value);
   if (input.commonAppPrompt !== undefined) {
     const choice = checkCommonAppPrompt(input.commonAppPrompt === "" ? null : input.commonAppPrompt, next);
     if (!choice.ok) return choice;

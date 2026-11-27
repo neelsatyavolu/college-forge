@@ -111,6 +111,12 @@ export const UC_PERSONAL_INSIGHT_QUESTIONS: Essay[] = ([
   },
 ] as Essay[]).map((e) => ({ ...e, chooseGroup: "uc", choose: 4 }));
 
+/** The Essays group a list school writes in: its slug, or the shared UC Application for a UC campus. */
+export function essayGroupKey(c: { slug?: string; name?: string; short?: string }): string | null {
+  if (isUcCampus(c)) return UC_APPLICATION_SLUG;
+  return c.slug || null;
+}
+
 function shortName(c: College): string {
   return (c.short || c.name || c.slug || "School").trim();
 }

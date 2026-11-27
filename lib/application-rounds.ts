@@ -4,6 +4,7 @@
  */
 
 import type { College, Workspace } from "./store";
+import { isSchoolSkipped } from "./essay-tools";
 
 export type RoundChoice = { slug: string; plan: string };
 
@@ -69,7 +70,8 @@ export function workloadSummary(ws: Workspace): string {
   const parts = [...buckets.entries()]
     .sort(([a], [b]) => a - b)
     .map(([, { label, schools }]) => {
-      const heavy = schools.filter((c) => c.supp === "Supps required").map((c) => c.short || c.slug);
+      // A school the student turned off on Essays has no supplements to write.
+      const heavy = schools.filter((c) => c.supp === "Supps required" && !isSchoolSkipped(ws, c.slug)).map((c) => c.short || c.slug);
       const count = `${schools.length} school${schools.length === 1 ? "" : "s"}`;
       return `${label}: ${count}, ${heavy.length} with required supplements${heavy.length ? ` (${heavy.join(", ")})` : ""}`;
     });
