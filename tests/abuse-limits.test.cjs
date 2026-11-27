@@ -65,11 +65,18 @@ test('a failed college search returns a fixed message and logs only the error na
   console.error = (...args) => logged.push(args.map(String).join(' '));
   globalThis.fetch = async () => new Response('UPSTREAM-SECRET-DETAIL api_key=test-key', { status: 500 });
   try {
-    const res = await searchRoute.GET(new NextRequest('http://localhost/api/colleges/search?q=rice', { headers: { 'x-forwarded-for': '203.0.113.30' } }));
+    // A name the Explore catalog lacks, so only the Scorecard could answer.
+    const res = await searchRoute.GET(new NextRequest('http://localhost/api/colleges/search?q=zzqxv', { headers: { 'x-forwarded-for': '203.0.113.30' } }));
     assert.equal(res.status, 502);
     const body = await res.text();
     assert.doesNotMatch(body, /UPSTREAM-SECRET|Scorecard 500|test-key/);
     assert.match(JSON.parse(body).error, /try again/i);
+    // A catalog school still comes back from the local list while the Scorecard is down.
+    const local = await searchRoute.GET(new NextRequest('http://localhost/api/colleges/search?q=rice', { headers: { 'x-forwarded-for': '203.0.113.30' } }));
+    assert.equal(local.status, 200);
+    const localBody = await local.text();
+    assert.doesNotMatch(localBody, /UPSTREAM-SECRET|test-key/);
+    assert.ok(JSON.parse(localBody).data.some((c) => c.name === 'Rice University'));
     assert.doesNotMatch(logged.join('\n'), /UPSTREAM-SECRET|test-key/);
   } finally {
     console.error = realError;

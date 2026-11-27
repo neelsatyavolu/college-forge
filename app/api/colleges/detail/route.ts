@@ -10,6 +10,7 @@ import {
   type ScorecardCollege,
 } from "@/lib/colleges";
 import { getWorkspace } from "@/lib/store";
+import { catalogRow, exploreExtras, toExploreCollege } from "@/lib/explore-catalog";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 
 export const runtime = "nodejs";
@@ -138,8 +139,31 @@ export async function GET(req: NextRequest) {
   if (!/^\d+$/.test(idParam)) {
     return json({ success: false, error: "A numeric Scorecard 'id' is required." }, 400, setCookie);
   }
+  const known = catalogRow(Number(idParam));
+  // Without the live Scorecard record, a catalog school still opens: its saved figures and notes, no programs.
+  const fromCatalog = async () => {
+    if (!known) return null;
+    const ws = await getWorkspace(wsId);
+    const base = toExploreCollege(known);
+    const saved = ws.colleges.find((c) => c.slug === base.slug);
+    const { tags, tier } = fitFor(base, ws.profile.testing.sat || ws.applicant.sat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
+    const pctOf = (n?: number) => (typeof n === "number" ? `${Math.round(n * 100)}%` : undefined);
+    const moneyOf = (n?: number) => (typeof n === "number" ? `$${Math.round(n).toLocaleString()}` : undefined);
+    return {
+      ...base, ...(saved ?? {}), ...exploreExtras(base.slug, known.id),
+      rank: saved?.rank ?? base.rank, photo: base.photo || saved?.photo || null,
+      tags: saved?.tags ?? tags, tier: saved?.tier ?? tier,
+      ownership: known.control === "public" ? "Public" : known.control === "private" ? "Private, nonprofit" : undefined,
+      coa: moneyOf(known.coa), tuitionIn: moneyOf(known.tuitionIn), tuitionOut: moneyOf(known.tuitionOut),
+      grad6: pctOf(known.grad), earnings: moneyOf(known.earn), pellRate: pctOf(known.pell),
+      url: known.url, onList: Boolean(saved), programs: [] as ProgramRow[], partial: true,
+    };
+  };
+
   const key = process.env.COLLEGE_SCORECARD_API_KEY;
   if (!key) {
+    const partial = await fromCatalog();
+    if (partial) return json({ success: true, data: partial }, 200, setCookie);
     return json({ success: false, error: "COLLEGE_SCORECARD_API_KEY is not configured." }, 503, setCookie);
   }
 
@@ -159,7 +183,9 @@ export async function GET(req: NextRequest) {
     const r = body.results?.[0];
     if (!r) return json({ success: false, error: "College not found." }, 404, setCookie);
 
-    const base = scorecardToCollege(toScorecardCollege(r));
+    const scored = scorecardToCollege(toScorecardCollege(r));
+    // The catalog's slug and name (U.S. News spelling for ranked schools) keep one school one row.
+    const base = known ? { ...scored, slug: known.slug, name: known.name } : scored;
     const ws = await getWorkspace(wsId);
     const { tags, tier } = fitFor(base, ws.profile.testing.sat || ws.applicant.sat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
     // Anything the copilot already researched for this school (deadlines,
@@ -170,12 +196,14 @@ export async function GET(req: NextRequest) {
     const testReq = num(r["latest.admissions.test_requirements"]);
 
     const scId = num(r.id) ?? undefined;
+    const extras = exploreExtras(base.slug, scId);
     const detail = {
       ...base,
       ...(saved ?? {}),
+      ...extras,
       // Keep US News rank + campus photo even if the saved workspace row is sparse.
-      rank: saved?.rank ?? base.rank,
-      photo: saved?.photo || base.photo || null,
+      rank: saved?.rank ?? base.rank ?? known?.rank,
+      photo: extras.photo || saved?.photo || base.photo || null,
       scorecardId: scId,
       tags: saved?.tags ?? tags,
       tier: saved?.tier ?? tier,
@@ -198,8 +226,10 @@ export async function GET(req: NextRequest) {
     );
     return json({ success: true, data: detail }, 200, setCookie);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Lookup failed.";
-    console.error(`[colleges] detail failed for id=${idParam}:`, err);
-    return json({ success: false, error: message }, 502, setCookie);
+    // Scorecard's error text stays in the server log, not the reply.
+    console.error(`[colleges] detail failed for id=${idParam}:`, err instanceof Error ? err.message : err);
+    const partial = await fromCatalog().catch(() => null);
+    if (partial) return json({ success: true, data: partial }, 200, setCookie);
+    return json({ success: false, error: "Couldn't load this school right now. Try again in a moment." }, 502, setCookie);
   }
 }

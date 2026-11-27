@@ -153,6 +153,8 @@ function FieldEarnings({ programs }) {
 /** One row of the "At a glance" card; skipped when the value is unknown. */
 const Glance = ({ label, children }) => (children ? <div><dt>{label}</dt><dd>{children}</dd></div> : null);
 
+const hasDeadlinesSaved = (d) => Boolean(d.deadlines && d.deadlines.length);
+
 function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, onToggleFavorite, onAdd, onRemove, onList, busy }) {
   // `c` is the light list row (instant); `detail` is the full record (async).
   const [confirmRemove, setConfirmRemove] = React.useState(false);
@@ -164,13 +166,19 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
   const place = d.location ? d.location.split(" · ")[0] : null;
   const programs = (detail && detail.programs) || [];
   const ranked = typeof d.rank === "number" && d.rank > 0;
-  const eyebrow = ranked ? `U.S. News ${edition ? edition + " " : ""}#${d.rank} · National Universities` : "U.S. Dept. of Education data";
+  const lacRanked = typeof d.lacRank === "number" && d.lacRank > 0;
+  const eyebrow = ranked ? `U.S. News ${edition ? edition + " " : ""}#${d.rank} · National Universities`
+    : lacRanked ? `U.S. News ${edition ? edition + " " : ""}#${d.lacRank} · Liberal Arts Colleges` : "U.S. Dept. of Education data";
+  const research = d.research || null;
+  const researchDeadlines = !hasDeadlinesSaved(d) && research ? research.deadlines : [];
+  const loadingNote = loading ? "Loading…" : null;
   const hasPlans = d.plans && d.plans.length > 0;
   const hasDeadlines = d.deadlines && d.deadlines.length > 0;
 
   return (
     <article className="cf-explore-page">
-      <window.CollegePhoto name={d.name} photo={d.photo} className="cf-explore-page__hero" />
+      <window.CollegePhoto name={d.name} photo={d.photo} className="cf-explore-page__hero" eager />
+      <window.ExplorePhotoCredit credit={d.credit} />
 
       <header className="cf-explore-page__head">
         <div style={{ minWidth: 0, flex: "1 1 320px" }}>
@@ -213,6 +221,8 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
         ["Undergraduates", d.size],
       ]} />
 
+      <window.ExploreRankings rankings={d.rankings} rank={d.rank} lacRank={d.lacRank} />
+
       <div className="cf-explore-page__layout">
         <aside className="cf-explore-glance" aria-label="At a glance">
           <h2>At a glance</h2>
@@ -223,6 +233,9 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
             <Glance label="SAT/ACT policy">{d.testPolicy}</Glance>
             <Glance label="Pell grant recipients">{d.pellRate}</Glance>
             <Glance label="Average net price">{d.netPrice}</Glance>
+            <Glance label="Meets full need">{d.f?.meetsNeed ? "Yes" : null}</Glance>
+            <Glance label="HBCU">{d.hbcu || d.f?.hbcu ? "Yes" : null}</Glance>
+            <Glance label="Women’s college">{d.women || d.f?.women ? "Yes" : null}</Glance>
           </dl>
           <div className="cf-explore-glance__links">
             {d.url ? <a href={d.url} target="_blank" rel="noopener noreferrer">College website ↗</a> : null}
@@ -231,6 +244,18 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
         </aside>
 
         <div className="cf-explore-page__main">
+          {research && research.notes.length ? (
+            <Section title="What to know" note={`Forge notes · checked ${research.checkedAt}`}>
+              <window.ExploreNotesList notes={research.notes} />
+            </Section>
+          ) : null}
+
+          {d.intlAid?.label || d.nursing?.entry ? (
+            <Section title="International students & nursing">
+              <window.ExploreSpecialNotes intlAid={d.intlAid} nursing={d.nursing} />
+            </Section>
+          ) : null}
+
           <Section title="Cost & outcomes" note={loading ? "Loading…" : "U.S. Dept. of Education"}>
             <Stats compact items={[
               ["Average net price", d.netPrice],
@@ -242,11 +267,17 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
               ["Freshman retention", d.retention],
               ["Median earnings, 10 yrs", d.earnings],
             ]} />
+            {research ? <window.ExploreIncomeTable rows={research.byIncome} /> : null}
+            {d.earningsRange ? (
+              <p className="cf-explore-note">Ten years after starting, the middle half of former students earned ${d.earningsRange.p25.toLocaleString()}–${d.earningsRange.p75.toLocaleString()}.</p>
+            ) : null}
             <p className="cf-explore-note">Average net price is what families paid after grants, not your aid offer. Use the college’s net price calculator for an estimate.</p>
           </Section>
 
-          <Section title="Admission plans & deadlines" note={hasPlans ? `${d.plans.length} plans` : null}>
-            {hasPlans || hasDeadlines ? (
+          <Section title="Admission plans & deadlines" note={hasPlans ? `${d.plans.length} plans` : researchDeadlines.length ? "From the college’s site" : null}>
+            {!hasPlans && !hasDeadlines && researchDeadlines.length ? (
+              <window.ExploreDeadlines deadlines={researchDeadlines} />
+            ) : hasPlans || hasDeadlines ? (
               <div style={{ display: "grid", gap: 12 }}>
                 {hasPlans ? <Table head={[{ label: "Plan" }, { label: "Admit rate", right: true, mono: true }]} rows={d.plans.map((p) => [p.plan, p.rate])} /> : null}
                 {hasDeadlines ? <Table head={[{ label: "Plan" }, { label: "Deadline", mono: true }]} rows={d.deadlines.map((x) => [x.plan, x.date])} /> : null}
@@ -258,18 +289,31 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
             )}
           </Section>
 
-          <Section title="Schools & programs" note={programs.length ? `${programs.length} bachelor’s programs` : loading ? "Loading…" : null}>
-            {loading && !programs.length ? <NoteBox>Loading programs…</NoteBox> : <Programs programs={programs} />}
+          {research && research.essays.length ? (
+            <Section title="Supplemental essays" note={`${research.essays.length} prompt${research.essays.length === 1 ? "" : "s"}`}>
+              <window.ExploreEssays essays={research.essays} />
+            </Section>
+          ) : null}
+
+          {d.niche ? (
+            <Section title="Campus life" note="Niche grades">
+              <window.ExploreCampusLife niche={d.niche} />
+            </Section>
+          ) : null}
+
+          <Section title="Schools & programs" note={programs.length ? `${programs.length} bachelor’s programs` : loadingNote}>
+            {loading && !programs.length ? <NoteBox>Loading programs…</NoteBox> : d.partial ? <NoteBox>Program data is unavailable right now. Try again later.</NoteBox> : <Programs programs={programs} />}
           </Section>
 
           <Section title="Field-of-study earnings" note={programs.length ? "Median 4 yrs after completion" : null}>
             {loading && !programs.length ? <NoteBox>Loading…</NoteBox> : <FieldEarnings programs={programs} />}
           </Section>
 
-          <Section title="Internal transfer policy">
+          <Section title="Switching majors" note={d.switching && d.switching.length ? "Forge’s read of each school’s rules" : null}>
+            {d.switching && d.switching.length ? <window.ExploreSwitching switching={d.switching} /> : null}
             {d.transfer ? (
               <p style={{ margin: 0, fontSize: 14, color: "var(--ink)", lineHeight: 1.6 }}>{d.transfer}</p>
-            ) : (
+            ) : d.switching && d.switching.length ? null : (
               <NoteBox>Check {d.short || d.name}’s official department and admissions pages for restrictions on changing majors or colleges.</NoteBox>
             )}
           </Section>

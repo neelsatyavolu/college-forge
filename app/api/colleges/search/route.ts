@@ -3,12 +3,12 @@ import { expandAlias } from "@/lib/college-aliases";
 import {
   scorecardToCollege,
   fitFor,
-  usNewsToCollege,
   withUsNews,
   type ScorecardCollege,
 } from "@/lib/colleges";
-import { US_NEWS_EDITION, US_NEWS_TOP_250 } from "@/lib/us-news-rankings";
-import { emptyWorkspace, peekWorkspace } from "@/lib/store";
+import { US_NEWS_EDITION } from "@/lib/us-news-rankings";
+import { CATALOG, CATALOG_DATE, catalogRow, searchCatalog, toExploreCollege } from "@/lib/explore-catalog";
+import { emptyWorkspace, peekWorkspace, type College } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { allow, clientIp } from "@/lib/rate-limit";
 
@@ -153,26 +153,22 @@ export async function GET(req: NextRequest) {
   const browse = req.nextUrl.searchParams.get("browse") === "1" || q.length === 0;
   const { id, setCookie } = await getWorkspaceId(req);
 
-  // Default browse: US News National Universities top ~250 (photos + ranks).
-  // Search (q ≥ 2) still hits the live College Scorecard for every school.
+  // Default browse: the Explore catalog (every 4-year public/nonprofit college with 1,000+
+  // undergrads, plus every ranked school), ranked schools first. Search (q ≥ 2) adds the live
+  // College Scorecard for anything the catalog lacks.
   if (browse && q.length < 2) {
     try {
       // Read only: a visitor without a stored workspace browses against an empty one, and none is created.
       const ws = (await peekWorkspace(id)) ?? emptyWorkspace();
       const applicantSat = ws.profile.testing.sat || ws.applicant.sat;
+      const satNote = `${ws.applicant.satNote} ${ws.profile.testing.satNote}`;
       const onList = new Set(ws.colleges.map((c) => c.slug));
-      const data = US_NEWS_TOP_250.map((u) => {
-        const college = usNewsToCollege(u);
-        const { tags, tier } = fitFor(college, applicantSat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
-        return {
-          ...college,
-          scorecardId: u.scorecardId,
-          tags,
-          tier,
-          onList: onList.has(college.slug),
-        };
+      const data = CATALOG.map((row) => {
+        const college = toExploreCollege(row);
+        const { tags, tier } = fitFor(college, applicantSat, satNote);
+        return { ...college, tags, tier, onList: onList.has(college.slug) };
       });
-      return json({ success: true, data, edition: US_NEWS_EDITION, source: "us-news-top-250" }, 200, setCookie);
+      return json({ success: true, data, edition: US_NEWS_EDITION, catalogDate: CATALOG_DATE, source: "explore-catalog" }, 200, setCookie);
     } catch (err) {
       console.error("[colleges] browse failed", err instanceof Error ? err.name : "unknown");
       return json({ success: false, error: "Couldn't load colleges. Try again in a moment." }, 502, setCookie);
@@ -181,8 +177,22 @@ export async function GET(req: NextRequest) {
 
   if (q.length < 2) return json({ success: true, data: [] }, 200, setCookie);
 
+  const ws = (await peekWorkspace(id)) ?? emptyWorkspace();
+  const applicantSat = ws.profile.testing.sat || ws.applicant.sat;
+  const satNote = `${ws.applicant.satNote} ${ws.profile.testing.satNote}`;
+  const onList = new Set(ws.colleges.map((c) => c.slug));
+  const tag = <C extends College>(college: C) => {
+    const { tags, tier } = fitFor(college, applicantSat, satNote);
+    return { ...college, tags, tier, onList: onList.has(college.slug) };
+  };
+
+  const expandedTerm = expandAlias(q);
+  const fromCatalog = [...searchCatalog(q), ...(expandedTerm ? searchCatalog(expandedTerm) : [])];
+  const local = [...new Map(fromCatalog.map((r) => [r.id, r])).values()].slice(0, 25).map((r) => tag(toExploreCollege(r)));
+
   const key = process.env.COLLEGE_SCORECARD_API_KEY;
   if (!key) {
+    if (local.length) return json({ success: true, data: local, source: "explore-catalog" }, 200, setCookie);
     return json(
       { success: false, error: "College search is unavailable: COLLEGE_SCORECARD_API_KEY is not configured." },
       503,
@@ -195,7 +205,7 @@ export async function GET(req: NextRequest) {
     return json({ success: false, error: "Too many searches from here in the last hour. Try again later." }, 429, setCookie);
   }
 
-  const expanded = expandAlias(q);
+  const expanded = expandedTerm;
   const terms = expanded ? [q, expanded] : [q];
 
   try {
@@ -208,27 +218,27 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Tag each result against the applicant's SAT so the list shows real fit.
-    const ws = (await peekWorkspace(id)) ?? emptyWorkspace();
-    const applicantSat = ws.profile.testing.sat || ws.applicant.sat;
-    const onList = new Set(ws.colleges.map((c) => c.slug));
-
-    const data = rankByRelevance([...merged.values()], q, expanded)
-      .slice(0, 25)
+    const seen = new Set(local.map((c) => c.scorecardId));
+    const remote = rankByRelevance([...merged.values()], q, expanded)
+      .filter((r) => !seen.has(num(r.id) ?? -1))
       .map((r) => {
         const sc = toScorecardCollege(r);
+        // A school the catalog knows gets its catalog row (photo, facets); others the Scorecard row.
+        const known = catalogRow(sc.id);
+        if (known) return tag(toExploreCollege(known));
         // scorecardToCollege already attaches US News rank + photo when known.
         const college = withUsNews(scorecardToCollege(sc), sc.id);
-        const { tags, tier } = fitFor(college, applicantSat, `${ws.applicant.satNote} ${ws.profile.testing.satNote}`);
         // scorecardId lets the detail panel fetch the heavy per-school record.
-        return { ...college, scorecardId: sc.id, tags, tier, onList: onList.has(college.slug) };
+        return tag({ ...college, scorecardId: sc.id });
       });
+    const data = [...local, ...remote].slice(0, 25);
 
     console.log(`[colleges] q="${q}"${expanded ? ` (expanded="${expanded}")` : ""} -> ${data.length} results`);
     return json({ success: true, data, source: "scorecard" }, 200, setCookie);
   } catch (err) {
     // The upstream error can carry Scorecard's response text; it stays out of the logs and the reply.
     console.error("[colleges] search failed", err instanceof Error ? err.name : "unknown");
+    if (local.length) return json({ success: true, data: local, source: "explore-catalog" }, 200, setCookie);
     return json({ success: false, error: "College search isn't working right now. Try again in a moment." }, 502, setCookie);
   }
 }
