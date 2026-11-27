@@ -1,9 +1,10 @@
-import type { FollowerRole, ParentLevel } from "./parents";
+import type { FollowerLevel, FollowerRole, ParentLevel } from "./parents";
 import type { Essay, Workspace } from "./store";
 import { isEssayHidden } from "./essay-tools";
 import { shareTracker } from "./tracker-service";
 import { sharedAidPlan } from "./aid-plan";
 import { sharedScholarship } from "./aid-validate";
+import { UC_APPLICATION_SLUG } from "./essay-supplements";
 
 /**
  * What a parent or counselor sees of a student, by level. Never: portal logins, uploads, AI chance estimates,
@@ -14,9 +15,12 @@ import { sharedScholarship } from "./aid-validate";
  *  standard  basic + to-dos and flags, the college list, recommendation letters, scholarships (no amounts for a
  *            school's own awards), financial aid and the per-school aid form checklist
  *  full      standard + profile (GPA, scores, activities, honors) and essays with drafts
+ *  essays    a writing coach: essay prompts, drafts, writing status and the school name of each supplement
+ *            group, plus the comments that coach left (essaysView, coachNotes). Nothing from the tracker,
+ *            list or profile.
  */
 /** `summary` is written to the student, `forParent` to the parent. */
-export const PARENT_LEVEL_INFO: Record<ParentLevel, { label: string; summary: string; forParent: string }> = {
+export const PARENT_LEVEL_INFO: Record<FollowerLevel, { label: string; summary: string; forParent: string }> = {
   basic: {
     label: "Basic",
     summary: "Applications, statuses, deadlines and decisions you've opened.",
@@ -31,6 +35,11 @@ export const PARENT_LEVEL_INFO: Record<ParentLevel, { label: string; summary: st
     label: "Full",
     summary: "Standard, plus your profile (GPA, scores, activities) and essay drafts. Read-only.",
     forParent: "everything in their applications, including their profile (GPA, scores, activities) and essay drafts, read-only",
+  },
+  essays: {
+    label: "Essays",
+    summary: "Your essays and drafts only. They can comment on each essay.",
+    forParent: "their essays and drafts only, and you can comment on each essay",
   },
 };
 
@@ -51,9 +60,53 @@ export function counselorNotes(ws: Workspace, level: ParentLevel, linkId: string
     .sort((a, b) => b.createdAt - a.createdAt);
 }
 
-export function followerView(ws: Workspace, access: { level: ParentLevel; role: FollowerRole; linkId: string }, today?: string) {
-  const view = parentView(ws, access.level, today);
-  return access.role === "counselor" ? { ...view, role: access.role, notes: counselorNotes(ws, access.level, access.linkId) } : { ...view, role: access.role };
+/**
+ * A writing coach's view, picked field by field so anything added to the workspace later stays out. Drafts and
+ * statuses only for essays that exist; supplement groups carry the school's name and nothing else about it.
+ */
+export function essaysView(ws: Workspace) {
+  const first = (ws.applicant.name || "").trim().split(/\s+/)[0] || "";
+  const pick = ({ id, label, prompt, limit, unit, required, chooseGroup, choose, options, audience }: Workspace["essays"]["commonApp"][number]) =>
+    ({ id, label, prompt, limit, unit, required, chooseGroup, choose, options, audience });
+  // An essay the student hid is not shown to the coach, nor its draft, status or comments.
+  const shown = (list: Essay[]) => (list || []).filter((e) => !isEssayHidden(ws, e)).map(pick);
+  const commonApp = shown(ws.essays.commonApp);
+  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements).map(([slug, items]) => [slug, shown(items)] as const).filter(([, items]) => items.length));
+  const ids = new Set([...commonApp, ...Object.values(supplements).flat()].map((e) => e.id));
+  const named = (slug: string) => {
+    if (slug === UC_APPLICATION_SLUG) return "UC Application";
+    const c = ws.colleges.find((x) => x.slug === slug);
+    return (c && (c.short || c.name)) || slug;
+  };
+  const only = <T,>(map: Record<string, T> | undefined) => Object.fromEntries(Object.entries(map || {}).filter(([id]) => ids.has(id)));
+  return {
+    level: "essays" as const,
+    student: { name: first, cycle: ws.applicant.cycle || "" },
+    essays: { commonApp, supplements },
+    schools: Object.keys(supplements).map((slug) => ({ slug, name: named(slug) })),
+    essayDrafts: only(ws.essayDrafts),
+    essayStatus: only(ws.essayStatus),
+  };
+}
+
+/** The comments one coach link left, newest first. A coach never sees a parent's, counselor's or other coach's. */
+export function coachNotes(ws: Workspace, linkId: string) {
+  return ws.advisorNotes
+    .filter((n) => n.via === "coach" && n.byLink === linkId && n.essayId)
+    .map((n) => ({ id: n.id, body: n.body, author: n.author, createdAt: n.createdAt, essayId: n.essayId!, mine: true }))
+    .sort((a, b) => b.createdAt - a.createdAt);
+}
+
+/** What /api/parent/[id] returns for one follower: the level-cut view, plus a counselor's notes or a coach's own comments. */
+export function followerView(ws: Workspace, access: { level: FollowerLevel; role: FollowerRole; linkId: string }, today?: string) {
+  if (access.role === "coach" || access.level === "essays") {
+    const view = essaysView(ws);
+    const ids = new Set([...view.essays.commonApp, ...Object.values(view.essays.supplements).flat()].map((e) => e.id));
+    return { ...view, role: "coach" as const, notes: coachNotes(ws, access.linkId).filter((n) => ids.has(n.essayId)) };
+  }
+  const level = access.level;
+  const view = parentView(ws, level, today);
+  return access.role === "counselor" ? { ...view, role: access.role, notes: counselorNotes(ws, level, access.linkId) } : { ...view, role: access.role };
 }
 
 /** The essays a parent may see: everything the student hasn't hidden, without the hidden ones' drafts and statuses. */

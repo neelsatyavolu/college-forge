@@ -5,15 +5,16 @@ import { allow } from "@/lib/rate-limit";
 import { appOrigin } from "@/lib/origin";
 import { sendEmail } from "@/lib/email";
 import { PARENT_LEVEL_INFO } from "@/lib/parent-view";
-import { ParentError, cleanEmail, inviteParent, isFollowerRole, isParentLevel, listParents, removeParent, setParentLevel, type FollowerRole, type ParentLevel } from "@/lib/parents";
+import { ParentError, cleanEmail, inviteParent, isFollowerRole, isParentLevel, listParents, removeParent, setParentLevel, type FollowerLevel, type FollowerRole, type ParentLevel } from "@/lib/parents";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
  * The student's parents and counselors: GET the list; POST {action:"invite", email, level, role?},
- * {action:"set-level", id, level} or {action:"remove", id}. `role` is "parent" (the default) or "counselor";
- * a counselor starts at full unless a level is given. Signed-in students only, on the web and in the iPhone
+ * {action:"set-level", id, level} or {action:"remove", id}. `role` is "parent" (the default), "counselor" or
+ * "coach"; a counselor starts at full unless a level is given, and a writing coach always sees essays only
+ * (any level is ignored). Signed-in students only, on the web and in the iPhone
  * app (same session).
  */
 
@@ -52,17 +53,17 @@ export async function POST(req: NextRequest) {
   try {
     if (body.action === "invite") {
       const role: FollowerRole = isFollowerRole(body.role) ? body.role : "parent";
-      const who = role === "counselor" ? "counselor" : "parent";
+      const who = role === "coach" ? "writing coach" : role;
       const email = cleanEmail(body.email);
       if (!email) return fail(`Enter your ${who}'s email address.`);
       if (email === session.email.toLowerCase()) return fail(`That's your own email. Enter your ${who}'s.`);
-      if (body.level !== undefined && !isParentLevel(body.level)) return fail("Choose basic, standard or full.");
-      if (body.role !== undefined && !isFollowerRole(body.role)) return fail("Choose parent or counselor.");
+      if (body.role !== undefined && !isFollowerRole(body.role)) return fail("Choose parent, counselor or coach.");
+      if (role !== "coach" && body.level !== undefined && !isParentLevel(body.level)) return fail("Choose basic, standard or full.");
       const level: ParentLevel = isParentLevel(body.level) ? body.level : role === "counselor" ? "full" : "basic";
       if (!(await allow(`parent-invite:${session.sub}`, 10, 60 * 60 * 1000))) return fail("Too many invites. Try again in an hour.", 429);
-      const { token } = await inviteParent(ws, { email, level, role });
+      const { token, link } = await inviteParent(ws, { email, level, role });
       const url = inviteUrl(appOrigin(req), token);
-      const emailed = await sendInvite(email, url, await studentName(ws, session.name), level, role);
+      const emailed = await sendInvite(email, url, await studentName(ws, session.name), link.level, role);
       return json({ success: true, url, emailed, data: await listParents(ws) });
     }
     if (body.action === "set-level") {
@@ -88,16 +89,21 @@ async function studentName(workspaceId: string, accountName: string): Promise<st
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 /** The email is a convenience: the student also gets the link to send themselves, so a failure isn't an error. */
-async function sendInvite(to: string, url: string, name: string, level: ParentLevel, role: FollowerRole): Promise<boolean> {
+async function sendInvite(to: string, url: string, name: string, level: FollowerLevel, role: FollowerRole): Promise<boolean> {
   const sees = PARENT_LEVEL_INFO[level].forParent;
   const counselor = role === "counselor";
-  const invited = counselor ? `${name} invited you to be their college counselor on Forge` : `${name} invited you to follow their college applications on Forge`;
+  const coach = role === "coach";
+  const invited = counselor ? `${name} invited you to be their college counselor on Forge`
+    : coach ? `${name} invited you to be their essay writing coach on Forge`
+    : `${name} invited you to follow their college applications on Forge`;
   const notes = counselor ? " You can also leave them notes, on an essay or in general." : "";
+  // The iPhone app doesn't show a coach's essays view yet.
+  const where = coach ? "on the web" : "on the web or in the iPhone app";
   try {
     await sendEmail(to, {
       subject: invited,
-      text: `${invited}.\n\nYou'll see ${sees}.${notes}\n\nAccept the invite (it works for 14 days):\n${url}\n\nYou'll sign in or create a free account. After that, open Forge on the web or in the iPhone app with the same account.`,
-      html: `<p>${esc(invited)}.</p><p>You'll see ${esc(sees)}.${esc(notes)}</p><p><a href="${esc(url)}">Accept the invite</a> (it works for 14 days).</p><p>You'll sign in or create a free account. After that, open Forge on the web or in the iPhone app with the same account.</p>`,
+      text: `${invited}.\n\nYou'll see ${sees}.${notes}\n\nAccept the invite (it works for 14 days):\n${url}\n\nYou'll sign in or create a free account. After that, open Forge ${where} with the same account.`,
+      html: `<p>${esc(invited)}.</p><p>You'll see ${esc(sees)}.${esc(notes)}</p><p><a href="${esc(url)}">Accept the invite</a> (it works for 14 days).</p><p>You'll sign in or create a free account. After that, open Forge ${esc(where)} with the same account.</p>`,
     });
     return true;
   } catch (err) {

@@ -3,7 +3,7 @@ import { getSession } from "@/lib/workspace-cookie";
 import { ownerOf } from "@/lib/session";
 import { getWorkspace } from "@/lib/store";
 import { appOrigin } from "@/lib/origin";
-import { ParentError, acceptInvite, readInvite, roleOf, wrongAccount } from "@/lib/parents";
+import { ParentError, acceptInvite, levelOf, readInvite, roleOf, wrongAccount } from "@/lib/parents";
 import { PARENT_LEVEL_INFO } from "@/lib/parent-view";
 
 export const runtime = "nodejs";
@@ -48,17 +48,20 @@ export async function GET(req: NextRequest) {
   const invite = await readInvite(token).catch(() => null);
   if (!invite) return problem(EXPIRED, 404);
   const name = firstName((await getWorkspace(invite.workspaceId)).applicant.name);
-  const sees = PARENT_LEVEL_INFO[invite.link.level];
   const role = roleOf(invite.link);
   const counselor = role === "counselor";
+  const coach = role === "coach";
+  const sees = PARENT_LEVEL_INFO[levelOf(invite.link)];
   const back = `/parent/accept?t=${encodeURIComponent(token)}`;
   const session = getSession(req);
   const intro = `<p class="oa__brand">Forge</p>
-<h1>${esc(name)} invited you ${counselor ? "to be their college counselor" : "to follow their college applications"}</h1>
+<h1>${esc(name)} invited you ${counselor ? "to be their college counselor" : coach ? "to be their essay writing coach" : "to follow their college applications"}</h1>
 <dl class="oa__list">
   <div><dt>You'll see</dt><dd>${esc(sees.forParent.charAt(0).toUpperCase() + sees.forParent.slice(1))}.</dd></div>
-  <div><dt>Level</dt><dd>${esc(sees.label)}. ${esc(name)} can change it or remove you at any time.</dd></div>
-  ${counselor ? `<div><dt>You can</dt><dd>Leave ${esc(name)} notes, in general or on an essay you can see.</dd></div>\n  ` : ""}<div><dt>You can't</dt><dd>${counselor ? "Change their applications" : "Change anything"}, see portal passwords, or see a decision before ${esc(name)} opens it.</dd></div>
+  ${coach
+    ? `<div><dt>You can't</dt><dd>Edit their drafts, or see their applications, college list, profile or decisions. ${esc(name)} can remove you at any time.</dd></div>`
+    : `<div><dt>Level</dt><dd>${esc(sees.label)}. ${esc(name)} can change it or remove you at any time.</dd></div>
+  ${counselor ? `<div><dt>You can</dt><dd>Leave ${esc(name)} notes, in general or on an essay you can see.</dd></div>\n  ` : ""}<div><dt>You can't</dt><dd>${counselor ? "Change their applications" : "Change anything"}, see portal passwords, or see a decision before ${esc(name)} opens it.</dd></div>`}
 </dl>`;
   if (!session) {
     return page("Invite", `${intro}
@@ -67,7 +70,7 @@ export async function GET(req: NextRequest) {
   }
   if ((await ownerOf(invite.workspaceId)) === session.sub) {
     return page("Invite", `${intro}
-<p class="oa__lede">You're signed in as <!--email_off--><strong>${esc(session.email)}</strong><!--/email_off-->, the student who sent this invite. Send the link to your ${role} instead, or switch accounts.</p>
+<p class="oa__lede">You're signed in as <!--email_off--><strong>${esc(session.email)}</strong><!--/email_off-->, the student who sent this invite. Send the link to your ${coach ? "writing coach" : role} instead, or switch accounts.</p>
 <div class="oa__actions"><a class="oa__btn" href="/api/xanom/start?prompt=login&return=${encodeURIComponent(back)}" style="display:inline-flex;align-items:center;text-decoration:none">Use another account</a></div>`);
   }
   if (session.email.trim().toLowerCase() !== invite.link.email) {
@@ -102,7 +105,14 @@ export async function POST(req: NextRequest) {
     return problem("Something went wrong. Try the link again.", 500);
   }
   const name = firstName((await getWorkspace(invite.workspaceId)).applicant.name);
-  const board = roleOf(invite.link) === "counselor" ? "counselor dashboard" : "parent dashboard";
+  const role = roleOf(invite.link);
+  if (role === "coach") {
+    return page("You're in", `<p class="oa__brand">Forge</p>
+<h1>You're ${esc(name)}'s writing coach</h1>
+<p class="oa__lede">Open ${esc(name)}'s essays here, signed in with <!--email_off--><strong>${esc(session.email)}</strong><!--/email_off-->.</p>
+<div class="oa__actions"><a class="oa__btn oa__btn--primary" href="/hub/index.html?view=parent" style="display:inline-flex;align-items:center;text-decoration:none">Open essays</a></div>`);
+  }
+  const board = role === "counselor" ? "counselor dashboard" : "parent dashboard";
   return page("You're in", `<p class="oa__brand">Forge</p>
 <h1>You're following ${esc(name)}'s applications</h1>
 <p class="oa__lede">Open your ${board} here, or sign in to the Forge iPhone app with <!--email_off--><strong>${esc(session.email)}</strong><!--/email_off-->.</p>

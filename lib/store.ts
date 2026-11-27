@@ -228,9 +228,9 @@ export type AdvisorNote = {
   author: string;
   createdAt: number;
   essayId?: string;
-  /** Which kind of share link it came through, or "counselor" for an invited counselor's account. Progress links only ever show notes left through progress links. */
-  via?: "progress" | "full" | "counselor";
-  /** The counselor link that wrote it (lib/parents.ts), so that counselor can delete it. */
+  /** Which kind of share link it came through, or "counselor" / "coach" for an invited counselor's or writing coach's account. Progress links only ever show notes left through progress links. */
+  via?: "progress" | "full" | "counselor" | "coach";
+  /** The counselor or coach link that wrote it (lib/parents.ts), so that follower can delete it. */
   byLink?: string;
   /** What that counselor could see when writing it: a note can quote anything up to this level. */
   authorLevel?: "basic" | "standard" | "full";
