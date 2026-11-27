@@ -6,6 +6,7 @@
 import type { IncomeBracket, OnboardingListPrefs, Workspace } from "./store";
 import { loadSchoolResearch, type SchoolResearch } from "./school-research";
 import { averageNetPrice, schoolPlace } from "./college-recommendations";
+import { internationalAid, internationalAidLabel } from "./international-aid";
 
 export const CURRENT_CYCLE = "2026-27";
 
@@ -73,8 +74,9 @@ export function studentFacts(ws: Workspace, nameOrSlug: string, slug?: string): 
     const sticker = research?.facts.find((f) => f.key === "sticker_cost");
     const amount = sticker ? dollars(sticker.value) : null;
     const noCap = !prefs.budget || BUDGET_CAP[prefs.budget] === null;
+    const aidNote = internationalAidLabel(internationalAid(research?.slug ?? slug ?? nameOrSlug));
     return {
-      netPrice: amount !== null ? { amount, basis: "sticker", label: `$${amount.toLocaleString("en-US")} full cost before any aid for international students` } : null,
+      netPrice: amount !== null ? { amount, basis: "sticker", label: `$${amount.toLocaleString("en-US")} full cost before any aid for international students${aidNote ? `; ${aidNote}` : ""}` } : null,
       fitsBudget: noCap ? (prefs.budget ? "yes" : null) : amount !== null && amount <= (BUDGET_CAP[prefs.budget!] ?? Infinity) ? "yes" : null,
       supplements: supplementsFor(research), international: true,
     };

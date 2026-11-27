@@ -5,6 +5,7 @@ import { US_NEWS_BY_SCORECARD_ID, type UsNewsCollege } from "./us-news-rankings"
 import { slugify, isTestOptionalNote } from "./colleges";
 import { actToSat } from "./act-concordance";
 import { loadSchoolResearch } from "./school-research";
+import { aidsNoInternationals, internationalAid } from "./international-aid";
 import careerData from "../public/data/career-ranking.json";
 import { majorKeysOf, SWITCH_LABELS, type CareerData } from "./career-ranking";
 
@@ -325,6 +326,7 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
   if (!codes.size) profileGaps.push("Choose a more specific intended major to compare published major outcomes.");
   if (prefs?.size && prefs.size !== "any") profileGaps.push("Enrollment size is not available in this ranking snapshot; confirm your size preference on the college website.");
   if (prefs?.notes?.trim()) profileGaps.push("Free-text preferences need an advisor review; the automatic list uses the structured region and setting choices.");
+  const needsInternationalAid = prefs?.citizenship === "international" && prefs?.needAid !== false;
   const candidates = rankings.schools.flatMap(row => {
     const admissions = US_NEWS_BY_SCORECARD_ID.get(row.unitid);
     const { fit: base, estimate } = fitWithEstimate(admissions, academics);
@@ -335,6 +337,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
     if (!gate.ok) return [];
     // A student applying without scores can't apply where Forge's research shows scores are required.
     if (academics.testOptional && testRequired(admissions?.slug || slugify(row.institution), row.institution)) return [];
+    // An international student who needs aid can't count on a college whose Common Data Set reports aiding none.
+    if (needsInternationalAid && aidsNoInternationals(internationalAid(admissions?.slug || slugify(row.institution)))) return [];
     // Not suggested when Forge's career data shows no graduates in the student's major there.
     const access = majorAccess(row.unitid, ws.profile.intended || "");
     if (access && !access.offered) return [];
