@@ -1,6 +1,8 @@
 import type { FollowerRole, ParentLevel } from "./parents";
 import type { Workspace } from "./store";
 import { shareTracker } from "./tracker-service";
+import { sharedAidPlan } from "./aid-plan";
+import { sharedScholarship } from "./aid-validate";
 
 /**
  * What a parent or counselor sees of a student, by level. Never: portal logins, uploads, AI chance estimates,
@@ -8,7 +10,8 @@ import { shareTracker } from "./tracker-service";
  * and then only the notes counselors left (`counselorNotes`).
  *
  *  basic     applications, statuses, deadlines and opened decisions
- *  standard  basic + to-dos and flags, the college list, recommendation letters, scholarships, financial aid
+ *  standard  basic + to-dos and flags, the college list, recommendation letters, scholarships (no amounts for a
+ *            school's own awards), financial aid and the per-school aid form checklist
  *  full      standard + profile (GPA, scores, activities, honors) and essays with drafts
  */
 /** `summary` is written to the student, `forParent` to the parent. */
@@ -77,8 +80,11 @@ export function parentView(ws: Workspace, level: ParentLevel, today?: string) {
       admit: c.admit, netPrice: c.netPrice, deadlines: c.deadlines, url: c.url,
     })),
     recommendations: ws.recommendations.map(({ notes, ...r }) => (keepNotes ? { ...r, notes } : r)),
-    scholarships: ws.scholarships.map(({ notes, ...s }) => (keepNotes ? { ...s, notes } : s)),
-    financialAid: { fafsaStatus: ws.financialAid.fafsaStatus, cssStatus: ws.financialAid.cssStatus, fafsaOpenDate: ws.financialAid.fafsaOpenDate },
+    // A school's own award comes from its decision letter, so its amount stays private to the student.
+    scholarships: ws.scholarships.map(({ notes, ...s }) => ({ ...sharedScholarship(s), ...(keepNotes ? { notes } : {}) })),
+    financialAid: { fafsaStatus: ws.financialAid.fafsaStatus, cssStatus: ws.financialAid.cssStatus, idocStatus: ws.financialAid.idocStatus ?? "n_a", fafsaOpenDate: ws.financialAid.fafsaOpenDate },
+    /** Which aid forms each school needs and when (no offers, amounts or letters). */
+    aidBySchool: sharedAidPlan(ws, today),
   };
   if (level === "standard") return standard;
 

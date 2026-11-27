@@ -106,6 +106,10 @@ struct Scholarship: Codable, Hashable, Sendable, Identifiable {
     var status: ScholarshipStatus
     var url: String?
     var notes: String?
+    /// "school" (the school's own award, tied to `slug`) or "outside"; nil means outside.
+    var kind: String?
+    /// The college on the list this award is from. The server rejects a slug that isn't on the list.
+    var slug: String?
 }
 
 extension Scholarship {
@@ -118,6 +122,8 @@ extension Scholarship {
         status = c.value(.status, .researching)
         url = c.optionalString(.url)
         notes = c.optionalString(.notes)
+        kind = c.optionalString(.kind)
+        slug = c.optionalString(.slug)
     }
 }
 
@@ -143,6 +149,8 @@ struct ScholarshipStatus: OpenEnum {
 struct FinancialAid: Codable, Hashable, Sendable {
     var fafsaStatus: AidFormStatus = .notStarted
     var cssStatus: AidFormStatus = .notStarted
+    /// College Board IDOC; "n_a" until a school needs it.
+    var idocStatus: AidFormStatus = .notApplicable
     var fafsaOpenDate: String?
     var notes: String?
 }
@@ -152,12 +160,13 @@ extension FinancialAid {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         fafsaStatus = c.value(.fafsaStatus, .notStarted)
         cssStatus = c.value(.cssStatus, .notStarted)
+        idocStatus = c.value(.idocStatus, .notApplicable)
         fafsaOpenDate = c.optionalString(.fafsaOpenDate)
         notes = c.optionalString(.notes)
     }
 }
 
-/// FAFSA / CSS Profile status. `notApplicable` is only valid for the CSS Profile.
+/// FAFSA / CSS Profile / IDOC status. `notApplicable` is only valid for the CSS Profile and IDOC.
 struct AidFormStatus: OpenEnum {
     let rawValue: String
     init(rawValue: String) { self.rawValue = rawValue }

@@ -8,6 +8,7 @@ import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type T
 import type { AdmissionOdds, ApplicationRead } from "./admission-odds";
 import type { SchoolStats } from "./school-stats";
 import type { SchoolResearch } from "./school-research";
+import { sharedScholarship } from "./aid-validate";
 
 // ── Workspace data model ──────────────────────────────────────────────────
 // Mirrors the shape the hub UI renders (window.CF_DATA). Everything starts
@@ -193,11 +194,19 @@ export type Scholarship = {
   status: "researching" | "in_progress" | "submitted" | "won" | "lost" | "skipped";
   url?: string;
   notes?: string;
+  /** "school": the school's own award, tied to `slug`. Missing means "outside". */
+  kind?: "outside" | "school";
+  /** The college on the list this award is from (lib/aid-validate.ts checks it is on the list). */
+  slug?: string;
 };
+
+export type AidFormStatus = "not_started" | "in_progress" | "submitted" | "processed" | "n_a";
 
 export type FinancialAid = {
   fafsaStatus: "not_started" | "in_progress" | "submitted" | "processed";
-  cssStatus: "not_started" | "in_progress" | "submitted" | "processed" | "n_a";
+  cssStatus: AidFormStatus;
+  /** College Board IDOC (tax documents some CSS Profile schools ask for). "n_a" until a school needs it. */
+  idocStatus?: AidFormStatus;
   fafsaOpenDate?: string;
   notes?: string;
 };
@@ -318,6 +327,7 @@ export function emptyWorkspace(): Workspace {
     financialAid: {
       fafsaStatus: "not_started",
       cssStatus: "not_started",
+      idocStatus: "n_a",
     },
     advisorNotes: [],
     shares: [],
@@ -721,15 +731,17 @@ export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" |
   uploads: { name: string; chars: number }[];
 } {
   // applicationRead and admissionOdds hold AI assessments drawn from uploads (family context, concerns): the student's alone.
-  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, ...rest } = ws;
+  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, scholarships, ...rest } = ws;
   return {
     ...rest,
+    // A school's own award amount and its aid offer stay with the student (lib/aid-validate.ts).
+    scholarships: scholarships.map((s) => sharedScholarship(s)),
     // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
     tracker: {
       autocheck: tracker.autocheck,
       emails: tracker.emails,
       flags: tracker.flags.filter((f) => !f.resolvedAt),
-      apps: redactTracker(tracker).apps.map(({ login: _l, ...app }) => app),
+      apps: redactTracker(tracker).apps.map(({ login: _l, aidOffer: _offer, ...app }) => app),
     },
     uploads: uploads.map((u) => ({ name: u.name, chars: u.chars })),
   };

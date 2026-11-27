@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// FAFSA and CSS Profile status, links to both, and free-form notes.
+/// FAFSA, CSS Profile and IDOC status, links, and free-form notes.
 struct FinancialAidSection: View {
     @Binding var error: APIError?
     @Environment(WorkspaceStore.self) private var store
@@ -18,6 +18,9 @@ struct FinancialAidSection: View {
                 ForEach(Self.fafsaOptions, id: \.self) { Text($0.label).tag($0) }
             }
             Picker("CSS Profile", selection: binding(\.cssStatus)) {
+                ForEach(Self.cssOptions, id: \.self) { Text($0.label).tag($0) }
+            }
+            Picker("IDOC", selection: binding(\.idocStatus)) {
                 ForEach(Self.cssOptions, id: \.self) { Text($0.label).tag($0) }
             }
             Link(destination: URL(string: "https://studentaid.gov/h/apply-for-aid/fafsa")!) {

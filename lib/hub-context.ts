@@ -2,6 +2,7 @@ import type { Workspace } from "./store";
 import { recommendColleges } from "./college-recommendations";
 import { planReadiness } from "./plan-readiness";
 import { oddsTargets } from "./admission-odds";
+import { aidPlan } from "./aid-plan";
 
 // A compact, readable snapshot of the current workspace so the model knows
 // what's already populated and what's still empty.
@@ -48,8 +49,12 @@ export function snapshot(ws: Workspace): string {
   lines.push(`Essay drafts with text: ${draftCount}`);
   lines.push(`Recommendations: ${(ws.recommendations || []).length}; Scholarships: ${(ws.scholarships || []).length}`);
   lines.push(
-    `Financial aid: FAFSA=${ws.financialAid?.fafsaStatus || "—"}, CSS=${ws.financialAid?.cssStatus || "—"}`
+    `Financial aid: FAFSA=${ws.financialAid?.fafsaStatus || "—"}, CSS=${ws.financialAid?.cssStatus || "—"}, IDOC=${ws.financialAid?.idocStatus || "n_a"}`
   );
+  if (ws.tracker?.apps?.length) {
+    const { totals } = aidPlan(ws);
+    lines.push(`Aid forms by school (get_aid_plan): ${totals.cssSchools} need the CSS Profile, ${totals.idocSchools} use IDOC`);
+  }
   const tracked = ws.tracker?.apps || [];
   if (tracked.length) {
     // Statuses only: a decision a portal posted stays hidden until the student reveals it.

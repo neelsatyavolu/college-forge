@@ -13,6 +13,8 @@ struct ApplicationEdit: Encodable, Hashable, Sendable {
     var name: String?
     var submittedAt: String?
     var testing: TestingEdit?
+    /// The school's aid offer (whole dollars; the server sets `updatedAt`).
+    var aidOffer: AidOffer?
 }
 
 /// One POST /api/applications action (app/api/applications/route.ts). The server replies with the whole

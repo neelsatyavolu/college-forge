@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { COLLEGES, collegeById, expectedDecision, logoUrl, type College } from "./catalog";
 import { applyTestingEdit, type TestingChoice, type TestingEdit } from "./testing-plan";
+import { checkAidOffer, type AidOffer } from "./aid-validate";
 
 /**
  * The applications tracker, ported from College Apps. Each school the student applies to, where it stands,
@@ -88,6 +89,8 @@ export interface TrackedApp {
   login?: { username: string; hasPassword: boolean };
   /** Whether to send SAT/ACT scores here, how, and when the official report went out (lib/testing-plan.ts). */
   testing?: TestingChoice;
+  /** The school's financial aid offer as the student entered it (lib/aid-validate.ts AidOffer). Private to the student. */
+  aidOffer?: AidOffer;
   createdAt: number;
   updatedAt: number;
 }
@@ -382,6 +385,8 @@ export interface AppEdit {
   name?: string;
   ignoreAid?: boolean;
   testing?: TestingEdit;
+  /** Dollar amounts per year (numbers or "$12,000"); null removes the offer. */
+  aidOffer?: { costOfAttendance?: unknown; grants?: unknown; loans?: unknown; workStudy?: unknown; notes?: unknown } | null;
 }
 
 /** Validates and applies an edit; throws with a user-facing message on bad input. */
@@ -412,6 +417,15 @@ export function editApp(app: TrackedApp, edit: AppEdit, now = Date.now()): Track
   if (edit.ignoreAid !== undefined) clean.ignoreAid = edit.ignoreAid;
   if (edit.name !== undefined && edit.name.trim()) clean.name = edit.name.trim().slice(0, 120);
   if (edit.testing !== undefined) clean.testing = applyTestingEdit(app.testing, edit.testing);
+  if (edit.aidOffer !== undefined) {
+    const offer = checkAidOffer(edit.aidOffer, now);
+    if (!offer.ok) throw new Error(offer.error);
+    if (offer.value === null) {
+      const { aidOffer: _gone, ...rest } = app;
+      return { ...rest, ...clean, updatedAt: now };
+    }
+    clean.aidOffer = offer.value;
+  }
   return { ...app, ...clean, updatedAt: now };
 }
 
@@ -492,6 +506,8 @@ const cleanText = (text: string, max: number) => {
 export function addFollowUp(app: TrackedApp, text: string, due = "", now = Date.now()): TrackedApp {
   if (!isDate(due)) throw new Error("Due date must be yyyy-mm-dd or empty.");
   const item: FollowUp = { id: randomUUID().slice(0, 8), text: cleanText(text, 300), due, done: false, createdAt: now };
+  // Pressing "Add to-dos" twice, or a retried request, must not list the same open to-do twice.
+  if ((app.followUps ?? []).some((f) => !f.done && f.text.toLowerCase() === item.text.toLowerCase())) return app;
   // Keep every open follow-up; finished ones make room (the newest 10 are kept for history).
   const open = (app.followUps ?? []).filter((f) => !f.done);
   if (open.length >= 30) throw new Error("Already 30 open follow-ups for this school. Finish some first.");

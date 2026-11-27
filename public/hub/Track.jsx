@@ -20,9 +20,18 @@ function Panel({ title, action, children }) {
 function Track({ data, onAsk, onWorkspaceChange }) {
   const recs = data.recommendations || [];
   const sch = data.scholarships || [];
-  const fa = data.financialAid || { fafsaStatus: "not_started", cssStatus: "not_started" };
+  const fa = data.financialAid || { fafsaStatus: "not_started", cssStatus: "not_started", idocStatus: "n_a" };
   const [recForm, setRecForm] = React.useState({ name: "", type: "teacher", subject: "", deadline: "" });
-  const [schForm, setSchForm] = React.useState({ name: "", amount: "", deadline: "", url: "" });
+  const [schForm, setSchForm] = React.useState({ name: "", amount: "", deadline: "", url: "", slug: "" });
+  const colleges = data.colleges || [];
+  const schoolName = (slug) => { const c = colleges.find((x) => x.slug === slug); return c ? (c.short || c.name) : "school award"; };
+  const won = sch.filter((s) => s.status === "won");
+  const wonCount = won.length;
+  // Same reading as lib/aid-plan.ts dollars(): "$5,000", "5000" and "$12.5k" count; "TBD" doesn't.
+  const wonTotal = won.reduce((sum, s) => {
+    const m = String(s.amount || "").replace(/,/g, "").match(/\$?\s*(\d+(?:\.\d+)?)\s*(k)?\b/i);
+    return sum + (m ? Math.round(Number(m[1]) * (m[2] ? 1000 : 1)) : 0);
+  }, 0);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
   const [notes, setNotes] = React.useState(fa.notes || "");
@@ -63,9 +72,10 @@ function Track({ data, onAsk, onWorkspaceChange }) {
         deadline: schForm.deadline || undefined,
         url: schForm.url || undefined,
         status: "researching",
+        ...(schForm.slug ? { slug: schForm.slug, kind: "school" } : {}),
       },
     });
-    if (saved) setSchForm({ name: "", amount: "", deadline: "", url: "" });
+    if (saved) setSchForm({ name: "", amount: "", deadline: "", url: "", slug: "" });
   };
 
   const fieldStyle = {
@@ -105,6 +115,14 @@ function Track({ data, onAsk, onWorkspaceChange }) {
               {CSS.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
             </select>
           </label>
+          <label>
+            <div style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.2px", color: "var(--muted)", marginBottom: 4 }}>IDOC</div>
+            <select value={fa.idocStatus || "n_a"} disabled={busy}
+              onChange={(e) => patch({ financialAid: { idocStatus: e.target.value } })}
+              style={{ ...fieldStyle, width: "100%" }}>
+              {CSS.map((s) => <option key={s} value={s}>{s === "n_a" ? "not needed" : s.replace(/_/g, " ")}</option>)}
+            </select>
+          </label>
         </div>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 13 }}>
           <a href="https://studentaid.gov/h/apply-for-aid/fafsa" target="_blank" rel="noopener noreferrer" style={{ color: "var(--coral)" }}>Open FAFSA →</a>
@@ -122,6 +140,10 @@ function Track({ data, onAsk, onWorkspaceChange }) {
           style={{ ...fieldStyle, width: "100%", marginTop: 12, fontFamily: "var(--font-body)" }}
         />
         <Button size="sm" variant="secondary" disabled={busy || notes === (fa.notes || "")} onClick={() => patch({ financialAid: { notes } })}>Save notes</Button>
+      </Panel>
+
+      <Panel title="Aid by school">
+        <window.AidBySchool revision={data.revision} />
       </Panel>
 
       <Panel title={`Recommendation letters (${recs.length})`} action={<Badge variant="cream" uppercase>LOR tracker</Badge>}>
@@ -159,6 +181,11 @@ function Track({ data, onAsk, onWorkspaceChange }) {
       </Panel>
 
       <Panel title={`Scholarships (${sch.length})`}>
+        {wonCount ? (
+          <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--muted)" }}>
+            Won so far: <span className="cf-nums">{wonCount}</span>{wonTotal ? <React.Fragment> · <span className="cf-nums">${wonTotal.toLocaleString("en-US")}</span></React.Fragment> : null}
+          </p>
+        ) : null}
         {sch.length === 0 ? (
           <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--muted)" }}>Track external and school-specific scholarships here.</p>
         ) : (
@@ -170,7 +197,7 @@ function Track({ data, onAsk, onWorkspaceChange }) {
                     {s.url && /^https?:\/\//i.test(s.url) ? <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{s.name}</a> : s.name}
                   </div>
                   <div style={{ fontSize: 12, color: "var(--muted)" }}>
-                    {s.amount || "amount TBD"}{s.deadline ? ` · due ${s.deadline}` : ""}
+                    {s.amount || "amount TBD"}{s.deadline ? ` · due ${s.deadline}` : ""}{s.slug ? ` · ${schoolName(s.slug)}` : ""}
                   </div>
                 </div>
                 <select aria-label={`Status for ${s.name}`} disabled={busy} value={s.status} onChange={(e) => patch({ scholarship: { id: s.id, status: e.target.value } })} style={fieldStyle}>
@@ -185,8 +212,12 @@ function Track({ data, onAsk, onWorkspaceChange }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8 }}>
           <input aria-label="Scholarship name" placeholder="Name" value={schForm.name} onChange={(e) => setSchForm((f) => ({ ...f, name: e.target.value }))} style={fieldStyle} />
           <input aria-label="Scholarship amount" placeholder="Amount" value={schForm.amount} onChange={(e) => setSchForm((f) => ({ ...f, amount: e.target.value }))} style={fieldStyle} />
-          <input aria-label="Scholarship deadline" placeholder="Deadline" value={schForm.deadline} onChange={(e) => setSchForm((f) => ({ ...f, deadline: e.target.value }))} style={fieldStyle} />
+          <input type="date" aria-label="Scholarship deadline" value={schForm.deadline} onChange={(e) => setSchForm((f) => ({ ...f, deadline: e.target.value }))} style={fieldStyle} />
           <input aria-label="Scholarship url" placeholder="URL" value={schForm.url} onChange={(e) => setSchForm((f) => ({ ...f, url: e.target.value }))} style={fieldStyle} />
+          <select aria-label="Scholarship school" value={schForm.slug} onChange={(e) => setSchForm((f) => ({ ...f, slug: e.target.value }))} style={fieldStyle}>
+            <option value="">Outside scholarship</option>
+            {colleges.map((c) => <option key={c.slug} value={c.slug}>From {c.short || c.name}</option>)}
+          </select>
           <Button size="sm" onClick={addSch} disabled={busy || !schForm.name.trim()}>Add</Button>
         </div>
       </Panel>

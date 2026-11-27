@@ -238,8 +238,21 @@ function StudentView({ d, onChange }) {
           <ul className="cf-parent-rows">
             <li><span>FAFSA</span><span className="cf-parent-meta">{word(d.financialAid.fafsaStatus)}</span></li>
             <li><span>CSS Profile</span><span className="cf-parent-meta">{word(d.financialAid.cssStatus)}</span></li>
+            {d.financialAid.idocStatus && d.financialAid.idocStatus !== "n_a" ? <li><span>IDOC</span><span className="cf-parent-meta">{word(d.financialAid.idocStatus)}</span></li> : null}
             {(d.scholarships || []).map((s) => <li key={s.id}><span>{s.name}{s.amount ? <small>{s.amount}</small> : null}</span><span className="cf-parent-meta">{word(s.status)}</span></li>)}
             {(d.recommendations || []).map((r) => <li key={r.id}><span>Letter: {r.name}{r.subject ? <small>{r.subject}</small> : null}</span><span className="cf-parent-meta">{word(r.status)}</span></li>)}
+          </ul>
+        </ParentSection>
+      ) : null}
+
+      {(d.aidBySchool || []).length ? (
+        <ParentSection title="Aid forms by school" count={d.aidBySchool.length}>
+          <ul className="cf-parent-rows">
+            {d.aidBySchool.map((r) => {
+              const forms = r.ignoreAid ? "Not applying for aid" : [r.css === "required" ? "CSS Profile" : r.css === "unknown" ? "CSS Profile: check the school's aid page" : "CSS Profile not required", r.idoc ? "IDOC" : ""].filter(Boolean).join(" · ");
+              const next = (r.deadlines || []).find((x) => x.kind === "aid");
+              return <li key={r.appId}><span><strong>{r.name}</strong><small>{forms}</small></span><span className="cf-parent-meta cf-nums">{next ? `Aid due ${next.date}` : ""}</span></li>;
+            })}
           </ul>
         </ParentSection>
       ) : null}

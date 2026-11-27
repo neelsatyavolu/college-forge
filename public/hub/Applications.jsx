@@ -181,13 +181,25 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact }) 
 }
 
 /** Deadlines and decision dates, soonest first, with the student's own dates. */
-function DatesView({ apps, criticalDates }) {
+function DatesView({ apps, criticalDates, colleges, scholarships }) {
   const { todayIso, fmtDate } = window.cfApp;
   const today = todayIso();
   const rows = [];
+  const DATE = /^\d{4}-\d{2}-\d{2}$/;
   apps.forEach((a) => {
     if (a.deadline && a.stage === "working") rows.push({ date: a.deadline, title: `${a.name} application due`, sub: a.round || "Deadline", est: false });
     if ((a.stage === "working" || a.stage === "waiting") && a.decisionDate) rows.push({ date: a.decisionDate.date, title: `${a.name} decision`, sub: a.decisionDate.estimated ? "Estimated from last year's release" : "Date from the portal or you", est: a.decisionDate.estimated });
+    // The school's aid and scholarship dates, while the student is still applying and wants aid there.
+    const college = a.stage === "working" && !a.ignoreAid ? (colleges || []).find((c) => (a.slug && c.slug === a.slug) || c.name === a.name) : null;
+    if (college) {
+      window.cfDeadlinePlan.planDeadlines(college).forEach((d) => {
+        const label = window.cfDeadlinePlan.deadlineTone(d.plan).label;
+        if ((label === "Aid" || label === "$") && DATE.test(d.date || "")) rows.push({ date: d.date, title: `${a.name}: ${d.plan}`, sub: label === "Aid" ? "Financial aid" : "Scholarship", est: false });
+      });
+    }
+  });
+  (scholarships || []).forEach((s) => {
+    if ((s.status === "researching" || s.status === "in_progress") && DATE.test(s.deadline || "")) rows.push({ date: s.deadline, title: `Scholarship: ${s.name}`, sub: s.amount || "Scholarship", est: false });
   });
   (criticalDates || []).forEach((d) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d.date)) rows.push({ date: d.date, title: d.label, sub: d.detail || "Your date", est: false }); });
   const upcoming = rows.filter((r) => r.date >= today).sort((a, b) => a.date.localeCompare(b.date));
@@ -347,7 +359,7 @@ function Applications({ data, tracker, onTrackerChange }) {
             </label>
             </div>
           </div>
-          {view === "dates" ? <DatesView apps={apps} criticalDates={data.criticalDates} /> : [{ id: "attention", label: "Needs attention", list: attention }].concat(APP_STAGES.map((s) => ({ id: s.id, label: s.label, list: quiet.filter((a) => a.stage === s.id), compact: true }))).map((group) => {
+          {view === "dates" ? <DatesView apps={apps} criticalDates={data.criticalDates} colleges={data.colleges} scholarships={data.scholarships} /> : [{ id: "attention", label: "Needs attention", list: attention }].concat(APP_STAGES.map((s) => ({ id: s.id, label: s.label, list: quiet.filter((a) => a.stage === s.id), compact: true }))).map((group) => {
             if (!group.list.length) return null;
             const list = group.list.slice().sort(group.compact ? bySoonest : byUrgency);
             return (
