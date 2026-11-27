@@ -199,7 +199,7 @@ test('the calendar export gives timed interviews a start time and an hour', () =
   const compact = ahead.replace(/-/g, '');
   assert.match(text, new RegExp(`DTSTART:${compact}T153000\\r\\nDURATION:PT1H`));
   assert.match(text, /Tulane University — interview with Alum/);
-  assert.match(text, new RegExp(`DTSTART;VALUE=DATE:${compact}\\r\\nSUMMARY:Tulane University — campus visit`));
+  assert.match(text, new RegExp(`DTSTART;VALUE=DATE:${compact}\\r\\nDTEND;VALUE=DATE:\\d{8}\\r\\nSUMMARY:Tulane University — campus visit`));
 });
 
 test('viewApp carries the log and signal; progress links do not', () => {
