@@ -81,6 +81,27 @@
     return (items || []).filter(function (it) { return !isHidden(it, opts); });
   }
 
+  /** Choose-N sets where the student picks more than one prompt (UC: 4 of 8), in item order. */
+  function pickSets(items) {
+    var sets = [];
+    var byGroup = {};
+    (items || []).forEach(function (it) {
+      var choice = choiceOf(it);
+      if (!choice || choice.choose < 2) return;
+      var set = byGroup[choice.group];
+      if (!set) { set = byGroup[choice.group] = { group: choice.group, choose: choice.choose, items: [] }; sets.push(set); }
+      set.items.push(it);
+    });
+    return sets;
+  }
+
+  /** essayHidden patch for a set: the picked prompts shown, every other one hidden. */
+  function pickPatch(setItems, pickedIds) {
+    var patch = {};
+    (setItems || []).forEach(function (it) { patch[it.id] = pickedIds.indexOf(it.id) >= 0 ? null : true; });
+    return patch;
+  }
+
   var UC_APPLICATION_SLUG = "uc-application";
 
   /** A University of California campus; they share one UC Application essay group. */
@@ -216,6 +237,8 @@
     isOptional: isOptional,
     isHidden: isHidden,
     visibleItems: visibleItems,
+    pickSets: pickSets,
+    pickPatch: pickPatch,
     isUcCampus: isUcCampus,
     essayGroupKey: essayGroupKey,
     isSchoolSkipped: isSchoolSkipped,

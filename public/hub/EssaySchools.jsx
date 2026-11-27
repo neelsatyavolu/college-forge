@@ -109,33 +109,15 @@ function EssaySchoolsSheet({ data, onWorkspaceChange, onClose }) {
   );
 }
 
-/** The schools the student isn't writing for, each with a one-click "Add back". Nothing when there are none. */
-function NotWritingFor({ data, onWorkspaceChange }) {
-  const [busy, setBusy] = React.useState("");
-  const [error, setError] = React.useState("");
-  const skipped = PLAN.essaySchools(data.colleges, { essaySchools: data.essaySchools }).filter((r) => !r.writing);
-  if (!skipped.length) return null;
-  const addBack = async (key) => {
-    setBusy(key);
-    setError("");
-    try {
-      await saveEssaySchools({ [key]: null }, onWorkspaceChange);
-    } catch (e) {
-      setError(e.message || "Couldn’t save. Try again.");
-    } finally {
-      setBusy("");
-    }
-  };
+/** One button naming how many schools the student isn't writing for; it opens the essay schools sheet. Nothing when there are none. */
+function NotWritingFor({ data, onOpen }) {
+  const skipped = PLAN.essaySchools(data.colleges, { essaySchools: data.essaySchools }).filter((r) => !r.writing).length;
+  if (!skipped) return null;
   return (
     <div className="cf-essay-skipped">
-      <span className="cf-essay-skipped__label">Not writing for:</span>
-      {skipped.map((r) => (
-        <span key={r.key} className="cf-essay-skipped__school">
-          {r.title}
-          <button type="button" className="cf-link-btn" disabled={!!busy} onClick={() => addBack(r.key)} aria-label={`Add ${r.title} back to Essays`}>{busy === r.key ? "Adding…" : "Add back"}</button>
-        </span>
-      ))}
-      {error ? <span role="alert" className="cf-essay-toggle__error">{error}</span> : null}
+      <button type="button" className="cf-link-btn" onClick={onOpen} title="See them and add any back to Essays">
+        Not writing for {skipped} school{skipped === 1 ? "" : "s"}
+      </button>
     </div>
   );
 }

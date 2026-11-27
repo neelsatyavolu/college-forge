@@ -932,7 +932,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
       ) : (
         <React.Fragment>
         <WritingSummary totals={totals} next={nextGroup ? nextGroup.due : null} today={today} />
-        <window.NotWritingFor data={data} onWorkspaceChange={onWorkspaceChange} />
+        <window.NotWritingFor data={data} onOpen={() => setPicking(true)} />
         {commonChoices.length > 1 ? (
           <div className="cf-mobile-essay-picker">
             <CommonAppChoice choices={commonChoices} chosen={commonAppPrompt} busy={statusBusy} onChoose={chooseCommonApp} />
@@ -1036,6 +1036,10 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                       {g.kind === "common" && commonChoices.length > 1 ? (
                         <CommonAppChoice choices={commonChoices} chosen={commonAppPrompt} busy={statusBusy} onChoose={chooseCommonApp} />
                       ) : null}
+                      {ESSAY_PLAN.pickSets(g.items).map((set) => (
+                        <window.PickSetControl key={set.group} set={set} hidden={hiddenMap} busy={statusBusy}
+                          onSave={(patch) => patchEssay({ essayHidden: patch })} />
+                      ))}
                       {items.length === 0 ? (
                         <div
                           style={{
