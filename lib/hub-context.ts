@@ -3,7 +3,7 @@ import { recommendColleges } from "./college-recommendations";
 import { planReadiness } from "./plan-readiness";
 import { oddsTargets } from "./admission-odds";
 import { aidPlan } from "./aid-plan";
-import { isEssayHidden } from "./essay-tools";
+import { isEssayHidden, skippedEssayIds } from "./essay-tools";
 import { readSavedPicks } from "./decision-picks";
 
 // A compact, readable snapshot of the current workspace so the model knows
@@ -53,7 +53,8 @@ export function snapshot(ws: Workspace): string {
   );
   const skipped = Object.keys(ws.essaySchools || {}).filter((k) => ws.essaySchools?.[k] === false);
   if (skipped.length) lines.push(`Not writing supplements for: ${skipped.join(", ")}`);
-  const draftCount = Object.keys(ws.essayDrafts || {}).filter((k) => (ws.essayDrafts[k] || "").trim()).length;
+  const offIds = skippedEssayIds(ws);
+  const draftCount = Object.keys(ws.essayDrafts || {}).filter((k) => !offIds.has(k) && (ws.essayDrafts[k] || "").trim()).length;
   lines.push(`Essay drafts with text: ${draftCount}`);
   lines.push(`Recommendations: ${(ws.recommendations || []).length}; Scholarships: ${(ws.scholarships || []).length}`);
   lines.push(

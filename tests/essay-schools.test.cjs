@@ -16,7 +16,9 @@ const store = require('../lib/store.ts');
 const tools = require('../lib/essay-tools.ts');
 const { checkWorkspacePatch, applyWorkspacePatch } = require('../lib/workspace-patch.ts');
 const { makeHubTools } = require('../lib/hub-tools.ts');
-const { parentView } = require('../lib/parent-view.ts');
+const { parentView, essaysView } = require('../lib/parent-view.ts');
+const { applicationMaterial } = require('../lib/odds-plan.ts');
+const { workloadSummary } = require('../lib/application-rounds.ts');
 const { snapshot } = require('../lib/hub-context.ts');
 const { planReadiness } = require('../lib/plan-readiness.ts');
 const plan = require('../public/hub/essay-archetypes.js');
@@ -105,6 +107,27 @@ test('parents, the copilot snapshot and the plan leave opted-out schools out', (
   assert.match(snap, /Not writing supplements for: rice-university/);
   assert.doesNotMatch(snap, /rice-university\(2\)/);
   assert.equal(planReadiness(ws).essays.placeholder.includes('rice-university'), false);
+});
+
+test('the coach view, draft count, odds read and round balancing leave opted-out schools out', () => {
+  const base = sample({ essayDrafts: { 'rice-1': 'my rice draft', 'duke-1': 'my duke draft' } });
+  const ws = {
+    ...base,
+    essaySchools: { 'rice-university': false },
+    colleges: base.colleges.map((c) => ({ ...c, supp: 'Supps required', deadline: 'RD · Jan 1', deadlines: [{ plan: 'RD', date: '2027-01-01' }] })),
+  };
+  const coach = essaysView(ws);
+  assert.equal(coach.essays.supplements['rice-university'], undefined);
+  assert.ok(coach.essays.supplements['duke-university']);
+  assert.equal(coach.essayDrafts['rice-1'], undefined);
+  assert.equal(coach.schools.some((x) => x.slug === 'rice-university'), false);
+  assert.match(snapshot(ws), /Essay drafts with text: 1\b/);
+  const material = applicationMaterial(ws);
+  assert.doesNotMatch(material, /my rice draft/);
+  assert.match(material, /my duke draft/);
+  const load = workloadSummary(ws);
+  assert.doesNotMatch(load, /Rice/);
+  assert.match(load, /with required supplements \(Duke/);
 });
 
 test('turning off the UC Application also covers supplements saved under a campus slug', () => {

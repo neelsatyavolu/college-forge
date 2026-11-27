@@ -69,10 +69,10 @@ export function essaysView(ws: Workspace) {
   const first = (ws.applicant.name || "").trim().split(/\s+/)[0] || "";
   const pick = ({ id, label, prompt, limit, unit, required, chooseGroup, choose, options, audience }: Workspace["essays"]["commonApp"][number]) =>
     ({ id, label, prompt, limit, unit, required, chooseGroup, choose, options, audience });
-  // An essay the student hid is not shown to the coach, nor its draft, status or comments.
-  const shown = (list: Essay[]) => (list || []).filter((e) => !isEssayHidden(ws, e)).map(pick);
-  const commonApp = shown(ws.essays.commonApp);
-  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements).map(([slug, items]) => [slug, shown(items)] as const).filter(([, items]) => items.length));
+  // An essay the student hid, or one for a school they turned off, is not shown to the coach, nor its draft, status or comments.
+  const shown = (list: Essay[], key: string) => (list || []).filter((e) => !isEssayHidden(ws, e, key)).map(pick);
+  const commonApp = shown(ws.essays.commonApp, "common");
+  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements).map(([slug, items]) => [slug, shown(items, slug)] as const).filter(([, items]) => items.length));
   const ids = new Set([...commonApp, ...Object.values(supplements).flat()].map((e) => e.id));
   const named = (slug: string) => {
     if (slug === UC_APPLICATION_SLUG) return "UC Application";

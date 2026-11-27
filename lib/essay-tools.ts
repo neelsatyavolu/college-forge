@@ -58,6 +58,11 @@ export function isEssayHidden(ws: Workspace, essay: Essay, groupKey?: string): b
   return Boolean(ws.commonAppPrompt && inCommonSet(essay) && essay.id !== ws.commonAppPrompt);
 }
 
+/** Ids of the supplements of schools the student turned off: their drafts leave counts and reads. */
+export function skippedEssayIds(ws: Workspace): Set<string> {
+  return new Set(allEssays(ws).filter((x) => isSchoolSkipped(ws, x.groupKey)).map((x) => x.essay.id));
+}
+
 /** The visibility flags an agent sees on each essay. */
 function visibility(ws: Workspace, essay: Essay, groupKey: string) {
   return {
