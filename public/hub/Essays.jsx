@@ -341,7 +341,7 @@ function SuggestionPanel({ suggestion, unit, onUse, onDismiss, busy }) {
   );
 }
 
-function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden, aiCheck, flagged, option, onChooseOption }) {
+function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden, aiCheck, flagged, option, onChooseOption, onEditPrompt }) {
   const count = essayCount(it, value);
   const over = count > it.limit;
   const underMin = /^ca-ps-/.test(it.id) && count > 0 && count < 250;
@@ -380,9 +380,11 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
         <window.EssayPrompt it={it} chosen={option} busy={statusBusy} onChoose={onChooseOption} />
         {onAsk ? (
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12 }}>
+            <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "help"))}>Ask copilot ✱</Button>
             <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "outline"))}>Outline</Button>
             <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "tighten"))}>Tighten to limit</Button>
             <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "check"))}>Check against prompt</Button>
+            {onEditPrompt ? <button type="button" className="cf-link-btn" style={{ marginLeft: "auto" }} onClick={onEditPrompt}>Edit prompt</button> : null}
           </div>
         ) : null}
         {aiCheck}
@@ -579,6 +581,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     [allGroups, data.essaySchools]
   );
   const [picking, setPicking] = React.useState(false);
+  // The page header, totals and essay-school tools, in a sheet opened from the sidebar's Overview button.
+  const [overview, setOverview] = React.useState(false);
   // GPTZero's flagged sentences for one essay, highlighted in its draft. Not stored, like the scan route.
   const [flaggedFor, setFlaggedFor] = React.useState(null);
   const allItems = React.useMemo(
@@ -767,27 +771,12 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
   };
 
   return (
-    <div className="cf-page">
-      <header className="cf-page-header">
-        <div>
-          <h1 className="cf-page-title">Essays</h1>
-          <p className="cf-page-lede">
-            Common App and school supplements, organized by university. Check each prompt against the current application before writing.
-            Personal statement: 250–650 words. Drafts save to your hub — not just this browser.
-          </p>
-        </div>
-        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          <Button variant="secondary" size="sm" onClick={() => onAsk(active ? essayAsk(active, "help") : undefined)}>Ask copilot ✱</Button>
-          {(data.colleges || []).length ? <Button variant="secondary" size="sm" onClick={() => setPicking(true)}>Pick essay schools</Button> : null}
-          <Button size="sm" onClick={()=>{setPromptError("");setPromptForm({groupKey:active ? active._groupKey : "common",label:"",prompt:"",limit:250,unit:"words"});}}>Add prompt</Button>
-          {active ? <Button variant="secondary" size="sm" onClick={()=>{setPromptError("");setPromptForm({...active,groupKey:active._groupKey});}}>Edit prompt</Button> : null}
-        </div>
-      </header>
+    <div className="cf-page cf-page--studio">
 
       {picking ? <window.EssaySchoolsSheet data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setPicking(false)} /> : null}
       {promptForm ? (
-        <form onSubmit={savePrompt} style={{padding:20,border:"1px solid var(--hairline)",borderRadius:"var(--radius-md)",display:"grid",gap:12,marginBottom:20}}>
-          <h2 className="cf-display" style={{margin:0,fontSize:20}}>{promptForm.id ? "Edit essay prompt" : "Add essay prompt"}</h2>
+        <window.EssaySheet title={promptForm.id ? "Edit essay prompt" : "Add essay prompt"} onClose={() => { if (!promptSaving) setPromptForm(null); }}>
+        <form onSubmit={savePrompt} style={{display:"grid",gap:12}}>
           <p style={{margin:0,color:"var(--muted)",fontSize:13}}>Copy the exact prompt and limit from the current application. Editing a prompt keeps your draft.</p>
           <label>Application<select aria-label="Prompt application" disabled={!!promptForm.id} value={promptForm.groupKey} onChange={(e)=>setPromptForm({...promptForm,groupKey:e.target.value})} style={{display:"block",padding:10,width:"100%"}}>{groups.map((g)=><option key={g.key} value={g.key}>{g.title}</option>)}</select></label>
           <label>Title<input aria-label="Prompt title" required maxLength={160} value={promptForm.label} onChange={(e)=>setPromptForm({...promptForm,label:e.target.value})} style={{display:"block",width:"100%",padding:10,boxSizing:"border-box"}} /></label>
@@ -799,6 +788,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
           {promptError ? <p role="alert" style={{color:"var(--error)"}}>{promptError}</p> : null}
           <div style={{display:"flex",gap:8}}><Button type="submit" disabled={promptSaving}>{promptSaving ? "Saving…" : "Save prompt"}</Button><Button variant="secondary" disabled={promptSaving} onClick={()=>setPromptForm(null)}>Cancel</Button></div>
         </form>
+        </window.EssaySheet>
       ) : null}
       {queue.storageError && saveState !== "error" && Object.keys(queue.drafts).length ? <p role="alert" style={{color:"var(--error)"}}>Browser draft recovery is unavailable. Keep this tab open until your draft saves, or copy it before leaving.</p> : null}
       {saveState === "error" ? (
@@ -814,13 +804,27 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
         </div>
       ) : (
         <React.Fragment>
-        <WritingSummary totals={totals} next={nextGroup ? nextGroup.due : null} today={today} />
-        <window.NotWritingFor data={data} onOpen={() => setPicking(true)} />
+        {overview ? (
+          <window.EssaySheet title="Essays" wide onClose={() => setOverview(false)}>
+            <p className="cf-help" style={{ margin: "0 0 18px", color: "var(--body)" }}>
+              Common App and school supplements, organized by university. Check each prompt against the current application before writing.
+              Personal statement: 250–650 words. Drafts save to your hub, not just this browser.
+            </p>
+            <WritingSummary totals={totals} next={nextGroup ? nextGroup.due : null} today={today} />
+            <window.NotWritingFor data={data} onOpen={() => { setOverview(false); setPicking(true); }} />
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <Button variant="secondary" size="sm" onClick={() => { setOverview(false); onAsk(active ? essayAsk(active, "help") : undefined); }}>Ask copilot ✱</Button>
+              {(data.colleges || []).length ? <Button variant="secondary" size="sm" onClick={() => { setOverview(false); setPicking(true); }}>Pick essay schools</Button> : null}
+              <Button size="sm" onClick={() => { setOverview(false); setPromptError(""); setPromptForm({ groupKey: active ? active._groupKey : "common", label: "", prompt: "", limit: 250, unit: "words" }); }}>Add prompt</Button>
+            </div>
+          </window.EssaySheet>
+        ) : null}
         {commonChoices.length > 1 ? (
           <div className="cf-mobile-essay-picker">
             <CommonAppChoice choices={commonChoices} chosen={commonAppPrompt} busy={statusBusy} onChoose={chooseCommonApp} />
           </div>
         ) : null}
+        <div className="cf-mobile-essay-picker"><Button variant="secondary" size="sm" onClick={() => setOverview(true)}>Overview · {totals.drafted} of {totals.required} drafted</Button></div>
         <label className="cf-mobile-essay-picker">Choose an essay
           <select aria-label="Choose an essay" value={activeId || ""} onChange={(event) => {
             const item = allItems.find(essay => essay.id === event.target.value);
@@ -841,7 +845,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
             borderRadius: "var(--radius-lg)",
             overflow: "hidden",
             background: "var(--canvas)",
-            height: "max(560px, calc(100dvh - 120px))",
+            height: "max(560px, calc(100dvh - 92px))",
           }}
         >
           <aside
@@ -857,6 +861,11 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
               maxHeight: "none",
             }}
           >
+            <button type="button" className="cf-press cf-essays-home" onClick={() => setOverview(true)} aria-haspopup="dialog">
+              <svg aria-hidden="true" viewBox="0 0 16 16" width="15" height="15"><path d="M2.5 7.2 8 2.8l5.5 4.4V13a.6.6 0 0 1-.6.6H9.6V10H6.4v3.6H3.1a.6.6 0 0 1-.6-.6Z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg>
+              <span className="cf-essays-home__title">Overview</span>
+              <span className="cf-essays-home__meta cf-nums">{totals.drafted} of {totals.required} drafted</span>
+            </button>
             <div role="group" aria-label="Sort essays" style={{ display: "flex", gap: 2, padding: 2, margin: "0 2px 10px", borderRadius: "var(--radius-sm)", background: "var(--surface-cream-strong)" }}>
               {[["school", "By school"], ["type", "By prompt type"]].map(([mode, text]) => (
                 <button
@@ -1017,6 +1026,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                 flagged={flaggedFor && flaggedFor.id === active.id && flaggedFor.show ? flaggedFor.sentences : null}
                 option={(data.essayOption || {})[active.id]}
                 onChooseOption={(i) => patchEssay({ essayOption: { [active.id]: i } })}
+                onEditPrompt={() => { setPromptError(""); setPromptForm({ ...active, groupKey: active._groupKey }); }}
               />
             ) : (
               <div className="cf-empty" style={{ border: "none", margin: "auto" }}>

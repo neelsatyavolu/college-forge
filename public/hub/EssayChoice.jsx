@@ -139,3 +139,25 @@ function AudienceControl({ items, hidden, busy, onSave }) {
 
 window.EssayPrompt = EssayPrompt;
 window.AudienceControl = AudienceControl;
+
+/** A modal sheet for the Essays page (overview, add or edit a prompt): Escape or Close closes it. */
+function EssaySheet({ title, onClose, children, wide }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const dialog = ref.current;
+    if (dialog && !dialog.open && dialog.showModal) dialog.showModal();
+  }, []);
+  return (
+    <dialog ref={ref} className={"cf-essay-sheet" + (wide ? " cf-essay-sheet--wide" : "")} aria-label={title} onCancel={(e) => { e.preventDefault(); onClose(); }}>
+      <div className="cf-essay-sheet__scroll">
+        <header className="cf-essay-sheet__head cf-essay-sheet__head--row">
+          <h2 className="cf-display">{title}</h2>
+          <button type="button" className="cf-link-btn" onClick={onClose}>Close</button>
+        </header>
+        <div className="cf-essay-sheet__body">{children}</div>
+      </div>
+    </dialog>
+  );
+}
+
+window.EssaySheet = EssaySheet;
