@@ -13,14 +13,15 @@ function portalSummary(app) {
   return { quoted: false, text: "No status shown in the portal" };
 }
 
-function PortalLine({ app }) {
+function PortalLine({ app, odds }) {
   const { ago } = window.cfApp;
   const p = app.portal;
   const hidden = app.decision.state === "hidden";
   if (!p) {
     if (hidden) return <div className="cf-app-row__portal"><a href="#decisions" className="is-decision">A decision is posted. Open it on Decisions →</a></div>;
-    if (!app.login) return null;
-    return <div className="cf-app-row__portal"><span className="is-error">Login saved. The next check fills this in.</span></div>;
+    const chance = odds ? <span style={{ color: "var(--muted)" }} title={`Likely range ${odds.low}–${odds.high}%`}><b style={{ fontWeight: 500, color: "var(--ink)" }}>{odds.percent}%</b> chance</span> : null;
+    if (!app.login) return chance ? <div className="cf-app-row__portal">{chance}</div> : null;
+    return <div className="cf-app-row__portal"><span className="is-error">Login saved. The next check fills this in.</span>{chance ? <> · {chance}</> : null}</div>;
   }
   if (!p.ok) return <div className="cf-app-row__portal"><span className="is-error">{p.error} · tried {ago(p.checkedAt)}</span></div>;
   const failed = app.lastFailure ? <div className="is-error">Latest check didn’t finish: {app.lastFailure.error} ({ago(app.lastFailure.at)}). Showing the last good check.</div> : null;
@@ -31,6 +32,7 @@ function PortalLine({ app }) {
         <React.Fragment>
           <span>{p.statusText ? <React.Fragment>Portal says <b style={{ fontWeight: 500, color: "var(--ink)" }}>“{p.statusText}”</b></React.Fragment> : portalSummary(app).text}</span>
           <span style={{ color: "var(--muted)" }}> · {ago(p.checkedAt)}</span>
+          {odds ? <span style={{ color: "var(--muted)" }} title={`Likely range ${odds.low}–${odds.high}%. From Estimate my chances.`}> · <b style={{ fontWeight: 500, color: "var(--ink)" }}>{odds.percent}%</b> chance</span> : null}
         </React.Fragment>
       )}
       {failed}
@@ -192,7 +194,7 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, ma
           <span className="cf-sr-only">{open ? "Hide" : "Show"} details for {app.name}</span><Chevron />
         </button>
       </div>
-      {!compact || open ? <PortalLine app={app} /> : null}
+      {!compact || open ? <PortalLine app={app} odds={window.cfOdds ? window.cfOdds.oddsForApp(data, app) : null} /> : null}
       {open ? <div id={`app-${app.id}`} className="cf-app-row__more"><AppDetails app={app} act={act} busy={busy} checking={checking} onCheck={onCheck} master={master} data={data} onWorkspaceChange={onWorkspaceChange} /></div> : null}
     </li>
   );

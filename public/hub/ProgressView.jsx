@@ -105,9 +105,9 @@ function DecisionNote({ app, editable, act, busy }) {
 /** The short signal column: what needs attention first, otherwise the chance estimate. Full wording is in the expanded row. */
 function Signal({ app, odds }) {
   const first = window.cfApp.attentionOf(app)[0];
-  if (first) return <span className="cf-prow__signal is-alert">{first.text}</span>;
-  if (odds) return <span className="cf-prow__signal" title={`Likely range ${odds.low}–${odds.high}%`}>{odds.percent}% chance</span>;
-  return <span className="cf-prow__signal" />;
+  const chance = odds ? <span title={`Likely range ${odds.low}–${odds.high}%`}>{odds.percent}% chance</span> : null;
+  if (first) return <span className="cf-prow__signal"><span className="is-alert">{first.text}</span>{chance ? <> · {chance}</> : null}</span>;
+  return <span className="cf-prow__signal">{chance}</span>;
 }
 
 function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, checking, oddsFor, full }) {

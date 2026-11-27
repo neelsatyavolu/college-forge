@@ -95,38 +95,51 @@ async function loadWorkspace() {
 }
 
 // Counts only what this run saved, so a provider without hub tools (or a refused write) never reads as success.
+// onProgress(text, done, total): done and total count the read step plus one per school, for a progress bar.
+// Schools whose estimate didn't save get one automatic retry, so a run covers every school it can.
 async function runOddsSteps(onProgress) {
   const before = await loadWorkspace();
   const scope = before.draftStorageKey;
   const readBefore = before.applicationRead ? before.applicationRead.readAt : "";
   const stamp = (ws, key) => (ws.admissionOdds && ws.admissionOdds[key] ? ws.admissionOdds[key].estimatedAt : "");
   const sameWorkspace = () => !window.CF_DATA || !window.CF_DATA.draftStorageKey || window.CF_DATA.draftStorageKey === scope;
-  onProgress("Looking up admission rates…");
+  onProgress("Looking up admission rates…", 0, 1);
   const res = await fetch("/api/ai/odds-plan", { credentials: "same-origin", cache: "no-store" });
   const plan = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(plan.error || "Could not start the estimate.");
   if (!(plan.schools || []).length) return { ws: before, total: 0, missed: [] };
-  await window.cfStreamBuildChat(plan.read.prompt, (m) => onProgress(`Reading your application: ${m}`));
+  const steps = plan.schools || [];
+  const schoolCount = steps.reduce((n, s) => n + (s.keys || []).length, 0);
+  const total = 1 + schoolCount;
+  await window.cfStreamBuildChat(plan.read.prompt, (m) => onProgress(`Reading your application: ${m}`, 0, total));
   const afterRead = await loadWorkspace();
   if (!sameWorkspace() || afterRead.draftStorageKey !== scope) throw new Error("Your workspace changed, so the estimate stopped.");
   if (!afterRead.applicationRead || afterRead.applicationRead.readAt === readBefore) {
     throw new Error("The AI didn't save its read of your application. Estimates need ChatGPT or Grok connected in Settings.");
   }
-  const steps = plan.schools || [];
-  let next = 0;
-  let finished = 0;
-  const worker = async () => {
-    while (next < steps.length) {
-      if (!sameWorkspace()) return;
-      const step = steps[next++];
-      try {
-        await window.cfStreamBuildChat(step.prompt, (m) => onProgress(`Schools ${finished} of ${steps.length} done · ${step.label}: ${m}`));
-      } catch (e) { /* counted below from what was saved */ }
-      finished++;
-    }
+  let schoolsDone = 0;
+  const runAll = async (list, retry) => {
+    let next = 0;
+    const worker = async () => {
+      while (next < list.length) {
+        if (!sameWorkspace()) return;
+        const step = list[next++];
+        const tag = retry ? "Retrying " : "";
+        try {
+          await window.cfStreamBuildChat(step.prompt, (m) => onProgress(`${tag}${step.label}: ${m}`, 1 + schoolsDone, total));
+        } catch (e) { /* counted below from what was saved */ }
+        if (!retry) schoolsDone += (step.keys || []).length;
+        onProgress(`${schoolsDone} of ${schoolCount} schools estimated`, 1 + schoolsDone, total);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(ODDS_CONCURRENCY, list.length) }, worker));
   };
-  await Promise.all(Array.from({ length: Math.min(ODDS_CONCURRENCY, steps.length) }, worker));
-  const ws = await loadWorkspace();
+  await runAll(steps, false);
+  const unsaved = (ws) => (s) => (s.keys || []).some((k) => !stamp(ws, k) || stamp(ws, k) === stamp(before, k));
+  const mid = await loadWorkspace();
+  const retry = steps.filter(unsaved(mid));
+  if (retry.length && sameWorkspace()) await runAll(retry, true);
+  const ws = retry.length ? await loadWorkspace() : mid;
   if (ws.draftStorageKey !== scope) throw new Error("Your workspace changed, so the estimate stopped.");
   const nameOf = (k) => {
     const hit = k.indexOf("app:") === 0
@@ -135,8 +148,42 @@ async function runOddsSteps(onProgress) {
     return hit ? hit.short || hit.name : k;
   };
   const missed = steps.flatMap((s) => (s.keys || []).filter((k) => !stamp(ws, k) || stamp(ws, k) === stamp(before, k)).map(nameOf));
-  const wanted = steps.flatMap((s) => s.keys || []);
-  return { ws, total: wanted.length, missed };
+  return { ws, total: schoolCount, missed };
+}
+
+/** The estimate's progress: a thin bar with the percent, and what it's doing now on one line. */
+function OddsProgress({ frac, text }) {
+  const pct = Math.round(frac * 100);
+  return (
+    <span role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Estimating your chances" style={{ display: "grid", gap: 5 }}>
+      <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ flex: 1, height: 4, borderRadius: 999, background: "var(--surface-cream-strong)", overflow: "hidden" }}>
+          <span style={{ display: "block", height: "100%", width: `${Math.max(3, pct)}%`, background: "var(--coral)", borderRadius: 999, transition: "width 300ms ease" }} />
+        </span>
+        <span className="cf-nums" style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--muted)", minWidth: 32, textAlign: "right" }}>{pct}%</span>
+      </span>
+      <span style={{ fontSize: 12, lineHeight: 1.35, color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{text}</span>
+    </span>
+  );
+}
+
+/** The header button while estimating: the same pill, filling left to right, with the count; the step is the tooltip. */
+function OddsPill({ frac, text }) {
+  const pct = Math.round(frac * 100);
+  const m = /(\d+) of (\d+) schools/.exec(text || "");
+  return (
+    <span className="cf-odds-pill cf-nums" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Estimating your chances" title={text}
+      style={{ "--fill": `${Math.max(4, pct)}%` }}>
+      <span>Estimating {m ? `${m[1]} of ${m[2]}` : `${pct}%`}</span>
+    </span>
+  );
+}
+
+/** A tracked application's chance estimate: by its own key ("app:<id>"), or its shortlist school's slug. */
+function oddsForApp(data, app) {
+  const oddsMap = (data && data.admissionOdds) || {};
+  const listed = ((data && data.colleges) || []).find((c) => c.slug === app.slug || String(c.name || "").toLowerCase() === String(app.name || "").toLowerCase());
+  return oddsMap["app:" + app.id] || (listed ? oddsMap[listed.slug] : null) || null;
 }
 
 function ChancesPanel({ data, onWorkspaceChange, compact }) {
@@ -146,10 +193,11 @@ function ChancesPanel({ data, onWorkspaceChange, compact }) {
   const estimated = Object.keys(data.admissionOdds || {});
   const fingerprint = profileFingerprint(data);
   const staleCount = estimated.filter((k) => isStaleOdds(data.admissionOdds[k], fingerprint)).length;
+  const [frac, setFrac] = React.useState(0);
   const run = async () => {
-    setRunning(true); setResult(null); setProgress("Starting…");
+    setRunning(true); setResult(null); setProgress("Starting…"); setFrac(0);
     try {
-      const { ws, total, missed } = await runOddsSteps(setProgress);
+      const { ws, total, missed } = await runOddsSteps((text, done, of) => { setProgress(text); if (of) setFrac(Math.min(1, done / of)); });
       if (onWorkspaceChange) onWorkspaceChange(ws);
       setResult(!total
         ? { tone: "ok", text: "Every school on your list already has a decision." }
@@ -158,16 +206,16 @@ function ChancesPanel({ data, onWorkspaceChange, compact }) {
           : { tone: "ok", text: `Estimated all ${total} schools.` });
     } catch (e) {
       setResult({ tone: "error", text: e.message || "The estimate stopped. Try again." });
-    } finally { setRunning(false); setProgress(""); }
+    } finally { setRunning(false); setProgress(""); setFrac(0); }
   };
   const label = running ? "Estimating…" : staleCount ? "Re-estimate chances" : estimated.length ? "Estimate chances again" : "Estimate my chances";
   if (compact) {
     // A header button (Progress); progress, results and a stale warning show in one short line under it.
-    const line = running ? progress : result ? result.text : staleCount ? `${staleCount} of ${estimated.length} estimates predate profile changes.` : "";
+    const line = running ? "" : result ? result.text : staleCount ? `${staleCount} of ${estimated.length} estimates predate profile changes.` : "";
     return (
       <span style={{ position: "relative", display: "inline-flex" }}>
-        <Button size="sm" variant="secondary" disabled={running} onClick={run}
-          title="The AI reads your profile, essays, each school's supplements and your uploads, starts from each school's published rate for your round, and can move at most threefold from it. A rough guide.">{label}</Button>
+        {running ? <OddsPill frac={frac} text={progress} /> : <Button size="sm" variant="secondary" onClick={run}
+          title="The AI reads your profile, essays, each school's supplements and your uploads, starts from each school's published rate for your round, and can move at most threefold from it. A rough guide.">{label}</Button>}
         {line ? <span role="status" aria-live="polite" style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, width: "max-content", maxWidth: 320, zIndex: 2, fontSize: 12, lineHeight: 1.35, textAlign: "right", color: result && result.tone === "error" ? "var(--error)" : staleCount && !running && !result ? "var(--warning)" : "var(--muted)" }}>{line}</span> : null}
       </span>
     );
@@ -188,9 +236,11 @@ function ChancesPanel({ data, onWorkspaceChange, compact }) {
           {staleCount === estimated.length ? "Estimated before your profile changed." : `${staleCount} of ${estimated.length} estimates were made before your profile changed.`} Re-estimate to use your current scores.
         </p>
       ) : null}
-      <div role="status" aria-live="polite" style={{ fontSize: 13, marginTop: progress || result ? 10 : 0, color: result && result.tone === "error" ? "var(--error)" : "var(--muted)" }}>
-        {running ? progress : result ? result.text : ""}
-      </div>
+      {running ? <div style={{ marginTop: 12, maxWidth: 520 }}><OddsProgress frac={frac} text={progress} /></div> : (
+        <div role="status" aria-live="polite" style={{ fontSize: 13, marginTop: result ? 10 : 0, color: result && result.tone === "error" ? "var(--error)" : "var(--muted)" }}>
+          {result ? result.text : ""}
+        </div>
+      )}
     </section>
   );
 }
@@ -578,4 +628,4 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
   );
 }
 window.Shortlist = Shortlist;
-window.cfOdds = { OddsLine, ChancesPanel };
+window.cfOdds = { OddsLine, ChancesPanel, oddsForApp, OddsProgress, OddsPill };

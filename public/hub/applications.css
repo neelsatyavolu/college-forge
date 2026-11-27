@@ -119,6 +119,7 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-prow__status .cf-badge--select select { min-height: 30px; }
 .cf-prow__signal { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cf-prow__signal.is-alert { color: var(--coral); font-weight: 500; }
+.cf-prow__signal .is-alert { color: var(--coral); font-weight: 500; }
 .cf-prow__sub { padding-left: 36px; padding-bottom: 4px; }
 .cf-prow__sub:empty { display: none; }
 .cf-prow__note { margin-top: 2px; font-size: 13px; line-height: 1.5; color: var(--muted); }
@@ -540,3 +541,9 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-essay-group__done { display: inline-flex; flex: none; align-self: center; }
 .cf-essay-group__top { justify-content: flex-start; }
 .cf-essay-group__count { margin-left: auto; }
+
+/* "Estimate my chances" while it runs: the button's pill fills with progress. */
+.cf-odds-pill { position: relative; display: inline-flex; align-items: center; height: 27px; box-sizing: border-box; padding: 0 12px; overflow: hidden; font-size: 13px; color: var(--ink); border: 1px solid var(--hairline); border-radius: var(--radius-sm, 6px); background: var(--canvas); cursor: progress; white-space: nowrap; }
+.cf-odds-pill::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--fill); background: color-mix(in srgb, var(--coral) 22%, transparent); transition: width 400ms ease; }
+.cf-odds-pill > span { position: relative; }
+@media (prefers-reduced-motion: reduce) { .cf-odds-pill::before { transition: none; } }
