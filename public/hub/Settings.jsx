@@ -373,6 +373,7 @@ function Settings({ theme, account, onToggleTheme, onStartOnboarding, onWorkspac
 
       <AccountPanel account={account} />
       <AssistantPanel />
+      {window.GptzeroPanel ? <window.GptzeroPanel Panel={Panel} /> : null}
 
       <Panel title="AI providers" action={
         loading ? null : (

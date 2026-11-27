@@ -456,7 +456,7 @@ function SuggestionPanel({ suggestion, unit, onUse, onDismiss, busy }) {
   );
 }
 
-function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden }) {
+function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden, aiCheck }) {
   const count = essayCount(it, value);
   const over = count > it.limit;
   const underMin = /^ca-ps-/.test(it.id) && count > 0 && count < 250;
@@ -514,6 +514,7 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
       </div>
 
       <div className="cf-essay-writing-area" style={{ flex: 1, minHeight: 0, padding: "20px 28px", overflowY: "auto" }}>
+        {aiCheck}
         {suggestion ? (
           <SuggestionPanel suggestion={suggestion} unit={it.unit} busy={statusBusy} onUse={onUseSuggestion} onDismiss={onDismissSuggestion} />
         ) : null}
@@ -1115,6 +1116,16 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                 onDismissSuggestion={() => dismissSuggestion(active.id)}
                 hidden={!!hiddenMap[active.id]}
                 onToggleHidden={() => setHidden(active.id, !hiddenMap[active.id])}
+                aiCheck={window.AiCheckPanel ? (
+                  <window.AiCheckPanel
+                    essayId={active.id}
+                    words={wordCount(local[active.id] || "")}
+                    check={(data.essayAiChecks || {})[active.id]}
+                    pending={saveState !== "saved"}
+                    onFlush={flush}
+                    onWorkspaceChange={onWorkspaceChange}
+                  />
+                ) : null}
               />
             ) : (
               <div className="cf-empty" style={{ border: "none", margin: "auto" }}>
@@ -1145,7 +1156,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                 </div>
                 {notes.map((n) => (
                   <p key={n.id} style={{ margin: "0 0 8px", fontSize: 13, color: "var(--body)", lineHeight: 1.45 }}>
-                    <strong>{n.author}</strong>: {n.body}
+                    <strong>{n.via === "coach" ? `Coach · ${n.author}` : n.author}</strong>: {n.body}
                   </p>
                 ))}
               </div>

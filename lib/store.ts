@@ -236,6 +236,16 @@ export type AdvisorNote = {
   authorLevel?: "basic" | "standard" | "full";
 };
 
+export type EssayAiCheck = {
+  checkedAt: number;
+  verdict: "ai" | "mixed" | "human";
+  ai: number;
+  mixed: number;
+  human: number;
+  /** Words in the draft that was checked. */
+  words: number;
+};
+
 export type ShareMeta = {
   token: string;
   label: string;
@@ -284,6 +294,8 @@ export type Workspace = {
   essaySuggestions?: Record<string, EssaySuggestion>;
   /** Draft text keyed by essay id — server-persisted (not localStorage). */
   essayDrafts: Record<string, string>;
+  /** The latest GPTZero check by essay id (app/api/gptzero/scan): totals only, the student's alone. */
+  essayAiChecks?: Record<string, EssayAiCheck>;
   /** Planner checkbox state keyed by task id. */
   plannerDone: Record<string, boolean>;
   /** Old per-school status, kept only so older workspaces migrate into `tracker`. */
@@ -524,10 +536,15 @@ function normalizeWorkspace(parsed: Partial<Workspace>): { workspace: Workspace;
     shares: parsed.shares ?? empty.shares,
     onboarding: { ...empty.onboarding, ...(parsed.onboarding || {}) },
   };
+  // A malformed essayAiChecks (not a plain object) is dropped rather than trusted.
+  const clean: Workspace =
+    "essayAiChecks" in base && (!base.essayAiChecks || typeof base.essayAiChecks !== "object" || Array.isArray(base.essayAiChecks))
+      ? (({ essayAiChecks: _bad, ...rest }) => rest)(base)
+      : base;
   // Every application gets a list school and every kept list school an application (lazy migration),
   // then Essays groups for every college on the list.
-  const linked = linkListAndApplications(base);
-  return { workspace: withDerived(linked), linked: linked !== base };
+  const linked = linkListAndApplications(clean);
+  return { workspace: withDerived(linked), linked: linked !== clean };
 }
 
 type WorkspaceMutation = (workspace: Workspace) => Workspace | Promise<Workspace>;
@@ -780,7 +797,8 @@ export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" |
   uploads: { name: string; chars: number }[];
 } {
   // applicationRead and admissionOdds hold AI assessments drawn from uploads (family context, concerns): the student's alone.
-  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, scholarships, ...rest } = ws;
+  // essayAiChecks: GPTZero results are the student's to share or not.
+  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, scholarships, essayAiChecks: _e, ...rest } = ws;
   return {
     ...rest,
     // A school's own award amount and its aid offer stay with the student (lib/aid-validate.ts).

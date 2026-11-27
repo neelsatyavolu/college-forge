@@ -19,6 +19,7 @@ import { syncEssaySupplements } from "@/lib/essay-supplements";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { deleteAllLogins } from "@/lib/portal-logins";
 import { deleteAllSetup } from "@/lib/portal-setup";
+import { deleteGptzero } from "@/lib/gptzero-login";
 import { createShareLink, revokeShareLink } from "@/lib/sharing";
 import { removeAllParents } from "@/lib/parents";
 import { applyWorkspacePatch, checkWorkspacePatch, isStalePatch, workspacePatchError, type WorkspacePatch } from "@/lib/workspace-patch";
@@ -148,6 +149,7 @@ export async function POST(req: NextRequest) {
     // A reset clears the tracker, so its saved portal logins go too.
     await deleteAllLogins(id).catch(() => undefined);
     await deleteAllSetup(id).catch(() => undefined);
+    await deleteGptzero(id).catch(() => undefined);
     return withCookie(ws, setCookie);
   }
 
