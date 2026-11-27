@@ -24,7 +24,7 @@ test('Common Data Set H6 parses into checkboxes, count and average', async () =>
 test('the label states the count and average, and colleges aiding none are flagged', () => {
   const aid = { needBased: true, meritBased: true, none: false, awarded: 510, average: 40057, cdsYear: '2025-26', source: 'x' };
   assert.equal(A.internationalAidLabel(aid), '510 international students got aid averaging $40,057 (CDS 2025-26)');
-  assert.equal(A.aidsNoInternationals({ ...aid, awarded: 0 }), true);
+  assert.equal(A.aidsNoInternationals({ ...aid, needBased: false, meritBased: false, average: null, awarded: 0 }), true);
   assert.equal(A.aidsNoInternationals(aid), false);
   assert.equal(A.internationalAidLabel(null), null);
 });
