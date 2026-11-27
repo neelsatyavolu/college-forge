@@ -346,8 +346,8 @@
     return colleges.filter(function (c) { return c && typeof c.slug === "string" && typeof c.name === "string"; }).slice(0, 300);
   }
 
-  // The first "hello" runs the student's list; while the popup stays open, each
-  // "fetch" looks up more schools the student searched for there.
+  // "hello" runs the student's list once; while the popup stays open, each "fetch"
+  // looks up schools the student searched for there.
   var started = false;
   function onMessage(event) {
     if (!current() || popup.closed) { window.removeEventListener("message", onMessage); return; }
@@ -357,7 +357,10 @@
       started = true;
       clearInterval(ping);
       run(cleanList(msg.colleges));
-    } else if (msg.type === "cf-maia:fetch" && started && !running && Array.isArray(msg.colleges)) {
+    } else if (msg.type === "cf-maia:fetch" && !running && Array.isArray(msg.colleges)) {
+      // Also a first request: when nothing on the list needs fetching, the popup only looks schools up.
+      started = true;
+      clearInterval(ping);
       run(cleanList(msg.colleges));
     } else if (msg.type === "cf-maia:cancel") {
       cancelled = true;
