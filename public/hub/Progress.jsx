@@ -71,11 +71,7 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
   };
   const links = (data.shares || []).filter((s) => !s.revokedAt && s.scope === "progress").length;
   // Estimates are keyed by shortlist slug, or "app:<id>" for schools only on Progress (lib/admission-odds.ts).
-  const oddsMap = data.admissionOdds || {};
-  const oddsFor = (app) => {
-    const listed = (data.colleges || []).find((c) => c.slug === app.slug || String(c.name || "").toLowerCase() === app.name.toLowerCase());
-    return oddsMap["app:" + app.id] || (listed ? oddsMap[listed.slug] : null) || null;
-  };
+  const oddsFor = (app) => (window.cfOdds ? window.cfOdds.oddsForApp(data, app) : null);
   const Chances = window.cfOdds && window.cfOdds.ChancesPanel;
   return (
     <div className="cf-page">
