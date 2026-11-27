@@ -53,7 +53,7 @@
    "source": "https://www.bates.edu/research/files/2026/06/CDS_2025-2026.pdf"
   },
   "baylor-university": {
-   "needBased": true,
+   "needBased": false,
    "meritBased": true,
    "none": false,
    "awarded": 340,
@@ -63,7 +63,7 @@
    "source": "https://ir.web.baylor.edu/sites/g/files/ecbvkj1621/files/2026-04/cds-pdf-2025-2026-final.pdf"
   },
   "boston-college": {
-   "needBased": true,
+   "needBased": false,
    "meritBased": true,
    "none": false,
    "awarded": 26,
@@ -233,8 +233,8 @@
    "source": "https://www.depauw.edu/files/resources/depauw-cds-all-sections-2526.pdf"
   },
   "drexel-university": {
-   "needBased": false,
-   "meritBased": false,
+   "needBased": true,
+   "meritBased": true,
    "none": false,
    "awarded": 1038,
    "average": 32937,
@@ -495,9 +495,9 @@
   "the-pennsylvania-state-university-university-park": {
    "needBased": false,
    "meritBased": false,
-   "none": false,
+   "none": true,
    "awarded": 0,
-   "average": 0,
+   "average": null,
    "total": 0,
    "cdsYear": "2025_2026",
    "source": "https://opair.psu.edu/files/2026/09/CDS_2025_2026_UniversityPark_v3.pdf"
@@ -543,7 +543,7 @@
    "source": "https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/2/5478/files/2026/05/2025-26-CDS-PDF-Upload.pdf"
   },
   "university-of-california-riverside": {
-   "needBased": true,
+   "needBased": false,
    "meritBased": true,
    "none": false,
    "awarded": 288,
@@ -691,6 +691,136 @@
    "total": null,
    "cdsYear": "2025-26",
    "source": "https://oir.yale.edu/sites/default/files/yale_cds_2025-26_md_20260616.pdf"
+  },
+  "grinnell-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": null,
+   "average": 56853,
+   "total": 13815175,
+   "cdsYear": "2024-2025",
+   "source": "https://www.grinnell.edu/doc/grinnell-college-common-data-set-2024-2025"
+  },
+  "hamilton-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": null,
+   "average": null,
+   "total": 1,
+   "cdsYear": "2025-26",
+   "source": "https://www.hamilton.edu/offices/oir/common-data-sets/cds-2025-26"
+  },
+  "kenyon-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": null,
+   "average": 73082,
+   "total": 10889270,
+   "cdsYear": "2025-26",
+   "source": "https://www.kenyon.edu/files/resources/cds-2025-26-kenyon.xlsx"
+  },
+  "massachusetts-institute-of-technology": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": 411,
+   "average": 81991,
+   "total": 33698421,
+   "cdsYear": "2025-26",
+   "source": "https://ir.mit.edu/projects/2025-26-common-data-set/"
+  },
+  "new-jersey-institute-of-technology": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 518,
+   "average": 28025,
+   "total": 14517182,
+   "cdsYear": "2024-2025",
+   "source": "https://www.njit.edu/oie/sites/njit.edu.oie/files/CDS_2024-2025_v12.xlsx"
+  },
+  "northeastern-university": {
+   "needBased": false,
+   "meritBased": true,
+   "none": false,
+   "awarded": 323,
+   "average": 31459,
+   "total": 10161350,
+   "cdsYear": null,
+   "source": "https://uds.northeastern.edu/university-facts/common-data-set/"
+  },
+  "pitzer-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": 46,
+   "average": 81824,
+   "total": 3763914,
+   "cdsYear": "2025-2026",
+   "source": "https://www.pitzer.edu/documents/common-data-set-2025-2026"
+  },
+  "rhodes-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": null,
+   "average": 51370,
+   "total": 7910968,
+   "cdsYear": "2026-11",
+   "source": "https://www.rhodes.edu/sites/default/files/2026-11/CDS_2026-2027.xlsx"
+  },
+  "stony-brook-university-suny": {
+   "needBased": false,
+   "meritBased": true,
+   "none": false,
+   "awarded": 968,
+   "average": 3799,
+   "total": 3677271,
+   "cdsYear": "2025-2026",
+   "source": "https://www.stonybrook.edu/irpe/_media/Common_data_sets/CDS_2025-2026.xlsx"
+  },
+  "university-of-maryland-college-park": {
+   "needBased": false,
+   "meritBased": false,
+   "none": true,
+   "awarded": null,
+   "average": null,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://www.irpa.umd.edu/InstitutionalData/CommonDataSet/CDS_2025-2026.xlsx"
+  },
+  "virginia-tech": {
+   "needBased": true,
+   "meritBased": false,
+   "none": false,
+   "awarded": null,
+   "average": null,
+   "total": null,
+   "cdsYear": "2025-2026",
+   "source": "https://aie.vt.edu/content/dam/aie_vt_edu/common-data-set/25-26/2025-2026-CDS.xlsx"
+  },
+  "wabash-college": {
+   "needBased": true,
+   "meritBased": true,
+   "none": false,
+   "awarded": null,
+   "average": 44685,
+   "total": 2993900,
+   "cdsYear": "2025-2026",
+   "source": "https://www.wabash.edu/institutional_research/docs/cds-2025-2026.xlsx"
+  },
+  "yeshiva-university": {
+   "needBased": false,
+   "meritBased": false,
+   "none": false,
+   "awarded": 172,
+   "average": 50050,
+   "total": 8608670,
+   "cdsYear": "2023_2024",
+   "source": "https://www.yu.edu/sites/default/files/inline-files/CDS_2023_2024.xlsx"
   }
  }
 }

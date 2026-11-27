@@ -24,7 +24,7 @@ test('Common Data Set H6 parses into checkboxes, count and average', async () =>
 test('the label states the count and average, and colleges aiding none are flagged', () => {
   const aid = { needBased: true, meritBased: true, none: false, awarded: 510, average: 40057, cdsYear: '2025-26', source: 'x' };
   assert.equal(A.internationalAidLabel(aid), '510 international students got aid averaging $40,057 (CDS 2025-26)');
-  assert.equal(A.aidsNoInternationals({ ...aid, awarded: 0 }), true);
+  assert.equal(A.aidsNoInternationals({ ...aid, needBased: false, meritBased: false, average: null, awarded: 0 }), true);
   assert.equal(A.aidsNoInternationals(aid), false);
   assert.equal(A.internationalAidLabel(null), null);
 });
@@ -36,4 +36,32 @@ test('the scraped data covers well-known colleges with sane values', () => {
     if (v.average != null) assert.ok(v.average >= 0 && v.average < 130000, `${slug} average ${v.average}`);
     if (v.awarded != null) assert.ok(v.awarded >= 0 && v.awarded < 20000, `${slug} awarded ${v.awarded}`);
   }
+});
+
+test('H6 from an HTML Common Data Set page (Markdown tables) parses too', async () => {
+  const { parseH6 } = await import('../scripts/research/intl-aid.mjs');
+  const md = `**H6.** Indicate your institution’s policy regarding institutional scholarship and grant aid for undergraduate degree-seeking nonresidents:
+
+| | |
+| --- | --- |
+| Institutional need-based scholarship or grant aid is available |  |
+| Institutional non-need-based scholarship or grant aid is available | X |
+| Institutional scholarship or grant aid is not available |  |
+
+| If institutional financial aid is available for undergraduate degree-seeking nonresidents, provide the number of undergraduate degree-seeking nonresidents who were awarded need-based or non-need-based aid: | 323 |
+
+| Average dollar amount of institutional financial aid awarded to undergraduate degree-seeking nonresidents: | $31,459 |
+
+**H7.** Check off all financial aid forms`;
+  assert.deepEqual(parseH6(md), { needBased: false, meritBased: true, none: false, awarded: 323, average: 31459, total: null });
+});
+
+test('contradictory checkboxes never hide a college that reports aiding internationals', async () => {
+  const { parseH6 } = await import('../scripts/research/intl-aid.mjs');
+  const both = H6.replace('          Institutional scholarship or grant aid is not available', '    x     Institutional scholarship or grant aid is not available');
+  assert.equal(parseH6(both).none, false);
+  assert.equal(A.aidsNoInternationals({ needBased: true, meritBased: false, none: true, awarded: null, average: null }), false);
+  assert.equal(A.aidsNoInternationals({ needBased: false, meritBased: false, none: true, awarded: null, average: null }), true);
+  const data = require('../public/data/international-aid.json').colleges;
+  for (const slug of ['grinnell-college', 'pitzer-college', 'rhodes-college', 'virginia-tech']) assert.equal(A.aidsNoInternationals(data[slug] || null), false, slug);
 });
