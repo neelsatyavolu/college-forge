@@ -55,4 +55,33 @@ struct ParentModelTests {
         #expect(reply.data[1].expired)
         #expect(!reply.emailed)
     }
+
+    @Test func counselorDashboardCarriesNotes() throws {
+        let json = #"""
+        {"level":"full","levelLabel":"Full","levelSummary":"everything","role":"counselor","student":{"name":"Sam","cycle":""},
+         "progress":{"flags":[],"apps":[]},"criticalDates":[],
+         "notes":[{"id":"n1","body":"Tighten the opening.","author":"Casey","createdAt":1700000000000,"essayId":"ca-ps-1","mine":true}]}
+        """#
+        let d = try decode(ParentDashboardData.self, json)
+        #expect(d.role == .counselor)
+        #expect(d.notes?.first?.essayId == "ca-ps-1")
+        #expect(d.notes?.first?.mine == true)
+        let parent = try decode(ParentDashboardData.self, #"{"level":"basic","student":{"name":"Sam"},"progress":{"flags":[],"apps":[]},"criticalDates":[]}"#)
+        #expect(parent.role == .parent && parent.notes == nil, "an older reply without a role is a parent's")
+    }
+
+    @Test func rosterStudentHasSummary() throws {
+        let json = #"""
+        {"students":[{"id":"l1","name":"Avery Lin","cycle":"2026-27","role":"counselor","level":"full","levelLabel":"Full","applications":3,
+         "summary":{"applications":3,"submitted":1,"decisions":0,"admits":0,"overdue":1,"dueSoon":2,"flags":1,
+                    "next":{"date":"2026-11-30","title":"Lakeview College · RD"},"upcoming":[{"date":"2026-11-30","title":"Lakeview College · RD"}],"attention":125}},
+         {"id":"l2","name":"Old Reply","level":"basic","applications":0}]}
+        """#
+        let list = try decode(ParentStudentList.self, json)
+        #expect(list.students[0].followerRole == .counselor)
+        #expect(list.students[0].summary.overdue == 1 && list.students[0].summary.next?.title == "Lakeview College · RD")
+        #expect(list.students[1].followerRole == .parent && list.students[1].summary.attention == 0)
+        let me = try decode(MeResponse.self, #"{"signedIn":true,"parent":{"students":3,"home":true,"counselor":true}}"#)
+        #expect(me.parent.counselor)
+    }
 }

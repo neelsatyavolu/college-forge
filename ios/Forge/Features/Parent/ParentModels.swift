@@ -1,13 +1,68 @@
 import Foundation
 
-/// One student a parent follows (GET /api/parent).
+/// Parent or counselor (lib/parents.ts). Counselors can also leave notes.
+enum FollowerRole: String, Sendable, Hashable, CaseIterable, Identifiable {
+    case parent, counselor
+
+    var id: String { rawValue }
+    var label: String { rawValue.capitalized }
+    var defaultLevel: ParentLevel { self == .counselor ? .full : .basic }
+
+    init(_ raw: String) { self = raw == "counselor" ? .counselor : .parent }
+}
+
+/// A dated item on a roster summary.
+struct DatedItem: Codable, Hashable, Sendable {
+    var date: String
+    var title: String
+
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        date = c.string(.date)
+        title = c.string(.title)
+    }
+}
+
+/// One student's line on the roster (lib/follower-summary.ts), cut to what their level shows.
+struct FollowerSummary: Codable, Hashable, Sendable {
+    var applications = 0
+    var submitted = 0
+    var decisions = 0
+    var overdue = 0
+    var dueSoon = 0
+    var flags = 0
+    var next: DatedItem?
+    var upcoming: [DatedItem] = []
+    var attention = 0
+
+    init() {}
+
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        applications = c.int(.applications)
+        submitted = c.int(.submitted)
+        decisions = c.int(.decisions)
+        overdue = c.int(.overdue)
+        dueSoon = c.int(.dueSoon)
+        flags = c.int(.flags)
+        next = c.optional(DatedItem.self, .next)
+        upcoming = c.array(.upcoming)
+        attention = c.int(.attention)
+    }
+}
+
+/// One student a parent or counselor follows (GET /api/parent).
 struct ParentStudent: Codable, Hashable, Sendable, Identifiable {
     var id: String
     var name: String
     var cycle: String
+    var role: String
     var level: String
     var levelLabel: String
     var applications: Int
+    var summary: FollowerSummary
+
+    var followerRole: FollowerRole { FollowerRole(role) }
 }
 
 extension ParentStudent {
@@ -16,9 +71,33 @@ extension ParentStudent {
         id = c.string(.id)
         name = c.string(.name)
         cycle = c.string(.cycle)
+        role = c.string(.role, "parent")
         level = c.string(.level, "basic")
         levelLabel = c.string(.levelLabel)
         applications = c.int(.applications)
+        summary = c.value(.summary, FollowerSummary())
+    }
+}
+
+/// A note a counselor left (lib/parent-view.ts counselorNotes). `mine`: this counselor wrote it.
+struct CounselorNote: Decodable, Sendable, Identifiable, Hashable {
+    var id: String
+    var body: String
+    var author: String
+    var createdAt: Double
+    var essayId: String?
+    var mine: Bool
+
+    private enum CodingKeys: String, CodingKey { case id, body, author, createdAt, essayId, mine }
+
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = c.string(.id)
+        body = c.string(.body)
+        author = c.string(.author)
+        createdAt = c.double(.createdAt)
+        essayId = c.optionalString(.essayId)
+        mine = c.bool(.mine)
     }
 }
 
@@ -33,8 +112,8 @@ struct ParentStudentList: Decodable, Sendable {
     }
 }
 
-/// A student's dashboard as a parent sees it (GET /api/parent/:id, lib/parent-view.ts). Sections the
-/// student's chosen level leaves out are nil.
+/// A student's dashboard as a parent or counselor sees it (GET /api/parent/:id, lib/parent-view.ts). Sections
+/// the student's chosen level leaves out are nil; `notes` is nil for a parent.
 struct ParentDashboardData: Decodable, Sendable {
     struct Student: Decodable, Sendable {
         var name: String
@@ -87,10 +166,12 @@ struct ParentDashboardData: Decodable, Sendable {
     var profile: Profile?
     var essays: EssaySet?
     var essayDrafts: [String: String]
+    var role: FollowerRole
+    var notes: [CounselorNote]?
 
     private enum CodingKeys: String, CodingKey {
         case level, levelLabel, levelSummary, student, progress, criticalDates, colleges, recommendations, scholarships
-        case financialAid, applicant, profile, essays, essayDrafts
+        case financialAid, applicant, profile, essays, essayDrafts, role, notes
     }
 
     init(from decoder: any Decoder) throws {
@@ -109,6 +190,8 @@ struct ParentDashboardData: Decodable, Sendable {
         profile = c.optional(Profile.self, .profile)
         essays = c.optional(EssaySet.self, .essays)
         essayDrafts = c.dictionary(.essayDrafts)
+        role = FollowerRole(c.string(.role, "parent"))
+        notes = c.contains(.notes) ? c.array(.notes) : nil
     }
 
     var firstName: String {
@@ -126,10 +209,11 @@ struct ParentDashboardData: Decodable, Sendable {
     }
 }
 
-/// A parent link as the student sees it (GET/POST /api/parents).
+/// A parent or counselor link as the student sees it (GET/POST /api/parents).
 struct ParentLinkInfo: Codable, Hashable, Sendable, Identifiable {
     var id: String
     var email: String
+    var role: String
     var level: String
     var status: String
     var invitedAt: Double
@@ -150,6 +234,7 @@ extension ParentLinkInfo {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         id = c.string(.id)
         email = c.string(.email)
+        role = c.string(.role, "parent")
         level = c.string(.level, "basic")
         status = c.string(.status)
         invitedAt = c.double(.invitedAt)
@@ -196,9 +281,26 @@ extension APIClient {
         try await get("/api/parent", as: DataEnvelope<ParentStudentList>.self).data.students
     }
 
+    private func parentPath(_ id: String) -> String {
+        "/api/parent/" + (id.addingPercentEncoding(withAllowedCharacters: .alphanumerics.union(CharacterSet(charactersIn: "-_"))) ?? "")
+    }
+
     func parentDashboard(id: String) async throws -> ParentDashboardData {
-        let safe = id.addingPercentEncoding(withAllowedCharacters: .alphanumerics.union(CharacterSet(charactersIn: "-_"))) ?? ""
-        return try await get("/api/parent/\(safe)", as: DataEnvelope<ParentDashboardData>.self).data
+        try await get(parentPath(id), as: DataEnvelope<ParentDashboardData>.self).data
+    }
+
+    /// Counselors only: leave a note, on an essay or in general. Returns the refreshed dashboard.
+    func leaveCounselorNote(studentID: String, body: String, essayID: String?) async throws -> ParentDashboardData {
+        var fields: [String: JSONValue] = ["action": .string("note"), "body": .string(body)]
+        if let essayID { fields["essayId"] = .string(essayID) }
+        let reply: DataEnvelope<ParentDashboardData> = try await post(parentPath(studentID), body: fields)
+        return reply.data
+    }
+
+    func deleteCounselorNote(studentID: String, noteID: String) async throws -> ParentDashboardData {
+        let fields: [String: JSONValue] = ["action": .string("delete-note"), "noteId": .string(noteID)]
+        let reply: DataEnvelope<ParentDashboardData> = try await post(parentPath(studentID), body: fields)
+        return reply.data
     }
 
     func parents() async throws -> [ParentLinkInfo] {

@@ -208,8 +208,12 @@ export type AdvisorNote = {
   author: string;
   createdAt: number;
   essayId?: string;
-  /** Which kind of share link it came through. Progress links only ever show notes left through progress links. */
-  via?: "progress" | "full";
+  /** Which kind of share link it came through, or "counselor" for an invited counselor's account. Progress links only ever show notes left through progress links. */
+  via?: "progress" | "full" | "counselor";
+  /** The counselor link that wrote it (lib/parents.ts), so that counselor can delete it. */
+  byLink?: string;
+  /** What that counselor could see when writing it: a note can quote anything up to this level. */
+  authorLevel?: "basic" | "standard" | "full";
 };
 
 export type ShareMeta = {

@@ -1,10 +1,11 @@
-import type { ParentLevel } from "./parents";
+import type { FollowerRole, ParentLevel } from "./parents";
 import type { Workspace } from "./store";
 import { shareTracker } from "./tracker-service";
 
 /**
- * What a parent sees of a student, by level. Read-only, and never: portal logins, uploads, AI chance
- * estimates, share tokens, recovery codes, advisor notes, or a decision the student hasn't opened.
+ * What a parent or counselor sees of a student, by level. Never: portal logins, uploads, AI chance estimates,
+ * share tokens, recovery codes, or a decision the student hasn't opened. Advisor notes only for a counselor,
+ * and then only the notes counselors left (`counselorNotes`).
  *
  *  basic     applications, statuses, deadlines and opened decisions
  *  standard  basic + to-dos and flags, the college list, recommendation letters, scholarships, financial aid
@@ -28,6 +29,28 @@ export const PARENT_LEVEL_INFO: Record<ParentLevel, { label: string; summary: st
     forParent: "everything in their applications, including their profile (GPA, scores, activities) and essay drafts, read-only",
   },
 };
+
+const RANK: Record<ParentLevel, number> = { basic: 0, standard: 1, full: 2 };
+
+/**
+ * Notes counselors left. A note can quote whatever its author could see, so a counselor sees another's note
+ * only when they share at least that author's level (a note without one counts as full); their own always.
+ * `mine` marks the ones this counselor link wrote; an essay id only where essays show.
+ */
+export function counselorNotes(ws: Workspace, level: ParentLevel, linkId: string) {
+  return ws.advisorNotes
+    .filter((n) => n.via === "counselor" && (n.byLink === linkId || RANK[n.authorLevel ?? "full"] <= RANK[level]))
+    .map((n) => ({
+      id: n.id, body: n.body, author: n.author, createdAt: n.createdAt, mine: n.byLink === linkId,
+      ...(level === "full" && n.essayId ? { essayId: n.essayId } : {}),
+    }))
+    .sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export function followerView(ws: Workspace, access: { level: ParentLevel; role: FollowerRole; linkId: string }, today?: string) {
+  const view = parentView(ws, access.level, today);
+  return access.role === "counselor" ? { ...view, role: access.role, notes: counselorNotes(ws, access.level, access.linkId) } : { ...view, role: access.role };
+}
 
 export function parentView(ws: Workspace, level: ParentLevel, today?: string) {
   const progress = shareTracker(ws.tracker, today);

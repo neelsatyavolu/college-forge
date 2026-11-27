@@ -11,11 +11,15 @@ export async function GET(req: NextRequest) {
   // The hub opens the setup wizard by itself for a workspace that has nothing in it yet.
   let onboarding = false;
   // Parents: how many students they follow. `home` is true when the parent dashboard should open instead of
-  // the hub: they follow someone and haven't started applications of their own.
+  // the hub: they follow someone and haven't started applications of their own. `counselor` is true when
+  // any of them invited this account as their counselor (the dashboard then reads as a counselor's).
   let students = 0;
+  let counselor = false;
   if (s) {
     try {
-      students = (await studentsOf(s.sub)).length;
+      const followed = await studentsOf(s.sub);
+      students = followed.length;
+      counselor = followed.some((f) => f.role === "counselor");
     } catch (error) {
       console.error("api/me: could not read parent links", error instanceof Error ? error.name : "unknown");
     }
@@ -31,7 +35,7 @@ export async function GET(req: NextRequest) {
       signedIn: !!s,
       user: s ? { email: s.email, name: s.name } : null,
       needsOnboarding: onboarding,
-      parent: { students, home: students > 0 && onboarding },
+      parent: { students, home: students > 0 && onboarding, counselor },
     },
     { headers: { "cache-control": "no-store" } },
   );

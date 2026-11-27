@@ -1,9 +1,12 @@
 import SwiftUI
 
-/// Parents: invite by email with a level, change a level, resend, remove (app/api/parents).
+/// Parents or counselors: invite by email with a level, change a level, resend, remove (app/api/parents).
+/// The endpoint lists both roles; this section shows its own.
 struct MoreParentsSection: View {
+    var role: FollowerRole = .parent
     @Environment(WorkspaceStore.self) private var store
-    @State private var parents: [ParentLinkInfo] = []
+    @State private var links: [ParentLinkInfo] = []
+    private var parents: [ParentLinkInfo] { links.filter { FollowerRole($0.role) == role } }
     @State private var showingInvite = false
     @State private var busy = false
     @State private var sent: (url: URL, email: String, emailed: Bool)?
@@ -16,7 +19,7 @@ struct MoreParentsSection: View {
                 showingInvite = true
             } label: {
                 HStack {
-                    Label("Invite a parent", systemImage: "person.badge.plus")
+                    Label("Invite a \(role.rawValue)", systemImage: role == .counselor ? "person.crop.rectangle.badge.plus" : "person.badge.plus")
                     Spacer()
                     if busy { ProgressView() }
                 }
@@ -35,20 +38,22 @@ struct MoreParentsSection: View {
                 .padding(.vertical, 4)
             }
             ForEach(parents) { parent in
-                MoreParentRow(parent: parent, busy: busy, setLevel: { setLevel(parent, $0) }, resend: { invite(email: parent.email, level: ParentLevel(rawValue: parent.level) ?? .basic) })
+                MoreParentRow(parent: parent, busy: busy, setLevel: { setLevel(parent, $0) }, resend: { invite(email: parent.email, level: ParentLevel(rawValue: parent.level) ?? role.defaultLevel) })
                     .swipeActions { Button(parent.isActive ? "Remove" : "Cancel", role: .destructive) { removing = parent } }
             }
         } header: {
-            Text("Parents")
+            Text(role == .counselor ? "Counselors" : "Parents")
         } footer: {
-            Text("A parent creates a Forge account with the email you invite and sees your applications read-only, on the web or in this app, at the level you choose. They never see portal logins or a decision before you open it.")
+            Text(role == .counselor
+                ? "Your counselor creates a Forge account with the email you invite, sees your applications at the level you choose, and can leave you notes, in general or on an essay. They can't change anything, see portal logins, or see a decision before you open it."
+                : "A parent creates a Forge account with the email you invite and sees your applications read-only, on the web or in this app, at the level you choose. They never see portal logins or a decision before you open it.")
         }
         .task { await load() }
         .sheet(isPresented: $showingInvite) {
-            MoreParentInviteSheet { email, level in invite(email: email, level: level) }
+            MoreParentInviteSheet(role: role) { email, level in invite(email: email, level: level) }
                 .presentationDetents([.medium, .large])
         }
-        .confirmationDialog(removing?.isActive == true ? "Remove this parent?" : "Cancel this invite?", isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }), titleVisibility: .visible, presenting: removing) { parent in
+        .confirmationDialog(removing?.isActive == true ? "Remove this \(role.rawValue)?" : "Cancel this invite?", isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }), titleVisibility: .visible, presenting: removing) { parent in
             Button(parent.isActive ? "Remove" : "Cancel invite", role: .destructive) { remove(parent) }
         } message: { parent in
             Text(parent.isActive ? "\(parent.displayName) loses access right away." : "The invite link stops working.")
@@ -57,7 +62,7 @@ struct MoreParentsSection: View {
     }
 
     private func load() async {
-        do { parents = try await store.api.parents() } catch { self.error = APIError.wrap(error) }
+        do { links = try await store.api.parents() } catch { self.error = APIError.wrap(error) }
     }
 
     private func run(_ fields: [String: JSONValue], after: @escaping (ParentsReply) -> Void = { _ in }) {
@@ -65,7 +70,7 @@ struct MoreParentsSection: View {
         Task {
             do {
                 let reply = try await store.api.parentsAction(fields)
-                withAnimation { parents = reply.data }
+                withAnimation { links = reply.data }
                 after(reply)
                 Haptics.success()
             } catch {
@@ -77,7 +82,7 @@ struct MoreParentsSection: View {
     }
 
     private func invite(email: String, level: ParentLevel) {
-        run(["action": .string("invite"), "email": .string(email), "level": .string(level.rawValue)]) { reply in
+        run(["action": .string("invite"), "email": .string(email), "level": .string(level.rawValue), "role": .string(role.rawValue)]) { reply in
             guard let url = reply.url.flatMap(URL.init(string:)) else { return }
             withAnimation { sent = (url, email, reply.emailed) }
         }
@@ -139,10 +144,17 @@ private struct MoreParentRow: View {
 }
 
 private struct MoreParentInviteSheet: View {
+    let role: FollowerRole
     let send: (String, ParentLevel) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
-    @State private var level: ParentLevel = .basic
+    @State private var level: ParentLevel
+
+    init(role: FollowerRole, send: @escaping (String, ParentLevel) -> Void) {
+        self.role = role
+        self.send = send
+        _level = State(initialValue: role.defaultLevel)
+    }
 
     private var valid: Bool {
         let e = email.trimmingCharacters(in: .whitespaces)
@@ -153,13 +165,13 @@ private struct MoreParentInviteSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("parent@example.com", text: $email)
+                    TextField(role == .counselor ? "counselor@school.org" : "parent@example.com", text: $email)
                         .keyboardType(.emailAddress)
                         .textContentType(.emailAddress)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } header: {
-                    Text("Parent's email")
+                    Text(role == .counselor ? "Counselor's email" : "Parent's email")
                 }
                 Section {
                     Picker("They see", selection: $level) {
@@ -170,7 +182,7 @@ private struct MoreParentInviteSheet: View {
                     Text(level.summary)
                 }
             }
-            .navigationTitle("Invite a parent")
+            .navigationTitle("Invite a \(role.rawValue)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }

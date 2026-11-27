@@ -187,6 +187,37 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-parent-draft { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.7; color: var(--body); }
 .cf-parent-empty { margin: 0; font-size: 14px; color: var(--muted); }
 .cf-parent-error { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; font-size: 14px; color: var(--error); }
+.cf-roster-tools { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; font-size: 13px; color: var(--muted); }
+.cf-roster-tools input, .cf-roster-tools select, .cf-note-form textarea, .cf-note-form select { padding: 8px 10px; border: 1px solid var(--hairline); border-radius: var(--radius-sm); background: var(--canvas); color: var(--ink); font: 400 14px/1.4 var(--font-sans); }
+.cf-roster-tools input { flex: 1 1 220px; max-width: 320px; }
+.cf-roster-tools label { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.cf-roster { margin: 0; padding: 0; list-style: none; }
+.cf-roster li { border-bottom: 1px solid var(--hairline-soft, var(--hairline)); }
+.cf-roster li:last-child { border-bottom: 0; }
+.cf-roster button { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 150px 220px; gap: 16px; align-items: center; width: 100%; padding: 12px 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.cf-roster button:hover strong { text-decoration: underline; }
+.cf-roster button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cf-roster-name, .cf-roster-next { display: grid; gap: 2px; min-width: 0; }
+.cf-roster small { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-roster-counts { font-size: 13px; color: var(--muted); white-space: nowrap; text-align: right; }
+.cf-roster-tags { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+.cf-roster-who { font-weight: 500; color: var(--ink); text-align: left; margin-right: 6px; }
+.cf-parent-rows li > span.cf-upcoming-what { display: block; flex: 1 1 auto; color: var(--body); }
+.cf-upcoming-when { margin-left: auto; }
+.cf-note-form { display: grid; gap: 8px; margin-bottom: 12px; }
+.cf-note-form textarea { width: 100%; box-sizing: border-box; resize: vertical; line-height: 1.6; }
+.cf-note-row { display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.cf-note-row select { flex: 0 1 320px; min-width: 0; }
+.cf-note-body { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; color: var(--body); }
+.cf-essay-note { display: grid; gap: 2px; margin: 10px 0 0; padding: 8px 12px; border-left: 2px solid var(--hairline); font-size: 14px; line-height: 1.6; color: var(--body); white-space: pre-wrap; }
+.cf-essay-note small { font-size: 12px; color: var(--muted); white-space: normal; }
+@media (max-width: 720px) {
+  .cf-roster button { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; }
+  .cf-roster-next { grid-column: 1; }
+  .cf-roster-counts { grid-column: 2; grid-row: 1; text-align: right; }
+  .cf-roster-tags { grid-column: 2; grid-row: 2; }
+  .cf-roster-tools label { margin-left: 0; }
+}
 .cf-parent-foot { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 13px; color: var(--muted); }
 
 /* Decisions */

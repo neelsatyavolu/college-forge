@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// One student's dashboard for a parent, read-only. The server already cut it to the student's chosen level;
-/// sections it left out don't show.
+/// One student's dashboard for a parent or counselor. The server already cut it to the student's chosen level;
+/// sections it left out don't show. Parents only read; counselors can also leave and delete their own notes.
 struct ParentDashboardView: View {
     let studentID: String
     @Environment(WorkspaceStore.self) private var store
@@ -11,7 +11,7 @@ struct ParentDashboardView: View {
     var body: some View {
         Group {
             if let data {
-                ParentDashboardList(data: data, config: store.config)
+                ParentDashboardList(data: data, config: store.config, studentID: studentID, update: { self.data = $0 })
                     .refreshable { await load() }
             } else if let error {
                 ErrorStateView(error: error) { await load() }
@@ -36,6 +36,8 @@ struct ParentDashboardView: View {
 private struct ParentDashboardList: View {
     let data: ParentDashboardData
     let config: AppConfig
+    let studentID: String
+    let update: (ParentDashboardData) -> Void
 
     var body: some View {
         List {
@@ -49,6 +51,10 @@ private struct ParentDashboardList: View {
                         .foregroundStyle(Theme.body)
                 }
                 .padding(.vertical, Theme.Spacing.xs)
+            }
+
+            if let notes = data.notes {
+                CounselorNotesSection(notes: notes, essays: data.essays?.all ?? [], firstName: data.firstName, studentID: studentID, update: update)
             }
 
             Section("Applications") {
@@ -138,7 +144,7 @@ private struct ParentDashboardList: View {
                     ForEach(essays.all) { essay in
                         let draft = data.essayDrafts[essay.id] ?? ""
                         NavigationLink {
-                            ParentEssayView(essay: essay, draft: draft)
+                            ParentEssayView(essay: essay, draft: draft, notes: (data.notes ?? []).filter { $0.essayId == essay.id })
                         } label: {
                             ForgeRow(title: essay.label, subtitle: "\(essay.length(of: draft))/\(essay.limit) \(essay.unit)") { EmptyView() }
                         }
@@ -196,6 +202,7 @@ private struct ParentApplicationRow: View {
 private struct ParentEssayView: View {
     let essay: Essay
     let draft: String
+    var notes: [CounselorNote] = []
 
     var body: some View {
         ScrollView {
@@ -205,6 +212,14 @@ private struct ParentEssayView: View {
                     .font(.body)
                     .foregroundStyle(Theme.body)
                     .textSelection(.enabled)
+                ForEach(notes) { note in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(note.author).font(.caption).foregroundStyle(Theme.muted)
+                        Text(note.body).font(.subheadline).foregroundStyle(Theme.body)
+                    }
+                    .padding(.leading, Theme.Spacing.sm)
+                    .overlay(alignment: .leading) { Rectangle().fill(Theme.hairline).frame(width: 2) }
+                }
             }
             .padding(Theme.Spacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -212,5 +227,143 @@ private struct ParentEssayView: View {
         .navigationTitle(essay.label)
         .navigationBarTitleDisplayMode(.inline)
         .forgeScreenBackground()
+    }
+}
+
+/// Counselors: leave the student a note, in general or on an essay they can see, and delete their own.
+private struct CounselorNotesSection: View {
+    let notes: [CounselorNote]
+    let essays: [Essay]
+    let firstName: String
+    let studentID: String
+    let update: (ParentDashboardData) -> Void
+    @Environment(WorkspaceStore.self) private var store
+    @State private var writing = false
+    @State private var busy = false
+    @State private var error: APIError?
+
+    var body: some View {
+        Section {
+            Button {
+                writing = true
+            } label: {
+                HStack {
+                    Label("Leave \(firstName) a note", systemImage: "square.and.pencil")
+                    Spacer()
+                    if busy { ProgressView() }
+                }
+            }
+            .disabled(busy)
+            ForEach(notes) { note in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(caption(note)).font(.caption).foregroundStyle(Theme.muted)
+                    Text(note.body).foregroundStyle(Theme.body)
+                }
+                .padding(.vertical, 2)
+                .swipeActions {
+                    if note.mine { Button("Delete", role: .destructive) { run { try await store.api.deleteCounselorNote(studentID: studentID, noteID: note.id) } } }
+                }
+            }
+        } header: {
+            Text("Notes")
+        } footer: {
+            Text("\(firstName) sees your notes in Forge. Swipe to delete one you wrote.")
+        }
+        .sheet(isPresented: $writing) {
+            CounselorNoteSheet(firstName: firstName, essays: essays) { body, essayID in
+                // The sheet keeps the draft until the server has it.
+                let saved = try await store.api.leaveCounselorNote(studentID: studentID, body: body, essayID: essayID)
+                update(saved)
+                Haptics.success()
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .errorAlert($error)
+    }
+
+    private func caption(_ note: CounselorNote) -> String {
+        let date = Date(milliseconds: note.createdAt).formatted(date: .abbreviated, time: .omitted)
+        let essay = note.essayId.flatMap { id in essays.first { $0.id == id }?.label }
+        return [note.author, date, essay].compactMap { $0 }.joined(separator: " · ")
+    }
+
+    private func run(_ call: @escaping () async throws -> ParentDashboardData) {
+        busy = true
+        Task {
+            do {
+                update(try await call())
+                Haptics.success()
+            } catch {
+                self.error = APIError.wrap(error)
+                Haptics.error()
+            }
+            busy = false
+        }
+    }
+}
+
+private struct CounselorNoteSheet: View {
+    let firstName: String
+    let essays: [Essay]
+    let send: (String, String?) async throws -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var text = ""
+    @State private var essayID = ""
+    @State private var sending = false
+    @State private var error: APIError?
+
+    /// The server counts UTF-16 units, like JavaScript's length.
+    private static let limit = 4000
+
+    private var trimmed: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextEditor(text: $text)
+                        .frame(minHeight: 140)
+                } footer: {
+                    let used = trimmed.utf16.count
+                    Text(used > Self.limit ? "Too long by \(used - Self.limit) characters." : "\(firstName) sees it in Forge.")
+                        .foregroundStyle(used > Self.limit ? Theme.danger : Theme.muted)
+                }
+                if !essays.isEmpty {
+                    Section {
+                        Picker("About", selection: $essayID) {
+                            Text("General note").tag("")
+                            ForEach(essays) { Text($0.label).tag($0.id) }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Note for \(firstName)")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    if sending {
+                        ProgressView()
+                    } else {
+                        Button("Send") { Task { await submit() } }
+                            .disabled(trimmed.isEmpty || trimmed.utf16.count > Self.limit)
+                    }
+                }
+            }
+            .interactiveDismissDisabled(sending || !trimmed.isEmpty)
+            .errorAlert($error)
+        }
+    }
+
+    private func submit() async {
+        sending = true
+        defer { sending = false }
+        do {
+            try await send(trimmed, essayID.isEmpty ? nil : essayID)
+            dismiss()
+        } catch {
+            self.error = APIError.wrap(error)
+            Haptics.error()
+        }
     }
 }
