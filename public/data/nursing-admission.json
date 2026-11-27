@@ -1,0 +1,276 @@
+{
+ "source": "Each college's own admissions or school-of-nursing page (sourceUrl per college); researched 2026-11-27, verify yearly",
+ "checkedAt": "2026-11-27",
+ "colleges": {
+  "university-of-pennsylvania": {
+   "entry": "direct",
+   "note": "Penn's catalog: \"Our traditional four-year BSN is a direct-entry program for graduating high school seniors\"; high school students apply through Penn's central undergraduate admissions office to the School of Nursing.",
+   "sourceUrl": "https://catalog.upenn.edu/undergraduate/programs/nursing-bsn/"
+  },
+  "duke-university": {
+   "entry": "none",
+   "note": "Duke has no four-year undergraduate BSN; its only bachelor's nursing option was the 16-month accelerated ABSN, which the school says is ending in Spring 2026 and no longer admitting, pointing pre-licensure students to its Master of Nursing.",
+   "sourceUrl": "https://nursing.duke.edu/academic-programs/absn-accelerated-bachelor-science-nursing"
+  },
+  "johns-hopkins-university": {
+   "entry": "none",
+   "note": "Johns Hopkins School of Nursing offers pre-licensure entry only through the MSN Entry into Nursing program (for bachelor's-degree holders); no undergraduate BSN.",
+   "sourceUrl": "https://nursing.jhu.edu/academics/programs/"
+  },
+  "columbia-university": {
+   "entry": "none",
+   "note": "Columbia Nursing dropped its bachelor's track in 2015; non-nurses enter through the 15-month Master's Direct Entry (MDE) program, which requires a prior bachelor's degree.",
+   "sourceUrl": "https://www.nursing.columbia.edu/academics/academic-programs/masters-direct-entry-program-non-nurses"
+  },
+  "university-of-california-los-angeles": {
+   "entry": "direct",
+   "note": "UCLA's BS (Prelicensure) is a four-year program; first-year applicants are admitted at the freshman level for fall only via the UC Application plus a School of Nursing supplemental application (statement, resume, two recommendations) due Jan 15.",
+   "sourceUrl": "https://nursing.ucla.edu/programs-admissions/academic-programs/bachelor-of-science/apply"
+  },
+  "emory-university": {
+   "entry": "competitive",
+   "note": "Students enter Emory College or Oxford College, take two years of prerequisites, and apply to the BSN in their 3rd semester; a 3.0 cumulative GPA gives guaranteed admission, below that applicants are waitlisted for committee review.",
+   "sourceUrl": "https://www.nursing.emory.edu/program-details/high-school-students"
+  },
+  "georgetown-university": {
+   "entry": "direct",
+   "note": "Georgetown's BSN \"is a traditional four-year direct entry undergraduate program,\" with the first nursing course in fall of the first year; first-years apply EA Nov 1 or RD Jan 1.",
+   "sourceUrl": "https://nursing.georgetown.edu/degree-programs/bachelor-of-science-nursing-bsn/"
+  },
+  "university-of-michigan-ann-arbor": {
+   "entry": "direct",
+   "note": "Michigan's BSN takes first-year applicants into a full-time four-year program with clinicals from sophomore year; a separate sophomore transfer route leads to a three-year program.",
+   "sourceUrl": "https://www.nursing.umich.edu/academics/bsn"
+  },
+  "university-of-virginia": {
+   "entry": "direct",
+   "note": "\"Prospective nursing students apply directly to the School of Nursing\" for the traditional BSN (EA Nov 1, RD Jan 1); a separate 3-year transfer program also takes internal UVA applicants.",
+   "sourceUrl": "https://www.nursing.virginia.edu/programs/bsn/"
+  },
+  "university-of-north-carolina-chapel-hill": {
+   "entry": "both",
+   "note": "Assured Admissions guarantees a BSN spot to select NC-resident first-years who keep a 3.0 cumulative and 3.0 prerequisite-science GPA (BSN starts junior fall); others apply later via intra-university transfer, for which the school \"reserves ample spots.\"",
+   "sourceUrl": "https://nursing.unc.edu/programs/bachelor-of-science-in-nursing/assured-admissions"
+  },
+  "boston-college": {
+   "entry": "direct",
+   "note": "First-years interested in nursing apply directly to the Connell School of Nursing as their undergraduate division; Nursing is one of the few majors declared at application. Internal transfer into CSON is possible only after two semesters.",
+   "sourceUrl": "https://www.bc.edu/bc-web/schools/cson/admission-aid.html"
+  },
+  "new-york-university": {
+   "entry": "direct",
+   "note": "NYU Meyers' traditional four-year BS: 'High school graduates enter this program as first-year students in the fall,' taking liberal arts and prerequisites first and starting clinical courses junior year.",
+   "sourceUrl": "https://nursing.nyu.edu/academics/undergraduate/traditional-4-year"
+  },
+  "university-of-california-irvine": {
+   "entry": "direct",
+   "note": "'Our program is a direct-entry program for students admitted to the Nursing Science major as freshmen'; they do not reapply later. Admission is competitive and the program aims to graduate about 50 students a year; limited change-of-major also exists.",
+   "sourceUrl": "https://nursing.uci.edu/degrees-and-programs/undergraduate-nursing-science/faqs/"
+  },
+  "university-of-florida": {
+   "entry": "competitive",
+   "note": "Traditional BSN is limited-access upper-division entry via NursingCAS (Fall 2027 deadline Feb 1, 2027): 60 credits, 3.0 overall and 3.0 pre-professional GPA, HESI A2; 'not all qualified applicants are admitted.'",
+   "sourceUrl": "https://nursing.ufl.edu/programs/bachelor-of-science-bsn/traditional-bsn/"
+  },
+  "the-university-of-texas-austin": {
+   "entry": "direct",
+   "note": "Freshmen select Nursing as first-choice major (fall only, Dec 1 deadline) with nursing short answers; 'The BSN degree program is direct entry, with no additional application prior to upper division course work.'",
+   "sourceUrl": "https://nursing.utexas.edu/academics/undergraduate/bsn"
+  },
+  "university-of-wisconsin-madison": {
+   "entry": "competitive",
+   "note": "Students begin as pre-nursing and apply to the Traditional BSN midway through sophomore year (min 2.75 cumulative and prerequisite GPA); admission to UW does not guarantee nursing and fewer than 50% of applicants are typically admitted.",
+   "sourceUrl": "https://nursing.wisc.edu/undergraduate/bsn-traditional/"
+  },
+  "northeastern-university": {
+   "entry": "direct",
+   "note": "First-year applicants select Nursing as their major on the undergraduate application, with no separate nursing application; the pre-licensure handbook says first-year applicants are admitted directly into the Nursing program.",
+   "sourceUrl": "https://bouve.northeastern.edu/programs/bachelor-of-science-in-nursing-bsn/"
+  },
+  "villanova-university": {
+   "entry": "direct",
+   "note": "Undergraduate admission FAQ: 'The nursing major is a four-year, direct-admit program.' Applicants need at least one year each of high school biology and chemistry.",
+   "sourceUrl": "https://www.villanova.edu/university/undergraduate-admission/faqs.html"
+  },
+  "case-western-reserve-university": {
+   "entry": "direct",
+   "note": "BSN page lists 'Direct Admission to the undergraduate program'; students apply through undergraduate admission, with no second nursing application and nursing coursework from the first semester.",
+   "sourceUrl": "https://case.edu/nursing/programs/bsn"
+  },
+  "the-ohio-state-university": {
+   "entry": "both",
+   "note": "Limited Direct Admission BSN seats (top 10%, ACT Math 26+, early action; must finish year one with 3.2 GPA and prerequisites at C+). Others enter Pre-Nursing and apply through the highly competitive Second-Year Enrollment Process.",
+   "sourceUrl": "https://nursing.osu.edu/degrees-programs/direct-admission"
+  },
+  "rutgers-university-new-brunswick": {
+   "entry": "direct",
+   "note": "Rutgers School of Nursing admits high school students each fall into the four-year traditional B.S. in nursing 'for students applying directly from high school'; New Brunswick lists School of Nursing as a first-year school choice.",
+   "sourceUrl": "https://catalogs.rutgers.edu/generated/nursing_2325/pg16.html"
+  },
+  "university-of-rochester": {
+   "entry": "none",
+   "note": "Rochester's School of Nursing offers only accelerated bachelor's programs (12 or 24 months, for those with a prior bachelor's) and an RN-to-BS; it has no traditional four-year first-year BSN.",
+   "sourceUrl": "https://son.rochester.edu/academics/undergraduate.html"
+  },
+  "university-of-washington": {
+   "entry": "competitive",
+   "note": "The Seattle BSN is a two-year professional program after prerequisites; admission once a year (autumn, Jan 15 deadline) and 'selection is capacity constrained', with a 2.00 GPA minimum but 'usually significantly higher' in practice.",
+   "sourceUrl": "https://www.washington.edu/students/gencat/program/S/Nursing-552.html"
+  },
+  "the-pennsylvania-state-university-university-park": {
+   "entry": "direct",
+   "note": "First-year applicants are admitted directly into the Nursing program at University Park (Dec 1 deadline, competitive); transfers and change-of-major students can't enter there. About 4,000 applicants for roughly 160 seats.",
+   "sourceUrl": "https://www.nursing.psu.edu/general-b-s-n-program-faqs/"
+  },
+  "purdue-university-main-campus": {
+   "entry": "direct",
+   "note": "Purdue runs a 'four-year, direct-admit baccalaureate nursing program'; it is highly competitive with limited space, and applicants should apply by the Nov 1 early action deadline.",
+   "sourceUrl": "https://hhs.purdue.edu/undergraduate-majors/nursing-bachelor-of-science/"
+  },
+  "university-of-miami": {
+   "entry": "direct",
+   "note": "Freshmen accepted into the Traditional BSN are 'ensured progression into the upper division' if they finish prerequisites and keep the required GPA (handbook: 3.0 cumulative UM GPA and 2.75 prerequisite GPA at entry to junior year).",
+   "sourceUrl": "https://www.sonhs.miami.edu/academics/bachelors-programs/bsn/index.html"
+  },
+  "florida-state-university": {
+   "entry": "competitive",
+   "note": "The BSN is a limited-access upper-division major: apply after about 60 credits and prerequisites with at least a 3.0 GPA (HESI A2 required from Fall 2027). Up to 150 are admitted per cycle from 300-600 applicants; admits average a 3.7-3.8 GPA.",
+   "sourceUrl": "https://nursing.fsu.edu/academics/bachelor-science-nursing-bsn"
+  },
+  "george-washington-university": {
+   "entry": "none",
+   "note": "GW School of Nursing lists only an Accelerated BSN (needs 60+ credits or a prior bachelor's), a Veterans BSN and an online RN-BSN; no traditional first-year four-year BSN appears on its programs or deadlines pages.",
+   "sourceUrl": "https://nursing.gwu.edu/deadlines"
+  },
+  "stony-brook-university-suny": {
+   "entry": "competitive",
+   "note": "First-year applicants are admitted to Arts and Sciences to take about 57 credits of prerequisites, then apply to the upper-division Basic Baccalaureate program (minimum 2.8 GPA); the school says it 'is not a direct admission program'.",
+   "sourceUrl": "https://www.stonybrook.edu/undergraduate-admissions/apply/upper-division/nursing.html"
+  },
+  "texas-a-and-m-university": {
+   "entry": "competitive",
+   "note": "The Traditional BSN takes no applicants straight from high school; students finish two years of prerequisites and then apply for upper-level entry (minimums: 3.0 science and prerequisite GPA, 75% on each HESI section). Admission is competitive.",
+   "sourceUrl": "https://nursing.tamu.edu/degrees/bsn-traditional/index.html"
+  },
+  "university-of-massachusetts-amherst": {
+   "entry": "direct",
+   "note": "Four-year BS in Nursing admits first-years only; no transfer or change-of-major students. Highly selective (about 12% acceptance), limited by clinical placements; acceptance to UMass does not guarantee the nursing major.",
+   "sourceUrl": "https://www.umass.edu/nursing/academics/bachelor-science-nursing-bs/admissions"
+  },
+  "university-of-minnesota-twin-cities": {
+   "entry": "direct",
+   "note": "Freshmen are admitted directly into the School of Nursing (supplemental questions due Nov 1); they continue to sophomore year after completing prerequisites with a minimum 3.0 GPA both fall and spring. About 30 transfer spaces otherwise.",
+   "sourceUrl": "https://nursing.umn.edu/academics/bachelor-science-nursing/freshman-admissions"
+  },
+  "university-of-pittsburgh": {
+   "entry": "direct",
+   "note": "High school applicants apply through Pitt admissions to the School of Nursing's first-year BSN class and must meet nursing course requirements (chemistry, biology); internal and external transfers compete for limited seats.",
+   "sourceUrl": "https://www.nursing.pitt.edu/admissions/requirements/"
+  },
+  "michigan-state-university": {
+   "entry": "both",
+   "note": "Traditional BSN is a secondary-admission program (about 120 admitted a year, 3.0 minimum GPA, 28 credits plus prerequisites). Nurse Scholar Program gives high schoolers with 3.8+ GPA a guaranteed seat if they keep a 3.4 cumulative GPA.",
+   "sourceUrl": "https://nursing.msu.edu/undergraduate/special-programs/nurse-scholar"
+  },
+  "binghamton-university-suny": {
+   "entry": "direct",
+   "note": "Decker directly admits a first-year cohort; students are nursing majors once they deposit and do not need to re-apply to the nursing program after completing prerequisites.",
+   "sourceUrl": "https://www.binghamton.edu/decker/nursing/undergraduate/bs.html"
+  },
+  "howard-university": {
+   "entry": "competitive",
+   "note": "Basic track: freshmen and sophomores complete Lower Division prerequisites, then must apply and be accepted to the Upper Division (junior/senior nursing courses) with a minimum 3.0 cumulative and 3.0 science GPA.",
+   "sourceUrl": "https://cnahs.howard.edu/departments/nursing/undergraduate-nursing"
+  },
+  "indiana-university-bloomington": {
+   "entry": "both",
+   "note": "Limited, competitive direct-admit seats by invitation and supplemental application; direct admits are guaranteed placement from their third semester with a 3.5 prerequisite GPA. Others start as pre-nursing and apply to the traditional BSN later.",
+   "sourceUrl": "https://nursing.iu.edu/admissions/direct-admit.html"
+  },
+  "university-of-connecticut": {
+   "entry": "direct",
+   "note": "Qualified students are admitted directly to the School of Nursing as first-year students (fall only, competitive). Catalog says they may hold a 2.0 GPA until fall of second year, then must keep a 2.5 GPA to progress.",
+   "sourceUrl": "https://catalog.uconn.edu/undergraduate/nursing/"
+  },
+  "clemson-university": {
+   "entry": "direct",
+   "note": "The Clemson application is also the application for a Nursing seat; freshmen admitted to Nursing do not reapply. Progression needs C or better in prerequisites and a 2.5 GPR; change-of-major seats are very limited.",
+   "sourceUrl": "https://www.clemson.edu/cbshs/departments/nursing/students/prospective-nursing-students.html"
+  },
+  "drexel-university": {
+   "entry": "direct",
+   "note": "Entering freshmen apply to the BSN Co-op itself, choosing a 4-year (one co-op) or 5-year (three co-ops) program through Undergraduate Admissions; no separate later application to the major is described.",
+   "sourceUrl": "https://drexel.edu/cnhp/academics/undergraduate/BSN-Nursing-CO-OP/"
+  },
+  "university-at-buffalo-suny": {
+   "entry": "both",
+   "note": "Freshmen enter as intended nursing majors and apply to the upper-division BSN, typically spring of sophomore year (competitive; min 3.3 overall GPA). Honors College students can get guaranteed Dual Admission.",
+   "sourceUrl": "https://nursing.buffalo.edu/admissions/undergraduate/bsn.html"
+  },
+  "university-of-delaware": {
+   "entry": "direct",
+   "note": "The four-year Traditional BSN 'welcomes students directly into the nursing program as freshmen'; nursing courses start freshman year. Change of major into nursing later is space-available only.",
+   "sourceUrl": "https://udel.edu/academics/colleges/chs/departments/son/undergraduate-programs/traditional-bsn"
+  },
+  "baylor-university": {
+   "entry": "competitive",
+   "note": "All entering freshmen who wish to study nursing begin in the non-degree Pre-Nursing (PNU1) major; progression needs a 2.75 cumulative and science GPA plus HESI A2 score of 80+, and School of Nursing acceptance is not guaranteed.",
+   "sourceUrl": "https://catalog.baylor.edu/undergraduate/louise-herrington-school-nursing/pre-nursing/"
+  },
+  "gonzaga-university": {
+   "entry": "direct",
+   "note": "High school seniors apply to nursing through Gonzaga admission and are in the program from freshman fall; they must keep a 3.0 cumulative GPA and C grades in prerequisites. No applications from current or transfer students.",
+   "sourceUrl": "https://gonzaga.edu/school-of-health-sciences/departments/nursing/bachelor-of-science-in-nursing/admission-requirements"
+  },
+  "marquette-university": {
+   "entry": "direct",
+   "note": "Students are admitted directly to the College of Nursing; 'acceptance as a freshman in the College of Nursing assures placement in clinical nursing courses' if they remain in good standing and follow the program plan.",
+   "sourceUrl": "https://bulletin.marquette.edu/nursing/policies/admission-requirements/"
+  },
+  "texas-christian-university": {
+   "entry": "direct",
+   "note": "First-year applicants apply to the nursing major (via TCU admissions plus nursing supplemental questions) as direct-admit students; to stay in the program all nursing majors must keep a TCU cumulative GPA of 2.5 or higher.",
+   "sourceUrl": "https://harriscollege.tcu.edu/nursing/undergraduate/admission.php"
+  },
+  "rutgers-university-camden": {
+   "entry": "direct",
+   "note": "High school students apply through the 'Traditional, First-Year Application' (Dec 1 deadline) straight into the Rutgers School of Nursing-Camden BSN; separate space-limited internal and external transfer tracks also exist.",
+   "sourceUrl": "https://camden.rutgers.edu/nursing/bachelor-science-applicants"
+  },
+  "university-of-illinois-chicago": {
+   "entry": "both",
+   "note": "UIC Nursing 'now accepts students directly to our program in Chicago as freshmen'. It still runs a 'very competitive' junior-level transfer admission (57 credit hours, min 2.75 GPA, fall only).",
+   "sourceUrl": "https://nursing.uic.edu/programs/bsn-all/bsn-freshmen/"
+  },
+  "university-of-missouri": {
+   "entry": "both",
+   "note": "Freshmen are admitted as pre-nursing and apply to the clinical major, where 'admission is competitive'. Honors-eligible freshmen in the Nursing Honors Program can take direct admission with a 3.8 MU GPA.",
+   "sourceUrl": "https://nursing.missouri.edu/academic-programs/bachelor-of-science-in-nursing-bsn/overview-of-program/how-to-apply"
+  },
+  "auburn-university": {
+   "entry": "competitive",
+   "note": "Freshmen declare pre-nursing and apply to the upper-division BSN in the fall of sophomore year through a holistic review; 'Admission to Auburn University does not guarantee admission to the College of Nursing.'",
+   "sourceUrl": "https://nursing.auburn.edu/traditional"
+  },
+  "creighton-university": {
+   "entry": "direct",
+   "note": "Admitted freshmen get a seat in the College of Nursing with no later application; list Nursing on the admission application.",
+   "sourceUrl": "https://creighton.edu/nursing/future-students/admissions"
+  },
+  "saint-louis-university": {
+   "entry": "direct",
+   "note": "Direct-entry BSN; an older catalog lists a 3.20 GPA to stay in the nursing track. Confirm the current progression GPA.",
+   "sourceUrl": "https://www.slu.edu/nursing/degrees/undergraduate/nursing-bs.php"
+  },
+  "university-of-iowa": {
+   "entry": "direct",
+   "note": "From fall 2027, direct admission is the only first-year BSN route (about 168 seats); it requires an ACT/SAT score and a 3.0 GPA after year one.",
+   "sourceUrl": "https://nursing.uiowa.edu/admissions/bsn/direct-admission"
+  },
+  "st-olaf-college": {
+   "entry": "both",
+   "note": "12-15 students are admitted directly each year; others apply competitively in the fall of sophomore year (about a 3.0 GPA).",
+   "sourceUrl": "https://wp.stolaf.edu/nursing/nursing-admissions/"
+  }
+ }
+}

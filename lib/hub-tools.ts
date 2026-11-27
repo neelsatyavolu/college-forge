@@ -1,4 +1,5 @@
 import { studentFacts } from "./list-facts";
+import { nursingAdmission, nursingLabel, wantsNursing } from "./nursing-admission";
 import { EXTRA_TOOL_SPECS, runExtraTool } from "./copilot-extra-tools";
 import { recExtras, trackedAppIds, withoutExtras } from "./recommenders";
 import { bridgeToolSpecs, runBridgeTool } from "./copilot-bridge-tools";
@@ -481,7 +482,8 @@ export function makeHubTools(
           // What each school would cost this family and whether it needs supplements, from Forge's research files.
           const forYou = (name: string, slug?: string) => {
             const f = studentFacts(ws, name, slug);
-            return { netPriceForYou: f.netPrice?.label ?? (f.outOfState ? "out-of-state public: the income averages are for residents; check the nonresident cost" : null), fitsBudget: f.fitsBudget, supplements: f.supplements };
+            const nursing = wantsNursing(ws.profile.intended) ? nursingLabel(nursingAdmission(slug)) : null;
+            return { netPriceForYou: f.netPrice?.label ?? (f.outOfState ? "out-of-state public: the income averages are for residents; check the nonresident cost" : null), fitsBudget: f.fitsBudget, supplements: f.supplements, ...(nursing ? { nursingEntry: nursing } : {}) };
           };
           return JSON.stringify({
             ...result,
