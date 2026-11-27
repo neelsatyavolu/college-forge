@@ -5,7 +5,7 @@ const OnboardingChat = window.OnboardingChat;
 // The sidebar's views, groups, page links and icons live in nav.js, shared with the full pages outside the hub.
 const { NAV, GROUPS: NAV_GROUPS, PAGE_LINKS, ICONS: NAV_ICONS } = window.cfNav;
 // Tabs that were folded into others keep working as links.
-const VIEW_ALIASES = { portals: "applications", overview: "applications", timeline: "applications", planner: "applications", compare: "shortlist" };
+const VIEW_ALIASES = { portals: "applications", overview: "applications", planner: "timeline", compare: "shortlist" };
 
 function NavIcon({ name }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={NAV_ICONS[name] || NAV_ICONS.home} /></svg>;
@@ -261,6 +261,7 @@ function App() {
           </div>}
           {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspace} />}
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspaceAndTracker} />}
+          {view === "timeline" && <Timeline data={data} tracker={tracker} onWorkspaceChange={applyWorkspace} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={refresh} />}
           {view === "board" && <DecisionBoard tracker={tracker} onTrackerChange={setTracker} />}
           {view === "list" && <RankList tracker={tracker} data={data} onWorkspaceChange={applyWorkspace} />}
