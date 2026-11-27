@@ -14,7 +14,9 @@ import * as cheerio from "cheerio";
 const NOISE =
   "script,style,noscript,svg,nav,header,footer,form,iframe,aside,template,[role=navigation],[role=banner],[role=contentinfo]";
 const BLOCK_TAGS = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "blockquote", "td", "th", "dt", "dd", "summary", "div"];
-const BLOCK_SELECTOR = BLOCK_TAGS.join(",");
+/** Accordion toggles ("<button aria-controls>Transfer Students</button>") title the panel after them. */
+const ACCORDION_BUTTON = "button[aria-controls],button[aria-expanded]";
+const BLOCK_SELECTOR = [...BLOCK_TAGS, ACCORDION_BUTTON].join(",");
 
 /** Level for headings that aren't h1–h6 (accordion summaries, bold lines). */
 const MINOR_HEADING = 7;
@@ -128,7 +130,7 @@ function headingLevel($, el, text) {
   const tag = el.tagName.toLowerCase();
   const h = tag.match(/^h([1-6])$/);
   if (h) return Number(h[1]);
-  if (tag === "summary" || tag === "dt" || tag === "th") return MINOR_HEADING;
+  if (tag === "summary" || tag === "dt" || tag === "th" || tag === "button") return MINOR_HEADING;
   const bold = clean($(el).find("strong,b").text());
   return text.length <= MAX_LABEL_CHARS && bold === text && !text.includes("?") ? MINOR_HEADING : 0;
 }

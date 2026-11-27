@@ -210,3 +210,39 @@ test('MCP agents can list, read and set essay prompts without touching drafts', 
   assert.equal((await callTool(id, 'set_essays', { supplements: { 'sample-u': [{ ...prompt, limit: -1 }] } })).isError, true);
   assert.equal((await callTool(id, 'set_essays', {})).isError, true);
 }));
+
+test('refreshScrapedSupplements updates dataset prompts in place and keeps drafts with their prompts', () => {
+  const { refreshScrapedSupplements } = require('../lib/essay-supplements.ts');
+  const { emptyWorkspace } = require('../lib/store.ts');
+  const college = { name: 'University of Maryland, College Park', slug: 'university-of-maryland-college-park' };
+  const fresh = scrapedSupplementsFor(college);
+  assert.ok(fresh && fresh.length >= 2);
+  const old = (id, label, prompt) => ({ id, group: 'UMD', label, prompt, limit: 650, unit: 'words', starter: '', source: 'collegevine' });
+  const ws = {
+    ...emptyWorkspace(),
+    colleges: [college],
+    essays: { commonApp: [], supplements: { [college.slug]: [
+      old(`${college.slug}-supp-1`, 'Essay Questions 1', 'Please answer one of the following essay questions.'),
+      // Same question as the new first prompt, at an old position: its draft must follow it.
+      old(`${college.slug}-supp-2`, 'Old label', fresh[0].prompt),
+      old(`${college.slug}-supp-3`, 'Dropped prompt without a draft', 'Gone.'),
+    ] } },
+    essayDrafts: { [`${college.slug}-supp-1`]: 'An old draft I want to keep.', [`${college.slug}-supp-2`]: 'Travel draft.' },
+    essayStatus: { [`${college.slug}-supp-2`]: 'final' },
+  };
+  const next = refreshScrapedSupplements(ws);
+  const list = next.essays.supplements[college.slug];
+  const ids = list.map((e) => e.id);
+  assert.equal(new Set(ids).size, ids.length, 'ids stay unique');
+  const travel = list.find((e) => e.prompt === fresh[0].prompt);
+  assert.equal(travel.id, `${college.slug}-supp-2`, 'a matched prompt keeps its id, so the draft and final mark follow');
+  assert.equal(travel.label, fresh[0].label);
+  const kept = list.find((e) => e.id === `${college.slug}-supp-1`);
+  assert.match(kept.label, /\(earlier prompt\)$/);
+  assert.equal(kept.required, false);
+  assert.ok(!ids.includes(`${college.slug}-supp-3`), 'an old prompt with no draft goes');
+  for (const f of fresh) assert.ok(list.some((e) => e.prompt === f.prompt), `new prompt present: ${f.label}`);
+  assert.deepEqual(refreshScrapedSupplements(next), next, 'running it again changes nothing');
+  const hand = { ...ws, essays: { commonApp: [], supplements: { [college.slug]: [{ ...old('x-1', 'Mine', 'My own prompt'), source: undefined }] } } };
+  assert.equal(refreshScrapedSupplements(hand), hand, 'prompts not from the dataset are left alone');
+});

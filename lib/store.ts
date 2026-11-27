@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
-import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
+import { refreshScrapedSupplements, syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
 import { keepValidCommonAppPrompt, visibleEssays } from "./essay-tools";
 import { linkListAndApplications, syncListAndApplications } from "./list-sync";
 import { cleanupApps, removedAppIds } from "./app-cleanup";
@@ -511,9 +511,12 @@ export function newWorkspaceId(): string {
   return randomUUID();
 }
 
-/** What every saved workspace keeps true: Essays groups for each list school and a valid Common App choice. */
+/**
+ * What every saved workspace keeps true: Essays groups for each list school, dataset prompts as current as
+ * lib/supplements/prompts.json, and a valid Common App choice.
+ */
 function withDerived(ws: Workspace): Workspace {
-  return keepValidCommonAppPrompt(syncSuppStatus(syncEssaySupplements(ws)));
+  return keepValidCommonAppPrompt(syncSuppStatus(syncEssaySupplements(refreshScrapedSupplements(ws))));
 }
 
 function normalizeWorkspace(parsed: Partial<Workspace>): { workspace: Workspace; linked: boolean } {
