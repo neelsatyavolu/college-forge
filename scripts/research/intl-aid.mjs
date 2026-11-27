@@ -16,6 +16,8 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const RESEARCH_DIR = path.join(root, "lib/school-research");
 const OUT = path.join(root, "public/data/international-aid.json");
+// Official CDS links for colleges whose research files don't cite one (checked by hand; update yearly).
+const EXTRA_LINKS = (() => { try { return JSON.parse(readFileSync(path.join(root, "scripts/research/cds-links.json"), "utf8")); } catch { return {}; } })();
 const only = (() => { const i = process.argv.indexOf("--only"); return i > 0 ? new Set(process.argv[i + 1].split(",")) : null; })();
 
 /** The Common Data Set link a research file cites, if any. */
@@ -28,8 +30,11 @@ const money = (s) => (s ? Number(s.replace(/[$,]/g, "")) : null);
 /** Parses section H6 of a CDS text (pdftotext -layout). Returns null when the section isn't there. */
 export function parseH6(raw) {
   // HTML pages arrive as Markdown (**H6.**, tables with | and _X_); PDFs as laid-out text. Normalize both.
-  const text = raw.replace(/\*\*/g, "").replace(/_([xX])_/g, " $1 ").replace(/\|/g, " ");
-  const start = text.search(/^\s*H6\b/m);
+  const text = raw.replace(/\*\*/g, "").replace(/_([xX])_/g, " $1 ").replace(/\|/g, " ")
+    // Page headers and footers ("Common Data Set 2025-2026", "CDS-H", "Page 2") end in stray numbers.
+    .split("\n").filter((l) => !/Common Data Set|CDS-H|Page \d+\s*$/i.test(l)).join("\n");
+  // The H6 item itself ("H6. Indicate your institution's policy..."), not a sentence that wraps to "H6 below:".
+  const start = text.search(/^\s*H6\b(?!\s+below)/m);
   if (start < 0) return null;
   const rest = text.slice(start);
   const end = rest.slice(3).search(/^\s*(H7|H8|Section I|I\.\s|I1)\b/m);
@@ -56,8 +61,17 @@ export function parseH6(raw) {
   };
 }
 
-function fetchCds(url) {
-  const pdf = /\.pdf(\?|$)/i.test(url);
+/** A public Google Drive or Box viewer link turned into its file download link; other URLs unchanged. */
+export function downloadUrl(url) {
+  const drive = /drive\.google\.com\/file\/d\/([\w-]+)/.exec(url) || /drive\.google\.com\/open\?id=([\w-]+)/.exec(url);
+  if (drive) return { url: `https://drive.google.com/uc?export=download&id=${drive[1]}`, pdf: true };
+  const box = /^https:\/\/([\w-]+\.)?box\.com\/s\/([\w]+)/.exec(url);
+  if (box) return { url: `https://${box[1] || ""}box.com/shared/static/${box[2]}`, pdf: true };
+  return { url, pdf: /\.pdf(\?|$)/i.test(url) };
+}
+
+export function fetchCds(link) {
+  const { url, pdf } = downloadUrl(link);
   return execFileSync("uv", ["run", path.join(root, "scripts/research/fetch.py"), ...(pdf ? ["--pdf"] : []), url], {
     encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 120_000, stdio: ["ignore", "pipe", "ignore"],
   });
@@ -67,11 +81,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const previous = (() => { try { return JSON.parse(readFileSync(OUT, "utf8")).colleges; } catch { return {}; } })();
   const colleges = { ...previous };
   const misses = [];
-  for (const file of readdirSync(RESEARCH_DIR).filter((f) => f.endsWith(".json")).sort()) {
+  for (const file of readdirSync(RESEARCH_DIR).filter((f) => f.endsWith(".json") && f !== "manifest.json").sort()) {
     const slug = file.replace(/\.json$/, "");
     if (only && !only.has(slug)) continue;
     const research = JSON.parse(readFileSync(path.join(RESEARCH_DIR, file), "utf8"));
-    const url = cdsUrl(research);
+    const url = cdsUrl(research) ?? EXTRA_LINKS[slug]?.url ?? null;
     if (!url) { misses.push(`${slug}: no CDS link`); continue; }
     try {
       const h6 = parseH6(fetchCds(url));
