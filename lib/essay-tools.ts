@@ -58,6 +58,20 @@ export function isEssayHidden(ws: Workspace, essay: Essay, groupKey?: string): b
   return Boolean(ws.commonAppPrompt && inCommonSet(essay) && essay.id !== ws.commonAppPrompt);
 }
 
+/** The essays a parent may see: everything the student hasn't hidden (or whose school they opted out of), without the hidden ones' drafts and statuses. */
+export function visibleEssays(ws: Workspace) {
+  const all = [
+    ...ws.essays.commonApp.map((e) => [e, "common"] as const),
+    ...Object.entries(ws.essays.supplements || {}).flatMap(([key, list]) => (list || []).map((e) => [e, key] as const)),
+  ];
+  const hidden = new Set(all.filter(([e, key]) => isEssayHidden(ws, e, key)).map(([e]) => e.id));
+  const shown = (list: Essay[]) => (list || []).filter((e) => !hidden.has(e.id));
+  const commonApp = shown(ws.essays.commonApp);
+  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements || {}).map(([k, v]) => [k, shown(v)] as const).filter(([, v]) => v.length));
+  const only = <T,>(map: Record<string, T> | undefined) => Object.fromEntries(Object.entries(map || {}).filter(([k]) => !hidden.has(k)));
+  return { essays: { commonApp, supplements }, essayDrafts: only(ws.essayDrafts), essayStatus: only(ws.essayStatus) };
+}
+
 /** Ids of the supplements of schools the student turned off: their drafts leave counts and reads. */
 export function skippedEssayIds(ws: Workspace): Set<string> {
   return new Set(allEssays(ws).filter((x) => isSchoolSkipped(ws, x.groupKey)).map((x) => x.essay.id));

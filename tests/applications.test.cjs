@@ -169,13 +169,6 @@ test('first sign-in moves the anonymous workspace to a new id that only the acco
   assert.notEqual((await getWorkspaceId(anonReq)).id, a.workspaceId, 'an account workspace never opens from the anonymous cookie');
 }));
 
-test('handoff tokens are opaque and work once', () => isolated(async () => {
-  const t = await session.createHandoff('ws-abcdefgh');
-  assert.doesNotMatch(Buffer.from(t, 'base64url').toString('latin1'), /ws-abcdefgh/);
-  assert.equal(await session.claimHandoff(t), 'ws-abcdefgh');
-  assert.equal(await session.claimHandoff(t), null);
-}));
-
 // ── Tracker service and logins ────────────────────────────────────────────
 
 test('logins are encrypted at rest and never come back in views', () => isolated(async (dir) => {

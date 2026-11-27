@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getWorkspace, updateWorkspace } from "@/lib/store";
 import { importCurated, recordAttempt, researchSteps } from "@/lib/research-plan";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { sameSite } from "@/lib/same-site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ export async function GET(req: NextRequest) {
  * action "attempt": a step for `slug` ended; count it (three incomplete steps mark the school for review).
  */
 export async function POST(req: NextRequest) {
+  if (!sameSite(req)) return Response.json({ error: "Not allowed." }, { status: 403 });
   const id = await workspaceIdOrError(req);
   if (!id) return Response.json({ error: "Open your hub first so there is a workspace to research." }, { status: 400 });
   let body: { action?: unknown; slug?: unknown };

@@ -3,7 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
 import { syncEssaySupplements, syncSuppStatus } from "./essay-supplements";
-import { keepValidCommonAppPrompt } from "./essay-tools";
+import { keepValidCommonAppPrompt, visibleEssays } from "./essay-tools";
 import { linkListAndApplications, syncListAndApplications } from "./list-sync";
 import { cleanupApps, removedAppIds } from "./app-cleanup";
 import { listDocs } from "./doc-store";
@@ -805,27 +805,32 @@ export function redactWorkspaceBody<T>(body: T): T {
   return body;
 }
 
-/** Public share payload — strips recovery codes and internal share tokens list details if needed. */
-export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" | "shares" | "uploads" | "calendarFeed"> & {
-  uploads: { name: string; chars: number }[];
-} {
-  // applicationRead and admissionOdds hold AI assessments drawn from uploads (family context, concerns): the student's alone.
-  // essayAiChecks: GPTZero results are the student's to share or not.
-  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, scholarships, essayAiChecks: _e, decisionBoard: _b, ...rest } = ws;
-  // decisionBoard holds the AI's picks over family cost and aid; switchTo/pathNote feed only the board.
-  const { switchTo: _sw, pathNote: _pn, ...profile } = rest.profile;
+/**
+ * What a full share link (public/hub/share.html) gets, picked field by field so anything added to the workspace
+ * later stays out. Never: onboarding answers, recovery codes, share tokens, uploads, calendar feeds, AI estimates,
+ * GPTZero checks, copilot suggestions, the decision board, hidden essays and their drafts, or coach and counselor notes.
+ */
+export function publicShareView(ws: Workspace) {
+  const a = ws.applicant;
+  const p = ws.profile;
   return {
-    ...rest,
-    profile,
-    // A school's own award amount and its aid offer stay with the student (lib/aid-validate.ts).
-    scholarships: scholarships.map((s) => sharedScholarship(s)),
-    // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
-    tracker: {
-      autocheck: tracker.autocheck,
-      emails: tracker.emails,
-      flags: tracker.flags.filter((f) => !f.resolvedAt),
-      apps: redactTracker(tracker).apps.map(({ login: _l, aidOffer: _offer, ...app }) => app),
-    },
-    uploads: uploads.map((u) => ({ name: u.name, chars: u.chars })),
+    applicant: { name: a.name, cycle: a.cycle, year: a.year, gpaWeighted: a.gpaWeighted, gpaUnweighted: a.gpaUnweighted, sat: a.sat, awards: a.awards },
+    profile: { intended: p.intended, hs: p.hs, gradYear: p.gradYear, location: p.location, counselor: p.counselor, activities: p.activities },
+    ed: ws.ed ? { school: ws.ed.school, deadline: ws.ed.deadline } : null,
+    criticalDates: ws.criticalDates.map(({ date, label, detail }) => ({ date, label, detail })),
+    colleges: ws.colleges.map(({ slug, name, short, tier, deadline, deadlines }) => ({ slug, name, short, tier, deadline, deadlines })),
+    // Statuses only: never a decision the student hasn't revealed, a login or an aid offer.
+    tracker: { apps: ws.tracker.apps.map(({ slug, status }) => ({ slug, status })) },
+    recommendations: ws.recommendations.map(({ id, name, type, status, deadline }) => ({ id, name, type, status, deadline })),
+    // A school's own award amount stays with the student (lib/aid-validate.ts).
+    scholarships: ws.scholarships.map(({ notes: _n, ...s }) => sharedScholarship(s)),
+    financialAid: { fafsaStatus: ws.financialAid.fafsaStatus, cssStatus: ws.financialAid.cssStatus },
+    // Hidden essays, opted-out schools and unchosen Common App prompts, with their drafts, never leave the server.
+    ...visibleEssays(ws),
+    // Notes left through share links only (older ones have no via): a coach's or counselor's comments are theirs and the student's.
+    advisorNotes: ws.advisorNotes
+      .filter((n) => !n.via || n.via === "full" || n.via === "progress")
+      .map(({ id, body, author, createdAt, essayId, via }) => ({ id, body, author, createdAt, essayId, via })),
+    onboarding: { completed: ws.onboarding.completed },
   };
 }

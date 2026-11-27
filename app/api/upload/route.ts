@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { saveUpload } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { sameOrigin } from "@/lib/same-site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,6 +54,8 @@ async function extractText(name: string, type: string, buf: Buffer): Promise<str
 }
 
 export async function POST(req: NextRequest) {
+  // Multipart, so Origin only: a cross-site form can send this body, but its Origin gives it away.
+  if (!sameOrigin(req)) return Response.json({ error: "Not allowed." }, { status: 403 });
   const { id, setCookie } = await getWorkspaceId(req);
 
   let form: FormData;

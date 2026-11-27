@@ -232,6 +232,8 @@ export function isStalePatch(ws: Workspace, patch: WorkspacePatch): boolean {
   return typeof patch.baseRevision === "number" && patch.baseRevision !== ws.revision && replacesProfileLists(patch);
 }
 
+const MAX_ADVISOR_NOTES = 500;
+
 export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Workspace {
   let next: Workspace = { ...ws };
 
@@ -449,7 +451,12 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       ...(patch.advisorNote.byLink ? { byLink: patch.advisorNote.byLink } : {}),
       ...(patch.advisorNote.authorLevel ? { authorLevel: patch.advisorNote.authorLevel } : {}),
     };
-    next = { ...next, advisorNotes: [...next.advisorNotes, note] };
+    // Share links let anyone holding one write notes, so only the newest share-link notes are kept. Counselor and
+    // coach notes are never trimmed, so link spam can't push them out.
+    const all = [...next.advisorNotes, note];
+    const fromLinks = all.filter((n) => !n.via || n.via === "full" || n.via === "progress");
+    const drop = new Set(fromLinks.slice(0, Math.max(0, fromLinks.length - MAX_ADVISOR_NOTES)).map((n) => n.id));
+    next = { ...next, advisorNotes: drop.size ? all.filter((n) => !drop.has(n.id)) : all };
   }
   if (patch.removeAdvisorNoteId) {
     next = {

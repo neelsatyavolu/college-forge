@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { redactWorkspaceBody, updateWorkspace, type College } from "@/lib/store";
 import { upsertCollegeInto, removeCollegeFrom, slugify } from "@/lib/colleges";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { sameOrigin, sameSite } from "@/lib/same-site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ function json(body: unknown, status = 200, setCookie?: string): Response {
 
 /** Add (or update) a college on the user's list from the Explore page. */
 export async function POST(req: NextRequest) {
+  if (!sameSite(req)) return Response.json({ success: false, error: "Not allowed." }, { status: 403 });
   const { id, setCookie } = await getWorkspaceId(req);
 
   let body: { college?: Partial<College> };
@@ -48,6 +50,8 @@ export async function POST(req: NextRequest) {
 
 /** Remove a college: DELETE /api/workspace/colleges?slug=… */
 export async function DELETE(req: NextRequest) {
+  // The hub sends DELETE with no body, so Origin only.
+  if (!sameOrigin(req)) return Response.json({ success: false, error: "Not allowed." }, { status: 403 });
   const { id, setCookie } = await getWorkspaceId(req);
   const slug = (req.nextUrl.searchParams.get("slug") ?? "").trim();
   if (!slug) return json({ success: false, error: "slug is required." }, 400, setCookie);

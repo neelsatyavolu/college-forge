@@ -53,15 +53,6 @@ export async function revokeFeed(workspaceId: string): Promise<Workspace> {
   return ws;
 }
 
-/** After sign-in copies an anonymous workspace to `workspaceId`, its feed keeps working from the new copy. */
-export async function moveFeed(workspaceId: string): Promise<void> {
-  const ws = await peekWorkspace(workspaceId);
-  const token = ws?.calendarFeed?.token;
-  if (!token || !FEED_TOKEN.test(token)) return;
-  const rec = await readDoc<FeedRecord>(feedKey(token));
-  if (rec) await writeDoc(feedKey(token), { ...rec, workspaceId } satisfies FeedRecord);
-}
-
 /**
  * The workspace a feed token opens, or null. Never creates a workspace. A storage failure throws (the route
  * answers 503), so a subscriber doesn't read an outage as a revoked link.
