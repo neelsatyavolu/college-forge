@@ -9,7 +9,10 @@
   var MAIA_HOST = "app.maialearning.com";
   var API = "https://app-www-maia.maialearning.com/ajs-services";
   var CLASS_OF_YEARS = "4"; // Maia's own default for the scattergram view
-  var DELAY_MS = 350; // be polite: one school at a time
+  var DELAY_MS = 600; // be polite: one school at a time
+  // Maia answers "not able to respond, Please try after some time" when we go too fast:
+  // wait this long before each retry of the same call, then give up for this run.
+  var BUSY_WAITS_MS = [10000, 30000, 60000, 120000];
   var JWT = /^[\w-]+\.[\w-]+\.[\w-]+$/;
 
   // ── Pure helpers (exercised by tests/maia-import.test.cjs) ──────────────
@@ -238,14 +241,30 @@
       if (!res.ok) {
         return res.text().catch(function () { return ""; }).then(function (t) {
           var detail = String(t || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160);
-          throw Object.assign(new Error("Maia returned " + res.status + " on " + call + (detail ? ": " + detail : "")), { signature: res.status + " " + call });
+          var busy = res.status === 429 || res.status === 503 || /try after some time|not able to respond|too many/i.test(detail);
+          throw Object.assign(new Error("Maia returned " + res.status + " on " + call + (detail ? ": " + detail : "")), { signature: res.status + " " + call, busy: busy });
         });
       }
       return res.text().then(function (t) { return t ? JSON.parse(t) : null; });
     });
   }
 
+  /** Runs a Maia call, waiting and retrying while Maia says it's busy. */
+  async function patiently(fn, onWait) {
+    for (var attempt = 0; ; attempt++) {
+      try { return await fn(); } catch (e) {
+        if (!e.busy || attempt >= BUSY_WAITS_MS.length || !active()) throw e;
+        onWait(BUSY_WAITS_MS[attempt]);
+        // Wait in short steps so Stop doesn't hang for the whole pause.
+        for (var waited = 0; waited < BUSY_WAITS_MS[attempt] && active(); waited += 1000) await sleep(1000);
+        if (!active()) throw e;
+      }
+    }
+  }
+
   function collegeNid(session, college) {
+    // A Maia id saved from an earlier run skips both lookups.
+    if (college.nid && /^\d{1,10}$/.test(String(college.nid))) return Promise.resolve({ nid: Number(college.nid), title: null });
     var byUnit = college.scorecardId
       ? api(session, "GET", "college_nid_by_unitid/" + encodeURIComponent(college.scorecardId)).then(function (d) { return d && d.nid ? { nid: d.nid, title: null } : null; }, function (e) { if (e.fatal) throw e; return null; })
       : Promise.resolve(null);
@@ -272,26 +291,31 @@
         });
         return;
       }
-      var out = [], missing = [], student = null;
+      var out = [], missing = [], student = null, stopped = null, diagnostic = null;
       var idsUsed = { schools: session.schools.map(function (s) { return s.id + " from " + s.path; }), studentUid: session.studentUid, studentFrom: session.sources.student };
       var streak = { signature: null, count: 0 };
       var schoolIdx = 0;
       for (var i = 0; i < colleges.length && active(); i++) {
         var c = colleges[i];
         send({ type: "cf-maia:progress", done: i, total: colleges.length, name: c.name });
+        var waiting = function (ms) { send({ type: "cf-maia:progress", done: i, total: colleges.length, name: c.name, waitSeconds: Math.round(ms / 1000) }); };
         try {
-          var hit = await collegeNid(session, c);
+          var hit = await patiently(function () { return collegeNid(session, c); }, waiting);
           if (!hit) { missing.push({ slug: c.slug, name: c.name, reason: "Not found in Maia" }); continue; }
-          var raw = await api(session, "POST", "scattergram-colleges-by-name", {
-            class_of_years: CLASS_OF_YEARS, app_plan: [], collegeNid: Number(hit.nid), type: "sat", grading_type: "gpa",
-            school_id: session.schools[schoolIdx].id, student_uid: session.studentUid,
-          });
+          var raw = await patiently(function () {
+            return api(session, "POST", "scattergram-colleges-by-name", {
+              class_of_years: CLASS_OF_YEARS, app_plan: [], collegeNid: Number(hit.nid), type: "sat", grading_type: "gpa",
+              school_id: session.schools[schoolIdx].id, student_uid: session.studentUid,
+            });
+          }, waiting);
           var norm = normalizeScatter(raw);
           if (!student && (norm.student.gpa || norm.student.sat)) student = norm.student;
-          out.push({ slug: c.slug, maiaTitle: hit.title, averages: norm.averages, points: norm.points });
+          out.push({ slug: c.slug, nid: Number(hit.nid), maiaTitle: hit.title, averages: norm.averages, points: norm.points });
           streak = { signature: null, count: 0 };
         } catch (e) {
-          if (e.fatal) { send({ type: "cf-maia:error", error: e.message }); return; }
+          if (e.fatal) { stopped = e.message; break; }
+          // Still busy after every wait: keep what's done and let the student run it again later.
+          if (e.busy) { stopped = "Maia is limiting requests right now. Click the bookmark again in a few minutes to finish the rest."; break; }
           // "Not authorized for this school": the id was wrong, so try the next candidate on the same college.
           if (e.signature === "406 scattergram-colleges-by-name" && schoolIdx < session.schools.length - 1) {
             schoolIdx++;
@@ -303,14 +327,16 @@
           // The same failure three times in a row is systematic: stop instead of hammering Maia.
           streak = e.signature && e.signature === streak.signature ? { signature: e.signature, count: streak.count + 1 } : { signature: e.signature || null, count: 1 };
           if (streak.count >= 3) {
-            send({ type: "cf-maia:error", error: "Stopped: " + e.message, diagnostic: [idsUsed].concat(describeStorage(localStorage)) });
-            return;
+            stopped = "Stopped: " + e.message;
+            diagnostic = [idsUsed].concat(describeStorage(localStorage));
+            break;
           }
         }
         await sleep(DELAY_MS);
       }
       send({ type: "cf-maia:progress", done: colleges.length, total: colleges.length, name: "" });
-      send({ type: "cf-maia:result", cancelled: cancelled, payload: { classOfYears: CLASS_OF_YEARS, student: student, colleges: out }, missing: missing });
+      // Whatever stopped the run, the schools already fetched are still saved.
+      send({ type: "cf-maia:result", cancelled: cancelled, stopped: stopped, diagnostic: diagnostic, payload: { classOfYears: CLASS_OF_YEARS, student: student, colleges: out }, missing: missing });
     } finally {
       running = false;
     }

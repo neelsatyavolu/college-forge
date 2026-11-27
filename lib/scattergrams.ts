@@ -12,6 +12,8 @@ export type CollegeScattergram = {
   /** U.S. News rank at import time, when the school is in the top 250. */
   rank?: number | null;
   maiaTitle: string | null;
+  /** Maia's id for the college, so a later run skips the name lookup Maia rate-limits. */
+  maiaNid?: number | null;
   fetchedAt: number;
   n: number;
   counts: Record<string, number>;
@@ -51,6 +53,10 @@ const sat = (v: unknown) => {
   return n === null ? null : Math.round(n);
 };
 const gpa = (v: unknown) => numberIn(v, 0, 5);
+const maiaNid = (v: unknown) => {
+  const n = numberIn(v, 1, 9_999_999_999);
+  return n === null ? null : Math.round(n);
+};
 
 function label(value: unknown, max: number): string | null {
   if (typeof value !== "string") return null;
@@ -124,6 +130,7 @@ export function applyScattergramImport(
       name: college.name,
       rank: college.rank ?? null,
       maiaTitle: label(entry.maiaTitle, 160),
+      maiaNid: maiaNid(entry.nid),
       fetchedAt: now,
       n: clean.length,
       counts: countResults(clean),

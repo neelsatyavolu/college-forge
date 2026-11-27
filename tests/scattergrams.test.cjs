@@ -103,6 +103,12 @@ test('any catalog school imports and stays after it leaves the list; unknown slu
  assert.deepEqual(j.data.skipped, ['not-a-real-school']);
 }));
 
+test('the Maia college id is kept so a later run skips the name lookup', () => isolated(async () => {
+ const j = await (await route.POST(req('POST', {colleges:[{...tufts, nid: 178250}, {slug:'bates-college', nid:'not a number', points:[]}]}))).json();
+ assert.equal(j.data.scattergrams.colleges['tufts-university'].maiaNid, 178250);
+ assert.equal(j.data.scattergrams.colleges['bates-college'].maiaNid, null);
+}));
+
 test('cross-site writes are refused', () => isolated(async () => {
  const r = new NextRequest('http://localhost/api/workspace/scattergrams', {method:'POST', headers:{cookie:'cf_workspace='+WS,'content-type':'application/json',origin:'https://evil.example'}, body: JSON.stringify({colleges:[tufts]})});
  assert.equal((await route.POST(r)).status, 403);
