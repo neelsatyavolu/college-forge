@@ -1,0 +1,48 @@
+{
+  "success": true,
+  "data": {
+    "version": 1,
+    "importedAt": 1793577600000,
+    "classOfYears": "3",
+    "student": { "gpa": 3.82, "wgpa": 4.3, "sat": 1480 },
+    "colleges": {
+      "alder-college": {
+        "slug": "alder-college",
+        "name": "Alder College",
+        "rank": 12,
+        "maiaTitle": "Alder College",
+        "maiaNid": 1234,
+        "fetchedAt": 1793577600000,
+        "n": 5,
+        "counts": { "Accepted": 2, "Denied": 2, "Waitlisted": 1 },
+        "averages": { "gpa": 3.9, "sat": 1500 },
+        "points": [
+          { "sat": 1520, "gpa": 3.95, "result": "Accepted", "round": "Early Decision II" },
+          { "sat": "1390", "gpa": "3.6", "result": "Denied", "round": "Regular Decision" },
+          { "sat": 1450, "gpa": 3.7, "result": "Waitlisted", "round": null },
+          { "sat": null, "gpa": 3.8, "result": "Denied", "round": "REA" },
+          { "sat": 1560, "gpa": 4.0, "result": "Accepted", "round": "EA" },
+          "not a point"
+        ]
+      },
+      "birch-university": {
+        "slug": "birch-university",
+        "name": "Birch University",
+        "fetchedAt": 1793577600000,
+        "n": 0,
+        "counts": {},
+        "averages": { "gpa": null, "sat": null },
+        "points": []
+      },
+      "cedar-institute": {
+        "name": "Cedar Institute",
+        "rank": "40",
+        "n": 1,
+        "counts": { "Other": 1 },
+        "averages": "bad",
+        "points": [ { "sat": 1300, "gpa": 3.2, "result": "Admitted with conditions" } ]
+      },
+      "broken": 42
+    }
+  }
+}

@@ -61,6 +61,16 @@ struct ShortlistView: View {
             } footer: {
                 Text(disclaimer)
             }
+            Section {
+                NavigationLink(value: ScattergramsRoute()) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Scattergrams").font(.body.weight(.medium)).foregroundStyle(Theme.ink)
+                        Text("Where past applicants from your high school landed, from Maia Learning")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
+                }
+            }
             ShortlistBalanceSection()
             ShortlistChancesSection()
             ShortlistAssessStatusSection()

@@ -340,3 +340,10 @@ Portal checks can capture the decision letter. Its body stays sealed on the serv
 - `Workspace.essayOption: [String: Int]`: which option (0-based) of a choose-one prompt the student answers, by essay id. PATCH `essayOption: {id: index | null}` (`WorkspacePatch.essayOption: [String: Int?]`, nil is sent as null and clears it). A picked option that states its own total limit ("(150 word limit)") is the limit shown and counted (`EssayChoiceRules.withChosenOption`); prompt edits save the stored limit, not the option's.
 - Choose-N sets (UC: 4 of 8) and per-college prompts (Cornell, Tufts, an honors-college opt-in) are chosen with `essayHidden` patches built by `EssayChoiceRules.pickPatch` and `audiencePatch`, as on the web.
 - Schools whose every required essay is final (or, with only optional essays, every shown one) get a checkmark and sort after open schools (`EssayWritingProgress.finishedGroups`, `sidebarOrder`). Expanded schools are remembered on the device per workspace (`EssayExpansionMemory`).
+
+## Maia scattergrams (`Features/Colleges/Scattergrams/`)
+
+- `GET /api/workspace/scattergrams` → `{success, data: ScattergramDoc | null}` (lib/scattergrams.ts): `{version: 1, importedAt (ms), classOfYears, student: {gpa, wgpa, sat} | null, colleges: {[slug]: {slug, name, rank?, n, counts: {Accepted|Denied|Waitlisted|Deferred|Other: n}, averages: {gpa, sat}, points: [{sat, gpa, result, round}]}}}`. SAT only (no ACT); either number on a point can be null, and only points with both are plotted. `DELETE` clears it all.
+- Importing is web-only (a bookmark run in Maia on a computer, public/maia/import.js); the app only views and deletes. Entry: a "Scattergrams" row on Shortlist, pushing `ScattergramsRoute`.
+- Each point is a real past applicant from the student's school: keep the doc in the screen's memory only. Never log, cache, export or put it in widgets. The AI reads it server-side (lib/scattergram-summary.ts); nothing to send from the app.
+- The student's marker follows the web page: Maia's numbers where present, else `applicant.gpaUnweighted` / `applicant.sat` (`ScattergramLogic.studentMarker`).
