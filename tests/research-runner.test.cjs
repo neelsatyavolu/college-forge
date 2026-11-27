@@ -60,7 +60,7 @@ test('starting again keeps the run and restarts only silent workers', () => {
 
 test('the vault encrypts with AES-GCM and rejects a wrong key or tampering', () => {
   const k = crypto.randomBytes(32);
-  const entry = { provider: 'codex', tokens: { accessToken: 'a', refreshToken: 'r', expiresAt: 5 }, savedAt: 1 };
+  const entry = { provider: 'codex', tokens: { accessToken: 'a', refreshToken: 'r', expiresAt: 5 }, savedAt: 1, createdAt: 1, binding: 'b' };
   const sealed = V.sealVault(entry, k);
   assert.doesNotMatch(sealed, /refreshToken|"r"/);
   assert.deepEqual(V.openVault(sealed, k), entry);
@@ -84,4 +84,21 @@ test('a school that was just tried waits behind ones not tried yet', () => {
   w0.colleges[0] = { ...w0.colleges[0], research: { attempts: 1, complete: false, facts: [] } };
   const { ws: w, run } = R.beginRun(w0, 0);
   assert.equal(R.claimNext(w, run.runId, 0, 10).slug, 'b');
+});
+
+test('a stored sign-in syncs only with the browser that started research', () => {
+  const cookie = V.newBinding();
+  const entry = { provider: 'grok', tokens: {}, savedAt: 0, createdAt: 0, binding: V.bindingHash(cookie) };
+  assert.equal(V.boundTo(entry, cookie), true);
+  assert.equal(V.boundTo(entry, V.newBinding()), false);
+  assert.equal(V.boundTo(entry, undefined), false);
+});
+
+test('signing out stops the run so the page stops waiting', () => {
+  const { ws: w, run } = R.beginRun(ws(['a']), 0);
+  const stopped = R.stopRun(R.claimNext(w, run.runId, 0, 10).ws, null, R.SIGN_IN_GONE, 20);
+  const r = stopped.onboarding.interview.researchRun;
+  assert.equal(r.finishedAt, 20);
+  assert.deepEqual(r.claims, {});
+  assert.equal(R.isRunActive(r), false);
 });

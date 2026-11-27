@@ -17,7 +17,7 @@ import { RESEARCH_RULES } from "./interview-prompt";
 import { loadScattergrams, scattergramDigest } from "./scattergram-summary";
 import { toolAllowed } from "./tool-policy";
 import type { WrapUp } from "./tool-budget";
-import { clearVault, loadVault, saveVault, type VaultEntry } from "./token-vault";
+import { loadVault, saveVault, type VaultEntry } from "./token-vault";
 import { refreshTokens } from "./codex-oauth";
 import { refreshGrokTokens } from "./grok-oauth";
 
@@ -102,7 +102,7 @@ export function maybeFinish(ws: Workspace, runId: string, now = Date.now()): { w
 async function liveTokens(workspaceId: string, runId: string): Promise<VaultEntry> {
   for (let i = 0; i < 20; i++) {
     const entry = await loadVault(workspaceId);
-    if (!entry) throw new Error("The AI sign-in for background research is gone. Reconnect and start research again.");
+    if (!entry || entry.doneAt) throw new SignInGone();
     if (entry.tokens.expiresAt > Date.now() + REFRESH_BEFORE_MS) return entry;
     let mine = false;
     await updateWorkspace(workspaceId, (w) => {
@@ -174,6 +174,17 @@ export const MAX_FAILURES = 3;
  * off with, or null when the worker should stop (nothing left, or too many failures in a row).
  */
 export async function workerTick(workspaceId: string, runId: string, worker: number, failures = 0): Promise<number | null> {
+  // Tokens first: a refresh can wait on another worker, and that wait must not eat into a school's claim.
+  let entry: VaultEntry;
+  try {
+    entry = await liveTokens(workspaceId, runId);
+  } catch (err) {
+    if (err instanceof SignInGone) {
+      await updateWorkspace(workspaceId, (w) => stopRun(w, runId, SIGN_IN_GONE));
+      return null;
+    }
+    return retry(workspaceId, runId, worker, failures, err);
+  }
   let slug: string | null = null;
   await updateWorkspace(workspaceId, (w) => {
     const r = claimNext(w, runId, worker);
@@ -187,26 +198,45 @@ export async function workerTick(workspaceId: string, runId: string, worker: num
       finished = r.finished;
       return r.ws;
     });
-    if (finished) await clearVault(workspaceId);
+    // Kept (marked done) until the starting browser takes the newest, possibly rotated, tokens.
+    if (finished) await markVaultDone(workspaceId);
     return null;
   }
   const school: string = slug;
-  let ok = false;
   try {
-    const entry = await liveTokens(workspaceId, runId);
     await researchOne(workspaceId, school, entry);
-    ok = true;
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Research failed.";
-    console.error(`[research-run] ws=${workspaceId.slice(0, 8)} worker=${worker} school=${school} failed:`, message);
-    await updateWorkspace(workspaceId, (w) => {
-      const run = runOf(w);
-      return run && run.runId === runId ? withRun(w, { ...run, error: message.slice(0, 300) }) : w;
-    });
+    // A failed AI call isn't an attempt: the school goes back in the queue.
+    await updateWorkspace(workspaceId, (w) => finishStep(w, runId, school, false));
+    return retry(workspaceId, runId, worker, failures, err, school);
   }
-  // A failed AI call isn't an attempt: the school goes back in the queue.
-  await updateWorkspace(workspaceId, (w) => finishStep(w, runId, school, ok));
-  if (ok) return 0;
+  await updateWorkspace(workspaceId, (w) => finishStep(w, runId, school, true));
+  return 0;
+}
+
+export const SIGN_IN_GONE = "Your AI sign-in ended, so research paused. Reconnect ChatGPT or Grok and press Try again.";
+const AI_FAILED = "The AI didn't answer for some schools. Forge keeps retrying.";
+class SignInGone extends Error {}
+
+/** Ends a run now (sign-in gone, or signed out): the page stops waiting and shows why. */
+export function stopRun(ws: Workspace, runId: string | null, message: string, now = Date.now()): Workspace {
+  const run = runOf(ws);
+  if (!run || run.finishedAt || (runId && run.runId !== runId)) return ws;
+  return withRun(ws, { ...run, finishedAt: now, claims: {}, error: message });
+}
+
+async function markVaultDone(workspaceId: string): Promise<void> {
+  const entry = await loadVault(workspaceId);
+  if (entry && !entry.doneAt) await saveVault(workspaceId, { ...entry, doneAt: Date.now() });
+}
+
+/** Logs the detail, shows the student a fixed message, and decides whether this worker tries again. */
+async function retry(workspaceId: string, runId: string, worker: number, failures: number, err: unknown, school = "-"): Promise<number | null> {
+  console.error(`[research-run] ws=${workspaceId.slice(0, 8)} worker=${worker} school=${school} failed:`, err instanceof Error ? err.message : "unknown");
+  await updateWorkspace(workspaceId, (w) => {
+    const run = runOf(w);
+    return run && run.runId === runId && !run.finishedAt ? withRun(w, { ...run, error: AI_FAILED }) : w;
+  });
   if (failures + 1 >= MAX_FAILURES) return null;
   await new Promise((r) => setTimeout(r, 15_000));
   return failures + 1;

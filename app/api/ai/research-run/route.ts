@@ -2,7 +2,8 @@ import { NextRequest, after } from "next/server";
 import { getWorkspace, updateWorkspace, type Workspace } from "@/lib/store";
 import { importCurated } from "@/lib/research-plan";
 import { beginRun, isRunActive, stageOf, workerTick, STALE_WORKER_MS } from "@/lib/research-runner";
-import { clearVault, loadVault, saveVault, signRun, vaultAvailable, verifyRun, type VaultProvider } from "@/lib/token-vault";
+import { cookies } from "next/headers";
+import { BINDING_COOKIE, VAULT_TTL_MS, bindingHash, boundTo, clearVault, loadVault, newBinding, saveVault, signRun, vaultAvailable, verifyRun, type VaultProvider } from "@/lib/token-vault";
 import { getActiveCodexSession, readSessionCookie, writeSessionCookie } from "@/lib/codex-session";
 import { getActiveGrokSession, readGrokSessionCookie, writeGrokSessionCookie } from "@/lib/grok-session";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
@@ -62,16 +63,29 @@ function view(ws: Workspace) {
   };
 }
 
-/** Keeps the browser's sign-in and the stored one on the same (newest) tokens: refresh tokens rotate. */
+/**
+ * Keeps the starting browser's sign-in and the stored one on the same (newest) tokens, since refresh
+ * tokens rotate. Only the browser holding the binding cookie set at start takes part: another browser
+ * on the same workspace (a parent's laptop) never receives the student's tokens or gives its own.
+ * A finished run's entry is deleted once that browser has the newest tokens.
+ */
 async function syncTokens(workspaceId: string): Promise<void> {
   const entry = await loadVault(workspaceId);
   if (!entry) return;
+  const jar = await cookies();
+  if (!boundTo(entry, jar.get(BINDING_COOKIE)?.value)) return;
   const cookie = entry.provider === "codex" ? await readSessionCookie() : await readGrokSessionCookie();
-  if (!cookie) return;
-  if (entry.tokens.expiresAt > cookie.expiresAt) {
-    await (entry.provider === "codex" ? writeSessionCookie(entry.tokens) : writeGrokSessionCookie(entry.tokens));
-  } else if (cookie.expiresAt > entry.tokens.expiresAt) {
-    await saveVault(workspaceId, { ...entry, tokens: cookie, savedAt: Date.now() });
+  const sameAccount = cookie && (!cookie.accountId || !entry.tokens.accountId || cookie.accountId === entry.tokens.accountId);
+  if (cookie && sameAccount) {
+    if (entry.tokens.expiresAt > cookie.expiresAt) {
+      await (entry.provider === "codex" ? writeSessionCookie(entry.tokens) : writeGrokSessionCookie(entry.tokens));
+    } else if (cookie.expiresAt > entry.tokens.expiresAt && !entry.doneAt) {
+      await saveVault(workspaceId, { ...entry, tokens: cookie, savedAt: Date.now() });
+    }
+  }
+  if (entry.doneAt) {
+    await clearVault(workspaceId);
+    jar.delete(BINDING_COOKIE);
   }
 }
 
@@ -83,7 +97,8 @@ export async function GET(req: NextRequest) {
   let ws = await getWorkspace(id);
   const run = ws.onboarding.interview?.researchRun;
   const origin = selfOrigin(req);
-  if (origin && isRunActive(run) && (await loadVault(id)) && Object.values(run.heartbeats).some((t) => Date.now() - t > STALE_WORKER_MS)) {
+  const entry = await loadVault(id);
+  if (origin && isRunActive(run) && entry && !entry.doneAt && Object.values(run.heartbeats).some((t) => Date.now() - t > STALE_WORKER_MS)) {
     let start: number[] = [];
     ws = await updateWorkspace(id, (w) => { const r = beginRun(w); start = r.start; return r.ws; });
     const runId = ws.onboarding.interview!.researchRun!.runId;
@@ -138,7 +153,11 @@ export async function POST(req: NextRequest) {
   if (!signIn) return Response.json({ error: "Connect ChatGPT or Grok to research your schools." }, { status: 400 });
   const model = typeof (signIn.provider === "codex" ? body.codexModel : body.grokModel) === "string"
     ? String(signIn.provider === "codex" ? body.codexModel : body.grokModel).slice(0, MAX_MODEL) : undefined;
-  await saveVault(id, { provider: signIn.provider, tokens: signIn.tokens, ...(model ? { model } : {}), savedAt: Date.now() });
+  // This browser alone is bound to the stored sign-in (see syncTokens).
+  const binding = newBinding();
+  const now = Date.now();
+  await saveVault(id, { provider: signIn.provider, tokens: signIn.tokens, ...(model ? { model } : {}), savedAt: now, createdAt: now, binding: bindingHash(binding) });
+  (await cookies()).set(BINDING_COOKIE, binding, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/api/ai/research-run", maxAge: VAULT_TTL_MS / 1000 });
 
   let start: number[] = [];
   const ws = await updateWorkspace(id, (w) => {

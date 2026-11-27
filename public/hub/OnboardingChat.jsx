@@ -292,6 +292,8 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         await new Promise((r) => setTimeout(r, OC_POLL_MS));
         view = await fetch("/api/ai/research-run", { credentials: "same-origin" }).then((r) => r.json()).catch(() => view);
       }
+      // One more check hands this browser the newest sign-in and lets Forge delete its stored copy.
+      await fetch("/api/ai/research-run", { credentials: "same-origin" }).catch(() => {});
       const stuck = (view.cards || []).filter((c) => c.stage === "queued").length;
       await afterResearch(stuck);
     } catch (e) {
