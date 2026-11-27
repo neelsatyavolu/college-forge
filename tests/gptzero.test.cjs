@@ -52,7 +52,7 @@ function stubFetch(handler) {
   globalThis.fetch = async (url, init = {}) => {
     const u = new URL(String(url));
     calls.push({ host: u.host, path: u.pathname, init, body: init.body ? JSON.parse(init.body) : null });
-    const [status, body] = handler(u.pathname, init);
+    const [status, body] = await handler(u.pathname, init);
     return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
   };
   return { calls, restore: () => { globalThis.fetch = real; } };
@@ -193,6 +193,27 @@ test('scan reads the saved draft, needs 50 words, saves only totals and stays ou
   } finally {
     quota.restore();
   }
+});
+
+test('a check that finishes after the draft changed is not saved', async () => {
+  const s = await student();
+  const ws = s.account.workspaceId;
+  const essayId = (await getWorkspace(ws)).essays.commonApp[0].id;
+  await updateWorkspace(ws, (w) => ({ ...w, essayDrafts: { ...w.essayDrafts, [essayId]: words(80) } }));
+  await saveGptzero(ws, { email: 'a@forge.invalid', password: PASSWORD });
+  const stub = stubFetch(async (p) => {
+    if (p !== '/v3/ai/text') return signinOk(p);
+    await updateWorkspace(ws, (w) => ({ ...w, essayDrafts: { ...w.essayDrafts, [essayId]: words(90) } }));
+    return [200, REPORT];
+  });
+  try {
+    const res = await (await call(scan.POST, '/api/gptzero/scan', s.cookie, { essayId })).json();
+    assert.equal(res.success, true);
+    assert.equal(res.result.flaggedCount, 1);
+  } finally {
+    stub.restore();
+  }
+  assert.equal((await getWorkspace(ws)).essayAiChecks, undefined, 'the newer draft keeps no stale verdict');
 });
 
 test('reset deletes the GPTZero login', async () => {

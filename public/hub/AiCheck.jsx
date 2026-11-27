@@ -130,7 +130,7 @@ function AiCheckPanel({ essayId, words, check, pending, onFlush, onWorkspaceChan
       {result && result.message ? <p style={{ margin: 0, fontSize: 13, color: "var(--body)" }}>{result.message}</p> : null}
       {result && result.flagged.length ? (
         <details>
-          <summary style={{ cursor: "pointer", fontSize: 13, color: "var(--ink)" }}>{result.flagged.length} of {result.sentences} sentences flagged as AI</summary>
+          <summary style={{ cursor: "pointer", fontSize: 13, color: "var(--ink)" }}>{result.flaggedCount || result.flagged.length} of {result.sentences} sentences flagged as AI{result.flaggedCount > result.flagged.length ? ` (first ${result.flagged.length} shown)` : ""}</summary>
           <ul style={{ margin: "8px 0 0", paddingLeft: 18, display: "grid", gap: 6 }}>
             {result.flagged.map((s, i) => (
               <li key={i} style={{ fontSize: 13, lineHeight: 1.5, color: "var(--body)" }}>

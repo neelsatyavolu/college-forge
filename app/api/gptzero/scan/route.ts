@@ -16,7 +16,8 @@ export const dynamic = "force-dynamic";
 
 const MIN_WORDS = 50;
 const MAX_CHARS = 50_000;
-const ESSAY_ID = /^[A-Za-z0-9_-]{1,80}$/;
+/** Same as lib/essay-tools.ts: essay ids can carry periods and colons. */
+const ESSAY_ID = /^[\w.:-]{1,200}$/;
 
 const json = (data: unknown, status = 200) => Response.json(redactWorkspaceBody(data), { status, headers: { "cache-control": "no-store" } });
 const fail = (error: string, status = 400) => json({ success: false, error }, status);
@@ -28,6 +29,7 @@ function crossSite(req: NextRequest): boolean {
 }
 
 const essayIds = (ws: Workspace) => new Set([...ws.essays.commonApp, ...Object.values(ws.essays.supplements).flat()].map((e) => e.id));
+class StaleDraft extends Error {}
 const words = (text: string) => (text.trim() ? text.trim().split(/\s+/).length : 0);
 
 export async function POST(req: NextRequest) {
@@ -68,7 +70,14 @@ export async function POST(req: NextRequest) {
       ? null
       : { checkedAt: Date.now(), verdict: result.verdict, ai: result.ai, mixed: result.mixed, human: result.human, words: count };
     const next = check
-      ? await updateWorkspace(id, (cur) => ({ ...cur, essayAiChecks: { ...(cur.essayAiChecks || {}), [essayId]: check } }))
+      ? await updateWorkspace(id, (cur) => {
+          // An edit (or a newer check) landed while GPTZero was working: this result is for an older draft.
+          if ((cur.essayDrafts[essayId] || "").trim() !== text) throw new StaleDraft();
+          return { ...cur, essayAiChecks: { ...(cur.essayAiChecks || {}), [essayId]: check } };
+        }).catch(async (err) => {
+          if (err instanceof StaleDraft) return getWorkspace(id);
+          throw err;
+        })
       : ws;
     return json({ success: true, data: next, result });
   } catch (err) {

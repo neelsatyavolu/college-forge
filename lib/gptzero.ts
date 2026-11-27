@@ -82,6 +82,8 @@ export type ScanSummary = {
   human: number;
   message: string;
   sentences: number;
+  /** How many sentences GPTZero flagged; `flagged` holds at most MAX_FLAGGED of them. */
+  flaggedCount: number;
   flagged: { sentence: string; prob: number }[];
   scanId: string;
   version: string;
@@ -94,6 +96,7 @@ export function summarize(raw: unknown): ScanSummary {
   const probs = obj(doc.class_probabilities);
   const cls = str(doc.predicted_class, 20).toLowerCase();
   const sentences = Array.isArray(doc.sentences) ? doc.sentences.map(obj) : [];
+  const flagged = sentences.filter((s) => s.highlight_sentence_for_ai === true && typeof s.sentence === "string" && s.sentence.trim());
   return {
     verdict: cls === "ai" || cls === "mixed" || cls === "human" ? cls : "unknown",
     confidence: str(doc.confidence_category, 20),
@@ -102,8 +105,8 @@ export function summarize(raw: unknown): ScanSummary {
     human: num(probs.human),
     message: str(doc.result_message, 400),
     sentences: sentences.length,
-    flagged: sentences
-      .filter((s) => s.highlight_sentence_for_ai === true && typeof s.sentence === "string" && s.sentence.trim())
+    flaggedCount: flagged.length,
+    flagged: flagged
       .slice(0, MAX_FLAGGED)
       .map((s) => ({ sentence: str(s.sentence, 1000).trim(), prob: num(s.generated_prob) })),
     scanId: str(res.scanId, 100),
