@@ -98,10 +98,3 @@ extension OpenEnum {
         try container.encode(rawValue)
     }
 }
-
-extension Date {
-    /// Forge stores most timestamps as JavaScript milliseconds.
-    init(milliseconds: Double) {
-        self.init(timeIntervalSince1970: milliseconds / 1000)
-    }
-}

@@ -5,7 +5,9 @@
  *
  * Uses the team's App Store Connect API key from 1Password (no account holder needed).
  *
- *   OP_ACCOUNT=<account> node scripts/asc-profile.mjs <out.mobileprovision>
+ *   OP_ACCOUNT=<account> node scripts/asc-profile.mjs <out.mobileprovision> [bundle id]
+ *
+ * The bundle id defaults to the app; pass co.xanom.forge.widgets for the widget extension.
  *
  * 1Password items (override with env):
  *   FORGE_APPLE_KEY_ITEM   "Xanom Apple Dev Creds"           Key ID, issuer id, AuthKey_<KeyID>.p8
@@ -21,6 +23,11 @@ export const APP_NAME = 'College Forge';
 export const PROFILE_NAME = 'Forge App Store';
 /** App ID capabilities the app's entitlements need; a profile only carries those on when it was made. */
 export const CAPABILITIES = ['PUSH_NOTIFICATIONS'];
+/** Every bundle the archive signs. The shared keychain group needs no capability. */
+export const TARGETS = {
+  [BUNDLE_ID]: { name: APP_NAME, profile: PROFILE_NAME, capabilities: CAPABILITIES },
+  'co.xanom.forge.widgets': { name: 'College Forge Widgets', profile: 'Forge Widgets App Store', capabilities: [] },
+};
 
 const API = 'https://api.appstoreconnect.apple.com';
 const VAULT = process.env.FORGE_APPLE_VAULT || 'Private';
@@ -39,15 +46,17 @@ export function apiToken({ keyId, issuerId, privateKey }, now = Math.floor(Date.
 }
 
 /** Picks the newest active App Store profile that includes the given certificate. */
-export function pickProfile(profiles, certificateId) {
+export function pickProfile(profiles, certificateId, name = PROFILE_NAME) {
   return profiles
-    .filter((p) => p.attributes.name === PROFILE_NAME && p.attributes.profileState === 'ACTIVE')
+    .filter((p) => p.attributes.name === name && p.attributes.profileState === 'ACTIVE')
     .filter((p) => p.certificateIds.includes(certificateId))
     .sort((a, b) => b.attributes.expirationDate.localeCompare(a.attributes.expirationDate))[0];
 }
 
-async function main(out) {
-  if (!out) throw new Error('usage: node scripts/asc-profile.mjs <out.mobileprovision>');
+async function main(out, bundleId = BUNDLE_ID) {
+  if (!out) throw new Error('usage: node scripts/asc-profile.mjs <out.mobileprovision> [bundle id]');
+  const target = TARGETS[bundleId];
+  if (!target) throw new Error(`unknown bundle id ${bundleId}`);
   const keyId = field(KEY_ITEM, 'Key ID');
   const key = {
     keyId,
@@ -70,24 +79,24 @@ async function main(out) {
     return json;
   }
 
-  let bundle = (await api('GET', `/v1/bundleIds?filter[identifier]=${BUNDLE_ID}`)).data
-    .find((b) => b.attributes.identifier === BUNDLE_ID);
+  let bundle = (await api('GET', `/v1/bundleIds?filter[identifier]=${bundleId}`)).data
+    .find((b) => b.attributes.identifier === bundleId);
   if (!bundle) {
     bundle = (await api('POST', '/v1/bundleIds', {
-      data: { type: 'bundleIds', attributes: { identifier: BUNDLE_ID, name: APP_NAME, platform: 'IOS' } },
+      data: { type: 'bundleIds', attributes: { identifier: bundleId, name: target.name, platform: 'IOS' } },
     })).data;
-    console.error(`Registered App ID ${BUNDLE_ID}`);
+    console.error(`Registered App ID ${bundleId}`);
   }
 
   const enabled = new Set((await api('GET', `/v1/bundleIds/${bundle.id}/bundleIdCapabilities`)).data
     .map((c) => c.attributes.capabilityType));
   let capabilitiesChanged = false;
-  for (const capabilityType of CAPABILITIES.filter((c) => !enabled.has(c))) {
+  for (const capabilityType of target.capabilities.filter((c) => !enabled.has(c))) {
     await api('POST', '/v1/bundleIdCapabilities', {
       data: { type: 'bundleIdCapabilities', attributes: { capabilityType }, relationships: { bundleId: { data: { type: 'bundleIds', id: bundle.id } } } },
     });
     capabilitiesChanged = true;
-    console.error(`Turned on ${capabilityType} for ${BUNDLE_ID}`);
+    console.error(`Turned on ${capabilityType} for ${bundleId}`);
   }
 
   const certificate = (await api('GET', '/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=200')).data
@@ -99,24 +108,24 @@ async function main(out) {
     ...p,
     certificateIds: (await api('GET', `/v1/profiles/${p.id}/relationships/certificates`)).data.map((c) => c.id),
   })));
-  let profile = capabilitiesChanged ? undefined : pickProfile(profiles, certificate.id);
+  let profile = capabilitiesChanged ? undefined : pickProfile(profiles, certificate.id, target.profile);
 
   if (!profile) {
     // A same-named profile would make Xcode's lookup ambiguous; replace it.
-    for (const stale of profiles.filter((p) => p.attributes.name === PROFILE_NAME)) {
+    for (const stale of profiles.filter((p) => p.attributes.name === target.profile)) {
       await api('DELETE', `/v1/profiles/${stale.id}`);
     }
     profile = (await api('POST', '/v1/profiles', {
       data: {
         type: 'profiles',
-        attributes: { name: PROFILE_NAME, profileType: 'IOS_APP_STORE' },
+        attributes: { name: target.profile, profileType: 'IOS_APP_STORE' },
         relationships: {
           bundleId: { data: { type: 'bundleIds', id: bundle.id } },
           certificates: { data: [{ type: 'certificates', id: certificate.id }] },
         },
       },
     })).data;
-    console.error(`Created profile "${PROFILE_NAME}" (expires ${profile.attributes.expirationDate.slice(0, 10)})`);
+    console.error(`Created profile "${target.profile}" (expires ${profile.attributes.expirationDate.slice(0, 10)})`);
   }
 
   const full = (await api('GET', `/v1/profiles/${profile.id}?fields[profiles]=profileContent,uuid,expirationDate`)).data;
@@ -125,7 +134,7 @@ async function main(out) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main(process.argv[2]).catch((err) => {
+  main(process.argv[2], process.argv[3]).catch((err) => {
     console.error(`error: ${err.message}`);
     process.exit(1);
   });

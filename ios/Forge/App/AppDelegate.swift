@@ -11,6 +11,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     ) -> Bool {
         // Must be set before launch finishes so a tap that launched the app is delivered.
         UNUserNotificationCenter.current().delegate = self
+        // Started here rather than in AppServices so previews and test stores never write the widget data.
+        services.widgets.start()
         return true
     }
 
@@ -20,6 +22,22 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
         services.push.didFailToRegister(error)
+    }
+
+    /// Portal pushes carry content-available, so iOS wakes the app for them in the background. Reloading
+    /// then updates the widgets before the student opens anything. In the foreground `willPresent` handles it.
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        guard application.applicationState != .active, PushPayload(userInfo: userInfo)?.isPortalUpdate == true else {
+            return completionHandler(.noData)
+        }
+        Task {
+            await services.refreshForBackgroundPush()
+            completionHandler(.newData)
+        }
     }
 
     // The completion-handler forms, not the async ones: the async forms call UIKit's completion off the

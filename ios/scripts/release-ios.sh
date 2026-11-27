@@ -35,6 +35,8 @@ KEY_ITEM="${FORGE_APPLE_KEY_ITEM:-Xanom Apple Dev Creds}"
 TEAM_ID="VTQW687WBQ"
 BUNDLE_ID="co.xanom.forge"
 PROFILE_NAME="Forge App Store"
+WIDGET_BUNDLE_ID="co.xanom.forge.widgets"
+WIDGET_PROFILE_NAME="Forge Widgets App Store"
 
 LOCAL_CERT=1
 if ! op whoami >/dev/null 2>&1; then
@@ -91,11 +93,13 @@ unset P12_PASSWORD
 # The .p12 carries Apple's intermediate; codesign only finds it on the search list.
 use_keychain
 
-echo "› Checking the App ID and App Store profile"
-PROFILE_UUID="$(FORGE_APPLE_VAULT="$VAULT" node scripts/asc-profile.mjs "$WORK/profile.mobileprovision")"
+echo "› Checking the App IDs and App Store profiles (app and widgets)"
 PROFILES_DIR="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 mkdir -p "$PROFILES_DIR"
-cp "$WORK/profile.mobileprovision" "$PROFILES_DIR/$PROFILE_UUID.mobileprovision"
+for bundle in "$BUNDLE_ID" "$WIDGET_BUNDLE_ID"; do
+  PROFILE_UUID="$(FORGE_APPLE_VAULT="$VAULT" node scripts/asc-profile.mjs "$WORK/$bundle.mobileprovision" "$bundle")"
+  cp "$WORK/$bundle.mobileprovision" "$PROFILES_DIR/$PROFILE_UUID.mobileprovision"
+done
 
 KEY_ID="$(op item get "$KEY_ITEM" --vault "$VAULT" --fields 'label=Key ID' --reveal)"
 ISSUER_ID="$(op item get "$KEY_ITEM" --vault "$VAULT" --fields 'label=issuer id' --reveal)"
@@ -130,7 +134,7 @@ cat > "$WORK/ExportOptions.plist" <<PLIST
 $(if [ "$LOCAL_CERT" = 1 ]; then cat <<MANUAL
   <key>signingStyle</key><string>manual</string>
   <key>signingCertificate</key><string>Apple Distribution</string>
-  <key>provisioningProfiles</key><dict><key>$BUNDLE_ID</key><string>$PROFILE_NAME</string></dict>
+  <key>provisioningProfiles</key><dict><key>$BUNDLE_ID</key><string>$PROFILE_NAME</string><key>$WIDGET_BUNDLE_ID</key><string>$WIDGET_PROFILE_NAME</string></dict>
 MANUAL
 else echo '  <key>signingStyle</key><string>automatic</string>'; fi)
   <key>uploadSymbols</key><true/>

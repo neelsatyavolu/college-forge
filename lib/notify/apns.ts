@@ -53,9 +53,10 @@ export function resetTokenCache(): void {
 /** Lock-screen text: no control characters, and a title short enough to read. */
 const clean = (s: string, max: number) => s.replace(/[\u0000-\u001f\u007f-\u009f]+/g, " ").trim().slice(0, max);
 
+/** content-available wakes the app in the background so it can refresh the home-screen widgets. */
 export function buildPayload(note: PushNote): string {
   return JSON.stringify({
-    aps: { alert: { title: clean(note.title, TITLE_MAX), body: clean(note.body, 300) }, sound: "default", "thread-id": note.appId },
+    aps: { alert: { title: clean(note.title, TITLE_MAX), body: clean(note.body, 300) }, sound: "default", "thread-id": note.appId, "content-available": 1 },
     type: "portal_update",
     appId: note.appId,
   });

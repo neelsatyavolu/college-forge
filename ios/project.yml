@@ -22,6 +22,9 @@ targets:
     platform: iOS
     sources:
       - path: Forge
+      - path: Shared
+    dependencies:
+      - target: ForgeWidgets
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.xanom.forge
@@ -54,6 +57,7 @@ targets:
           - UIInterfaceOrientationPortrait
         UIBackgroundModes:
           - remote-notification
+        ForgeSharedKeychainGroup: $(AppIdentifierPrefix)co.xanom.forge.shared
         CFBundleURLTypes:
           - CFBundleURLName: co.xanom.forge
             CFBundleURLSchemes:
@@ -62,6 +66,49 @@ targets:
       path: Forge/Forge.entitlements
       properties:
         aps-environment: development
+        # The app's own group first, so its Keychain items stay where they were; the second is shared
+        # with the widget extension (WidgetSnapshotStore).
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)co.xanom.forge
+          - $(AppIdentifierPrefix)co.xanom.forge.shared
+
+  ForgeWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ForgeWidgets
+      - path: Shared
+      - path: Forge/DesignSystem/Theme.swift
+      - path: Forge/DesignSystem/Components/ProgressRing.swift
+      - path: Forge/Core/Util/ForgeDates.swift
+      - path: Forge/Core/Auth/Keychain.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.xanom.forge.widgets
+        PRODUCT_NAME: ForgeWidgets
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: ForgeWidgets/ForgeWidgets.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: ForgeWidgets/Info.plist
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: Forge Widgets App Store
+    info:
+      path: ForgeWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Forge
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ForgeSharedKeychainGroup: $(AppIdentifierPrefix)co.xanom.forge.shared
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: ForgeWidgets/ForgeWidgets.entitlements
+      properties:
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)co.xanom.forge.shared
 
   ForgeTests:
     type: bundle.unit-test
