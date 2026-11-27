@@ -9,6 +9,8 @@
   var MAIA_ORIGIN = "https://app.maialearning.com";
   var SAVE_BATCH = 25; // colleges per POST, to stay well under the request size limit
   var QUEUE_KEY = "cf.maiaQueue"; // written by Scattergrams.jsx
+  var FRESH_MS = 24 * 60 * 60 * 1000; // a school imported this recently is skipped, so clicking again resumes
+  var remaining = []; // what a stopped run didn't get to, for the Resume button
   var maia = window.opener;
   var colleges = null;
   var busy = false;
@@ -30,6 +32,8 @@
     el("cancel").textContent = "Close";
     el("open").hidden = false;
     el("lookup").hidden = !maiaOpen();
+    el("resume").hidden = !(remaining.length && maiaOpen());
+    if (!el("resume").hidden) el("resume").textContent = "Resume (" + remaining.length + " left)";
   }
 
   function send(type, list) {
@@ -74,9 +78,12 @@
     if (!res.ok || j.success === false) throw new Error(j.error || "Save failed");
   }
 
-  async function save(payload, missing, cancelled) {
+  async function save(payload, missing, cancelled, stopped) {
     showMissing(missing);
-    if (!payload.colleges.length) { finish("Maia didn’t return scattergrams for " + (colleges.length === 1 ? colleges[0].name : "any of these colleges") + ".", true); return; }
+    var done = {};
+    payload.colleges.concat((missing || []).filter(function (m) { return m.reason === "Not found in Maia"; })).forEach(function (c) { done[c.slug] = true; });
+    remaining = stopped || cancelled ? colleges.filter(function (c) { return !done[c.slug]; }) : [];
+    if (!payload.colleges.length) { finish(stopped ? String(stopped) : "Maia didn’t return scattergrams for " + (colleges.length === 1 ? colleges[0].name : "any of these colleges") + ".", true); return; }
     var total = payload.colleges.length;
     try {
       for (var i = 0; i < total; i += SAVE_BATCH) {
@@ -86,7 +93,7 @@
       dropFromQueue(payload.colleges.map(function (c) { return c.slug; }));
       var withData = payload.colleges.filter(function (c) { return c.points.length > 0; }).length;
       var what = total === 1 ? colleges[0].name + (withData ? "" : " (no applicants from your school)") : total + " colleges (" + withData + " with applicants from your school)";
-      finish((cancelled ? "Stopped early. " : "") + "Imported " + what + ".");
+      finish((cancelled ? "Stopped early. " : "") + "Imported " + what + "." + (stopped ? " " + stopped : ""), Boolean(stopped));
     } catch (e) {
       finish("Couldn’t save: " + (e.message || "unknown error") + ". Try again.", true);
     }
@@ -101,7 +108,8 @@
       if (stopping) return;
       var pct = msg.total ? Math.round((msg.done / msg.total) * 100) : 0;
       el("bar").style.width = pct + "%";
-      setStatus(msg.name ? "Checking " + msg.name + " (" + (msg.done + 1) + " of " + msg.total + ")…" : "Finishing up…");
+      if (msg.waitSeconds) setStatus("Maia asked us to slow down. Waiting " + msg.waitSeconds + " seconds, then trying " + msg.name + " again…");
+      else setStatus(msg.name ? "Checking " + msg.name + " (" + (msg.done + 1) + " of " + msg.total + ")…" : "Finishing up…");
     } else if (msg.type === "cf-maia:error") {
       finish(String(msg.error || "Something went wrong in Maia."), true);
       if (Array.isArray(msg.diagnostic)) {
@@ -109,7 +117,11 @@
         el("diagnostic").hidden = false;
       }
     } else if (msg.type === "cf-maia:result" && msg.payload && Array.isArray(msg.payload.colleges)) {
-      save(msg.payload, msg.missing, msg.cancelled);
+      save(msg.payload, msg.missing, msg.cancelled, msg.stopped);
+      if (Array.isArray(msg.diagnostic)) {
+        el("diagnostic-text").textContent = msg.diagnostic.map(function (d) { return JSON.stringify(d); }).join("\n").slice(0, 4000);
+        el("diagnostic").hidden = false;
+      }
     }
   }
 
@@ -122,7 +134,17 @@
     el("cancel").textContent = "Close";
   });
 
-  function toTarget(c) { return { slug: c.slug, name: c.name, scorecardId: c.scorecardId || null }; }
+  var known = {}; // slug → stored scattergram, for Maia ids and import times
+  function toTarget(c) {
+    var k = known[c.slug];
+    return { slug: c.slug, name: c.name, scorecardId: c.scorecardId || null, nid: (k && k.maiaNid) || null };
+  }
+
+  el("resume").addEventListener("click", function () {
+    if (!remaining.length || busy) return;
+    setStatus("Resuming with " + remaining.length + " colleges…");
+    begin(remaining, false);
+  });
 
   /** Start a run. The first one says hello (the Maia page may still be loading); later ones ask for a fetch. */
   function begin(list, first) {
@@ -130,6 +152,7 @@
     busy = true;
     el("lookup").hidden = true;
     el("open").hidden = true;
+    el("resume").hidden = true;
     el("cancel").textContent = "Stop";
     el("bar").style.width = "0%";
     send(first ? "cf-maia:hello" : "cf-maia:fetch", colleges);
@@ -182,16 +205,22 @@
       if (!res.ok) throw new Error("load failed");
       var ws = await res.json();
       list = ws.colleges || [];
+      var sg = await fetch("/api/workspace/scattergrams", { credentials: "same-origin", cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; });
+      known = (sg && sg.data && sg.data.colleges) || {};
     } catch (e) {
       setStatus("Couldn’t load your College Forge list. Refresh College Forge and try again.", true);
       return;
     }
     // Your list first, then schools you queued from the Scattergrams tab.
     var seen = {};
-    var chosen = list.concat(readQueue()).filter(function (c) { return !seen[c.slug] && (seen[c.slug] = true); }).map(toTarget);
-    if (!chosen.length) { finish("Your list is empty. Look up any school below, or add colleges in College Forge first."); return; }
-    var queued = chosen.length - list.length;
-    setStatus("Importing " + chosen.length + " colleges" + (queued > 0 ? " (" + list.length + " from your list, " + queued + " you looked up)" : " from your list") + ". Waiting for Maia…");
+    var all = list.concat(readQueue()).filter(function (c) { return !seen[c.slug] && (seen[c.slug] = true); }).map(toTarget);
+    if (!all.length) { finish("Your list is empty. Look up any school below, or add colleges in College Forge first."); return; }
+    // Resume: skip schools imported in the last day, never-imported ones first. If all are fresh, refresh them all.
+    var age = function (c) { return known[c.slug] ? known[c.slug].fetchedAt || 0 : -1; };
+    var stale = all.filter(function (c) { return Date.now() - age(c) > FRESH_MS || age(c) < 0; }).sort(function (a, b) { return age(a) - age(b); });
+    var chosen = stale.length ? stale : all;
+    var skipped = all.length - chosen.length;
+    setStatus("Importing " + chosen.length + " colleges" + (skipped ? " (" + skipped + " imported in the last day are skipped)" : "") + ". Waiting for Maia…");
     begin(chosen, true);
   }
 
