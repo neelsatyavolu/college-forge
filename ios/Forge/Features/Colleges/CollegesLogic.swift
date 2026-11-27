@@ -136,6 +136,16 @@ enum CollegesShortlist {
         let name = college.name.lowercased()
         return apps.first { $0.name.lowercased() == name }
     }
+
+    /// The remove confirm, matching the web List tab: an untouched application leaves with the school
+    /// (lib/list-sync.ts); any other stays on Applications, unlinked from the list.
+    static func removalMessage(for app: TrackedApplication?) -> String {
+        guard let app else { return "Saved essay drafts will remain." }
+        let fate = app.untouched
+            ? "Its Not started application leaves Applications and Progress too."
+            : "Its application (\(app.statusLabel)) stays on Applications and Progress, no longer linked to the list."
+        return "\(fate) Saved essay drafts will remain."
+    }
 }
 
 enum CollegesExplore {

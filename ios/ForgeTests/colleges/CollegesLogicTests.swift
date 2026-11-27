@@ -216,3 +216,18 @@ struct CollegesDecodingTests {
         #expect(response.edition == "2027")
     }
 }
+
+@Suite("Shortlist remove confirm")
+struct CollegesRemovalMessageTests {
+    private func app(_ json: String) throws -> TrackedApplication {
+        try JSONDecoder().decode(TrackedApplication.self, from: Data(json.utf8))
+    }
+
+    @Test func untrackedUntouchedAndStartedApplications() throws {
+        #expect(CollegesShortlist.removalMessage(for: nil) == "Saved essay drafts will remain.")
+        let fresh = try app(#"{"id":"a","name":"A","untouched":true}"#)
+        #expect(CollegesShortlist.removalMessage(for: fresh).hasPrefix("Its Not started application leaves Applications"))
+        let started = try app(#"{"id":"b","name":"B","statusLabel":"Writing"}"#)
+        #expect(CollegesShortlist.removalMessage(for: started).contains("(Writing) stays on Applications"))
+    }
+}
