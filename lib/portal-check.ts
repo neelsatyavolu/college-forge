@@ -32,8 +32,17 @@ function catalogAllows(college: NonNullable<ReturnType<typeof collegeById>>, hos
 }
 
 /**
- * True when at least one link is given and every given link is https on one of this catalog school's own
- * hosts. No links proves nothing, so it is false. Not for schools outside the catalog.
+ * Only the exact portal hosts the catalog names (its login URL and listed hosts). Anything sourced from a
+ * forwarded email is held to this: universities host student and personal pages on their subdomains, so
+ * "any *.school.edu" proves nothing about a link in an email.
+ */
+function catalogExactHost(college: NonNullable<ReturnType<typeof collegeById>>, host: string): boolean {
+  return host === hostOf(college.loginUrl) || college.hosts.includes(host);
+}
+
+/**
+ * True when at least one link is given and every given link is https on one of this catalog school's exact
+ * portal hosts. No links proves nothing, so it is false. Not for schools outside the catalog.
  */
 export function catalogUrlsAllowed(collegeId: string | null | undefined, urls: string[]): boolean {
   const college = collegeId ? collegeById(collegeId) : undefined;
@@ -41,19 +50,19 @@ export function catalogUrlsAllowed(collegeId: string | null | undefined, urls: s
   if (!college || !given.length) return false;
   return given.every((u) => {
     const host = hostOf(u);
-    return !!host && catalogAllows(college, host);
+    return !!host && catalogExactHost(college, host);
   });
 }
 
 /**
- * A link from a forwarded email is shown only if it goes to the school: a catalog school's own hosts, or for
+ * A link from a forwarded email is shown only if it goes to the school: a catalog school's exact portal hosts, or for
  * another school the portal host the student saved. A host that itself came from an email proves nothing.
  */
 export function trustedSchoolLink(app: TrackedApp, url: string): boolean {
   const host = hostOf(url);
   if (!host) return false;
   const college = app.collegeId ? collegeById(app.collegeId) : undefined;
-  if (college) return catalogAllows(college, host);
+  if (college) return catalogExactHost(college, host);
   return !app.portalFromEmail && host === hostOf(app.portalUrl);
 }
 

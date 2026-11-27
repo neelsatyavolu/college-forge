@@ -256,3 +256,15 @@ test('the arrival email never says a login was saved when none was', () => {
   assert.doesNotMatch(set.text, /Forge saved that password/);
   assert.match(arrivalEmail(arrival, 'https://forge.test', { saved: true }).text, /login is saved/);
 });
+
+test('email-sourced links must be on a catalog school\'s exact portal hosts, not any subdomain', () => isolated(async () => {
+  const { catalogUrlsAllowed, trustedSchoolLink } = require('../lib/portal-check.ts');
+  assert.equal(catalogUrlsAllowed('purdue', ['https://apply.purdue.edu/apply/status']), true);
+  // A student or club page on the school's domain is not the portal.
+  assert.equal(catalogUrlsAllowed('purdue', ['https://web.ics.purdue.edu/~student/activate']), false);
+  assert.equal(catalogUrlsAllowed('purdue', ['https://purdue.edu/activate']), false);
+  assert.equal(catalogUrlsAllowed('purdue', ['https://apply.purdue.edu/x', 'https://people.purdue.edu/y']), false, 'every URL must pass');
+  const app = { id: 'a1', collegeId: 'purdue', name: 'Purdue University', portalUrl: 'https://apply.purdue.edu/apply/status' };
+  assert.equal(trustedSchoolLink(app, 'https://apply.purdue.edu/account/activate'), true);
+  assert.equal(trustedSchoolLink(app, 'https://web.ics.purdue.edu/~student/activate'), false);
+}));
