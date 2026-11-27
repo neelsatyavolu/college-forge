@@ -259,3 +259,84 @@ button:disabled { cursor: wait; }
 .cf-research-group a { color: var(--workspace-accent); font-size: 12px; }
 .cf-research-tag { margin-left: 6px; padding: 1px 6px; font-size: 11px; color: var(--muted); border: 1px solid var(--hairline); border-radius: 999px; white-space: nowrap; }
 @media (max-width: 560px) { .cf-research-group dl > div { grid-template-columns: 1fr; gap: 2px; } }
+
+/* Explore: sort, filter panel, active chips, richer cards and school-page notes. */
+.cf-explore-sort, .cf-explore-select { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.cf-explore-sort select, .cf-explore-select select { min-height: 38px; padding: 7px 30px 7px 11px; border: 1px solid var(--hairline); border-radius: 8px; background: var(--canvas); color: var(--ink); font: inherit; font-size: 13px; }
+.cf-explore-more-btn { min-height: 40px; padding: 8px 16px; border: 1px solid var(--hairline); border-radius: 8px; background: var(--canvas); color: var(--ink); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.cf-explore-more-btn.is-active, .cf-explore-more-btn[aria-expanded="true"] { border-color: var(--workspace-accent); color: var(--workspace-accent); }
+.cf-explore-toolbar { margin-bottom: 14px; }
+.cf-explore-toolbar + .cf-explore-filters { margin-bottom: 20px; }
+.cf-explore-panel { margin: -6px 0 20px; padding: 18px 20px; border: 1px solid var(--hairline); border-radius: 12px; background: var(--surface-soft); }
+.cf-explore-panel__selects { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 14px; }
+.cf-explore-select { flex-direction: column; align-items: stretch; gap: 5px; min-width: 0; }
+.cf-explore-select select { width: 100%; min-width: 0; }
+.cf-explore-panel__toggles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--hairline); }
+.cf-explore-panel__toggles .cf-filter-pill { min-height: 34px; padding: 6px 13px; }
+.cf-explore-panel__note { margin: 14px 0 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
+.cf-explore-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -4px 0 22px; }
+.cf-explore-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--workspace-accent); border-radius: 999px; background: var(--workspace-accent-soft); color: var(--workspace-accent); font-size: 12px; font-weight: 500; }
+.cf-explore-chip span { font-size: 14px; line-height: 1; }
+
+.cf-explore-card__photo.is-empty, .cf-explore-page__hero.is-empty { background: linear-gradient(135deg, hsl(var(--tint, 150) 30% 88%), hsl(calc(var(--tint, 150) + 40) 26% 80%)); color: hsl(var(--tint, 150) 35% 28%); }
+:root[data-theme="dark"] .cf-explore-card__photo.is-empty, :root[data-theme="dark"] .cf-explore-page__hero.is-empty { background: linear-gradient(135deg, hsl(var(--tint, 150) 22% 22%), hsl(calc(var(--tint, 150) + 40) 20% 16%)); color: hsl(var(--tint, 150) 40% 78%); }
+.cf-explore-card__photo img { transition: transform 300ms ease; }
+.cf-explore-card:hover .cf-explore-card__photo img { transform: scale(1.03); }
+.cf-explore-card__tags { display: flex; flex-wrap: wrap; gap: 5px; margin: -6px 0 14px; padding: 0; list-style: none; }
+.cf-explore-card__tags li { padding: 2px 8px; border-radius: 999px; background: var(--workspace-accent-soft); color: var(--workspace-accent); font-size: 11px; font-weight: 500; }
+.cf-explore-card__metrics { grid-template-columns: minmax(0, .8fr) minmax(0, 1.35fr) minmax(0, .85fr); gap: 10px; }
+.cf-explore-card__metrics dd { font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cf-explore-card__metrics div { min-width: 0; }
+
+.cf-explore-credit { margin: 6px 2px 0; font-size: 11px; color: var(--muted); text-align: right; }
+.cf-explore-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.cf-explore-ranks { display: flex; flex-wrap: wrap; gap: 0; margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--hairline); }
+.cf-explore-ranks li { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: baseline; padding: 14px 22px 14px 0; margin-right: 22px; }
+.cf-explore-ranks li + li { padding-left: 22px; margin-right: 22px; border-left: 1px solid var(--hairline-soft); }
+.cf-explore-ranks__n { grid-row: span 2; font: 500 24px/1 var(--font-display); color: var(--ink); font-variant-numeric: tabular-nums; }
+.cf-explore-ranks__pub { font-size: 12px; font-weight: 600; color: var(--ink); }
+.cf-explore-ranks__list { font-size: 11px; color: var(--muted); }
+.cf-explore-notes { margin: 0; border-top: 1px solid var(--hairline); }
+.cf-explore-notes div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--hairline-soft); font-size: 13.5px; }
+.cf-explore-notes dt { color: var(--muted); font-size: 12.5px; padding-top: 1px; }
+.cf-explore-notes dd { margin: 0; color: var(--ink); line-height: 1.55; }
+.cf-explore-notes dd > span { display: block; }
+.cf-explore-source { display: inline-block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+.cf-explore-source:hover { color: var(--workspace-accent); }
+.cf-explore-income { margin-top: 18px; }
+.cf-explore-income h4 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.cf-explore-income dl { margin: 0; border: 1px solid var(--hairline); border-radius: 8px; overflow: hidden; }
+.cf-explore-income dl div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 12px; font-size: 13px; }
+.cf-explore-income dl div + div { border-top: 1px solid var(--hairline-soft); }
+.cf-explore-income dt { color: var(--muted); white-space: nowrap; }
+.cf-explore-income dd { margin: 0; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.cf-explore-deadlines { margin: 0; padding: 0; list-style: none; border: 1px solid var(--hairline); border-radius: 8px; overflow: hidden; }
+.cf-explore-deadlines li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; padding: 9px 12px; font-size: 13.5px; }
+.cf-explore-deadlines li + li { border-top: 1px solid var(--hairline-soft); }
+.cf-explore-deadlines__date { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink); }
+.cf-explore-deadlines__note { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+.cf-explore-essays { margin: 0; padding: 0; list-style: none; counter-reset: essay; }
+.cf-explore-essays li { padding: 12px 0; border-top: 1px solid var(--hairline-soft); }
+.cf-explore-essays li:first-child { border-top: 1px solid var(--hairline); }
+.cf-explore-essays__meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
+.cf-explore-essays__meta strong { color: var(--ink); font-weight: 600; }
+.cf-explore-essays p { margin: 5px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--body); }
+.cf-explore-grades { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.cf-explore-grades div { padding: 12px 14px; border: 1px solid var(--hairline); border-radius: 8px; }
+.cf-explore-grades dt { font-size: 11px; color: var(--muted); }
+.cf-explore-grades dd { margin: 4px 0 0; font: 500 26px/1 var(--font-display); color: var(--ink); }
+.cf-explore-switch { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0 24px; margin: 0 0 12px; padding: 0; list-style: none; }
+.cf-explore-switch li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--hairline-soft); font-size: 13px; color: var(--ink); }
+.cf-explore-switch__lv { font-size: 12px; font-weight: 500; }
+.cf-explore-switch__lv.is-open { color: var(--accent-teal); }
+.cf-explore-switch__lv.is-bar { color: var(--muted); }
+.cf-explore-switch__lv.is-hard { color: var(--coral); }
+@media (max-width: 600px) {
+  .cf-explore-sort { flex: 1 1 auto; }
+  .cf-explore-sort select { flex: 1; }
+  .cf-explore-panel { padding: 14px; }
+  .cf-explore-panel__selects { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .cf-explore-notes div { grid-template-columns: 1fr; gap: 4px; }
+  .cf-explore-grades { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cf-explore-ranks li, .cf-explore-ranks li + li { padding: 10px 14px 10px 0; margin-right: 14px; border-left: none; }
+}
