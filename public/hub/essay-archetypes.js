@@ -374,6 +374,7 @@
     essayGroupKey: essayGroupKey,
     isSchoolSkipped: isSchoolSkipped,
     essaySchools: essaySchools,
+    requiredItems: requiredItems,
     writingTotals: writingTotals,
     nextDeadline: nextDeadline,
     byPromptType: byPromptType,
