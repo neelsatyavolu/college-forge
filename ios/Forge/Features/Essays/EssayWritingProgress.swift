@@ -49,6 +49,9 @@ struct EssayWritingProgress {
     var wordsWritten = 0
     var wordsRequired = 0
     var unfinishedGroups: Set<String> = []
+    /// Schools whose every required essay (after picks and hidden ones) is final. A school with only optional
+    /// essays is finished once every essay it shows is final.
+    var finishedGroups: Set<String> = []
     var next: EssayDeadline?
 
     init(groups: [EssayGroup], drafts: [String: String], status: [String: String], rules: [String: EssayPromptRule]) {
@@ -58,9 +61,9 @@ struct EssayWritingProgress {
             var requiredEssays: [Essay] = []
             for essay in group.essays {
                 let rule = rules[essay.id]
-                if let (key, picks) = Self.choice(for: essay, rule: rule) {
+                if let (key, picks) = EssayChoiceRules.choice(of: essay, rule: rule) {
                     sets[key, default: (picks, [])].essays.append(essay)
-                } else if rule?.required != false,
+                } else if (essay.required ?? rule?.required) != false,
                           essay.label.range(of: #"\(optional\)|only if this applies"#, options: [.regularExpression, .caseInsensitive]) == nil,
                           essay.prompt.range(of: #"^optional\b"#, options: [.regularExpression, .caseInsensitive]) == nil {
                     requiredEssays.append(essay)
@@ -77,6 +80,11 @@ struct EssayWritingProgress {
                 }
                 requiredEssays.append(contentsOf: ranked.prefix(set.choose))
             }
+            let groupFinal = requiredEssays.filter { status[$0.id] == "final" }.count
+            let finished = requiredEssays.isEmpty
+                ? !group.essays.isEmpty && group.essays.allSatisfy { status[$0.id] == "final" }
+                : groupFinal >= requiredEssays.count
+            if finished { finishedGroups.insert(group.key) }
             for essay in requiredEssays {
                 let length = count(essay)
                 required += 1
@@ -95,10 +103,14 @@ struct EssayWritingProgress {
         next = next ?? earliest
     }
 
-    private static func choice(for essay: Essay, rule: EssayPromptRule?) -> (String, Int)? {
-        if let group = rule?.chooseGroup, !group.isEmpty, let n = rule?.choose, n > 0 { return (group, n) }
-        if essay.id.hasPrefix("ca-ps-") { return ("common", 1) }
-        if essay.id.hasPrefix("uc-piq-") { return ("uc", 4) }
-        return nil
+    /// Schools still being written first, finished ones after, removed-from-list leftovers last; order kept within each.
+    func sidebarOrder(_ groups: [EssayGroup]) -> [EssayGroup] {
+        func rank(_ group: EssayGroup) -> Int { group.kind == .orphan ? 2 : finishedGroups.contains(group.key) ? 1 : 0 }
+        return groups.enumerated()
+            .sorted { lhs, rhs in
+                let left = rank(lhs.element), right = rank(rhs.element)
+                return left == right ? lhs.offset < rhs.offset : left < right
+            }
+            .map(\.element)
     }
 }

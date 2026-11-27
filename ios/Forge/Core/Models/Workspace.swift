@@ -35,6 +35,8 @@ struct Workspace: Codable, Hashable, Sendable {
     /// Schools the student is not writing supplements for, by Essays group key (a slug or "uc-application"),
     /// always false. Every other school is an essay school.
     var essaySchools: [String: Bool] = [:]
+    /// Which option (0-based) of a choose-one prompt the student answers, by essay id.
+    var essayOption: [String: Int] = [:]
 
     /// True while the onboarding wizard should cover the app (mirrors `needsOnboarding` in lib/store.ts).
     var needsOnboarding: Bool {
@@ -80,6 +82,7 @@ extension Workspace {
         essayHidden = c.dictionary(.essayHidden)
         commonAppPrompt = c.optionalString(.commonAppPrompt)
         essaySchools = c.dictionary(.essaySchools)
+        essayOption = c.dictionary(.essayOption)
     }
 }
 

@@ -4,6 +4,9 @@ import SwiftUI
 struct EssayEditorHeader: View {
     let item: EssayItem
     @Binding var expanded: Bool
+    /// The picked option of a choose-one prompt (`Workspace.essayOption`).
+    var chosenOption: Int?
+    var onChooseOption: (Int) -> Void = { _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
@@ -50,12 +53,8 @@ struct EssayEditorHeader: View {
     }
 
     private var promptText: some View {
-        Text(item.essay.prompt)
-            .font(.subheadline)
-            .foregroundStyle(Theme.body)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        EssayPromptText(essay: item.essay, chosen: chosenOption, onChoose: onChooseOption)
             .fixedSize(horizontal: false, vertical: true)
-            .textSelection(.enabled)
     }
 }
 
