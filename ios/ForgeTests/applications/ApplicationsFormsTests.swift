@@ -93,6 +93,27 @@ struct ApplicationDraftTests {
         #expect(edit == ApplicationEdit(deadline: "", portalUrl: "https://apply.example.edu/status"))
     }
 
+    @Test(arguments: [(" New note ", "New note"), ("  ", "")])
+    func decisionNoteUpdateBody(input: String, expected: String) throws {
+        var app = AppFixture.make("sample")
+        app.decisionNote = "Previous note"
+        var draft = ApplicationDraft(app)
+        #expect(draft.edit(from: app) == nil)
+        draft.decisionNote = input
+        let edit = try #require(draft.edit(from: app))
+        let body = try JSONEncoder().encode(ApplicationAction.update(id: app.id, edit: edit))
+        let object = try #require(JSONSerialization.jsonObject(with: body) as? [String: Any])
+        #expect(object["action"] as? String == "update")
+        #expect(object["id"] as? String == app.id)
+        #expect(object["edit"] as? [String: String] == ["decisionNote": expected])
+    }
+
+    @MainActor @Test func decisionNoteLimitMatchesWeb() {
+        let prefix = String(repeating: "a", count: 998)
+        #expect(DecisionNoteField.limited(prefix + "🎓!") == prefix + "🎓")
+        #expect(DecisionNoteField.limited(prefix + "a🎓") == prefix + "a")
+    }
+
     @Test func portalRoundIsUnsetInForm() {
         var app = AppFixture.make("a")
         app.round = .ea

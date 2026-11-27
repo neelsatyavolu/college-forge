@@ -13,6 +13,7 @@ struct ApplicationDraft: Equatable, Sendable {
     var decisionDate: String
     var portalUrl: String
     var notes: String
+    var decisionNote: String
 
     init(_ app: TrackedApplication) {
         name = app.name
@@ -21,6 +22,7 @@ struct ApplicationDraft: Equatable, Sendable {
         submittedAt = app.submittedAt
         decisionDate = app.ownDecisionDate
         portalUrl = app.portalUrl
+        decisionNote = app.decisionNote
         notes = app.notes
     }
 
@@ -45,6 +47,10 @@ struct ApplicationDraft: Equatable, Sendable {
         if submittedAt != original.submittedAt { edit.submittedAt = submittedAt }
         if decisionDate != original.decisionDate { edit.decisionDate = decisionDate }
         if trimmedURL != original.portalUrl { edit.portalUrl = trimmedURL }
+        if decisionNote != original.decisionNote {
+            let note = ApplicationsValidation.trimmed(decisionNote)
+            if note != original.decisionNote { edit.decisionNote = note }
+        }
         if notes != original.notes { edit.notes = notes }
         return edit == ApplicationEdit() ? nil : edit
     }

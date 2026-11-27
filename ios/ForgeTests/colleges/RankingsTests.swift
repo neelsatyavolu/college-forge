@@ -19,6 +19,28 @@ struct RankingsTests {
         #expect(response.ai == nil)
     }
 
+    @Test func sendsJudgedRankingAsRawJSON() throws {
+        let text = #"{"made":"Today","list":[{"school":"Example College","rank":"T-2","why":"Strong labs"}]}"#
+        let replace = try RankingsAiRequest.replace(text)
+        #expect(replace.method == "PUT")
+        #expect(replace.path == "/api/rankings/me/ai")
+        #expect(replace.contentType == "application/json")
+        #expect(replace.body == Data(text.utf8))
+
+        let remove = RankingsAiRequest.remove
+        #expect(remove.method == "DELETE")
+        #expect(remove.path == replace.path)
+        #expect(remove.body == nil)
+    }
+
+    @Test func limitsJudgedRankingUsingUTF16Length() throws {
+        let atLimit = String(repeating: "🎓", count: 100_000)
+        #expect(try RankingsAiRequest.replace(atLimit).body == Data(atLimit.utf8))
+        #expect(throws: APIError.server(status: 413, message: "That file is too large.")) {
+            try RankingsAiRequest.replace(atLimit + " ")
+        }
+    }
+
     @Test func formatsLikeTheWebsite() {
         #expect(RankingsFormat.money(84_400) == "$84k")
         #expect(RankingsFormat.money(nil) == "—")

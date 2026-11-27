@@ -9,6 +9,7 @@ struct RankingsSettingsSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                if current.signedIn { RankingsAiImportSection(response: current) }
                 if response.isPath { majorsSection }
                 weightsSection
                 adjustmentsSection
