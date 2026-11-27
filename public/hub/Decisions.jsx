@@ -110,7 +110,7 @@ function Decisions({ tracker, onTrackerChange, onWorkspaceChange }) {
         </div>
       </header>
       {error ? <div role="alert" className="cf-notice">{error}</div> : null}
-      {apps.filter((a) => a.stage === "admitted").length >= 2 ? <p className="cf-help" style={{ marginBottom: 20 }}><a href="#board">Compare your offers on the Decision board →</a></p> : null}
+      {apps.filter((a) => a.stage === "admitted").length >= 1 ? <p className="cf-help" style={{ marginBottom: 20 }}><a href="#board">See your offers on the Decision board →</a></p> : null}
 
       {hidden.length ? (
         <section className="cf-apps-group" aria-labelledby="dec-new">

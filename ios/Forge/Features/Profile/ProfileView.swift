@@ -55,7 +55,6 @@ private struct ProfileHome: View {
             } footer: {
                 Text("Go through the setup interview again with your AI. Your saved answers count as given, and your list, edits and drafts are kept.")
             }
-            HubRebuildSection()
         }
         .listStyle(.insetGrouped)
         .refreshable { await store.refresh() }

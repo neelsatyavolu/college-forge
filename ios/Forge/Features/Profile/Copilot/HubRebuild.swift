@@ -87,7 +87,7 @@ final class HubRebuildModel {
     }
 }
 
-/// The Profile row that runs a rebuild, with live progress.
+/// The More → Setup row that runs a rebuild, with live progress.
 struct HubRebuildSection: View {
     @Environment(WorkspaceStore.self) private var store
     @Environment(SessionModel.self) private var session
@@ -113,6 +113,8 @@ struct HubRebuildSection: View {
             } else if let message = model.message {
                 Text(message).font(.footnote).foregroundStyle(Theme.body)
             }
+        } header: {
+            Text("Setup")
         } footer: {
             Text("Have the AI rebuild your plan from the answers you already saved. It fills in deadlines, milestones and this year's essay prompts. Your school list, edits and drafts are kept. This takes a few minutes; keep the app open.")
         }

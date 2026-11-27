@@ -49,7 +49,7 @@ struct ApplicationsToolbar: ToolbarContent {
                     }
                 }
             } label: {
-                Label("More", systemImage: "ellipsis.circle")
+                Label("Portal tools", systemImage: "ellipsis.circle")
             }
             .errorAlert($error)
         }

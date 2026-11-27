@@ -41,7 +41,7 @@ struct MoreAccountSection: View {
     static let accountsURL = URL(string: "https://accounts.xanom.co/")!
 }
 
-/// Wipe the hub and start over.
+/// Rebuild the hub from saved answers, or wipe it and start over.
 struct MoreSetupSection: View {
     @Environment(WorkspaceStore.self) private var store
     @Environment(Router.self) private var router
@@ -50,6 +50,7 @@ struct MoreSetupSection: View {
     @State private var error: APIError?
 
     var body: some View {
+        HubRebuildSection()
         Section {
             Button(role: .destructive) { confirmReset = true } label: {
                 HStack {
@@ -59,8 +60,6 @@ struct MoreSetupSection: View {
                 }
             }
             .disabled(resetting)
-        } header: {
-            Text("Setup")
         } footer: {
             Text("Clears your profile, colleges, essay drafts and setup answers, then starts onboarding again. AI sign-ins stay connected.")
         }

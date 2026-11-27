@@ -274,7 +274,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
         <div>
           <h1 className="cf-page-title">Share & export</h1>
           <p className="cf-page-lede">
-            Share a read-only view with a counselor or parent, and download your drafts, deadlines or a full backup. Your work follows your Xanom account to any device.
+            Invite a parent, counselor or writing coach. Parents can look but not comment; counselors and writing coaches can leave you notes. You can also download your drafts, deadlines or a full backup. Your work follows your Xanom account to any device.
           </p>
         </div>
       </header>
@@ -317,7 +317,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
         ) : null}
       </Panel>
 
-      <CalendarFeedPanel />
+      <div id="calendar" className="cf-anchor"><CalendarFeedPanel /></div>
 
       <Panel title="Export for Common App & counselors">
         <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>

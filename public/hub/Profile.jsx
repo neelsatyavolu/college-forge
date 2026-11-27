@@ -1,4 +1,4 @@
-const { StatCard, Badge, VerdictBadge, SectionLabel, Tile, Button } = window.CollegeForgeDesignSystem_e95e63;
+const { StatCard, Badge, VerdictBadge, Tile, Button } = window.CollegeForgeDesignSystem_e95e63;
 
 const LEVEL_TONE = { National: "top", International: "top", State: "good", School: "neutral" };
 const DESC_LIMIT = 150;
@@ -285,8 +285,7 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
-          <SectionLabel style={{ marginBottom: 10 }}>Your profile</SectionLabel>
-          <h1 className="cf-page-title">Everything on file</h1>
+          <h1 className="cf-page-title">Your profile</h1>
           <p className="cf-page-lede">
             Transcript, testing, coursework, activities, and honors. Edit directly or ask the copilot. Activities follow Common App limits: up to {MAX_ACT} slots, {DESC_LIMIT}-character descriptions; up to {MAX_HON} honors.
           </p>

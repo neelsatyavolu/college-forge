@@ -124,7 +124,7 @@ function AiCheckPanel({ essayId, words, check, pending, onFlush, onWorkspaceChan
         {status === null ? null : connected ? (
           <Button size="sm" variant="secondary" disabled={busy || pending || words < 50} onClick={run}>{busy ? "Checking…" : shown ? "Check again" : "Check for AI writing"}</Button>
         ) : (
-          <a className="cf-link-btn" href="#settings">{status.failed ? "GPTZero sign-in failed. Re-enter your login in Settings" : "Connect GPTZero in Settings"}</a>
+          <a className="cf-link-btn" href="#settings/gptzero">{status.failed ? "GPTZero sign-in failed. Re-enter your login in Settings" : "Connect GPTZero in Settings"}</a>
         )}
       </div>
       {shown && shown.verdict ? <AiBars r={shown} /> : null}

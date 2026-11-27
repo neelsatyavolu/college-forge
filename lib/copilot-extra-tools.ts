@@ -112,7 +112,7 @@ export async function runExtraTool(
       if (!key) return "draft_rec_request needs a recommender id or name.";
       const ws = await read();
       const rec = ws.recommendations.find((r) => String(r.id).toLowerCase() === key) ?? ws.recommendations.find((r) => String(r.name).toLowerCase().includes(key));
-      if (!rec) return `No recommender matching "${key}". Add them on the Letters & aid page first.`;
+      if (!rec) return `No recommender matching "${key}". Add them on the Recs, aid & scholarships page first.`;
       return `Draft for ${rec.name}. Show it to the student to edit and send themselves:\n\n${draftRecRequest(ws, rec)}`;
     }
     default:

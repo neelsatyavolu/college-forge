@@ -176,7 +176,7 @@ function LetterTasks({ data, tracker }) {
     <section className="cf-panel" aria-labelledby="letter-tasks-title">
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
         <h2 id="letter-tasks-title">Letters still missing</h2>
-        <a className="cf-link-btn" href="#track">Letters &amp; aid →</a>
+        <a className="cf-link-btn" href="#track">Recs, aid &amp; scholarships →</a>
       </div>
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
         {tasks.map((t, i) => (

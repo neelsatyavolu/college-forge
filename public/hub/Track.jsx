@@ -71,7 +71,7 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
-          <h1 className="cf-page-title">Letters &amp; financial aid</h1>
+          <h1 className="cf-page-title">Recs, aid &amp; scholarships</h1>
           <p className="cf-page-lede">
             Keep recommendation letters, scholarships, and financial aid in one place. Check the official FAFSA and CSS Profile sites for your enrollment year, eligibility, and school-specific deadlines.
           </p>

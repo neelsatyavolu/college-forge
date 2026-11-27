@@ -113,18 +113,19 @@ function Signal({ app, odds }) {
 function ProgressRow({ app, editable, act, busy, open, onToggle, renderDetails, checking, oddsFor, full }) {
   const odds = oddsFor ? oddsFor(app) : null;
   const OddsLine = window.cfOdds && window.cfOdds.OddsLine;
-  const { SchoolMark, Chevron } = window.cfApp;
+  const { SchoolMark, Chevron, detailsHint } = window.cfApp;
   const when = whenText(app);
   const missing = app.missing && app.missing.length ? app.missing : null;
   const expandable = (editable && renderDetails) || (missing && !full) || odds;
   const showMore = open || full;
+  const hint = !open && editable && renderDetails ? detailsHint(app) : "";
   return (
     <li className="cf-prow">
       <div className="cf-prow__main">
         <SchoolMark name={app.name} logo={app.logo} />
         {expandable ? (
           <button type="button" className="cf-prow__name" aria-expanded={open} aria-controls={`app-${app.id}`} onClick={onToggle}>
-            <span>{app.name}</span><Chevron />
+            <span>{app.name}</span><Chevron />{hint ? <span className="cf-prow__hint">{hint}</span> : null}
           </button>
         ) : <span className="cf-prow__name"><span>{app.name}</span></span>}
         <span className="cf-prow__meta">

@@ -11,10 +11,10 @@ struct DecisionsList: View {
         let sections = DecisionLogic.sections(store.applications)
         List {
             Section { picker }
-            if store.applications.filter({ $0.status.stage == .admitted }).count >= 2 {
+            if store.applications.contains(where: { $0.status.stage == .admitted }) {
                 Section {
                     NavigationLink(value: ApplicationsDestination.decisionBoard) {
-                        Label("Compare your offers", systemImage: "rectangle.split.2x1")
+                        Label("See your offers", systemImage: "rectangle.split.2x1")
                     }
                 }
             }

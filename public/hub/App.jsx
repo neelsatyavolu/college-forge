@@ -32,6 +32,7 @@ function App() {
   const [loading, setLoading] = React.useState(true);
   const [loadError, setLoadError] = React.useState("");
   const [view, setView] = React.useState(readView);
+  const [hash, setHash] = React.useState(() => window.location.hash);
   const [chatOpen, setChatOpen] = React.useState(false);
   const [chatPrompt, setChatPrompt] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -119,6 +120,7 @@ function App() {
       const raw = window.location.hash.slice(1).split("/")[0];
       const id = VIEW_ALIASES[raw] || raw;
       if (!id || NAV.some(n => n.id === id)) setView(readView());
+      setHash(window.location.hash);
       setMenuOpen(false);
     };
     window.addEventListener("hashchange", onHash);
@@ -129,6 +131,20 @@ function App() {
     window.scrollTo(0, 0);
     if (mainRef.current) mainRef.current.focus({ preventScroll: true });
   }, [view]);
+  // "#settings/gptzero" scrolls to the element with that id once the view has rendered it.
+  React.useEffect(() => {
+    const anchor = hash.slice(1).split("/")[1];
+    if (!anchor) return undefined;
+    let tries = 0;
+    let timer = 0;
+    const seek = () => {
+      const el = document.getElementById(anchor);
+      if (el) el.scrollIntoView({ block: "start" });
+      else if (tries++ < 20) timer = setTimeout(seek, 50);
+    };
+    seek();
+    return () => clearTimeout(timer);
+  }, [view, hash, loading]);
   React.useEffect(() => {
     const escape = e => {
       if (e.key === "Escape") {
