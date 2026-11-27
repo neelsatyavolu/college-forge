@@ -1,42 +1,763 @@
 {
+  "adelphi-university": {
+    "url": "https://www.adelphi.edu/admissions/undergrad/apply/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors College Short Response",
+        "prompt": "Students being considered for the Honors College may be asked to submit a brief response (250 words or fewer) to one of the following prompts:",
+        "options": [
+          "Stamps, baseball cards, coins, salt-and-pepper shakers, magnets: people collect all kinds of items. If you were to collect facts, which fact would be the most valuable in your collection?",
+          "Murphy’s Law, Occam’s Razor, Acton’s Dictum, Pythagorean Theorem: If we were to name a principle after you, what would it be? Explain.",
+          "Individuals design furniture, clothing, apps and most everything else we encounter in daily life. What item would make your life better that has yet to be designed?"
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      },
+      {
+        "label": "Scholar Teacher Education Program (STEP) Essay",
+        "prompt": "What would people say are your greatest strengths that you will use as a teacher?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "STEP applicants (essay of at least 500 words, 650 recommended)"
+      }
+    ]
+  },
+  "american-university": {
+    "url": "https://www.american.edu/admissions/first-year/checklist.cfm (+ https://www.american.edu/admissions/first-year/special-academic-programs.cfm)",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "AU Supplemental Short Answer",
+        "prompt": "American University students identify as changemakers and describe themselves as passionate. Describe a belief, hobby, idea, issue, or topic about which you’re excited.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Honors Program Question 1",
+        "prompt": "Tell us about a piece of creative work (e.g. artwork, music, literature, film, etc.) that has influenced the way you view the world and why.",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": false,
+        "audience": "AU Honors Program applicants"
+      },
+      {
+        "label": "Honors Program Question 2",
+        "prompt": "If you could design the ideal Honors course, what would it be and what would you want to learn from it? Why does this topic interest you?",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": false,
+        "audience": "AU Honors Program applicants"
+      },
+      {
+        "label": "Honors Program Question 3",
+        "prompt": "Technological and scientific advances often create benefits while also using large amounts of resources and/or causing unintended harms. How should society decide what costs and risks are acceptable in pursuit of progress?",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": false,
+        "audience": "AU Honors Program applicants"
+      },
+      {
+        "label": "Lincoln Scholars Question 1",
+        "prompt": "Tell us about a morally complicated text that you think would lead to good discussion for first year college students. In what way is the text morally complicated and why do you recommend it?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Lincoln Scholars applicants"
+      },
+      {
+        "label": "Lincoln Scholars Question 2",
+        "prompt": "One goal of the Lincoln Scholars program is to encourage intellectual and political diversity on campus. What does this goal mean to you and why does a program with this goal interest you?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Lincoln Scholars applicants"
+      },
+      {
+        "label": "Lincoln Scholars Question 3",
+        "prompt": "List five texts, magazines, movies, websites, podcasts, music, or other media (no social media apps or platforms) that are important to you and explain briefly why you like each one. Please list a variety of types of media. (1-2 sentences per item, no more than 400 words total).",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "Lincoln Scholars applicants"
+      },
+      {
+        "label": "Sakura Scholars Question 1",
+        "prompt": "The Sakura Scholars program requires students to study in both the United States and Japan, learn the Japanese language, focus on regional topics in East Asia and the Pacific, and complete a capstone for the joint bachelor’s degree in Global International Relations. Why are you interested in this program? What are your personal and/or professional goals and how will this program help you to reach them?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Sakura Scholars applicants"
+      },
+      {
+        "label": "Sakura Scholars Question 2",
+        "prompt": "In this joint degree program, you will gain first-hand comparative international experience as you spend two years at American University and two years at Ritsumeikan University. Think of a time when you faced a challenge or found yourself in an unexpected situation. Explain what happened, what you learned, and how this experience might help you adapt to different intercultural situations, and work through future challenges as a Sakura Scholar.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Sakura Scholars applicants"
+      },
+      {
+        "label": "Global Scholars Question 1",
+        "prompt": "In your view, what is the greatest challenge facing humanity today and how do you envision yourself being part of the solution?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "Global Scholars applicants"
+      },
+      {
+        "label": "Global Scholars Question 2",
+        "prompt": "Describe a situation in which you had to work harder than you expected. When and how did you know that your current efforts were not enough? How did you adjust?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Global Scholars applicants"
+      },
+      {
+        "label": "Politics, Policy and Law Scholars Question 1",
+        "prompt": "The Politics, Policy and Law Scholars Program is an intensive course of study in which students from diverse backgrounds live and learn together. Given its intense and unique nature, why do you want to be a part of the program? Why do you think you would be a good fit for the Politics, Policy and Law Scholars Program?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Politics, Policy and Law Scholars applicants"
+      },
+      {
+        "label": "Politics, Policy and Law Scholars Question 2",
+        "prompt": "The Living Learning Community and cohort aspects are integral parts of the of the Politics, Policy and Law Scholars Program. Describe a specific project, course, or other experience that required you to work with others toward a shared goal or to resolve conflict and build consensus. How did you contribute to accomplishing the goal or resolving conflict? How did you engage with others? How has this experience prepared you for the PPL program? Be specific.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Politics, Policy and Law Scholars applicants"
+      },
+      {
+        "label": "Politics, Policy and Law Scholars Question 3",
+        "prompt": "You have been hired to advise a member of Congress or a state legislator (you can choose which one, but you should pick one) about the issues that affect Americans aged 18-26. You have been asked to identify one legal, political, or policy issue that will resonate with this group of Americans and recommend a policy proposal that he or she should support and promote. Explain the issue, explain why the elected official should highlight it, and propose a specific original policy solution. Provide support for your proposed solution. Your proposal should not simply be to support another individual’s already created policy.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Politics, Policy and Law Scholars applicants"
+      },
+      {
+        "label": "Public Health Scholars Question 1: Statement of Interest and Qualifications",
+        "prompt": "Explain what you hope to gain from joining a cohort program majoring in public health. Please include whether you plan to pursue the 3-year accelerated track or 4-year program track. Explain how your academic and extracurricular experiences have prepared you for this special academic program.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Public Health Scholars applicants"
+      },
+      {
+        "label": "Public Health Scholars Question 2: Reflective Essay",
+        "prompt": "Explain how your personal background will bring a unique perspective to the Public Health Scholars program and contribute to the collective of public health students and faculty at American University.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Public Health Scholars applicants"
+      }
+    ]
+  },
+  "amherst-college": {
+    "url": "https://www.amherst.edu/admission/apply/firstyear/writingsupplement",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Writing Supplement (choose Option A, B or C)",
+        "prompt": "In addition to the main essays you must write as part of the Common App, Apply Coalition with Scoir, or QuestBridge application, Amherst requires a supplementary essay of all applicants. There are three options for satisfying Amherst's supplementary writing requirement for the first-year application: Option A, Option B or Option C. Applicants may elect only one of those options.",
+        "options": [
+          "Option A: Choose one of the following quotations, and respond to the question posed, in an essay of not more than 350 words. It is not necessary to research, read, or refer to the texts from which these quotations are taken; we are looking for original, personal responses to these short excerpts. Remember that your essay should be personal in nature and not simply an argumentative essay.\n\n\"Hope and curiosity — these are qualities that are the foundation of what Amherst College means, of everything that we do here. Curiosity is at the core of a liberal arts education — a spirit of inquiry that shapes not only what our students do in the classroom, but also how they learn from and about each other.\" — Michael A. Elliott, 20th President of Amherst College, address at Amherst College’s 203rd Commencement\n\nPrompt 1 Question: What does curiosity mean to you? How do you experience curiosity in your own life?\n\n\"We seek an Amherst made stronger because it includes those whose experiences can enhance our understanding of our nation and our world. We do so in the faith that our humanity is an identity forged from diversity, and that our different perspectives enrich our inquiry, deepen our knowledge, strengthen our community, and prepare students to engage with an ever-changing world.\" — from the Trustee Statement on Diversity and Community\n\nPrompt 2 Question: In what ways could your unique experiences enhance our understanding of our nation and our world?\n\n\"We are working together to build a community that makes room for both true disagreement and true connection, one that practices the kind of recognition and robust negotiation that the everyday life of democracy requires, and one that explicitly prepares our students to work for the greater good in their professional and personal endeavors.\" — Presidential Priorities: Serving the Greater Good\n\nPrompt 3 Question: Tell us about a time that you engaged with a viewpoint different from your own. How did you enter that engagement, and what did you learn about yourself from it?",
+          "Option B: Submit a graded paper from your junior or senior year that best represents your writing skills and analytical abilities. We are particularly interested in your ability to construct a tightly reasoned, persuasive argument that calls upon literary, sociological or historical evidence. You should not submit a laboratory report, journal entry, creative writing sample or in-class essay. Also, if you have submitted an analytical essay in response to the \"essay topic of your choice\" prompt in the Common Application or Apply Coalition with Scoir writing section, you should not select Option B.",
+          "Option C: If you are/were an applicant to Amherst's Access to Amherst (A2A) program, you may use your A2A Writing Supplement essay in satisfaction of our supplementary essay requirement. If you would like to do so, please select Option C. However, if you would prefer not to use your A2A Writing Supplement for this purpose and you want to submit a different piece of writing, select either Option A or Option B. Option A, Prompt 2 is the same prompt as the A2A Writing Supplement essay; if you would like to submit an updated version of your A2A Writing Supplement essay, please choose Option A, Prompt 2."
+        ],
+        "limit": 350,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "arizona-state-university": {
+    "url": "https://barretthonors.asu.edu/why-barrett/faqs",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Barrett Honors College application essay",
+        "prompt": "The Barrett application essay allows you to address our admissions committee in your own voice. We have a deep interest in knowing why you are considering Barrett, The Honors College, and your essay will let us better see you as a future scholar in our community.\n\nYour essay:\n- may take creative and intellectual risks, but be sure to address and integrate all elements of the prompt\n- should give the admissions committee insight into how you reason and what you value\n- will be most impactful if it is informed by Barrett’s guiding values of Courage and Curiosity, Leadership and Agency, and Community and Belonging\n\nThe essay will also contribute to our assessment of your ability to communicate effectively and think critically, key skills for success in the honors curriculum. Essays that are general or impersonal are less successful. There is never a correct answer nor a preferred response to a prompt. The strongest essays are thoughtful, authentic, and distinctly your own.\n\nApplicants choose from one of three prompts to compose a 300 - 500 word essay. AI should not be used.",
+        "options": [
+          "What is a question you find yourself returning to repeatedly? How does your pursuit of an answer, or even just the persistence of the question itself, suggest you are a strong fit for Barrett?",
+          "Tell us about a time when something did not go according to plan. Focus less on the outcome and more on how the ways you responded in the moment suggest you are a strong fit for Barrett.",
+          "What is an object that connects you to your family or community, and how or why does it do this? How does this connection make you a strong fit for Barrett?"
+        ],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Barrett, The Honors College applicants"
+      }
+    ]
+  },
+  "auburn-university": {
+    "url": "https://honors.auburn.edu/admissions/first-year/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors College Essay 1",
+        "prompt": "Describe your academic and/or professional goals and the experiences that have shaped them. How will your participation in the Honors College at Auburn University further your education, help you pursue these goals, and prepare you for your next steps? In your response, explain how you plan to engage with the academic opportunities and challenges offered by the Honors College and what you hope to contribute to the Honors community.",
+        "options": [],
+        "limit": 600,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      },
+      {
+        "label": "Honors College Essay 2",
+        "prompt": "Select one prompt.",
+        "options": [
+          "Tell us who you are, and who you want to become, by describing in detail a material object that holds personal significance to you or someone close to you. What stories, memories, or meanings does this object carry? How have those influenced the person you are becoming?",
+          "The psychologist Mihaly Csikszentmihalyi used the word “flow” to describe a state of deep immersion in an activity. Describe an activity that can put you into this flow state, when your attention, energy, and sense of self align. What draws you to this experience? What does it reveal about who you are, how you think, or how you engage with the world?",
+          "Each year, the Honors College selects a quote to exhort the incoming cohort to aspire to the ideals of the college. Select a quote that deeply resonates with you and explain why it matters to you. How does this quote reflect your self-understanding, values, or way of thinking? How has it shaped your perspective, decisions, or sense of purpose?"
+        ],
+        "limit": 600,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      }
+    ]
+  },
+  "ball-state-university": {
+    "url": "https://www.bsu.edu/academics/collegesanddepartments/cap/applications-financial-aid/undergraduate",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Estopinal College of Architecture and Planning: Written Essay",
+        "prompt": "Describe an example of when you demonstrated resilience in an effort to achieve a goal.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Estopinal College of Architecture and Planning (ECAP) applicants"
+      }
+    ]
+  },
+  "barnard-college": {
+    "url": "https://barnard.edu/barnard-short-answer-questions",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Bold Question Short Response",
+        "prompt": "At Barnard, inquiry starts with asking bold questions about the world. What is one bold question on your mind and what about it piques your curiosity?",
+        "options": [],
+        "limit": 50,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Trailblazing Woman Short Response",
+        "prompt": "Barnard College is shaped by trailblazing women with a multitude of perspectives. Think of a woman - historical, fictional, contemporary, or personally significant - whose views or approach to problem-solving differ from your own, but who excels at bringing people together. What lesson from her approach would shape how you show up at Barnard both inside and outside of the classroom?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "bates-college": {
+    "url": "https://www.bates.edu/admission/apply/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "baylor-university": {
+    "url": "https://admissions.web.baylor.edu/admissions/incoming-freshman/application-process",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Short Answer Response",
+        "prompt": "What are you looking for in a university, why do you want to attend Baylor, and how do you see yourself contributing to the Baylor community?",
+        "options": [],
+        "limit": 450,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "belmont-university": {
+    "url": "https://www.belmont.edu/admissions/first-year/apply.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "bethel-university": {
+    "url": "https://www.bethelu.edu/admissions/first-year",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
   "binghamton-university-suny": {
-    "collegevine": "https://www.collegevine.com/schools/the-state-university-of-new-york-at-binghamton-suny-binghamton/essay-prompts"
+    "collegevine": "https://www.collegevine.com/schools/the-state-university-of-new-york-at-binghamton-suny-binghamton/essay-prompts",
+    "url": "https://www.binghamton.edu/admissions/undergraduate/apply/freshman/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "biola-university": {
-    "url": "https://www.biola.edu/admissions/undergrad/first-time"
+    "url": "https://www.biola.edu/admissions/undergrad/first-time",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Following Christ Short Response",
+        "prompt": "Describe how and when you made a decision to follow Jesus Christ.",
+        "options": [],
+        "limit": 800,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Spiritual Growth Short Response",
+        "prompt": "Using personal examples, share about your recent spiritual growth.",
+        "options": [],
+        "limit": 800,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Why Biola Short Response",
+        "prompt": "Why are you interested in attending Biola University?",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "boston-college": {
-    "url": "https://www.bc.edu/bc-web/admission/apply.html"
+    "url": "https://www.bc.edu/bc-web/admission/apply.html",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Supplemental Questions 2026-27",
+        "prompt": "We would like to get a better sense of you. Please respond to one of the first four prompts below (400 word limit). Students applying to the Human Centered Engineering major should respond to Prompt #5 instead.",
+        "options": [
+          "1. Strong communities are sustained by traditions. Boston College's annual calendar is marked with both long-standing and newer traditions that help shape our community. Tell us about a meaningful tradition in your family or community. Why is it important to you, and how does it bring people together or strengthen the bonds of those who participate?",
+          "2. The late BC theology professor, Father Michael Himes, argued that a university is not a place to which you go, but instead, a \"rigorous and sustained conversation about the great questions of human existence, among the widest possible circle of the best possible conversation partners.” Who has been your most meaningful conversation partner, and what profound questions have you considered together?",
+          "3. In her July 2009 Ted Talk, “The Danger of a Single Story,” Chimamanda Ngozi Adichie warned viewers against assigning people a “single story” through assumptions about their nationality, appearance, or background. Discuss a time when someone defined you by a single story. What challenges did this present and how did you overcome them?",
+          "4. Boston College’s Jesuit mission highlights “the three Be’s”: be attentive, be reflective, be loving – core to Jesuit education (see A Pocket Guide to Jesuit Education). If you could add a fourth “Be,” what would it be and why? How would this new value support your personal development and enrich the BC community?",
+          "5. Human-Centered Engineering (HCE) Applicants only: One goal of a Jesuit education is to prepare students to serve the Common Good. Human-Centered Engineering at Boston College integrates technical knowledge, creativity, and a humanistic perspective to address societal challenges and opportunities. What societal problems are important to you and how will you use your HCE education to solve them?"
+        ],
+        "limit": 400,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "boston-university": {
+    "url": "https://www.commonapp.org/explore/boston-university",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "BU Essay",
+        "prompt": "What about being a student at BU most excites you?",
+        "options": [],
+        "limit": 350,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "bowdoin-college": {
-    "url": "https://www.bowdoin.edu/admissions/apply/index.html"
+    "url": "https://www.bowdoin.edu/admissions/apply/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Bowdoin Supplemental Essay (from The Offer of the College)",
+        "prompt": "Generations of students have found connection and meaning in Bowdoin’s “The Offer of the College,” written in 1906 by Bowdoin President William DeWitt Hyde.\nTo be at home in all lands and all ages;\nTo count Nature a familiar acquaintance, and Art an intimate friend;\nTo gain a standard for the appreciation of others' work\nAnd the criticism of your own;\nTo carry the keys of the world's library in your pocket,\nAnd feel its resources behind you in whatever task you undertake;\nTo make hosts of friends...who are to be leaders in all walks of life;\nTo lose yourself in generous enthusiasms and cooperate with others for common ends –\nThis is the offer of the college for the best four years of your life.\nWhich line from The Offer resonates most with you?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Navigating through Differences Essay",
+        "prompt": "Bowdoin believes that its broadly diverse and inclusive campus community prepares graduates to be contributing and useful citizens of the world. Every graduate of this institution should be confident in their preparation to be able to navigate through differences and in all sorts of situations. A Bowdoin education does not guarantee these skills, but it does impart a set of tools necessary to bravely enter unfamiliar conditions with the confidence to deal effectively with ambiguity.\nIf you wish, you may share anything about the unique experiences and perspectives that you would bring with you to the Bowdoin campus and community or an experience you have had that required you to navigate across or through difference.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "bradley-university": {
+    "url": "https://catalog.bradley.edu/undergraduate/admissions/first-year-student/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "brigham-young-university": {
+    "url": "https://enrollment.byu.edu/admissions/essays-and-activities",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Engaging Topic Essay",
+        "prompt": "Describe a topic, idea, or experience that you find so engaging that it makes you lose all track of time. What have you done to learn more or engage further in the topic, idea or experience? What resources do you use to learn more?",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true
+      },
+      {
+        "label": "Community Service Essay",
+        "prompt": "Have you become aware of significant needs in your family, school, and/or community? Please explain how you have worked toward meeting those needs.",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true
+      },
+      {
+        "label": "Reflect on Failure Essay",
+        "prompt": "Briefly describe a time that your efforts have fallen short, a goal was not accomplished, or an aspiration was not achieved (500 character limit). What steps did you take to recover from this defeat? What resources did you use? How and why are you different today?",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true
+      },
+      {
+        "label": "Diversity Essay",
+        "prompt": "We strive to create a rich and varied educational environment through admitting students with a wide range of: Goals, Interests, Skills and talents, Life experiences, Perspectives, Cultures. Tell us your story. What will you contribute to our university community? Be specific.",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true
+      },
+      {
+        "label": "Why This College Essay",
+        "prompt": "A BYU education will be spiritually strengthening. BYU students have a unique opportunity to seek learning by study and by faith. Describe the reasons you want to learn in an environment like this.",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true
+      }
+    ]
   },
   "brown-university": {
-    "url": "https://admission.brown.edu/apply/how-apply"
+    "url": "https://admission.brown.edu/apply/how-apply",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Essay 1",
+        "prompt": "\"There is something distinctive about Brown students. It is a blend of intellectual curiosity, creativity, and humility. A commitment to collaboration. An openness to new ideas and perspectives. A desire to make the world better. And it is resilience: the ability to recover and thrive after experiencing difficulties.\" From President Christina Paxson's 2025 Convocation Address. How will you use these characteristics or others to shape your approach to the Open Curriculum? (150-250 words)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Essay 2",
+        "prompt": "Students entering Brown often find that making their home on College Hill naturally invites reflection on where they came from. Share how an aspect of your growing up has inspired or challenged you, and what unique contributions this might allow you to make to the Brown community. (150-250 words)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Essay 3",
+        "prompt": "If you could teach a class on any one thing, whether academic or otherwise, what would it be? (100-150 words)",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Essay 4",
+        "prompt": "Brown students care deeply about their work and the world around them. Students find contentment, satisfaction, and meaning in daily interactions and major discoveries. Whether big or small, mundane or spectacular, tell us about something that brings you joy. (100-150 words)",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "PLME Essay 1",
+        "prompt": "Why medicine? (250 words)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Program in Liberal Medical Education (PLME) applicants"
+      },
+      {
+        "label": "PLME Essay 2",
+        "prompt": "Why PLME? (250 words)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Program in Liberal Medical Education (PLME) applicants"
+      },
+      {
+        "label": "PLME Essay 3",
+        "prompt": "Tell us something about yourself, beyond your interest in medicine, that you think will make you a great doctor. (250 words)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Program in Liberal Medical Education (PLME) applicants"
+      },
+      {
+        "label": "Brown | RISD Dual Degree Essay",
+        "prompt": "The Brown | RISD Dual Degree Program draws on the complementary strengths of Brown University and Rhode Island School of Design (RISD) to provide students with the opportunity to explore and engage with diverse spheres of academic and creative inquiry. Considering your understanding of the academic programs at Brown and RISD, describe how and why the specific blend of RISD's experimental, immersive art and design program and Brown's wide-ranging courses and curricula could constitute an optimal undergraduate education for you. Reflect on how you might integrate or synthesize content, approaches, and methods from these two distinct learning experiences. Additionally, how might you contribute to the Dual Degree community and its commitment to interdisciplinary work? (650 word limit)",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Brown | RISD Dual Degree applicants"
+      }
+    ]
+  },
+  "bucknell-university": {
+    "url": "https://www.bucknell.edu/admissions-aid/admissions-blog/tips-writing-college-application-essay",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Major Short Response",
+        "prompt": "Please explain your interest in your first-choice major/undecided status and your second-choice major, should you opt to list one.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "california-institute-of-technology": {
-    "url": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays"
+    "url": "https://www.admissions.caltech.edu/apply/first-year-applicants/supplemental-application-essays",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Required STEM Academic Interest Question",
+        "prompt": "Caltech has a rigorous core curriculum and students don't declare a major until the end of their first year. However, some students arrive knowing which academic fields and areas already most excite them, or which novel fields and areas they most want to explore.\nIf you had to choose an area of interest or two today, what would you choose?\n*Note that you are under no obligation to follow this choice if admitted.\nWhy did you choose your proposed area of interest? If you selected 'other', what topics are you interested in pursuing? (Min: 150 / Max: 200 words)",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Scholarly Character",
+        "prompt": "How do you learn when there is no easy answer? Caltech's learning environment asks students to work through difficulty, collaborate around hard ideas, and contribute to one another's understanding. Use these responses to show us how you learn and grow.\nChoose one of the following prompts: (Max: 200 words)",
+        "options": [
+          "Option 1 -- COLLABORATION: STEM as shared learning. Tell us about a time your learning in STEM was shaped by another person or group — either because you needed help, offered help, changed your thinking through collaboration, or contributed to someone else's understanding. What did that experience teach you about learning and working with others?",
+          "Option 2 -- PROCESS: The thought behind the outcome. Tell us about a time your approach to a STEM problem, concept, or project mattered as much as the outcome. How did you work through uncertainty or persist creatively in tackling the problem? What would you still defend about your process, regardless of the outcome?"
+        ],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Scientific Drive",
+        "prompt": "How does STEM come alive in your life through learning, pursuing, or making? Caltech faculty review applications, so feel free to get technical in your response!\nChoose two of the following prompts: (Two Essays, Max: 200 words each)",
+        "options": [
+          "Option 1 -- LEARNING: STEM as a never-ending rabbit hole. Regardless of your STEM interest listed above, take this opportunity to nerd out and talk to us about whatever STEM rabbit hole you have found yourself falling into. Be as specific or broad as you would like.",
+          "Option 2 -- PURSUING: STEM as sustained intellectual engagement. Tell us about a STEM question, problem, idea, or project that has held your attention over time. What drew you to it, how have you pursued it, and what do you still want to understand?",
+          "Option 3 -- MAKING: STEM as creation. Tell us about something you created, tested, repaired, modeled, coded, built, or redesigned. What problem were you trying to solve and what did the process reveal to you?"
+        ],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Fun Question",
+        "prompt": "Caltech students bring more than academic ability to the communities they join. What is something you would be excited to do, share, teach, make, start, or contribute as part of the Caltech community? (Min: 100 / Max: 150 words)",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Optional Academic Short Answer Question",
+        "prompt": "Caltech cares about context. Is there anything about your academic preparation, coursework, school context, or learning experiences that would help us better understand your readiness for Caltech?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "california-state-university-fresno": {
+    "url": "https://www.calstate.edu/apply/counselor-resources/Documents/CSU-FreshmanInStateBrochure.pdf",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "california-state-university-long-beach": {
+    "url": "https://www.csulb.edu/admissions/first-time-first-year-student-application-process",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "california-state-university-san-bernardino": {
+    "url": "https://www.calstate.edu/apply/counselor-resources/Documents/CSU-FreshmanInStateBrochure.pdf",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "carleton-college": {
     "noSupplements": true,
-    "note": "Carleton removed its required supplement; only an optional 250-word 'anything missing' box remains"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.admissions.carleton.edu/register/supplement",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27"
   },
   "carnegie-mellon-university": {
     "url": "https://www.cmu.edu/admission/admission/admission-consideration"
   },
   "case-western-reserve-university": {
     "noSupplements": true,
-    "note": "Case Western requires only the Common App or Coalition essay; arts applicants may add a supplement"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://case.edu/admission/apply/deadlines-and-requirements",
+    "noSupplementsFor": "2026-27"
   },
   "chapman-university": {
     "url": "https://www.chapman.edu/admission/undergraduate/how-to-apply/creative-supplement.aspx"
   },
+  "claremont-mckenna-college": {
+    "url": "https://www.cmc.edu/admission/first-year-application-instructions",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Why CMC",
+        "prompt": "CMC’s mission is to prepare students for thoughtful and productive lives and responsible leadership in business, government, and the professions. With this mission in mind, please explain why you want to attend Claremont McKenna College.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Open Academy",
+        "prompt": "A critical part of fulfilling our mission is living out the commitments of CMC’s Open Academy: Freedom of Expression, Viewpoint Diversity, and Constructive Dialogue. We want to learn more about your commitment to listening and learning from others with different viewpoints, perspectives, and life experiences from your own. Describe a time when engaging with someone about a specific topic resulted in you changing your attitude, belief, or behavior, or you changed the belief or behavior of someone else. What was the change that occurred for you, and what facilitated that change? What did you learn from that experience, and how has it informed how you engage with others?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "clarkson-university": {
+    "url": "https://www.clarkson.edu/admissions-aid/undergraduate/how-to-apply",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "clemson-university": {
+    "url": "https://www.clemson.edu/cuhonors/admissions/first-year-student.html",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors Essay 1",
+        "prompt": "Tell us about your academic interests and professional goals (to the extent that you have identified them at this point). What experiences, talents, accomplishments, and/or characteristics inspired and contributed to these goals? What avenues have you explored to learn more about this or to gain experience in this area to date? Note: This is your opportunity to tell us who you are as a thinker. Please focus your essay on you, your experiences, and your ideas, not on what the Honors College or Clemson offers.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      },
+      {
+        "label": "Honors Essay 2",
+        "prompt": "The second essay is based on your response to one of the Common App essay prompts. If you have already written a response to one of these prompts in your Common App, that response is considered your second Honors application essay. If one is not on file, you are required to submit a response to one of the seven Common App essay prompts.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      },
+      {
+        "label": "Honors Essay 3 (optional)",
+        "prompt": "Please use this space to share any special circumstances affecting your application that warrant consideration by the selection committee.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      }
+    ]
+  },
+  "colby-college": {
+    "url": "https://www.colby.edu/admission/apply/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
   "colgate-university": {
     "noSupplements": true,
-    "note": "Colgate requires only the personal statement; its Colgate-specific questions are not essays"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.colgate.edu/admission-aid/apply/first-year-applicants",
+    "noSupplementsFor": "2026-27"
   },
   "college-of-the-holy-cross": {
-    "collegevine": "https://www.collegevine.com/schools/college-of-the-holy-cross-holy-cross/essay-prompts"
+    "collegevine": "https://www.collegevine.com/schools/college-of-the-holy-cross-holy-cross/essay-prompts",
+    "url": "https://www.holycross.edu/admissions-aid/apply/first-year-applicants",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "colorado-school-of-mines": {
+    "url": "https://undergraduate-admissions.mines.edu/admissions-considerations/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Short Response #1",
+        "prompt": "What element on the periodic table best represents you and why?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Short Response #2",
+        "prompt": "Why do you want to be an Oredigger? You can share what you want to study, your future involvement and activities, or anything else about the Mines experience that excites you.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "colorado-state-university": {
+    "url": "https://admissions.colostate.edu/apply/freshmen/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Academic explanation: GPA below 3.0 or D/F grades",
+        "prompt": "If your cumulative GPA is below 3.0/B- average (on a 4.0 scale), if you have any D or F grades, or if you are missing units in the recommended classes, this is your opportunity to explain. Tell us about the situation and/or what happened, what you did to fix it, and how your experience will help you be academically successful at CSU.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Academic explanation: gap year",
+        "prompt": "Provide an explanation of any break or interruption in your education of a semester or longer since 9th grade (or equivalent). Examples include sitting out for a semester or longer during or between academic year(s), completing a gap year, or taking time off between high school and college.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      }
+    ]
   },
   "columbia-university": {
     "url": "https://undergrad.admissions.columbia.edu/apply/process/columbia-questions",
@@ -93,65 +814,767 @@
     ]
   },
   "cornell-university": {
-    "url": "https://faq.enrollment.cornell.edu/admissions/application-process-requirements/what-are-essay-questions-for-fall-2027-application"
+    "url": "https://faq.enrollment.cornell.edu/admissions/application-process-requirements/what-are-essay-questions-for-fall-2027-application",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "College of Agriculture and Life Sciences: Question 1",
+        "prompt": "What interests you about the major you selected? Tell us about experiences (both in and outside of the classroom), questions, and goals that influenced your choice.",
+        "options": [],
+        "limit": 350,
+        "unit": "words",
+        "required": true,
+        "audience": "College of Agriculture and Life Sciences"
+      },
+      {
+        "label": "College of Agriculture and Life Sciences: Question 2",
+        "prompt": "What draws you to Cornell’s College of Agriculture and Life Sciences (CALS)? Reflect on the learning, community, or impact opportunities that matter most to you, and share how they align with Cornell CALS (as you understand it currently).",
+        "options": [],
+        "limit": 350,
+        "unit": "words",
+        "required": true,
+        "audience": "College of Agriculture and Life Sciences"
+      },
+      {
+        "label": "College of Architecture, Art, and Planning: B.Arch applicants",
+        "prompt": "Describe how your interests connect to architecture. Include an example of a creative project, design experience, or personal passion that sparked your interest in pursuing a 5-year professional degree in architecture. Reflect on how this experience shaped your understanding of the field and your motivation to study architecture.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "audience": "College of Architecture, Art, and Planning (B.Arch)"
+      },
+      {
+        "label": "College of Architecture, Art, and Planning: BFA applicants",
+        "prompt": "Submit an artist statement describing your creative interests and practice. Address how your work reflects your artistic voice, influences, and process, and how studying art at Cornell AAP would support and expand your practice. (You will also be prompted to upload a copy to your Slideroom portal.)",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "audience": "College of Architecture, Art, and Planning (BFA)"
+      },
+      {
+        "label": "College of Architecture, Art, and Planning: URS applicants",
+        "prompt": "Describe your interest in urban and regional studies. Discuss experiences, ideas, or issues that have shaped your interest in cities, communities, and regional systems, and explain how URS at Cornell aligns with your academic and career goals.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "audience": "College of Architecture, Art, and Planning (URS)"
+      },
+      {
+        "label": "College of Arts and Sciences",
+        "prompt": "At the College of Arts and Sciences, your education is yours to shape. Describe an intellectual passion, question, or idea that has captured your attention—whether it emerges from your studies or extends beyond your coursework. What specific aspects of our liberal arts curriculum would you draw on to explore and connect your varied interests?",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "audience": "College of Arts and Sciences"
+      },
+      {
+        "label": "Cornell Jeb E. Brooks School of Public Policy",
+        "prompt": "Discuss your interest in pursuing a major in policy at the Cornell Jeb E. Brooks School of Public Policy and what draws you to this field of study. You are encouraged to consider including details related to your personal experiences, values, academic influences, or extracurricular activities that have shaped your perspective and future goals.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell Jeb E. Brooks School of Public Policy"
+      },
+      {
+        "label": "Cornell Jeb E. Brooks School of Public Policy: DC Start",
+        "prompt": "DC Start Applicants only: Please describe why you are interested in being considered for the Brooks School DC Start program.",
+        "options": [],
+        "limit": 350,
+        "unit": "words",
+        "required": false,
+        "audience": "Cornell Jeb E. Brooks School of Public Policy (DC Start)"
+      },
+      {
+        "label": "Cornell SC Johnson College of Business",
+        "prompt": "What kind of a business student are you? Using your personal, academic, or volunteer/work experiences, describe the topics or issues that you care about and why they are important to you. Your response should convey how your interests align with the school to which you are applying within the Cornell SC Johnson College of Business (Charles H. Dyson School of Applied Economics and Management or the Cornell Peter and Stephanie Nolan School of Hotel Administration).",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell SC Johnson College of Business"
+      },
+      {
+        "label": "Cornell David A. Duffield College of Engineering: Long Essay 1",
+        "prompt": "Fundamentally, engineering is the application of math, science, and technology to solve complex problems. Why do you want to study engineering?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell David A. Duffield College of Engineering"
+      },
+      {
+        "label": "Cornell David A. Duffield College of Engineering: Long Essay 2",
+        "prompt": "Why do you think you would love to study at Duffield Engineering?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell David A. Duffield College of Engineering"
+      },
+      {
+        "label": "Cornell David A. Duffield College of Engineering: Short Answer 1",
+        "prompt": "What brings you joy?",
+        "options": [],
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell David A. Duffield College of Engineering"
+      },
+      {
+        "label": "Cornell David A. Duffield College of Engineering: Short Answer 2",
+        "prompt": "What do you believe you will contribute to the Duffield Engineering community beyond what you've already detailed in your application? What unique voice will you bring?",
+        "options": [],
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell David A. Duffield College of Engineering"
+      },
+      {
+        "label": "Cornell David A. Duffield College of Engineering: Short Answer 3",
+        "prompt": "What is one activity, club, team, organization, work/volunteer experience, or family responsibility that is especially meaningful to you? Please briefly tell us about its significance for you.",
+        "options": [],
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell David A. Duffield College of Engineering"
+      },
+      {
+        "label": "Cornell David A. Duffield College of Engineering: Short Answer 4",
+        "prompt": "What is one award you have received, or achievement you have attained, that has meant the most to you? Please briefly describe its importance to you.",
+        "options": [],
+        "limit": 100,
+        "unit": "words",
+        "required": true,
+        "audience": "Cornell David A. Duffield College of Engineering"
+      },
+      {
+        "label": "College of Human Ecology",
+        "prompt": "Think about an extracurricular/community engagement/work experience that most closely connects you to the CHE mission and your intended choice of major. Tell us what that experience taught you about your broader community and its needs, and the impact you can make. How will your intended CHE major help you make that impact? (Refer to our essay application tips as you write your essay.)",
+        "options": [],
+        "limit": 550,
+        "unit": "words",
+        "required": true,
+        "audience": "College of Human Ecology"
+      },
+      {
+        "label": "School of Industrial and Labor Relations",
+        "prompt": "Using your personal, academic, or volunteer/work experiences, describe the topics or issues that you care about and why they are important to you. Your response should show us that your interests align with the ILR School.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": true,
+        "audience": "School of Industrial and Labor Relations"
+      }
+    ]
+  },
+  "creighton-university": {
+    "url": "https://www.creighton.edu/admission-aid/admissions-information/admissions-requirements",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "d-youville-university": {
-    "url": "https://www.dyu.edu/admissions/first-time-college-admissions"
+    "url": "https://www.dyu.edu/admissions/first-time-college-admissions",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Optional essay",
+        "prompt": "Completion of an essay is optional but can be used to achieve a higher level of understanding of what makes you a unique applicant. Essays should not exceed 650 words. Please choose one of the following topics:",
+        "options": [
+          "Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.",
+          "The lessons we take from failure can be fundamental to later success. Recount an incident or time when you experienced failure. How did it affect you and what did you learn from the experience?",
+          "Reflect on a time when you challenged a belief or idea. What prompted you to act? Would you make the same decision again?",
+          "Describe a problem you’ve solved or a problem you’d like to solve. It can be an intellectual challenge, a research query, an ethical dilemma — anything that is of personal importance, no matter the scale. Explain its significance to you and what steps you took or could be taken to identify a solution.",
+          "Discuss an accomplishment or event, formal or informal, that marked your transition from childhood to adulthood within your culture, community, or family."
+        ],
+        "limit": 650,
+        "unit": "words",
+        "required": false
+      }
+    ]
   },
   "dartmouth-college": {
-    "url": "https://admissions.dartmouth.edu/glossary-term/writing-supplement"
+    "url": "https://admissions.dartmouth.edu/glossary-term/writing-supplement",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Prompt 1",
+        "prompt": "As you seek admission to Dartmouth's Class of 2031, what aspects of the college's academic program, community, and/or campus environment attract your interest? How is Dartmouth a good fit for you?",
+        "options": [],
+        "limit": 100,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Prompt 2",
+        "prompt": "Required of all applicants, please respond to one of the following prompts in 250 words or fewer:",
+        "options": [
+          "A. There is a Quaker saying: Let your life speak. Describe the environment in which you were raised and the impact it has had on the person you are today.",
+          "B. \"Be yourself,\" Oscar Wilde advised. \"Everyone else is taken.\" Introduce yourself."
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Prompt 3",
+        "prompt": "Required of all applicants, please respond to one of the following prompts in 250 words or fewer:",
+        "options": [
+          "A. What excites you?",
+          "B. Labor leader and civil rights activist Dolores Huerta recommended a life of purpose. \"We must use our lives to make the world a better place to live, not just to acquire things,\" she said. \"That is what we are put on the earth for.\" In what ways do you hope to make—or are you already making—an impact? Why? How?",
+          "C. In an Instagram post, best-selling British author Matt Haig cheered the impact of reading. \"A good novel is the best invention humans have ever created for imagining other lives,\" he wrote. How have you experienced such insight from reading? What did you read and how did it alter the way you understand yourself and others?",
+          "D. The social and family interactions of wild chimpanzees have been the focus of Dame Jane Goodall's research for decades. Her understanding of animal behavior prompted the English primatologist to see a lesson for human communities as well: \"Change happens by listening and then starting a dialogue with the people who are doing something you don't believe is right.\" Channel Dame Goodall: Tell us about a moment when you engaged in a difficult conversation or encountered someone with an opinion or perspective that was different from your own. How did you find common ground?",
+          "E. Celebrate your nerdy side.",
+          "F. \"It's not easy being green…\" was the frequent refrain of Kermit the Frog. How has difference been a part of your life, and how have you embraced it as part of your identity, outlook, or sense of purpose?"
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "davidson-college": {
+    "url": "https://www.davidson.edu/admission-and-financial-aid/apply/first-year-applicants",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Why Davidson",
+        "prompt": "There are just under 4,000 four-year colleges and universities in the United States. Being as specific as possible, what interests you most about Davidson College?",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "What Excites You",
+        "prompt": "Davidson encourages students to explore curiosities in and out of the classroom. What is a topic, activity or idea that excites you? Tell us why. Examples may include hobbies, books, interactions, music, podcasts, movies, etc.",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "depaul-university": {
+    "url": "https://www.depaul.edu/admission-and-aid/types-of-admission/freshman-student/Pages/for-school-counselors.aspx",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "drake-university": {
+    "url": "https://www.drake.edu/admission/first-yearstudents/first-yearapplicationprocess/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "drexel-university": {
-    "noSupplements": true,
-    "note": "Drexel asks for a writing supplement only from Architectural Studies, Architecture and Music Industry applicants"
+    "url": "https://drexel.edu/admissions/apply/undergrad-instructions/first-year-instructions",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Westphal Writing Supplement",
+        "prompt": "Reflect on your experiences, personal characteristics, and unique traits that have prepared you for the challenges and opportunities associated with your chosen major. How have these things shaped your goals, aspirations, and potential contributions to your field of study?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Architectural Studies, Architecture and Music Industry applicants (Westphal College)"
+      },
+      {
+        "label": "BA/BS+MD Early Assurance Essay",
+        "prompt": "Tell the Admission Committee why you are applying to the joint program with the Drexel University College of Medicine. Be sure to explain why you want to be a physician and, more specifically, why you want to obtain your medical education at the Drexel University College of Medicine.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "BA/BS+MD Early Assurance applicants"
+      }
+    ]
   },
   "duke-university": {
-    "url": "https://admissions.duke.edu/apply/"
+    "url": "https://admissions.duke.edu/apply/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Why Duke",
+        "prompt": "What is your impression of Duke as a university and community, and why do you believe it is a good match for your goals, values, and interests? If there is something specific that attracts you to our academic offerings in Trinity College of Arts and Sciences or the Pratt School of Engineering, or to our co-curricular opportunities, feel free to include that, too.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Communities",
+        "prompt": "We all belong to communities defined by place, faith, family, culture, interests or shared experience. Tell us about a community that has shaped who you are, any way it has set you apart, and what you’ve learned from being part of it that you hope to bring to Duke.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Optional short essay (choose one of three)",
+        "prompt": "We want to emphasize that the following questions are optional. We invite you to answer one of the three if you believe that doing so will add something meaningful that is not already addressed elsewhere in your application.",
+        "options": [
+          "Viewpoints and experiences: We believe a wide range of viewpoints and experiences is essential to maintaining Duke’s vibrant living and learning community. Please share anything in this context that might help us better understand you and your potential contributions to Duke.",
+          "Difference of opinion: Meaningful dialogue often involves respectful disagreement. Provide an example of a difference of opinion you’ve had with someone you care about. What did you learn from it?",
+          "Something you are excited about: What’s the last thing that you’ve been really excited about?"
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Duke Embark",
+        "prompt": "Applicants interested in Duke Embark may indicate their interest in the application and complete a 150-word response. Indicating interest is not an application to the program, a guarantee of acceptance, or a commitment to participate. Admitted students will apply to Duke Embark after enrolling at Duke.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": false,
+        "audience": "Duke Embark"
+      }
+    ]
+  },
+  "duquesne-university": {
+    "url": "https://www.duq.edu/admission-and-aid/how-to-apply/undergraduate/requirements.php",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Personal Essay (health professions)",
+        "prompt": "Tell us something unique about you, why you chose your particular health field major, and how you expect Duquesne University to help you achieve your academic, personal and professional goals. Please include any examples of your research, shadowing or volunteer experiences.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "Health professions applicants (required for them; optional for other programs)"
+      }
+    ]
+  },
+  "east-carolina-university": {
+    "url": "https://admissions.ecu.edu/connect/counselors/",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "emory-university": {
     "url": "https://blog.emoryadmission.com/2026/08/emorys-short-answer-questions-2026-27/"
   },
+  "fairfield-university": {
+    "url": "https://www.fairfield.edu/admission-and-aid/apply/first-year-applicants/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "florida-atlantic-university": {
+    "url": "https://www.fau.edu/admissions/freshmen/how-to-apply/admissions-requirements/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "florida-institute-of-technology": {
+    "url": "https://www.fit.edu/admission/applying/first-year/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "florida-international-university": {
+    "url": "https://admissions.fiu.edu/how-to-apply/freshman-applicant/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
   "florida-state-university": {
     "noSupplements": true,
-    "note": "FSU's required essay is a personal statement from a Common App-style prompt list; no school-specific supplement"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admissions.fsu.edu/first-year/wwlf",
+    "noSupplementsFor": "2026-27"
   },
   "fordham-university": {
-    "url": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/writing-for-the-common-application/"
+    "url": "https://www.fordham.edu/undergraduate-admission/apply/what-were-looking-for/writing-for-the-common-application/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Short Response",
+        "prompt": "Your choice of one of three short response questions (300 words max) is meant to help you reflect on your personal growth and community impact. How will you continue to grow and impact our communities at Fordham and in New York City?",
+        "options": [
+          "At Fordham, we expect students to care for and engage with their communities and be active citizens for positive change. Please share an experience you had that caused you to develop a new perspective, change your point of view, and/or empower you to take an action or be courageous. Your response should include examples of your personal growth (e.g., what did you learn, did your point of view change, did you develop new skills or strengths?).",
+          "Our motto is “New York is my campus, Fordham is my school.” New York City is a diverse and global city that provides Fordham students with a special kind of educational experience, full of both challenge and opportunity. What has prepared you to embrace the unique opportunity of living and learning in New York City?",
+          "At Fordham, we have a tradition of having our graduating seniors send a message to their younger selves. What will the future “you” tell the “you” of today about what you accomplished as a Fordham student?"
+        ],
+        "limit": 300,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Challenges and Circumstances",
+        "prompt": "Applicants have the opportunity to tell us more about how challenges or other circumstances have impacted their lives. Please feel free to use this section to discuss this topic as opposed to your essay.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "george-washington-university": {
+    "url": "https://undergraduate.admissions.gwu.edu/academics/special-interest-programs",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "University Honors Program essay 1",
+        "prompt": "With small classes and a dedicated faculty, the University Honors Program (UHP) embraces the ideals of a liberal arts education. Within the UHP, students take classes in many different academic fields (philosophy, science, history, art, social science, etc.) and hone their critical thinking skills. Explain why, as a member of the UHP, you would value the opportunity to engage with topics outside your major field(s) of study.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "University Honors Program applicants"
+      },
+      {
+        "label": "University Honors Program essay 2",
+        "prompt": "The UHP represents a community of scholars at GW. First-year UHP students live and take classes together on the Mount Vernon Campus. Upper-level UHP students remain connected to our community for the remainder of their time at GW through courses, faculty mentoring, advising, research, an optional Foggy Bottom housing opportunity, and our many co-curricular/social activities. How do you see yourself contributing to and/or benefiting from this community as a member of the UHP?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "University Honors Program applicants"
+      },
+      {
+        "label": "B.A./B.S.-M.D. essay",
+        "prompt": "George Washington University's location in Washington, DC places students at the intersection of medicine, science, policy, innovation, and public service. Imagine yourself 10 years after graduating from the B.A./B.S.-M.D. program. What impact do you hope to have on your patients, your profession, or society? Describe how specific opportunities at GW and in the DC metropolitan area would help you develop the experiences, relationships, and perspectives needed to achieve that vision.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "B.A./B.S.-M.D. applicants"
+      }
+    ]
   },
   "georgetown-university": {
     "url": "https://uadmissions.georgetown.edu/apply/first-year-applicants/application-requirements-and-forms/"
   },
   "georgia-institute-of-technology": {
     "noSupplements": true,
-    "note": "Georgia Tech removed its short-answer question for 2026-27 (news.em.gatech.edu, July 29, 2026)"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admission.gatech.edu/first-year/personal-essays",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27"
   },
   "georgia-state-university": {
-    "url": "https://admissions.gsu.edu/bachelors-degree/apply/high-school/"
+    "url": "https://admissions.gsu.edu/bachelors-degree/apply/high-school/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "gonzaga-university": {
+    "url": "https://www.gonzaga.edu/news-events/stories/admission-writing-prompts-and-requirements",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Mission Alignment Short Response",
+        "prompt": "You will select all areas where you have personal experience. Then you will share additional information about your experience in one or more of the areas that you selected (5 – 7 sentences). You will be asked to share information about your personal experience(s), commitments, and/or aspirations, as they pertain to the values shared in Gonzaga's Mission Statement.",
+        "options": [
+          "Leadership (formal roles such as club leadership, scouting, student government, sports captain, manager/assistant manager/trainer in a job, or similar)",
+          "Service to community or commitment to the common good",
+          "Social justice, advocacy, or addressing systemic inequities through your personal involvement or experiences (school clubs focused on social justice efforts, community-based organizations with social justice intent, participation in community advocacy events, etc.)",
+          "Intercultural competence and global awareness (a month or more living in a foreign country, participation in cultural clubs at school, etc.)",
+          "Commitment to the dignity and respect of all people",
+          "Ethical decision-making and integrity in challenging situations",
+          "Intellectual curiosity and commitment to lifelong learning",
+          "Environmental stewardship or care for the planet (environmental clubs, community-based sustainability efforts, etc.)",
+          "Solidarity with marginalized, vulnerable, or underserved populations",
+          "Resilience, perseverance, or personal development"
+        ],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Nursing Short Response",
+        "prompt": "You will share about your interests in nursing and experiences you may have in health care.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "Nursing applicants"
+      }
+    ]
+  },
+  "grand-valley-state-university": {
+    "url": "https://www.gvsu.edu/admissions/undergraduate-admissions-requirements-30.htm",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "grinnell-college": {
-    "url": "https://www.grinnell.edu/admission/apply/first-year/requirements"
+    "url": "https://www.grinnell.edu/admission/apply/first-year/requirements",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Short Answer Supplement",
+        "prompt": "Grinnell’s core values include supporting a diverse community that is respectful, egalitarian, and committed to the common good. How might your background, respect for the lived experiences of others, and/or eagerness to be exposed to new perspectives equip you to thrive at Grinnell and serve the common good?",
+        "options": [],
+        "limit": 450,
+        "unit": "words",
+        "required": false
+      }
+    ]
   },
   "harvard-university": {
-    "url": "https://college.harvard.edu/admissions"
+    "url": "https://college.harvard.edu/sites/default/files/2026-08/Harvard_FY_supplement_2026-2027.pdf",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Short answer 1",
+        "prompt": "Harvard has long recognized the importance of enrolling a student body with a diversity of perspectives and experiences. How will the life experiences that shaped who you are today enable you to contribute to Harvard?",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Short answer 2",
+        "prompt": "Describe a time when you strongly disagreed with someone about an idea or issue. How did you communicate or engage with this person? What did you learn from this experience?",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Short answer 3",
+        "prompt": "Briefly describe any of your extracurricular activities, employment experience, travel, or family responsibilities that have shaped who you are.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Short answer 4",
+        "prompt": "How do you hope to use your Harvard education in the future?",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Short answer 5",
+        "prompt": "Top 3 things your roommates might like to know about you.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "harvey-mudd-college": {
+    "url": "https://www.hmc.edu/admission/?p=55",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Question 1",
+        "prompt": "The problems that Harvey Mudd College students hope to tackle are shaped by their experiences, values, and communities. Through our intentionally interdisciplinary curriculum and our mission to develop “a clear understanding of the impact of their work,” Mudders develop the skills needed to address these complex challenges and contribute meaningfully to society. Share how an experience you’ve had or community you belong to has shaped the kinds of problems you want to solve and the impact you want to make.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Question 2",
+        "prompt": "No one succeeds alone, and at Harvey Mudd College, no one expects you to. In and out of the classroom, HMC students are encouraged to embrace challenges, collaborate with one another, and ask for support when they need it. Describe a time when asking for help made a difference in your work or wellbeing. What led you to reach out, and what did you take away from the experience?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "haverford-college": {
+    "url": "https://www.haverford.edu/admission/supplement",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Intellectual Curiosity",
+        "prompt": "Tell us about a topic or issue that sparks your curiosity and gets you intellectually excited. How do you hope to engage with this topic or issue at Haverford?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Haverford Community Values",
+        "prompt": "We have highlighted for you some of the values that shape the Haverford community. What are some of the values you seek in your next community? How do Haverford’s values, as demonstrated through our Honor Code, resonate with you?\n\nAs you think about how to answer this question, you might draw from how you have been influenced by other communities you have been a part of, experiences you may have had within your communities, or opportunities you have had to shape or even change your communities.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "illinois-state-university": {
-    "url": "https://illinoisstate.edu/admissions/freshman-requirements/"
+    "url": "https://illinoisstate.edu/admissions/freshman-requirements/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Academic Personal Statement",
+        "prompt": "If you would like to submit a personal statement, your submission should be approximately 500 words in length and address the contributions you are prepared to make to our community, both academically and otherwise. Specifically, your statement should:",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "indiana-university-bloomington": {
+    "url": "https://bloomington.iu.edu/admissions/apply/application-faqs.html",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "IU-specific essay (Apply IU)",
+        "prompt": "In 200–400 words, describe your academic and career plans and any special interest (for example, undergraduate research, academic interests, leadership opportunities, etc.) that you are eager to pursue as an undergraduate at Indiana University. Also, if you encountered any unusual circumstances, challenges, or obstacles in pursuit of your education, you may share those experiences and how you overcame them.",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "Apply IU applicants only; Common App applicants write a Common App personal statement prompt"
+      }
+    ]
   },
   "james-madison-university": {
-    "url": "https://www.jmu.edu/honors/prospective-students/apply.shtml"
+    "url": "https://www.jmu.edu/honors/prospective-students/apply.shtml",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors essay 1",
+        "prompt": "What does your ideal college experience look like? In what ways do you hope the JMU Honors College will help you achieve that vision? (200 words)",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "JMU Honors College applicants"
+      },
+      {
+        "label": "Honors essay 2",
+        "prompt": "Of the qualities listed below, which one matters most to you? Why? (200 words)",
+        "options": [
+          "Balance",
+          "Bravery",
+          "Confidence",
+          "Creativity",
+          "Curiosity",
+          "Diligence",
+          "Fairness",
+          "Faith",
+          "Flexibility",
+          "Forgiveness",
+          "Gratitude",
+          "Honesty",
+          "Hope",
+          "Humility",
+          "Humor",
+          "Independence",
+          "Integrity",
+          "Kindness",
+          "Love",
+          "Loyalty",
+          "Openness",
+          "Optimism",
+          "Patience",
+          "Perseverance",
+          "Prudence",
+          "Respect",
+          "Stability"
+        ],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "JMU Honors College applicants"
+      }
+    ]
   },
   "johns-hopkins-university": {
     "url": "https://apply.jhu.edu/how-to-apply/application-deadlines-requirements/"
   },
+  "kent-state-university": {
+    "url": "https://www.kent.edu/admissions/first-year-student-requirements",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
   "lafayette-college": {
     "url": "https://admissions.lafayette.edu/apply/"
   },
+  "lipscomb-university": {
+    "url": "https://lipscomb.edu/admissions/freshmen-admissions/freshmen-admission-requirements",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "loyola-university-chicago": {
+    "url": "https://www.luc.edu/undergrad/admissions/first-yearstudents/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "macalester-college": {
+    "url": "https://www.macalester.edu/admissions/us-admissions/first-year",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Twin Cities location",
+        "prompt": "Macalester is one of the few highly selective liberal arts colleges located in the heart of a metropolitan area. Identify one way Macalester’s location in the Twin Cities of Minneapolis and St. Paul would enhance your academic, social, or community experience.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Macalester's mission",
+        "prompt": "Four values guide Macalester’s mission: academic distinction, internationalism, multiculturalism, and service to society. Guided by these values, Macalester is a learning environment that affirms different identities and experiences and prepares graduates to work toward a more just and peaceful world. In what ways do your lived experiences, perspectives, or hopes for your college education connect with Macalester’s mission and community?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
   "marquette-university": {
     "noSupplements": true,
-    "note": "Marquette requires one essay (the personal statement); extra statements are optional"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.marquette.edu/explore/application-recommendation.php",
+    "noSupplementsFor": "2026-27"
   },
   "massachusetts-institute-of-technology": {
     "url": "https://mitadmissions.org/apply/firstyear/essays-activities-academics/"
+  },
+  "miami-university-oxford": {
+    "url": "https://miamioh.edu/admission-aid/apply/first-year-students/index.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "michigan-state-university": {
+    "url": "https://admissions.msu.edu/apply/first-year/how-to-apply",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "michigan-technological-university": {
+    "url": "https://www.mtu.edu/admissions/apply/requirements/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "middlebury-college": {
+    "url": "https://www.middlebury.edu/college/admissions/application-instructions-and-deadlines",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "mississippi-state-university": {
+    "url": "https://www.admissions.msstate.edu/howtoapply",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "new-mexico-state-university": {
+    "url": "https://admissions.nmsu.edu/how-to-apply/first-time-freshmen/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "new-york-university": {
     "url": "https://meet.nyu.edu/advice/application-tips/your-guide-to-the-nyu-supplemental-essay/",
@@ -159,63 +1582,505 @@
     "prompts": [
       {
         "label": "Bridge builders",
-        "prompt": "We are looking for students who want to be bridge builders—students who can connect people, groups, and ideas to span divides, foster understanding, and promote collaboration within a dynamic, interconnected, and vibrant global academic community. We are eager for you to tell us how your experiences have helped you understand what qualities and efforts are needed to bridge divides so that people can better learn and work together. Please consider one or more of the following questions in your essay.",
-        "limit": 250,
-        "unit": "words",
-        "required": false,
+        "prompt": "We are looking for students who want to be bridge builders—students who can connect people, groups, and ideas to span divides, foster understanding, and promote collaboration within a dynamic, interconnected, and vibrant global academic community. We are eager for you to tell us how your experiences have helped you understand what qualities and efforts are needed to bridge divides so that people can better learn and work together. Please consider one or more of the following questions in your essay:",
         "options": [
           "Tell us about a time you encountered a perspective different from your own. What did you learn—about yourself, the other person, or the world?",
           "Tell us about an experience you’ve had working with others who have different perspectives. What role did you try to play in helping people to work together, and what did you learn from your efforts?",
-          "Tell us about someone you’ve observed who does a particularly good job helping people think or work together. How does this person set the stage for common exploration or work? How do they react when challenges arise? What qualities do you admire in this person?"
-        ]
+          "Tell us about someone you’ve observed who does a particularly good job helping people think or work together. How does this person set the stage for common exploration or work? What qualities do you admire in this person?"
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      }
+    ],
+    "copiedFor": "2026-27"
+  },
+  "north-carolina-state-university": {
+    "url": "https://admissions.ncsu.edu/apply/first-year/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Required Short Answer Question",
+        "prompt": "Explain why you selected the academic program(s) above and why you are interested in studying these at NC State.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": true
       }
     ]
   },
+  "north-dakota-state-university": {
+    "url": "https://www.ndsu.edu/admission/requirements/first-year",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
   "northeastern-university": {
     "noSupplements": true,
-    "note": "Northeastern requires no supplemental essays"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admissions.northeastern.edu/application-information/required-materials/",
+    "noSupplementsFor": "2026-27"
+  },
+  "northern-arizona-university": {
+    "url": "https://nau.edu/how-to-apply/first-year/apply-steps",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "northwestern-university": {
-    "url": "https://admissions.northwestern.edu/apply/requirements.html"
+    "url": "https://admissions.northwestern.edu/apply/requirements.html",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Required Writing Supplement",
+        "prompt": "We want to be sure we’re considering your application in the context of your personal experiences: What aspects of your background (your identity, your school setting, your community, your household, etc.) have most shaped how you see yourself engaging in Northwestern’s community, be it academically, extracurricularly, culturally, politically, socially, or otherwise?",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Choose One or Two",
+        "prompt": "We encourage you to answer at least one and no more than two of the following questions. Please respond in fewer than 200 words per question:",
+        "options": [
+          "Painting “The Rock” is a tradition at Northwestern that invites all forms of expression—students promote campus events or extracurricular groups, support social or activist causes, show their Wildcat spirit (what we call “Purple Pride”), celebrate their culture, and more. What would you paint on The Rock, and why?",
+          "Northwestern fosters a distinctively interdisciplinary culture. We believe discovery and innovation thrive at the intersection of diverse ideas, perspectives, and academic interests. Within this setting, if you could dream up an undergraduate class, research project, or creative effort (a start-up, a design prototype, a performance, etc.), what would it be? Who might be some ideal classmates or collaborators?",
+          "Community and belonging matter at Northwestern. Tell us about one or more communities, networks, or student groups you see yourself connecting with on campus.",
+          "Northwestern’s location is special: on the shore of Lake Michigan, steps from downtown Evanston, just a few miles from Chicago. What aspects of our location are most compelling to you, and why?",
+          "Northwestern is a place where people with diverse backgrounds from all over the world can study, live, and talk with one another. This range of experiences and viewpoints immeasurably enriches learning. How might your individual background contribute to this diversity of perspectives in Northwestern’s classrooms and around our campus?"
+        ],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "ohio-university": {
+    "url": "https://www.ohio.edu/honors/tutorial-college/apply",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors Tutorial Essay 1",
+        "prompt": "Please explain why you have chosen your particular program of study.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors Tutorial College applicants"
+      },
+      {
+        "label": "Honors Tutorial Essay 2",
+        "prompt": "We expect that one reason you seek a tutorial education is for the one-on-one interaction with faculty, but other than that, what interests you about pursuing a tutorial-based undergraduate education? What aspects of your education and life experience have prepared you for a tutorial education with its emphasis on research and creative activity?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors Tutorial College applicants"
+      }
+    ]
+  },
+  "pace-university": {
+    "url": "https://www.pace.edu/admission-and-aid/undergraduate-admission/how-apply"
+  },
+  "pepperdine-university": {
+    "url": "https://seaver.pepperdine.edu/admission/application/undergraduate/firstyear.htm",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Pepperdine Essay Question",
+        "prompt": "Pepperdine is a Christian university where all are welcomed and encouraged to challenge each other in the pursuit of truth. Students, faculty, and staff members from all backgrounds participate in conversations of faith inside and outside of the classroom. Considering that Pepperdine is a Christian university, why are you interested in attending and how would you contribute to conversations of faith on campus?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "pomona-college": {
-    "url": "https://www.pomona.edu/admissions/apply"
+    "url": "https://www.pomona.edu/admissions/apply",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Academic Interest Statement",
+        "prompt": "What draws you to the subject(s) you selected as potential major(s)? If undecided, share more about one of your academic passions or interests.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Short-Response Essay",
+        "prompt": "Pomona is home to a diverse community of faculty, staff and students who, through close ties and collaboration, enable each other to identify and explore their greatest passions. Considering this, respond to one of the following:",
+        "options": [
+          "Reflecting on a community that you are a part of, what values or perspectives from that community would you bring to Pomona?",
+          "Describe an experience you had outside the classroom that changed the way you think and/or how you engage with your peers. What was that experience and what did you learn from it?",
+          "Choose any person or group of people in your life and share how they would describe you."
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "portland-state-university": {
+    "url": "https://www.pdx.edu/admissions/honors-college",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors College Essay 1",
+        "prompt": "You'll select one of the prompts from this list and complete an essay in response.",
+        "options": [
+          "",
+          "Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.",
+          "The lessons we take from obstacles we encounter can be fundamental to later success. Recount a time when you faced a challenge, setback, or failure. How did it affect you, and what did you learn from the experience?",
+          "Reflect on a time when you questioned or challenged a belief or idea. What prompted your thinking? What was the outcome?",
+          "Reflect on something that someone has done for you that has made you happy or thankful in a surprising way. How has this gratitude affected or motivated you?",
+          "Discuss an accomplishment, event, or realization that sparked a period of personal growth and a new understanding of yourself or others.",
+          "Describe a topic, idea, or concept you find so engaging that it makes you lose all track of time. Why does it captivate you? What or who do you turn to when you want to learn more?"
+        ],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      },
+      {
+        "label": "Honors College Essay 2",
+        "prompt": "You'll select one of the prompts below and complete the essay. Your essay should show how you think with and respond to another writer.",
+        "options": [
+          "In her essay “Open Door,” from A Field Guide to Getting Lost (2005), Rebecca Solnit writes,\n\nLeave the door open to the unknown, the door into the dark. That’s where you find the most important things come from, where you by yourself came from, and where you will go . . . . The things we want are transformative, and we don’t know or only think we know what is on the other side of that transformation. Love, wisdom, grace, inspiration—how do you go about finding these things that are in some ways about extending the boundaries of the self into unknown territory, about becoming someone else?\n\nCertainly for artists of all stripes, the unknown, the idea or the form or the tale that has not yet arrived, is what must be found. It is the job of artists to open doors and invite in prophesies, the unknown, the unfamiliar; it’s where their work comes from, although its arrival signals the beginning of the long disciplined process of making it their own. Scientists too, as J. Robert Oppenheimer once remarked, “live always at the ‘edge of mystery’—the boundary of the unknown.” But they transform the unknown into the known, haul it in like fishermen; artists get you out into that dark sea.\n\nEdgar Allen Poe declared, “All experience, in matters of philosophical discovery, teaches us that, in such discovery, it is the unforeseen upon which we must calculate most largely.” Poe is consciously juxtaposing the word “calculate,” which implies a cold counting up of the fact or measurements, with the “unforeseen,” that which cannot be measured or counted, only anticipated. How do you calculate upon the unforeseen? It seems to be an art of recognizing the role of the unforeseen, of keeping your balance amid surprises, of collaborating with chance, of recognizing that there are some essential mysteries in the world and thereby a limit to calculation, to plan, to control. To calculate on the unforeseen is perhaps exactly the paradoxical operation that life most requires of us.\n\nWhat do you understand Solnit to be saying about the unknown? What is at stake in engaging the unknown? How do artists, scientists, and philosophers approach the unknown? Why is this significant? What, if anything, would you add to this discussion of the unknown?",
+          "In her book, The Power of Place: Urban Landscapes as Public History, the architect and urban historian Dolores Hayden writes,\n\n“Place” is one of the trickiest words in the English language, a suitcase so overfilled one can never shut the lid. It carries the resonance of homestead, location, and open spaces in the city as well as a position in a social hierarchy. The authors of books on architecture, photography, cultural geography, poetry, and travel rely on “sense of place” as an aesthetic concept but often settle for “the personality of a location” as a way of defining it. Place for such authors may engage patterns in the mellow brick of an eighteenth-century building, the sweep of the Great Plains, the bustle of a small harbor full of sailboats, but such images can easily become cliches of tourist advertising. In the nineteenth century and earlier, place also carried a sense of the right of a person to own a piece of land, or to be part of a social world, and in this older sense place contains more political history. Phrases like “knowing one’s place” or “a woman’s place” still imply both spatial and political meanings.\n\nWhat is Hayden saying about place and why is the concept significant? What do you think Hayden means when she writes that place holds both spatial and political meanings? What, if anything, would you add to this discussion of place?"
+        ],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      }
+    ]
   },
   "princeton-university": {
     "url": "https://admission.princeton.edu/apply/princeton-specific-questions"
   },
   "purdue-university-main-campus": {
-    "url": "https://admissions.purdue.edu/become-student/guide/"
+    "url": "https://admissions.purdue.edu/become-student/guide/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Opportunities at Purdue",
+        "prompt": "How will opportunities at Purdue support your interests, both in and out of the classroom?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Major and campus",
+        "prompt": "Briefly discuss your reasons for choosing your major and your interest in studying at this campus location (Indianapolis or West Lafayette).",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Alternate major and campus",
+        "prompt": "Briefly discuss your reasons for pursuing the alternate major and campus location (Indianapolis or West Lafayette) you have selected.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Applicants who select an alternate major"
+      },
+      {
+        "label": "Honors: connecting disciplines",
+        "prompt": "Tell us about an experience you had which connected ideas from more than one discipline or subject. How did it impact you?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "John Martinson Honors College"
+      },
+      {
+        "label": "Honors: exploring a passion",
+        "prompt": "Tell us about a time you were able to get involved with or explore a topic you are passionate about. What did you take away from that experience?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "John Martinson Honors College"
+      },
+      {
+        "label": "Honors: a destination",
+        "prompt": "Share about a destination you would like to travel to, why it interests you, and how you would engage with the culture while there.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "John Martinson Honors College"
+      },
+      {
+        "label": "Honors: leadership",
+        "prompt": "Describe a leadership experience you have had in your school or community. How did this shape your approach to leadership?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "John Martinson Honors College"
+      }
+    ]
   },
   "rensselaer-polytechnic-institute": {
-    "noSupplements": true,
-    "note": "RPI dropped its all-applicant essays; five specialized programs ask for a program essay"
+    "url": "https://undergrad.admissions.rpi.edu/apply",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "BS/MD essay",
+        "prompt": "State your reasons for aspiring to a career in medicine.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "Accelerated Physician-Scientist (B.S./M.D.) Program (BIAM) applicants"
+      },
+      {
+        "label": "Architecture essay",
+        "prompt": "State your reasons for choosing architecture as your profession.",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "Architecture (ARCH) applicants"
+      }
+    ]
   },
   "rice-university": {
     "url": "https://admission.rice.edu/apply/first-year-domestic-applicants"
   },
   "rochester-institute-of-technology": {
-    "noSupplements": true,
-    "note": "RIT requires no supplemental essays except for the Honors Program and the Individualized Program"
+    "url": "https://www.rit.edu/admissions/first-year-application",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "School of Individualized Study Supplemental Essay",
+        "prompt": "RIT is pleased to be able to offer a limited number of students the opportunity to customize a degree pathway. What personal or professional outcome are you hoping to achieve? In what ways have you prepared yourself for this distinctive educational experience?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": true,
+        "audience": "Applicants to the School of Individualized Study (Individualized Program BS)"
+      }
+    ]
+  },
+  "rowan-university": {
+    "url": "https://www.rowan.edu/admissions/how-to-apply/first-year-students/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "rutgers-university-camden": {
+    "url": "https://admissions.rutgers.edu/apply/first-year-applicants",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "rutgers-university-new-brunswick": {
     "noSupplements": true,
-    "note": "Rutgers requires no supplemental essays on the Common App; honors applicants add a short statement"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admissions.rutgers.edu/apply/first-year-applicants",
+    "noSupplementsFor": "2026-27"
+  },
+  "rutgers-university-newark": {
+    "url": "https://admissions.rutgers.edu/apply/first-year-applicants",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "sacred-heart-university": {
+    "url": "https://www.sacredheart.edu/admissions--aid/undergraduate-admissions/freshman-admission/freshman-application-checklist",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "saint-joseph-s-university": {
+    "url": "https://www.sju.edu/apply"
+  },
+  "saint-louis-university": {
+    "url": "https://www.slu.edu/admission/freshman/requirements.php",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "samford-university": {
+    "url": "https://www.samford.edu/admission/apply",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "san-diego-state-university": {
+    "url": "https://admissions.sdsu.edu/freshmen",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "san-francisco-state-university": {
+    "url": "https://www.sfsu.edu/admission-aid/how-apply/first-time-freshmen",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "santa-clara-university": {
-    "noSupplements": true,
-    "note": "Santa Clara offers optional writing only for 2026-27"
+    "url": "https://www.scu.edu/admission/undergraduate/first-year-students/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Optional Supplemental Essay",
+        "prompt": "At Santa Clara University, we encourage our students to be creative, embrace challenges, and become changemakers. Think about an issue you care about and believe is important to address. This can be something happening in your local community or more globally. How can an SCU education help you prepare for and address this challenge? (150-300 words)",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "seattle-pacific-university": {
+    "url": "https://spu.edu/undergraduate-admissions/dropdown-source/undergraduate-admissions/apply/first-year/writing-prompts",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "SPU Mission Fit/Vision Writing Prompt",
+        "prompt": "In the SPU writing prompt, you'll be asked to respond to one of the below statements (in 100-500 words):",
+        "options": [
+          "SPU's mission is to empower students to serve the world. How does this align with your desire for college and your career aspirations?",
+          "Why are you interested in attending SPU and how do you hope your faith will grow or be developed in SPU's Christ-centered education?"
+        ],
+        "limit": 500,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "seattle-university": {
+    "url": "https://www.seattleu.edu/admissions-aid/undergraduate-admissions/first-year-admissions/how-to-apply/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Short Essay (optional)",
+        "prompt": "Located in one of the world's top cities for technology and innovation and deeply rooted in 500 years of Jesuit tradition, a Seattle University education is innovative, rigorous, global and holistic. We encourage students to challenge preconceived notions, reflect before they react, and strive for the greater good. What is it that drew you to apply to Seattle University? Where do you hope a Seattle University education will take you?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Nursing Essay",
+        "prompt": "The nursing program is a competitive program that admits students directly to the four-year nursing cohort. The College of Nursing and Health Sciences’ mission is to educate and inspire leaders to transform health care for a just and humane world. Why are you applying to the nursing program at Seattle University and what aspects of the profession uniquely excite you? Please limit your response to 250 words or less.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Nursing applicants"
+      },
+      {
+        "label": "Diagnostic Ultrasound Essay",
+        "prompt": "The Diagnostic Ultrasound program at Seattle University is a competitive program that admits students directly to the four-year Diagnostic Ultrasound cohort. The College of Nursing and Health Science’s mission is to educate and inspire leaders to transform healthcare for a just and humane world. Why are you applying to the Diagnostic Ultrasound program at Seattle University and what aspects of the profession uniquely excite you? Please limit your response to 250 words or less",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Diagnostic Ultrasound applicants"
+      }
+    ]
+  },
+  "seton-hall-university": {
+    "url": "https://www.shu.edu/undergraduate-admissions/application-checklist.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "simmons-university": {
+    "url": "https://www.simmons.edu/admission-aid/application-process/first-year-applicants",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "smith-college": {
+    "url": "https://www.smith.edu/admission-aid/apply-smith/first-year-applicants",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "st-catherine-university": {
+    "url": "https://www.stkate.edu/admission-and-aid/cfw/first-year-application-instructions",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "st-john-fisher-university": {
+    "url": "https://www.sjf.edu/admissions-aid/first-year-admissions/applying-to-fisher/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "st-john-s-university": {
+    "url": "https://www.stjohns.edu/admission/undergraduate-admission/application-requirements",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Six-Year Pharm.D. Personal Essay",
+        "prompt": "Personal Essay (250 words as to \"Why\" you wish to pursue Pharmacy and why you are applying to PharmD at St. John's University.)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true,
+        "audience": "First-time first-year applicants to the Six-Year Pharm.D."
+      }
+    ]
   },
   "stanford-university": {
     "url": "https://admission.stanford.edu/apply/first-year/apply.html"
   },
   "stony-brook-university-suny": {
-    "noSupplements": true,
-    "note": "Stony Brook requires only the personal essay; honors programs and some majors add their own essays"
+    "url": "https://www.stonybrook.edu/undergraduate-admissions/apply/freshman/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "University Honors Programs Statement",
+        "prompt": "Upload to your StartSBU Portal one brief honors statement (approximately 250 words). Honors College, WISE or University Scholars: Please discuss why you are a good fit for your preferred University Honors Program (Honors College, WISE or University Scholars). Yardi Scholars: Please discuss why you are a good fit for the Yardi Scholars Program and a good fit for your College of Business major.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College, WISE, University Scholars and Yardi Scholars applicants"
+      },
+      {
+        "label": "Scholars for Medicine / Dental Medicine Essay",
+        "prompt": "What aspects about medicine/dental medicine intrigue you? Describe how these aspects influence your life.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Scholars for Medicine and Scholars for Dental Medicine applicants (up to 650 words)"
+      }
+    ]
+  },
+  "swarthmore-college": {
+    "url": "https://www.swarthmore.edu/admissions-aid/common-application",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Short Answer 1",
+        "prompt": "Swarthmore College maintains an ongoing commitment of building a diverse, equitable, and inclusive residential community dedicated to rigorous intellectual inquiry.\n\nAll who engage in our community are empowered through the open exchange of ideas guided by equity and social responsibility to thrive and contribute as bridge builders within global communities.\n\nOur identities and perspectives are supported and developed by our immediate contexts and lived experiences – in our neighborhoods, families, classrooms, communities of faith, and more.\n\nWhat aspects of your self-identity or personal background are most significant to you? Reflecting on the elements of your home, school, or other communities that have shaped your life, explain how you have grown in your ability to navigate differences when engaging with others, or demonstrated your ability to collaborate in communities other than your own.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Short Answer 2",
+        "prompt": "Swarthmore’s community of learners inspire one another through their collaborative and flexible approach to learning. Swarthmore students are comfortable with intellectual experimentation and connection of ideas across the humanities, social sciences, natural sciences, and interdisciplinary studies through a liberal arts education.\n\nTell us about a topic that has fascinated you recently – either inside or outside of the classroom. What made you curious about this? Has this topic connected across other areas of your interests? How has this experience shaped you and what encourages you to keep exploring?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "syracuse-university": {
     "noSupplements": true,
     "note": "Syracuse requires only the personal essay; some programs ask for portfolios or auditions"
+  },
+  "temple-university": {
+    "url": "https://admissions.temple.edu/apply/first-year-students",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "texas-a-and-m-university": {
     "url": "https://admissions.tamu.edu/apply/freshman/",
@@ -280,26 +2145,150 @@
     ]
   },
   "texas-christian-university": {
-    "noSupplements": true,
-    "note": "TCU dropped its supplemental essay; honors, nursing and scholarship applicants still write one"
+    "url": "https://admissions.tcu.edu/apply/first-year/apply-to-the-honors-college.php",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Roach Honors College essay",
+        "prompt": "Please respond to one of the three essay prompts provided below. In your essay response, use no more than 800 words and be as specific as possible.",
+        "options": [
+          "### Question #1: Transform the Community\n\nEvery great community is built from the qualities and talents residents bring to it. In the John V. Roach Honors College, first-year students live together in Milton Daniel Hall, an incredibly engaged and connected community where highly motivated students encourage and support one another to lead from day one. So, before you get here, we want to know what you'll add to that mix and mission.\n\nTell us about one essential quality or experience that you can't help but bring wherever you go, the thing that would show up whether you planned it or not. Share a specific story that puts it on display, including the real, ordinary, or even messy details of how it played out. Then take a step back: How does this quality or experience define who you are, and how might it shape the way you lead, support, or connect with the people around you in Milton Daniel, Roach Honors, and across TCU?",
+          "### Question #2: Potential Unlocked\n\nSome of the best things Roach Honors students have achieved never showed up on a report card. Nobody assigned them. Nobody required them. They started because someone got an idea or got frustrated and decided to do something about it.\n\nWe want to hear about a time you did that. Tell us about a project, effort, or pursuit that you started on your own, and walk us through what happened, including the messy, boring, or hard parts. How did you begin? What got in your way? What did you try, and how did it turn out? Then take a step back: What did the whole experience teach you about how you learn and why you keep going when things get tough? And how does it connect to what you'd want to explore at TCU and in Roach Honors?",
+          "### Question #3: Where Curiosity Begins\n\nEverybody notices the big, obvious stuff. But our most interesting Roach Honors students are the ones who get curious about the things nobody else seems to see: a weird pattern, an everyday object, a habit, a place, a small problem that most people walk right past.\n\nSo, here's what we want to know: What's a question you keep coming back to, maybe one you'll never fully answer? And what's the small, overlooked thing that got you thinking about it? Tell us where your curiosity started, what you notice that others miss, and how this way of paying attention says something about who you are and who you're becoming. Show us how your mind works when it's genuinely curious and working with real, specific details."
+        ],
+        "limit": 800,
+        "unit": "words",
+        "required": false,
+        "audience": "John V. Roach Honors College applicants"
+      },
+      {
+        "label": "Nursing supplement 1",
+        "prompt": "Each of our nursing applicants share a common thread: the sincere desire to help others. With that in mind, we appreciate additional insight. Please describe the moment that nursing became your calling. (Recommended Length: 250 words)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Nursing applicants"
+      },
+      {
+        "label": "Nursing supplement 2",
+        "prompt": "How have you prepared, both academically and experientially, for the pursuit of a Bachelor of Science in Nursing? (Recommended Length: 250 words)",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "Nursing applicants"
+      }
+    ]
+  },
+  "texas-tech-university": {
+    "url": "https://www.depts.ttu.edu/admissions/homeschool/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "the-catholic-university-of-america": {
+    "url": "https://www.catholic.edu/admission-aid/undergraduate-admission/first-year-students/application-process",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "the-new-school": {
+    "url": "https://ww3.newschool.edu/lang/how-to-apply",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Essay 1 (Eugene Lang)",
+        "prompt": "In your study or work at The New School, what social issue or system would you make the focus of your efforts to effect change? (200-400 words)",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": true,
+        "audience": "Eugene Lang College of Liberal Arts"
+      },
+      {
+        "label": "Essay 2 (Eugene Lang)",
+        "prompt": "What aspects of The New School's academic programs or community drew you to apply? In your essay, please pay particular attention to the college and program to which you have applied. (200-400 words)",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": true,
+        "audience": "Eugene Lang College of Liberal Arts"
+      },
+      {
+        "label": "Required Essay (Parsons)",
+        "prompt": "What specific aspects of The New School's academic programs or community drew you to apply? Please pay particular attention to the college and program that you have applied to in your essay. (300-400 words)",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": true,
+        "audience": "Parsons School of Design (read at https://ww3.newschool.edu/parsons/how-to-apply-undergraduate)"
+      },
+      {
+        "label": "Required Essay (School of Jazz)",
+        "prompt": "What specific aspects of The New School's academic programs or community drew you to apply? Please pay particular attention to the college and program that you have applied to in your essay. (300-400 words)",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": true,
+        "audience": "School of Jazz and Contemporary Music (read at https://ww3.newschool.edu/jazz/how-to-apply)"
+      }
+    ]
   },
   "the-ohio-state-university": {
     "noSupplements": true,
-    "note": "Ohio State requires the personal statement; its Ohio State-specific questions are not essays"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://undergrad.osu.edu/apply/freshmen-columbus/apply-step-by-step",
+    "noSupplementsFor": "2026-27"
   },
   "the-pennsylvania-state-university-university-park": {
     "noSupplements": true,
-    "note": "Penn State's personal statement is optional and it has no supplement"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.psu.edu/resources/first-year-students/requirements",
+    "noSupplementsFor": "2026-27"
+  },
+  "the-university-of-alabama": {
+    "url": "https://admissions.ua.edu/freshman/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "the-university-of-texas-arlington": {
+    "url": "https://www.uta.edu/admissions/apply/freshmen",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "the-university-of-texas-austin": {
     "url": "https://admissions.utexas.edu/apply/application-materials/essays-and-short-answers/"
+  },
+  "the-university-of-texas-dallas": {
+    "url": "https://enroll.utdallas.edu/freshman/criteria/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "the-university-of-texas-rio-grande-valley": {
+    "url": "https://www.utrgv.edu/admissions/freshman/index.htm",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "the-university-of-texas-san-antonio": {
+    "url": "https://future.utsa.edu/freshman/admissions/",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "tufts-university": {
     "url": "https://admissions.tufts.edu/apply/short-answer-questions/"
   },
   "tulane-university-of-louisiana": {
     "noSupplements": true,
-    "note": "Tulane paused its Why Tulane essay for 2026-27; its checklist lists only the personal statement"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admission.tulane.edu/apply/instructions",
+    "noSupplementsFor": "2026-27"
+  },
+  "union-university": {
+    "url": "https://www.uu.edu/admissions/undergraduate/first-year-freshmen/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "united-states-air-force-academy": {
     "collegevine": "https://www.collegevine.com/schools/united-states-air-force-academy-air-force/essay-prompts"
@@ -310,106 +2299,817 @@
   "united-states-naval-academy": {
     "collegevine": "https://www.collegevine.com/schools/united-states-naval-academy-navy/essay-prompts"
   },
+  "university-of-alabama-at-birmingham": {
+    "url": "https://www.uab.edu/admissions/apply/freshman/how-to-apply",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-alabama-at-huntsville": {
+    "url": "https://www.uah.edu/admissions/undergraduate/apply-for-admission/freshmen",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
   "university-of-arizona": {
     "url": "https://www.arizona.edu/admissions/undergraduate/first-year"
+  },
+  "university-of-arkansas": {
+    "url": "https://admissions.uark.edu/apply/new-freshman.php",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-central-florida": {
+    "url": "https://www.ucf.edu/admissions/undergraduate/question/does-ucf-have-specific-essay-or-personal-statement-topics/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Optional essay",
+        "prompt": "If you would like to submit an essay, please select from one of the topics below. Your response should be limited to a total of 250 words.",
+        "options": [
+          "Why did you choose to apply to UCF?",
+          "What qualities or unique characteristics do you possess that will allow you to contribute to the UCF community?"
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      }
+    ]
   },
   "university-of-chicago": {
     "url": "https://collegeadmissions.uchicago.edu/apply/essay/"
   },
   "university-of-cincinnati": {
-    "url": "https://www.admissions.uc.edu/apply/apply-tips/prompts.html"
+    "url": "https://www.admissions.uc.edu/apply/apply-tips/prompts.html",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Personal Statement",
+        "prompt": "What motivated you to choose your first-choice academic program? In your response, please share personal insights, interests, goals, or experiences—especially those not already included in your application.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "university-of-colorado-boulder": {
+    "url": "https://www.colorado.edu/admissions/process/first-year/apply",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Academic interest short answer",
+        "prompt": "What do you hope to study, and why, at CU Boulder? Or if you don't know quite yet, think about your studies so far, extracurricular/after-school activities, jobs, volunteering, future goals or anything else that has shaped your interests.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "university-of-connecticut": {
-    "noSupplements": true,
-    "note": "UConn requires only the Common App or Coalition personal essay"
+    "url": "https://admissions.uconn.edu/apply/first-year/instructions/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Nursing Program Question",
+        "prompt": "Discuss the factors that have influenced your motivation to pursue a career in Nursing. Please include any activities, academics and/or life experiences that have shaped your interest in nursing",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": true,
+        "audience": "Elisabeth DeLuca School of Nursing applicants"
+      }
+    ]
+  },
+  "university-of-dayton": {
+    "url": "https://udayton.edu/apply/undergraduate/admission-process.php",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "university-of-delaware": {
     "noSupplements": true,
-    "note": "Delaware asks its supplemental essays only of applicants who apply test-optional"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.udel.edu/apply/undergraduate-admissions/apply-to-ud/freshman-admissions",
+    "noSupplementsFor": "2026-27"
+  },
+  "university-of-denver": {
+    "url": "https://www.du.edu/admission-aid/undergraduate/first-year-applicants/application-checklist",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "university-of-detroit-mercy": {
-    "url": "https://www.udmercy.edu/admission/freshman/index.php"
+    "url": "https://www.udmercy.edu/admission/freshman/index.php",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Writing sample",
+        "prompt": "A writing sample of at least 250 words on a topic of your choice",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "university-of-georgia": {
     "noSupplements": true,
-    "note": "UGA requires only the personal essay for Fall 2027 (admissions.uga.edu blog, May 21, 2026)"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admissions.uga.edu/blog/fall-2027-essay-questions/",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27"
+  },
+  "university-of-houston": {
+    "url": "https://www.uh.edu/undergraduate-admissions/apply/freshman/",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-idaho": {
+    "url": "https://www.uidaho.edu/academics/honors/admission/first-year",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "University Honors Program: Short Essays (choose two)",
+        "prompt": "Choose two of the writing prompts listed below and craft a short essay for each prompt of no more than 250 words per essay.",
+        "options": [
+          "Describe your interest in joining the Honors Program at the University of Idaho. What motivates you to join the program and the honors community? What about an honors education appeals to you and why?",
+          "Describe your proudest academic or personal achievement. Why does it stand out in your memory and why is it important to you? Please limit yourself to just one example.",
+          "Describe some of your academic or personal goals. Why are these goals important to you and what steps have you taken to accomplish these goals? Provide at least one example that demonstrates your perseverance."
+        ],
+        "limit": 250,
+        "unit": "words",
+        "required": false,
+        "audience": "University Honors Program applicants"
+      }
+    ]
+  },
+  "university-of-illinois-chicago": {
+    "url": "https://gppa.uic.edu/prospective-students/prospective-students-application-guide",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "GPPA Application Statement",
+        "prompt": "By applying to the GPPA programs, you are applying for a guaranteed seat in one of UIC’s graduate and professional programs earlier than students who apply in a traditional manner. The GPPA program seeks to understand why you have chosen your intended profession and a guaranteed path into it. What makes you an ideal candidate for guaranteed admission rather than following a traditional path to your intended profession? How would a guaranteed seat contribute to your goals as an undergraduate?",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": true,
+        "audience": "GPPA applicants (400-500 words)"
+      },
+      {
+        "label": "Honors College Statement",
+        "prompt": "Please describe in detail ways that you have sought out academic challenges and personal growth opportunities while in high school. Examples can include activities both inside or outside of your school.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": true,
+        "audience": "Honors College applicants (400-500 words; required for GPPA Accounting, Business Analytics, Dentistry, Law, MIS, Medicine, Pharmacy)"
+      }
+    ]
   },
   "university-of-illinois-urbana-champaign": {
-    "url": "https://www.admissions.illinois.edu/essays/"
+    "url": "https://www.admissions.illinois.edu/essays/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "First-choice major 1",
+        "prompt": "Explain, in detail, an experience you’ve had in the past 3 to 4 years related to your first-choice major. This can be an experience from an extracurricular activity, in a class you’ve taken, or through something else.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "First-choice major 2",
+        "prompt": "Describe your personal and/or career goals after graduating from Illinois and how your selected first-choice major will help you achieve them.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Undeclared: future goals",
+        "prompt": "What are your future career or academic goals? You may include courses you took in high school and how these impacted your goals.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "audience": "Undeclared applicants"
+      },
+      {
+        "label": "Undeclared: academic interests",
+        "prompt": "What are your academic interests? Please include 2-3 majors you’re considering at Illinois and why.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "audience": "Undeclared applicants"
+      },
+      {
+        "label": "Second-choice major",
+        "prompt": "Please explain your interest in your second-choice major or your overall academic or career goals.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true,
+        "audience": "Applicants with a second-choice major"
+      }
+    ]
+  },
+  "university-of-iowa": {
+    "url": "https://admissions.uiowa.edu/apply/how-apply/first-year-admissions",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-kansas": {
+    "url": "https://honors.ku.edu/apply",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors Program Essay",
+        "prompt": "Essays should be intellectually curious, thoughtful, well-organized, proofread, and limited to 500 words. We will evaluate the quality of your writing and your ability to provide an expansive yet focused response to one of these three prompts:",
+        "options": [
+          "Option 1: Dr. Cora Downs, who in 1924 became the first woman to earn a doctoral degree at KU, was a renowned microbiologist whose work advanced the detection and treatment of infectious diseases. Downs remarked that she was not motivated by fame and publicity but was rather someone “who had done something she very much wanted to do, that’s all.” Tell us about something that you very much want to do and what motivates you. How will you go about pursuing this interest?",
+          "Option 2: Each year, KU’s honors program hosts Common Cause, an interdisciplinary symposium that focuses on one of the United Nations’ 17 Sustainable Development Goals (SDGs). Choose an SDG that you are passionate about, explain your personal connection to it, then describe the specific ways your time at KU will prepare you to make a meaningful difference in that area. (Goals and details can be found at sdgs.un.org.)",
+          "Option 3: KU graduate and Olympic champion Billy Mills said: “Find your passion, develop your talent, create the magic.” What “magic” do you hope to create and why? What are your plans for developing the skills and experience you’ll need to make it happen?"
+        ],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "University Honors Program applicants"
+      },
+      {
+        "label": "Honors Program Short Answers",
+        "prompt": "Please upload your responses to all three questions as a single Word or PDF document and limit your total word count to 1,200 words combined. Convey the factors that shaped you and demonstrate skills of clarity and brevity when you answer each of these three questions:",
+        "options": [
+          "Question 1: List no more than five items — clubs and organizations, employment, community service, awards and recognition, extra-curricular interests, personal or family obligations — in descending order of significance, with the most significant item first. For each, explain your role, time commitment, length of involvement, and responsibilities.",
+          "Question 2: How have your experiences affected your sense of who you are and what you hope to accomplish in college? There are no wrong answers.",
+          "Question 3: Honors students make the most of available opportunities. Based on course availability at your school, how did you select the classes you took? Is there anything you want the admissions committee to know about your transcript?"
+        ],
+        "limit": 1200,
+        "unit": "words",
+        "required": false,
+        "audience": "University Honors Program applicants"
+      }
+    ]
+  },
+  "university-of-la-verne": {
+    "url": "https://www.laverne.edu/admission/traditional-undergraduate/admissions-requirements/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-louisville": {
+    "url": "https://louisville.edu/admissions/apply/first-time-freshman-applicants",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "university-of-maryland-college-park": {
     "url": "https://admissions.umd.edu/apply/essay-questions"
   },
   "university-of-massachusetts-amherst": {
     "url": "https://www.umass.edu/admissions/first-year-application-instructions",
-    "cycle": "2026-27",
     "prompts": [
       {
         "label": "Why UMass Amherst",
         "prompt": "Why do you want to attend UMass Amherst?",
-        "limit": 100,
+        "options": [],
+        "limit": null,
         "unit": "words",
-        "required": true,
-        "options": []
+        "required": true
       },
       {
         "label": "Why this major",
         "prompt": "Why did you choose the major you did?",
-        "limit": 100,
+        "options": [],
+        "limit": null,
         "unit": "words",
-        "required": true,
-        "options": []
+        "required": true
       },
       {
         "label": "Honors or community",
         "prompt": "Answer the question that fits you: the first if you're interested in Commonwealth Honors College, the second if not.",
-        "limit": 100,
-        "unit": "words",
-        "required": true,
         "options": [
           "Commonwealth Honors College is a community in which students examine complex questions, learn across differences, and connect their academic interests to the world around them. What is one perspective, experience, or question you would bring to this community, and how would you hope to develop it at UMass Amherst?",
           "At UMass Amherst, no two students are alike. Our communities and groups often define us and shape our individual worlds. Community can refer to various aspects, including shared geography, religion, race/ethnicity, income, ideology, and more. Please choose one of your communities or groups and describe its significance. Explain how, as a product of this community or group, you would enrich our campus."
-        ]
+        ],
+        "limit": null,
+        "unit": "words",
+        "required": true
+      }
+    ],
+    "copiedFor": "2026-27"
+  },
+  "university-of-massachusetts-boston": {
+    "url": "https://www.umb.edu/admissions/first-year-students/apply",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-massachusetts-dartmouth": {
+    "url": "https://www.umassd.edu/undergraduate/requirements/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-massachusetts-lowell": {
+    "url": "https://www.uml.edu/admissions/apply/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Essay",
+        "prompt": "A personal essay of 250-650 words. You may choose a Common Application essay option or respond to one of the following:",
+        "options": [
+          "What do you do in your spare time?",
+          "What is the greatest challenge your generation will face? What ideas do you have for dealing with this issue?",
+          "Formulate the perfect admissions essay question and answer it."
+        ],
+        "limit": 650,
+        "unit": "words",
+        "required": true
       }
     ]
   },
-  "university-of-massachusetts-lowell": {
-    "url": "https://www.uml.edu/admissions/apply/"
-  },
   "university-of-miami": {
     "noSupplements": true,
-    "note": "Miami requires no supplemental essay as of 2026-27 (admissions.miami.edu first-year requirements)"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://news.miami.edu/admissions/stories/2026/07/does-the-university-of-miami-require-a-supplemental-essay.html",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27"
+  },
+  "university-of-michigan-ann-arbor": {
+    "url": "https://admissions.umich.edu/apply/first-year-applicants/essay-questions",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "University of Michigan Question 1",
+        "prompt": "At the University of Michigan, we are focused on developing leaders and citizens who will challenge the present and enrich the future. In your essay, share with us how you are prepared to contribute to these goals. This could include the people, places, experiences, or aspirations that have shaped your journey and future plans.",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "University of Michigan Question 2",
+        "prompt": "Describe the unique qualities that attract you to the specific undergraduate college or school (including preferred admission and dual degree programs) to which you are applying at the University of Michigan. How would that curriculum support your interests?",
+        "options": [],
+        "limit": 550,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "university-of-minnesota-twin-cities": {
+    "url": "https://admissions.tc.umn.edu/academics/special-programs/freshman-nursing-program",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Nursing Short Response 1",
+        "prompt": "Why have you chosen to pursue a nursing career? Explain how your experiences shaped your decision.",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true,
+        "audience": "Freshman Nursing Program applicants"
+      },
+      {
+        "label": "Nursing Short Response 2",
+        "prompt": "How have your studies prepared you for a career in nursing?",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true,
+        "audience": "Freshman Nursing Program applicants"
+      },
+      {
+        "label": "Nursing Short Response 3",
+        "prompt": "Provide a brief reflection about why you feel the University of Minnesota School of Nursing will be the best fit with your degree and career plans.",
+        "options": [],
+        "limit": 1500,
+        "unit": "characters",
+        "required": true,
+        "audience": "Freshman Nursing Program applicants"
+      }
+    ]
+  },
+  "university-of-mississippi": {
+    "url": "https://olemiss.edu/admissions/undergraduate-admissions/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "university-of-missouri": {
-    "noSupplements": true,
-    "note": "Mizzou asks short essays only of applicants who choose test-optional review"
+    "url": "https://honors.missouri.edu/admissions/high-school-applicants/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors College Essay",
+        "prompt": "Essay of 500-750 words. Please use this essay to personalize your application so we can know more about you as an individual. The essay should address one of the following:",
+        "options": [
+          "Because you are interested in the Honors College, we already assume you are bright, hard-working and determined. What’s another trait you have that we wouldn’t know just by reading your resume?",
+          "Tell us about an activity, either school-related or not school-related, that you spend a lot of time on. Why do you spend your time doing this activity and how has it shaped you?",
+          "You may also use your common application essay."
+        ],
+        "limit": 750,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      }
+    ]
+  },
+  "university-of-missouri-kansas-city": {
+    "url": "https://www.umkc.edu/admissions/how-to-apply/first-time-college-students/admission-requirements.php",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-missouri-st-louis": {
+    "url": "https://www.umsl.edu/admissions/first-year-student/admissions-requirements.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-nebraska-lincoln": {
+    "url": "https://admissions.unl.edu/apply/admission-requirements/first-year/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-nevada-las-vegas": {
+    "url": "https://www.unlv.edu/admissions/freshman",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-nevada-reno": {
+    "url": "https://www.unr.edu/honors/apply",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors College essay",
+        "prompt": "select the honors mission pillar that interests you most and/or responds best to your strengths and describe how membership in the Honors College will support your development in this area.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants (separate Honors application)"
+      }
+    ]
+  },
+  "university-of-new-hampshire": {
+    "url": "https://admissions.unh.edu/apply/first-year",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-new-mexico": {
+    "url": "https://admissions.unm.edu/future-students/freshmen",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-north-carolina-at-charlotte": {
+    "url": "https://admissions.charlotte.edu/apply/first-year-students/application-requirements/",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "university-of-north-carolina-chapel-hill": {
     "noSupplements": true,
-    "note": "UNC removed its two short-answer questions for 2026-27 (admissions.unc.edu, June 19, 2026)"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admissions.unc.edu/short-essays-removed-from-carolinas-2026-2027-application",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27"
+  },
+  "university-of-north-carolina-greensboro": {
+    "url": "https://admissions.uncg.edu/admissions/first-year-admissions/requirements-for-first-years/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-north-dakota": {
+    "url": "https://und.edu/admissions/freshmen/apply.html",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-north-florida": {
+    "url": "https://www.unf.edu/admissions/freshman.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-north-texas": {
+    "url": "https://www.unt.edu/admissions/freshman/admission-requirements.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "university-of-notre-dame": {
-    "url": "https://admissions.nd.edu/apply/how-to-apply/"
+    "url": "https://admissions.nd.edu/apply/how-to-apply/",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Required short essay",
+        "prompt": "Everyone has different priorities when considering their higher education options and building their college or university list. Tell us about your “non-negotiable” factor(s) when searching for your future college home.",
+        "options": [],
+        "limit": 150,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Short answers (choose two)",
+        "prompt": "Please choose two questions from the options below. Your response to each short-answer question should be between 50-100 words.",
+        "options": [
+          "How does faith influence the decisions you make?",
+          "What is distinctive about your personal experiences and development (eg, family support, culture, disability, personal background, community)? Why are these experiences important to you and how will you enrich the Notre Dame community?",
+          "Notre Dame’s undergraduate experience is characterized by a collective sense of care for every person. How do you foster service to others in your community?",
+          "What would you fight for?"
+        ],
+        "limit": 100,
+        "unit": "words",
+        "required": true
+      }
+    ]
   },
   "university-of-oregon": {
-    "url": "https://www.uoregon.edu/admissions/undergraduate/find-your-path/first-year-students/"
+    "url": "https://honors.uoregon.edu/apply/essay",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Clark Honors College essay",
+        "prompt": "Curiosity and breadth of interests are defining characteristics of Clark Honors College students.\n\nWhat's something you believed in that you changed your mind about and what made you change it? Be thoughtful and provide concrete examples to support your response.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Clark Honors College applicants"
+      },
+      {
+        "label": "Optional: Additional Application Essay",
+        "prompt": "As you’ve explored what it will be like to be a student at Oregon, you’ve probably learned that no two Ducks are alike. Tell us what makes you you and how that connects to our campus community. We’re interested in your thoughts and experiences recognizing differences and supporting equity and inclusion. Choose one of the two essay options below to guide you in sharing these thoughts. You can learn more about belonging at Oregon by visiting the Student Communities page.\n\nMaximum statement length is 500 words. This statement is not required.",
+        "options": [
+          "What have you learned from a social justice issue that inspires you, and how will you apply these lessons to drive change?",
+          "The University of Oregon values difference, and we take pride in our diverse community. Please explain how you will share your experiences, values, and interests with our community. In what ways can you imagine offering your support to others?"
+        ],
+        "limit": 500,
+        "unit": "words",
+        "required": false
+      }
+    ]
   },
   "university-of-pennsylvania": {
-    "url": "https://admissions.upenn.edu/how-to-apply/preparing-your-application/writing"
+    "url": "https://admissions.upenn.edu/how-to-apply/preparing-your-application/writing",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Prompts for All Applicants 1",
+        "prompt": "Write a short thank-you note to someone you have not yet thanked and would like to acknowledge. (We encourage you to share this note with that person, if possible, and reflect on the experience!)",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Prompts for All Applicants 2",
+        "prompt": "How will you explore community at Penn? Consider how Penn will help shape your perspective, and how your experiences and perspective will help shape Penn.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "School of Nursing",
+        "prompt": "Penn Nursing intends to meet the health needs of society in a global and multicultural world by preparing its students to impact healthcare by advancing science. Why are you applying to Nursing, where do you see yourself professionally in the future, and how will you contribute to our mission of promoting equity in healthcare?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "School of Nursing"
+      },
+      {
+        "label": "College of Arts and Sciences",
+        "prompt": "The College of Arts and Sciences is designed to foster discovery and connection. Describe something you are curious about—something you'd like to learn more about or find a new approach to—and how you might pursue that curiosity in the College.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "College of Arts and Sciences"
+      },
+      {
+        "label": "The Wharton School",
+        "prompt": "Wharton prepares its students to make an impact by applying business methods and economic theory to real-world problems, including economic, political, and social issues. Discuss a current issue of importance to you and how you hope a Wharton education would help you explore it.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "The Wharton School"
+      },
+      {
+        "label": "Penn Engineering",
+        "prompt": "Penn Engineering prepares its students to become leaders in technology by combining a strong foundation in the natural sciences and mathematics with depth of study in focused disciplinary majors. Describe how you plan to pursue your engineering interests at Penn, particularly within the intended major you selected.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "Penn Engineering"
+      },
+      {
+        "label": "Huntsman 1",
+        "prompt": "Describe your experience with the target language you selected. You may wish to share the length of time you’ve studied or used this language, how you’ve learned it, the skills you’ve acquired, and/or the skills you still wish to develop. Please also explain why you are interested in studying this language and the region(s) of the world where it is spoken.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "Huntsman Program in International Studies and Business"
+      },
+      {
+        "label": "Huntsman 2",
+        "prompt": "The Huntsman Program supports the development of globally-minded scholars who become engaged citizens, creative innovators, and ethical leaders in the public, private, and non-profit sectors in the United States and around the world. What draws you to a dual degree in international studies and business, and how would you use what you learn to address a global issue where these two domains intersect?",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "Huntsman Program in International Studies and Business"
+      },
+      {
+        "label": "LSM",
+        "prompt": "The Vagelos Life Sciences & Management (LSM) program brings together two powerful modes of understanding—scientific inquiry and strategic thinking—to prepare students to engage thoughtfully and creatively with some of the most complex challenges of our time. What questions, problems, or opportunities would you hope to explore through LSM, and how might the integration of life sciences and management shape your approach to them? Focus on the ideas, values, or questions that draw you to this intersection, rather than how LSM might advance your career, and make sure this essay is distinct from your single-degree application.",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "Vagelos Program in Life Sciences and Management (LSM)"
+      },
+      {
+        "label": "M&T 1",
+        "prompt": "Explain how you will use the M&T program to pursue problems or opportunities that require both engineering and business perspectives.",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "Jerome Fisher Program in Management and Technology (M&T)"
+      },
+      {
+        "label": "M&T 2",
+        "prompt": "Describe something you created, designed, improved, or built. What motivated you, and what did you learn from the process?",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "Jerome Fisher Program in Management and Technology (M&T)"
+      },
+      {
+        "label": "NHCM",
+        "prompt": "Describe your interest in nursing and health care management, and how Penn's coordinated dual-degree program in nursing and business would help you meet your goals. Please ensure that this essay is distinct from your single-degree application, if applicable.",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "Nursing and Healthcare Management (NHCM)"
+      },
+      {
+        "label": "VIPER 1",
+        "prompt": "VIPER students pursue dual degrees in science or math and engineering. Which major combination(s) interest you most right now and why? Your response to this prompt is not binding; students often shift majors as they learn more through the program.",
+        "options": [],
+        "limit": 200,
+        "unit": "words",
+        "required": false,
+        "audience": "Vagelos Integrated Program in Energy Research (VIPER)"
+      },
+      {
+        "label": "VIPER 2",
+        "prompt": "Describe your interest in the VIPER program, including how any past experiences (academic, research, extracurricular, etc.) have shaped your interest in energy science and technology, and how you envision participation in VIPER fitting into your future goals.",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "Vagelos Integrated Program in Energy Research (VIPER)"
+      },
+      {
+        "label": "VIC",
+        "prompt": "Discuss how your interests align with the Visual and Interactive Computing (VIC) program at the University of Pennsylvania",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": false,
+        "audience": "BSE in Visual and Interactive Computing (VIC)"
+      }
+    ]
   },
   "university-of-pittsburgh": {
     "noSupplements": true,
-    "note": "Pitt asks for a personal statement only from test-optional applicants"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admissions.pitt.edu/personal-statement/",
+    "noSupplementsFor": "2026-27"
   },
   "university-of-richmond": {
-    "url": "https://admission.richmond.edu/process/materials/index.html"
+    "url": "https://admission.richmond.edu/process/materials/index.html",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Richmond Essay",
+        "prompt": "One essay response is required. Choose from the following prompts:",
+        "options": [
+          "Richmond is a community that strives to be relentlessly welcoming. Tell us about a time you made a space better for other people by helping them feel welcome, heard, included, or supported.",
+          "Richmond students turn ideas into actions. Tell us about a time you learned by doing, making, building, testing, helping, or leading and what that experience taught you about yourself, the world, or the kind of impact you want to have.",
+          "Richmond’s mascot is the Spider. Just as you are unique, this singular mascot represents over 52,680 unique species of spiders. Tell us about the communities, experiences, or ambitions that have shaped you into the unique person you are and how you will make your mark as part of a Spider community."
+        ],
+        "limit": 650,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Non-traditional high school narrative",
+        "prompt": "A brief narrative (~350 words) explaining your decision to take high school coursework in a non-traditional setting.",
+        "options": [],
+        "limit": 350,
+        "unit": "words",
+        "required": false,
+        "audience": "Students in non-traditional high school settings"
+      }
+    ]
   },
   "university-of-rochester": {
     "url": "https://admissions.rochester.edu/applying/how-to-apply/"
   },
+  "university-of-san-diego": {
+    "url": "https://www.sandiego.edu/admission-and-aid/undergraduate/apply/usd-member-questions.php",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Mandatory First-Year Essay Prompt",
+        "prompt": "How did you first learn about the University of San Diego, and what inspired you to apply?",
+        "options": [],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      },
+      {
+        "label": "Choose One Essay Prompt",
+        "prompt": "First-Year applicants are required to answer the Mandatory First Year Essay Prompt and either Essay Prompt Option #1, #2, or #3.",
+        "options": [
+          "USD is committed to fostering a community where everyone feels a sense of belonging and purpose. Reflecting on your own experiences, what does community mean to you? How have you helped create inclusive, welcoming spaces for others, and what have you learned from those efforts?",
+          "As a Changemaker Campus, USD challenges students to utilize their learning to actively pursue a more just, sustainable and equitable world. What is a challenge facing humanity today and why does it matter to you?",
+          "As a contemporary Catholic university, students from all backgrounds and faith traditions are welcomed and celebrated. Share an experience that highlights the ways faith or spirituality–either your own or someone else’s–have influenced your life."
+        ],
+        "limit": 300,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "university-of-san-francisco": {
+    "url": "https://www.usfca.edu/admission/undergraduate/first-year",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Nursing Short Answer",
+        "prompt": "What will be your responsibility to others as a Jesuit-educated, BSN professional registered nurse?",
+        "options": [],
+        "limit": null,
+        "unit": "words",
+        "required": false,
+        "audience": "Nursing (BSN) applicants"
+      }
+    ]
+  },
   "university-of-south-florida": {
     "noSupplements": true,
-    "note": "USF does not request an essay or personal statement (usf.edu academic requirements)"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.usf.edu/admissions/freshmen/admission-information/academic-requirements.aspx",
+    "noSupplementsFor": "2026-27"
+  },
+  "university-of-st-thomas-mn": {
+    "url": "https://www.stthomas.edu/admissions/undergraduate/first-year/application-process/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Essay Questions (Optional)",
+        "prompt": "Below are the current essay prompts on the St. Thomas application. You can choose to write about them or to submit a different personal essay of your choosing.",
+        "options": [
+          "Discuss a meaningful contribution you have made through involvement in school, church, community activities or family responsibilities.",
+          "Describe an event, a person or an educational experience that has had a major impact on your life and why.",
+          "Share additional information about your personal story that would be beneficial to the application review process. What do you want the readers to know about you apart from courses, grades and test scores?"
+        ],
+        "limit": 650,
+        "unit": "words",
+        "required": false
+      }
+    ]
+  },
+  "university-of-tennessee-knoxville": {
+    "url": "https://admissions.utk.edu/your-guide-to-this-years-admissions-cycle",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-the-pacific": {
+    "url": "https://www.pacific.edu/admission/undergraduate/personal-statement",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "university-of-vermont": {
+    "url": "https://www.uvm.edu/d10-files/documents/2026-08/DEM_Admissions-Counselor-Brochure_FY27_Pages.pdf",
+    "cycle": "2026-27",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "university-of-virginia": {
     "noSupplements": true,
@@ -417,21 +3117,37 @@
   },
   "university-of-washington": {
     "noSupplements": true,
-    "note": "UW requires only the Common App personal essay; its two other prompts are optional context questions"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://admit.washington.edu/apply/freshman/how-to-apply/common-app/",
+    "noSupplementsFor": "2026-27"
   },
   "university-of-wisconsin-madison": {
     "url": "https://admissions.wisc.edu/essays",
-    "cycle": "2026-27",
     "prompts": [
       {
         "label": "Why UW–Madison",
         "prompt": "Tell us why you would like to attend the University of Wisconsin–Madison. In addition, please include why you are interested in studying the major(s) you have selected. If you selected undecided, please describe your areas of possible academic interest.",
+        "options": [],
         "limit": 650,
         "unit": "words",
-        "required": true,
-        "options": []
+        "required": true
+      },
+      {
+        "label": "Universities of Wisconsin Application essay",
+        "prompt": "Each student is unique. Please tell us about the particular life experiences, talents, commitments, and/or interests you will bring to our campus.",
+        "options": [],
+        "limit": 650,
+        "unit": "words",
+        "required": false,
+        "audience": "Universities of Wisconsin Application only"
       }
-    ]
+    ],
+    "copiedFor": "2026-27"
+  },
+  "valparaiso-university": {
+    "url": "https://www.valpo.edu/admission/undergraduate/process/",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "vanderbilt-university": {
     "url": "https://admissions.vanderbilt.edu/apply/personal-essay-and-short-answer-prompts"
@@ -449,28 +3165,97 @@
       {
         "label": "Why Wake?",
         "prompt": "Why Wake?",
+        "options": [],
         "limit": 100,
         "unit": "words",
-        "required": true,
-        "options": []
+        "required": true
       },
       {
         "label": "Written supplement",
-        "prompt": "Answer one of these four prompts. The written supplement is optional: you can send a written response, a video, or both.",
-        "limit": 300,
-        "unit": "words",
-        "required": false,
+        "prompt": "You will choose and respond to just one of the following four prompts (optional: written response, video, or both)",
         "options": [
           "List five books you’ve read that have intrigued you. (150 character limit per book title)",
           "Tell us what piques your intellectual curiosity or has helped you understand the world’s complexity. This can include a work you’ve read, a project you’ve completed for a class, and even co-curricular activities in which you have been involved. (150 word limit)",
           "Dr. Maya Angelou, renowned author, poet, civil-rights activist, and former Wake Forest University Reynolds Professor of American Studies, inspired others to celebrate their identities and to honor each person’s dignity. Choose one of Dr. Angelou’s powerful quotes. How does this quote relate to your lived experience or reflect how you plan to contribute to the Wake Forest community? (300 word limit)",
           "Give us your Top Ten List. (The choice of theme is yours.) (100 character limit per line)"
-        ]
+        ],
+        "limit": 300,
+        "unit": "words",
+        "required": false
+      }
+    ],
+    "copiedFor": "2026-27"
+  },
+  "washington-and-lee-university": {
+    "url": "https://www.wlu.edu/admissions/apply/supplemental-application-prompts",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Optional 'Why W&L?' Written Statement",
+        "prompt": "There are over 8,200 accredited colleges and universities in the U.S. alone. You have chosen to apply to Washington and Lee University. Please describe how you have familiarized yourself with W&L and what aspects of its community are most exciting to you.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Short-Answer Option 1",
+        "prompt": "Please describe an aspect of your life outside of school that is important to you, such as an extracurricular activity, a job, or a family responsibility. How has your involvement shaped your personal qualities and growth, and how has it impacted those around you?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Short-Answer Option 2",
+        "prompt": "W&L’s mission statement focuses on preparing graduates for lifelong learning in a global and diverse society. Engaging with faculty, staff, and classmates with diverse identities, experiences, and perspectives is an essential component of our education. Recognizing that diversity takes many forms, what diverse aspect would you bring to W&L?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Short-Answer Option 3",
+        "prompt": "Reveal to us how your curious mind works by sharing something you spend considerable time thinking or learning about.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
+      },
+      {
+        "label": "Short-Answer Option 4",
+        "prompt": "On a residential college campus with a Speaking Tradition that encourages connections between individuals, using each other’s names matters. Please share the story of any name you go by and what significance it holds for you.",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": false
       }
     ]
   },
-  "washington-and-lee-university": {
-    "url": "https://www.wlu.edu/admissions/apply/supplemental-application-prompts"
+  "washington-state-university": {
+    "url": "https://honors.wsu.edu/apply-to-honors-2/",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Honors College Writing Prompt 1",
+        "prompt": "Imagine you are putting together a team to work on an issue that is important to you. Briefly describe that issue and what skills, experience, and expertise you would seek in your team members and why.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      },
+      {
+        "label": "Honors College Writing Prompt 2",
+        "prompt": "At the WSU Honors College we realize that applicants cannot be reduced to their academic transcripts. Pick one activity or experience and explain how it illustrates an important aspect of who you are and how it reflects on your own values or those of your community.",
+        "options": [],
+        "limit": 500,
+        "unit": "words",
+        "required": false,
+        "audience": "Honors College applicants"
+      }
+    ]
   },
   "washington-university-in-st-louis": {
     "url": "https://admissions.washu.edu/how-to-apply/first-year-us-applicants/",
@@ -486,22 +3271,85 @@
       }
     ]
   },
+  "wayne-state-university": {
+    "url": "https://wayne.edu/admissions/pdf/test-optional_short_answer_essay_prompts.pdf",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Test-optional short-answer essay",
+        "prompt": "Select one essay prompt from the following slides and answer the question in 300 words.",
+        "options": [
+          "Essay Topic: What it means to be a Wayne State Warrior. Wayne State University is a vibrant and dynamic community made up of people from a wide variety of backgrounds and experiences. In a 300-word essay, please tell us something about yourself that you think would make you an important member of the Wayne State community. You might describe your personal qualities or share an experience that was important to you.",
+          "Essay Topic: Overcoming challenges through perseverance. Sometimes life presents obstacles to our goals that we must learn to overcome. In a 300-word essay, describe a time you encountered an obstacle to an important goal in your life and how you sought solutions to achieve your goal."
+        ],
+        "limit": 300,
+        "unit": "words",
+        "required": false,
+        "audience": "First-year applicants using the test-optional pathway (no SAT/ACT)"
+      }
+    ]
+  },
+  "wellesley-college": {
+    "url": "https://www.wellesley.edu/admission-aid/apply/first-year-applicants",
+    "cycle": "2026-27",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Wellesley-specific essay",
+        "prompt": "Wellesley students actively seek ways to build bridges and to change the world for the better. Tell us about an experience working with and alongside people of different backgrounds and/or perspectives from your own. Why was this important to you, and what lessons from this will you bring with you to Wellesley?",
+        "options": [],
+        "limit": 400,
+        "unit": "words",
+        "required": true
+      }
+    ]
+  },
+  "wesleyan-university": {
+    "url": "https://www.wesleyan.edu/admission/undergraduate-admission/first-year.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
+  "west-virginia-university": {
+    "url": "https://admissions.wvu.edu/how-to-apply/first-time-freshmen",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
+  },
   "william-and-mary": {
     "noSupplements": true,
     "note": "No required supplement; up to two optional short answers appear only inside the Common App"
   },
   "williams-college": {
     "noSupplements": true,
-    "note": "Williams does not require a writing supplement; an academic paper is optional"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.williams.edu/admission-aid/how-to-apply/first-year/",
+    "noSupplementsFor": "2026-27"
+  },
+  "winston-salem-state-university": {
+    "url": "https://www.wssu.edu/admissions/apply/freshman-applicants.html",
+    "noSupplementsFor": "2026-27",
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)"
   },
   "worcester-polytechnic-institute": {
     "noSupplements": true,
-    "note": "WPI's Common App section has no writing supplement for 2026-27"
+    "note": "No school-specific supplement on the school's page (checked Nov 2026)",
+    "url": "https://www.wpi.edu/admissions/undergraduate/apply/how-to",
+    "noSupplementsFor": "2026-27"
   },
   "yale-university": {
     "url": "https://admissions.yale.edu/essay-topics"
   },
   "yeshiva-university": {
-    "url": "https://apply.yu.edu/freshman"
+    "url": "https://www.yu.edu/admissions/apply/freshman-applicants",
+    "copiedFor": "2026-27",
+    "prompts": [
+      {
+        "label": "Personal Statement",
+        "prompt": "How do you see Yeshiva University supporting your academic goals while helping you grow personally and within your values?",
+        "options": [],
+        "limit": 250,
+        "unit": "words",
+        "required": true
+      }
+    ]
   }
 }

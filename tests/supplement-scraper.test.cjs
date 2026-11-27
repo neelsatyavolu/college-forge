@@ -279,6 +279,46 @@ test('hand-copied prompts apply only to the cycle they were copied for', async (
   assert.deepEqual(entry.prompts[0], { unit: 'words', required: true, options: [], label: 'Why us', prompt: 'Why do you want to attend?', limit: 250 });
   assert.equal(copiedPrompts(reg, '2027-28'), null);
   assert.equal(copiedPrompts({ url: reg.url }, '2026-27'), null);
+  // Checked this cycle on a page that names no year: kept for the cycle, labeled with no cycle.
+  const unlabeled = { url: reg.url, copiedFor: '2026-27', prompts: reg.prompts };
+  assert.equal(copiedPrompts(unlabeled, '2026-27').cycle, null);
+  assert.equal(copiedPrompts(unlabeled, '2027-28'), null);
+});
+
+test('a choose-one list made only of reprinted personal-statement prompts is dropped, not left empty', async () => {
+  const { withoutPersonalStatement } = await import('../scripts/fetch-supplements.mjs');
+  const ps = ['Reflect on a time when you questioned or challenged a belief or idea.', 'Share an essay on any topic of your choice.'];
+  const keys = new Set(ps.map((t) => t.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60)));
+  const prompts = [
+    { label: 'Essay', prompt: 'Please answer one of the following essay questions.', options: ps, limit: 650, unit: 'words', required: true },
+    { label: 'Mixed', prompt: 'Choose one of the following.', options: [ps[0], 'What would you build at our makerspace and why?'], limit: 250, unit: 'words', required: true },
+    { label: 'Why us', prompt: 'Why do you want to attend?', options: [], limit: 250, unit: 'words', required: true },
+  ];
+  const kept = withoutPersonalStatement(prompts, keys);
+  assert.deepEqual(kept.map((p) => p.label), ['Mixed', 'Why us']);
+  assert.deepEqual(kept[0].options, ['What would you build at our makerspace and why?']);
+});
+
+test('a school checked as having no supplements this cycle is rechecked next cycle', async () => {
+  const { markedNone } = await import('../scripts/fetch-supplements.mjs');
+  assert.deepEqual(markedNone({ noSupplements: true, note: 'Test-optional, no essays' }, '2026-27'), { source: 'none', note: 'Test-optional, no essays' });
+  const checked = { noSupplementsFor: '2026-27', url: 'https://admissions.example.edu/apply', note: 'Page lists no essays' };
+  assert.deepEqual(markedNone(checked, '2026-27'), { source: 'none', url: checked.url, cycle: null, note: 'Page lists no essays' });
+  assert.equal(markedNone({ ...checked, cycle: '2026-27' }, '2026-27').cycle, '2026-27');
+  assert.equal(markedNone(checked, '2027-28'), null);
+  assert.equal(markedNone({}, '2026-27'), null);
+});
+
+test('accordion buttons are section headings, so a transfer accordion is skipped', async () => {
+  const { extractPrompts } = await load('extract');
+  const { prompts } = extractPrompts(page(`
+    <button aria-controls="a1" type="button">First-Year Students</button>
+    <div id="a1"><p>Why do you want to study here? (250 words)</p></div>
+    <button aria-controls="a2" type="button">Transfer Students</button>
+    <div id="a2"><p>Your answer should be no more than 300 words.</p><p>Please describe your past academic experiences and your reasons for wishing to enroll.</p></div>
+    <button type="button">Print this page</button>`));
+  assert.deepEqual(prompts.map((p) => p.prompt), ['Why do you want to study here? (250 words)']);
+  assert.equal(prompts[0].label, 'First-Year Students');
 });
 
 test('notes about the application itself are not saved as prompts', async () => {

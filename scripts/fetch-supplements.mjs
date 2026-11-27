@@ -7,7 +7,8 @@
  * runs it on a schedule and opens a PR for review.
  *
  * For each school, in order:
- *   1. sources.json "noSupplements" → recorded as having none; sources.json
+ *   1. sources.json "noSupplements" (or "noSupplementsFor" this cycle) →
+ *      recorded as having none; sources.json
  *      "prompts" copied by hand for the current cycle → used as is
  *   2. sources.json "url" (last known official prompt page) → extract
  *   3. crawl from sources.json "start" or the school's Common App-listed
@@ -103,11 +104,16 @@ async function loadPersonalStatementKeys(http) {
   return new Set([...local, ...live].map(promptKey));
 }
 
-/** Drop reprinted Common App personal-statement prompts; they aren't supplements. */
+/**
+ * Drop reprinted Common App personal-statement prompts; they aren't
+ * supplements. A choose-one list made only of them is the school's own
+ * personal-statement essay, so it goes too rather than staying with no options.
+ */
 export function withoutPersonalStatement(prompts, keys) {
   return prompts
-    .map((p) => ({ ...p, options: p.options.filter((o) => !keys.has(promptKey(o))) }))
-    .filter((p) => !keys.has(promptKey(p.prompt)) && (p.prompt || p.options.length));
+    .map((p) => ({ ...p, options: p.options.filter((o) => !keys.has(promptKey(o))), hadOptions: p.options.length > 0 }))
+    .filter((p) => !keys.has(promptKey(p.prompt)) && (p.prompt || p.options.length) && !(p.hadOptions && !p.options.length))
+    .map(({ hadOptions, ...p }) => p);
 }
 
 async function readJson(path, fallback) {
@@ -161,15 +167,28 @@ async function fetchCollegeVine(college, { http, collegeVine, cycle, registry })
 }
 
 /**
+ * sources.json "noSupplements": the school never asks for supplements.
+ * "noSupplementsFor": a person checked the school's page (sources.json "url")
+ * and found none for that cycle; ignored once the cycle has passed. "cycle"
+ * is the year the page itself states, if any.
+ */
+export function markedNone(reg, cycle) {
+  if (reg.noSupplements) return { source: "none", note: reg.note || "sources.json" };
+  if (reg.noSupplementsFor !== cycle) return null;
+  return { source: "none", ...(reg.url ? { url: reg.url } : {}), cycle: reg.cycle ?? null, note: reg.note || "Checked by hand on the school's page" };
+}
+
+/**
  * sources.json "prompts": this cycle's prompts copied from the school's own
  * page by a person, for pages that block the scraper or that it misreads.
  * They win over scraping for that cycle and are ignored once it has passed,
- * so they can't go stale.
+ * so they can't go stale. "cycle" is the year the page states; "copiedFor"
+ * marks the cycle they were checked in when the page states none.
  */
 export function copiedPrompts(reg, cycle) {
-  if (!reg.prompts?.length || reg.cycle !== cycle) return null;
+  if (!reg.prompts?.length || (reg.copiedFor ?? reg.cycle) !== cycle) return null;
   const prompts = reg.prompts.map((p) => ({ unit: "words", required: true, options: [], ...p }));
-  return { source: "official", url: reg.url, cycle, prompts, note: "Copied by hand from the school's page" };
+  return { source: "official", url: reg.url, cycle: reg.cycle ?? null, prompts, note: "Copied by hand from the school's page" };
 }
 
 /**
@@ -180,7 +199,8 @@ export function copiedPrompts(reg, cycle) {
 async function resolveSchool(college, ctx) {
   const { http, renderer, registry, commonApp, psKeys } = ctx;
   const reg = registry[college.slug] || {};
-  if (reg.noSupplements) return { entry: { source: "none", note: reg.note || "sources.json" } };
+  const none = markedNone(reg, ctx.cycle);
+  if (none) return { entry: none };
   const copied = copiedPrompts(reg, ctx.cycle);
   if (copied) return { entry: copied };
 

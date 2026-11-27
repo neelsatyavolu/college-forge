@@ -17,11 +17,11 @@ test('real prompts from prompts.json land in the expected archetype', () => {
   assert.equal(kind(real('duke-university', 'Why Duke')), 'why-us');
   assert.equal(kind(real('hofstra-university', 'Why This College Essay')), 'why-us');
   assert.equal(kind(real('lehigh-university', 'Why This College Short Response')), 'why-us');
-  assert.equal(kind(real('north-carolina-state-university', 'Why This Major Short Response')), 'why-major');
+  assert.equal(kind(real('bucknell-university', 'Major Short Response')), 'why-major');
   assert.equal(kind(real('carnegie-mellon-university', 'Essays 1')), 'why-major');
   assert.equal(kind(real('hamilton-college', 'Diversity Short Response')), 'community');
   assert.equal(kind(real('georgetown-university', 'Short Essay 2')), 'challenge');
-  assert.equal(kind(real('harvard-university', 'Short answer 4')), 'activity');
+  assert.equal(kind(real('harvard-university', 'Short answer 3')), 'activity');
   assert.equal(kind(real('university-of-florida', 'Extracurricular Short Response')), 'activity');
   assert.equal(kind(real('brigham-young-university', 'Engaging Topic Essay')), 'curiosity');
   assert.equal(kind(real('princeton-university', 'More About You 2')), 'short');
