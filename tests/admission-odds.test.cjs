@@ -206,3 +206,34 @@ test('a saved estimate records the profile it was made from', () => {
   const read = odds.readFromArgs({ summary: 'Strong reader.' }, TODAY, w);
   assert.equal(read.profileFingerprint, odds.profileFingerprint(w));
 });
+
+test('each school step reads that school’s own supplements and interest, and the profile carries the grade trend and testing plan', () => {
+  const { schoolMaterial } = require('../lib/odds-plan.ts');
+  const a = { slug: 'a', name: 'A U', admit: '20%' };
+  const w = ws([a]);
+  w.applicant.gpaByYear = { 9: '3.3', 10: '3.6', 11: '3.9' };
+  w.applicant.gpaTrend = 'up';
+  w.applicant.gpaRecent = '3.75';
+  w.profile.testing.act = '33';
+  w.essays.supplements = { a: [
+    { id: 'a-supp-1', label: 'Why A U', prompt: 'Why us?', limit: 250, unit: 'words', required: true },
+    { id: 'a-supp-2', label: 'Community', prompt: 'Describe a community.', limit: 200, unit: 'words', required: true },
+    { id: 'a-supp-3', label: 'Hidden one', prompt: 'x', limit: 100, unit: 'words', required: true },
+  ] };
+  w.essayDrafts = { 'a-supp-1': 'A U has the lab I want to join. '.repeat(10) };
+  w.essayStatus = { 'a-supp-1': 'final' };
+  w.essayHidden = { 'a-supp-3': true };
+  w.tracker = { ...w.tracker, apps: [{ id: 't1', name: 'A U', slug: 'a', status: 'submitted', round: 'RD', interest: [{ id: 'i1', kind: 'visit', date: '2026-10-01', notes: 'Toured the engineering school' }] }] };
+  const m = schoolMaterial(w, 'a');
+  assert.match(m, /Why A U \(required, final, \d+ words of 250\)[\s\S]*the lab I want to join/);
+  assert.match(m, /Community \(required\): not written yet/);
+  assert.doesNotMatch(m, /Hidden one/, 'hidden prompts are not part of the application');
+  assert.match(m, /visit 2026-10-01: Toured the engineering school/);
+  assert.match(schoolMaterial(w, 'nope'), /No school with key/);
+  const material = applicationMaterial(w);
+  assert.match(material, /by year: 9th 3\.3, 10th 3\.6, 11th 3\.9 \(trend up; 10th-11th 3\.75\)/);
+  assert.match(material, /ACT: 33/);
+  const step = oddsPlan(w).schools[0].prompt;
+  assert.match(step, /read_application with school/);
+  assert.ok(step.length < 8000);
+});

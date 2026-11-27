@@ -9,7 +9,9 @@ import type { Workspace } from "./store";
 import type { BuildStep } from "./build-plan";
 import { baselineFor, boundsFor, chosenRound, knownDecisions, oddsTargets, type OddsTarget } from "./admission-odds";
 import { decisionOf, statusInfo } from "./tracker";
-import { skippedEssayIds } from "./essay-tools";
+import { isEssayHidden, skippedEssayIds } from "./essay-tools";
+import { essayGroupKey } from "./essay-supplements";
+import { interestOf } from "./interest-log";
 
 export const ODDS_SCHOOLS_PER_STEP = 2;
 const ESSAY_CHARS = 24_000;
@@ -43,7 +45,11 @@ function profileText(ws: Workspace): string {
   const p = ws.profile;
   const a = ws.applicant;
   const lines = [
-    `GPA weighted/unweighted: ${a.gpaWeighted}/${a.gpaUnweighted}; SAT: ${a.sat}${a.satNote ? ` (${a.satNote})` : ""}`,
+    `GPA weighted/unweighted: ${a.gpaWeighted}/${a.gpaUnweighted}; SAT: ${a.sat}${a.satNote ? ` (${a.satNote})` : ""}; ACT: ${(p.testing as { act?: string }).act || "—"}`,
+    ...(a.gpaByYear && Object.keys(a.gpaByYear).length
+      ? [`Unweighted GPA by year: ${(["9", "10", "11", "12"] as const).filter((y) => a.gpaByYear?.[y]).map((y) => `${y}th ${a.gpaByYear![y]}`).join(", ")}${a.gpaTrend ? ` (trend ${a.gpaTrend}${a.gpaRecent ? `; 10th-11th ${a.gpaRecent}` : ""})` : ""}`]
+      : a.gpaTrend ? [`Grade trend: ${a.gpaTrend}${a.gpaRecent ? `; 10th-11th GPA ${a.gpaRecent}` : ""}`] : []),
+    ...(ws.onboarding?.listPrefs?.firstGen === "yes" ? ["First-generation college student"] : []),
     `Intended: ${p.intended || "—"}; residency: ${p.residency || "—"}; class of ${p.gradYear || "—"}`,
     `AP scores: ${p.testing.aps.map((x) => `${x.course} ${x.score}`).join(", ") || "—"}`,
     `Coursework: APs ${p.coursework.aps.join(", ") || "—"}; honors ${p.coursework.honors.join(", ") || "—"}; senior year ${p.coursework.senior.join(", ") || "—"}`,
@@ -70,6 +76,38 @@ export function applicationMaterial(ws: Workspace): string {
   ].join("\n");
 }
 
+const DRAFT_CHARS = 2_500;
+const wordsIn = (t: string) => (t.trim() ? t.trim().split(/\s+/).length : 0);
+
+/**
+ * One school's part of the application for its estimate: the supplements the student writes for it (hidden and
+ * opted-out ones left out), each with status and draft, and their demonstrated-interest log. read_application
+ * returns this for a school key, since step prompts are capped at 8,000 characters.
+ */
+export function schoolMaterial(ws: Workspace, key: string): string {
+  const target = oddsTargets(ws).find((t) => t.key === key);
+  if (!target) return `No school with key ${key}.`;
+  const { college, app } = target;
+  const group = essayGroupKey(college) ?? college.slug;
+  const essays = (group ? ws.essays.supplements?.[group] || [] : []).filter((e) => !isEssayHidden(ws, e, group || undefined));
+  const blocks = essays.map((e) => {
+    const draft = (ws.essayDrafts?.[e.id] || "").trim();
+    const need = e.required === false ? "optional" : "required";
+    const option = e.options?.length && ws.essayOption?.[e.id] !== undefined ? `\nAnswering: ${e.options[ws.essayOption[e.id]] || ""}` : "";
+    if (!draft) return `### ${e.label} (${need}): not written yet${option}`;
+    const status = ws.essayStatus?.[e.id] === "final" ? "final" : "draft";
+    return `### ${e.label} (${need}, ${status}, ${wordsIn(draft)} ${e.unit} of ${e.limit})${option}\nPrompt: ${(e.prompt || "").split(/\n\n/)[0].slice(0, 400)}\n${draft.slice(0, DRAFT_CHARS)}`;
+  });
+  const interest = app ? interestOf(app).slice(-8).map((i) => `- ${i.kind} ${i.date}${i.who ? ` with ${i.who}` : ""}${i.notes ? `: ${i.notes.slice(0, 200)}` : ""}`) : [];
+  return [
+    `## ${college.name}: supplements`,
+    blocks.join("\n\n") || "(no supplement prompts on file for this school)",
+    "",
+    "## Demonstrated interest logged",
+    interest.join("\n") || "(none logged)",
+  ].join("\n");
+}
+
 function readStep(): BuildStep {
   return {
     label: "Reading your application",
@@ -88,6 +126,8 @@ Reply in one sentence.`,
 }
 
 const SCHOOL_INSTRUCTIONS = `Estimate the student's chance of admission at each school. The applicant read ("Application read") and decisions the student already has are in the workspace snapshot; use them, do not reread uploads.
+
+First call read_application with school set to each school's key (both together): it returns the supplements the student is writing for that school, with their drafts and status, and the demonstrated interest they logged. Weigh them as this school's reader would: how specific and convincing the why-this-school and major essays are, required supplements still unwritten, and logged visits or interviews where the school considers interest.
 
 For each school, run at most two web_search calls (issue both schools' calls together), looking for:
 - the latest published admission rate for the student's round and residency (Common Data Set section C, the school's class profile), and how the intended major is admitted (some schools admit to competitive or capped majors separately);
