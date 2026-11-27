@@ -518,6 +518,8 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 
 /* Essays is a writing studio: no page header (it's in the Overview sheet), full width, the split fills the window. */
 .cf-hub-main:has(.cf-page--studio) { max-width: none; }
+/* The workspace top bar is centered at the content width; on the full-width studio it only misaligns and takes room. */
+.cf-workspace-body:has(.cf-page--studio) > .cf-workspace-topline { display: none; }
 .cf-page--studio { padding-top: 12px; padding-bottom: 12px; }
 .cf-essays-home { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 8px; row-gap: 1px; width: 100%; margin: 0 0 10px; padding: 9px 10px; text-align: left; color: var(--ink); background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-sm); cursor: pointer; transition: border-color 150ms; }
 .cf-essays-home:hover { border-color: var(--coral); }
