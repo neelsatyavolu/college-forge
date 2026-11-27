@@ -154,6 +154,20 @@ enum RankingsFormat {
     }
 }
 
+enum RankingsAiRequest {
+    private static let path = "/api/rankings/me/ai"
+
+    static func replace(_ text: String) throws -> APIRequest {
+        // JavaScript measures the original JSON in UTF-16 code units. The server validates the list schema.
+        guard text.utf16.count <= 200_000 else {
+            throw APIError.server(status: 413, message: "That file is too large.")
+        }
+        return APIRequest("PUT", path, body: Data(text.utf8))
+    }
+
+    static var remove: APIRequest { APIRequest("DELETE", path) }
+}
+
 extension APIClient {
     func rankingsView(_ request: RankingsRequest) async throws -> RankingsResponse {
         try await post("/api/rankings/view", body: request)

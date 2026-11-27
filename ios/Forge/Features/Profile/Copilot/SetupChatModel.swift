@@ -153,23 +153,8 @@ final class SetupChatModel {
         return false
     }
 
-    /// Streams one chat request, calling `onEvent` for each event. Throws on an error event or a cut-off stream.
     private func stream(_ messages: [MoreAIClient.ChatTurn], mode: String?, onEvent: (SetupChatEvent) -> Void) async throws {
-        let prefs = MoreAIPreferences.load()
-        let provider = prefs.preferred.flatMap { $0.canConnect ? $0 : nil }
-        var model: String?
-        if let provider, let s = try? await ai.status() { model = prefs.model(for: provider, in: s) }
-        let bytes = try await ai.chat(messages, provider: provider, model: model, mode: mode)
-        var failure: String?
-        var finished = false
-        for try await line in bytes.lines {
-            guard let event = SetupChatEvent.parse(line) else { continue }
-            if case .error(let message) = event { failure = message }
-            if case .done = event { finished = true }
-            onEvent(event)
-        }
-        if let failure { throw MoreChatError(failure) }
-        if !finished { throw MoreChatError("The connection ended before the reply finished.") }
+        try await ai.setupStream(messages, mode: mode, onEvent: onEvent)
     }
 
     private static func message(_ error: any Error) -> String {

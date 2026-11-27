@@ -12,12 +12,17 @@ struct DecisionPanel: View {
     @State private var error: APIError?
     @State private var celebrate = 0
 
+    @State private var editingNote = false
+    @State private var note = ""
+    @FocusState private var noteFocused: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             if app.decision.state == .hidden {
                 cover
             } else {
                 revealed
+                decisionNote
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -66,6 +71,47 @@ struct DecisionPanel: View {
         }
         if app.status != suggested, !app.hasRecordedOutcome || justRevealed.contains(app.id) {
             RecordOutcomeButtons(suggested: suggested, current: app.status, disabled: busy, record: record)
+        }
+    }
+
+    @ViewBuilder private var decisionNote: some View {
+        if editingNote {
+            DecisionNoteField(school: app.name, text: $note)
+                .focused($noteFocused)
+                .textFieldStyle(.roundedBorder)
+                .disabled(busy)
+            HStack {
+                Button("Save", action: saveNote)
+                    .disabled(ApplicationsValidation.trimmed(note) == app.decisionNote)
+                Button("Cancel") { editingNote = false }
+            }
+            .buttonStyle(.borderless)
+            .disabled(busy)
+        } else {
+            if !app.decisionNote.isEmpty { Text(app.decisionNote) }
+            Button(app.decisionNote.isEmpty ? "Add a note" : "Edit note") {
+                note = app.decisionNote
+                editingNote = true
+                noteFocused = true
+            }
+            .buttonStyle(.borderless)
+            .disabled(busy)
+        }
+    }
+
+    private func saveNote() {
+        let edit = ApplicationEdit(decisionNote: ApplicationsValidation.trimmed(note))
+        busy = true
+        Task {
+            defer { busy = false }
+            do {
+                try await store.updateApplication(id: app.id, edit)
+                editingNote = false
+                Haptics.success()
+            } catch {
+                self.error = APIError.wrap(error)
+                Haptics.error()
+            }
         }
     }
 

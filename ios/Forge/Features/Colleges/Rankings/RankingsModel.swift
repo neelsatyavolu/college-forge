@@ -14,6 +14,7 @@ final class RankingsModel {
 
     private(set) var state = State.idle
     private(set) var isUpdating = false
+    private var loadID = 0
     var request: RankingsRequest {
         didSet { save() }
     }
@@ -36,21 +37,33 @@ final class RankingsModel {
             try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else { return }
         }
+        loadID += 1
+        let id = loadID
         let sent = request
         if response == nil { state = .loading }
         isUpdating = true
-        defer { isUpdating = false }
+        defer { if id == loadID { isUpdating = false } }
         do {
             let response = try await api.rankingsView(sent)
-            guard !Task.isCancelled else { return }
+            guard id == loadID, !Task.isCancelled else { return }
             state = .loaded(response)
             // Saved on the workspace now: stop sending these, so a later change on the website isn't overwritten.
             // Edits made while this request ran stay pending.
             if sent.save == true, request == sent { request = RankingsRequest(view: sent.view) }
         } catch {
             let apiError = APIError.wrap(error)
-            guard apiError != .cancelled, !Task.isCancelled else { return }
+            guard id == loadID, apiError != .cancelled, !Task.isCancelled else { return }
             if response == nil { state = .failed(apiError) }
+        }
+    }
+
+    /// Drop the stale snapshot so a failed refresh offers a retry after the list has already changed.
+    func reloadAfterJudgedListChange(api: APIClient, removed: Bool) async {
+        state = .idle
+        if removed && request.view == "ai" {
+            select(view: "path") // RankingsView loads the newly selected tab.
+        } else {
+            await load(api: api, debounce: false)
         }
     }
 

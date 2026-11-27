@@ -53,6 +53,9 @@ struct EditApplicationSheet: View {
                             .foregroundStyle(draft.notes.count > ApplicationDraft.notesLimit ? Theme.danger : Theme.muted)
                     }
                 }
+                Section("Decision note") {
+                    DecisionNoteField(school: app.name, text: $draft.decisionNote)
+                }
                 if let message = draft.validationError, edit != nil {
                     Section { Text(message).foregroundStyle(Theme.danger) }
                 }

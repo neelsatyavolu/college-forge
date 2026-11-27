@@ -23,6 +23,7 @@ struct SetupBuildStep: Decodable, Hashable, Sendable {
 }
 
 struct SetupBuildPlan: Decodable, Sendable {
+    var schools: [SetupBuildStep]?
     var rounds: SetupBuildStep?
     var milestones: SetupBuildStep?
 }
@@ -78,5 +79,28 @@ extension APIClient {
     /// PATCH /api/workspace with a raw body, for fields `WorkspacePatch` doesn't model (the quick-start form).
     func setupPatch(_ body: [String: JSONValue]) async throws {
         _ = try await patch("/api/workspace", body: body, as: DataEnvelope<Workspace>.self)
+    }
+}
+
+extension MoreAIClient {
+    /// Streams one `/api/ai/chat` request with the student's provider choice, calling `onEvent` for each event.
+    /// Throws on an error event or a stream that ends before `done`.
+    @MainActor
+    func setupStream(_ messages: [ChatTurn], mode: String?, onEvent: (SetupChatEvent) -> Void) async throws {
+        let prefs = MoreAIPreferences.load()
+        let provider = prefs.preferred.flatMap { $0.canConnect ? $0 : nil }
+        var model: String?
+        if let provider, let s = try? await status() { model = prefs.model(for: provider, in: s) }
+        let bytes = try await chat(messages, provider: provider, model: model, mode: mode)
+        var failure: String?
+        var finished = false
+        for try await line in bytes.lines {
+            guard let event = SetupChatEvent.parse(line) else { continue }
+            if case .error(let message) = event { failure = message }
+            if case .done = event { finished = true }
+            onEvent(event)
+        }
+        if let failure { throw MoreChatError(failure) }
+        if !finished { throw MoreChatError("The connection ended before the reply finished.") }
     }
 }
