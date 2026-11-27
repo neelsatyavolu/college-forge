@@ -179,11 +179,22 @@ function OddsPill({ frac, text }) {
   );
 }
 
-/** A tracked application's chance estimate: by its own key ("app:<id>"), or its shortlist school's slug. */
+/** A school name for matching: "University of Michigan--Ann Arbor" and "University of Michigan" line up. */
+const schoolKey = (n) => String(n || "").toLowerCase().replace(/\b(the)\b/g, " ").replace(/[–—-]{1,2}|[,.'’()&]/g, " ").replace(/\s+/g, " ").trim();
+
+/**
+ * A tracked application's chance estimate: by its own key ("app:<id>"), or the shortlist school it belongs to,
+ * matched like the server's trackedFor (slug, catalog id, name, or a name that starts the other).
+ */
 function oddsForApp(data, app) {
   const oddsMap = (data && data.admissionOdds) || {};
-  const listed = ((data && data.colleges) || []).find((c) => c.slug === app.slug || String(c.name || "").toLowerCase() === String(app.name || "").toLowerCase());
-  return oddsMap["app:" + app.id] || (listed ? oddsMap[listed.slug] : null) || null;
+  if (oddsMap["app:" + app.id]) return oddsMap["app:" + app.id];
+  const name = schoolKey(app.name);
+  const colleges = ((data && data.colleges) || []).filter((c) => c.slug && oddsMap[c.slug]);
+  const listed = colleges.find((c) => c.slug === app.slug || c.slug === app.collegeId)
+    || colleges.find((c) => schoolKey(c.name) === name || schoolKey(c.short) === name)
+    || colleges.find((c) => { const k = schoolKey(c.name); return k && name && (k.startsWith(name + " ") || name.startsWith(k + " ")); });
+  return listed ? oddsMap[listed.slug] : null;
 }
 
 function ChancesPanel({ data, onWorkspaceChange, compact }) {
