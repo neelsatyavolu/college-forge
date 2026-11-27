@@ -65,3 +65,20 @@ test('contradictory checkboxes never hide a college that reports aiding internat
   const data = require('../public/data/international-aid.json').colleges;
   for (const slug of ['grinnell-college', 'pitzer-college', 'rhodes-college', 'virginia-tech']) assert.equal(A.aidsNoInternationals(data[slug] || null), false, slug);
 });
+
+test('a sentence that wraps to "H6 below:" is not taken for the H6 item, and page footers are ignored', async () => {
+  const { parseH6, downloadUrl } = await import('../scripts/research/intl-aid.mjs');
+  const wrapped = `Indicate the academic year for which data are reported for items H1, H2, H2A, and
+H6 below:
+Federal          $13,370,142        $17,756,040
+${H6.replace('$40,057', '$40,057\nCommon Data Set 2025-2026')}`;
+  const r = parseH6(wrapped);
+  assert.equal(r.awarded, 510);
+  assert.equal(r.average, 40057);
+  assert.equal(parseH6(`H6        Indicate your institution’s policy regarding institutional scholarship and grant aid for nonresidents:
+    X     Institutional scholarship or grant aid is not available
+CDS-H                                                   Page 2
+H7 Check off`).awarded, null, 'a footer number is not a count');
+  assert.equal(downloadUrl('https://drive.google.com/file/d/AbC_1-x/view?usp=sharing').url, 'https://drive.google.com/uc?export=download&id=AbC_1-x');
+  assert.equal(downloadUrl('https://upenn.box.com/s/abc123').url, 'https://upenn.box.com/shared/static/abc123');
+});

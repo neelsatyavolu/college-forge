@@ -23,7 +23,7 @@ export function internationalAid(slug: string | undefined | null): International
 
 /** True when the college's CDS says it gives international undergraduates no institutional aid. */
 export function aidsNoInternationals(aid: InternationalAid | null): boolean {
-  if (!aid || aid.needBased || aid.meritBased || (aid.average ?? 0) > 0) return false;
+  if (!aid || aid.needBased || aid.meritBased || (aid.average ?? 0) > 0 || (aid.awarded ?? 0) > 0 && aid.none) return false;
   return aid.none || aid.awarded === 0;
 }
 
