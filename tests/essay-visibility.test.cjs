@@ -95,3 +95,18 @@ test('the copilot hides, shows and chooses through set_essay_visibility', async 
   const listed = JSON.parse(await h.executeTool('list_essays', '{}'));
   assert.ok(listed.essays.every((e) => e.hidden === false));
 });
+
+test('essayOption saves which option of a choose-one prompt the student answers, and clears with null', async () => {
+  assert.equal(tools.checkEssayOption({ 'wake-supp-2': 0 }).ok, true);
+  assert.equal(tools.checkEssayOption({ 'wake-supp-2': -1 }).ok, false);
+  assert.equal(tools.checkEssayOption({ 'wake-supp-2': 1.5 }).ok, false);
+  assert.equal(tools.checkEssayOption({ 'wake-supp-2': 20 }).ok, false);
+  assert.equal(tools.checkEssayOption({ 'bad id!': 0 }).ok, false);
+  await store.getWorkspace(ID);
+  let res = await patch({ essayOption: { 'wake-supp-2': 2 } });
+  assert.equal(res.status, 200);
+  assert.deepEqual((await store.getWorkspace(ID)).essayOption, { 'wake-supp-2': 2 });
+  assert.equal((await patch({ essayOption: { 'wake-supp-2': 'two' } })).status, 400);
+  await patch({ essayOption: { 'wake-supp-2': null } });
+  assert.deepEqual((await store.getWorkspace(ID)).essayOption, {});
+});

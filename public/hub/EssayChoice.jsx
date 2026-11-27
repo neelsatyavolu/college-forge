@@ -67,3 +67,75 @@ function PickSetControl({ set, hidden, busy, onSave }) {
 }
 
 window.PickSetControl = PickSetControl;
+
+// ── Choose-one prompts and per-college prompts ─────────────────────────────────
+
+/** The prompt text split the way lib/supplement-prompts.ts joins it: intro, "Option N:" lines, then notes. */
+function promptParts(it) {
+  const parts = String(it.prompt || "").split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  const isOption = (p) => /^Option \d+:/.test(p);
+  const firstOption = parts.findIndex(isOption);
+  const isNote = (p) => /^\(.*\)$/.test(p);
+  const intro = parts.filter((p, i) => !isOption(p) && !isNote(p) && (firstOption < 0 || i < firstOption));
+  const notes = parts.filter((p, i) => !isOption(p) && (isNote(p) || (firstOption >= 0 && i > firstOption)));
+  const options = it.options && it.options.length ? it.options : parts.filter(isOption).map((p) => p.replace(/^Option \d+:\s*/, ""));
+  return { intro, options, notes };
+}
+
+/** The prompt under the essay title: the question, and for choose-one prompts the options to pick from. */
+function EssayPrompt({ it, chosen, busy, onChoose }) {
+  const { intro, options, notes } = promptParts(it);
+  const [changing, setChanging] = React.useState(false);
+  const picked = Number.isInteger(chosen) && chosen < options.length ? chosen : null;
+  const showList = options.length > 1 && (picked === null || changing);
+  return (
+    <div className="cf-essay-prompt">
+      <div className="cf-essay-prompt__text">
+        {intro.map((p, i) => <p key={i}>{p}</p>)}
+      </div>
+      {options.length > 1 && picked !== null && !changing ? (
+        <div className="cf-essay-prompt__chosen">
+          <span className="cf-essay-prompt__label">You’re answering option {picked + 1} of {options.length}</span>
+          <p>{options[picked]}</p>
+          <button type="button" className="cf-link-btn" disabled={busy} onClick={() => setChanging(true)}>Change</button>
+        </div>
+      ) : null}
+      {showList ? (
+        <div className="cf-essay-prompt__options" role="group" aria-label="Pick the option you’re answering">
+          <span className="cf-essay-prompt__label">Pick the one you’re answering</span>
+          {options.map((o, i) => (
+            <button key={i} type="button" className={"cf-essay-option" + (picked === i ? " is-picked" : "")} aria-pressed={picked === i} disabled={busy}
+              onClick={() => { onChoose(i); setChanging(false); }}>
+              <span className="cf-essay-option__n cf-nums">{i + 1}</span>
+              <span>{o}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {options.length === 1 ? <p className="cf-essay-prompt__single">{options[0]}</p> : null}
+      {notes.map((n, i) => <p key={i} className="cf-essay-prompt__note">{n}</p>)}
+    </div>
+  );
+}
+
+/** "Applying to [college]" for schools whose prompts depend on the college or program (Cornell, Tufts). */
+function AudienceControl({ items, hidden, busy, onSave }) {
+  const plan = window.cfEssayArchetypes;
+  const set = plan.audienceSet(items);
+  if (!set) return null;
+  const chosen = plan.chosenAudience(items, hidden);
+  return (
+    <label className={"cf-audience" + (chosen === null ? " is-open" : "")}>
+      <span>{chosen === null ? "Which college or program are you applying to?" : "Applying to"}</span>
+      <select value={chosen === null ? "__" : chosen} disabled={busy}
+        onChange={(e) => e.target.value !== "__" && onSave(plan.audiencePatch(items, e.target.value))}>
+        {chosen === null ? <option value="__">Choose…</option> : null}
+        {set.audiences.map((a) => <option key={a} value={a}>{a}</option>)}
+        {set.shared ? <option value="">None of these</option> : null}
+      </select>
+    </label>
+  );
+}
+
+window.EssayPrompt = EssayPrompt;
+window.AudienceControl = AudienceControl;

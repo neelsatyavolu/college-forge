@@ -83,6 +83,7 @@ function visibility(ws: Workspace, essay: Essay, groupKey: string) {
     hidden: isEssayHidden(ws, essay, groupKey),
     ...(isSchoolSkipped(ws, groupKey) ? { not_writing: true as const } : {}),
     ...(ws.commonAppPrompt && essay.id === ws.commonAppPrompt ? { chosen: true as const } : {}),
+    ...(essay.options?.length && ws.essayOption?.[essay.id] !== undefined ? { answering_option: (ws.essayOption[essay.id] ?? 0) + 1 } : {}),
   };
 }
 
@@ -265,6 +266,19 @@ export function checkCommonAppPrompt(raw: unknown, ws: Workspace): Parsed<string
     return { ok: false, error: "Choose one of the Common App personal essay prompts." };
   }
   return { ok: true, value: raw };
+}
+
+/** essayOption patch: { id: option index | null }: which option of a choose-one prompt the student answers. */
+export function checkEssayOption(raw: unknown): Parsed<Record<string, number | null>> {
+  const map = idMap(raw, "essayOption");
+  if (!map.ok) return map;
+  const bad = Object.values(map.value).some((v) => v !== null && !(Number.isInteger(v) && (v as number) >= 0 && (v as number) < 20));
+  if (bad) return { ok: false, error: "essayOption values must be an option number or null." };
+  return { ok: true, value: map.value as Record<string, number | null> };
+}
+
+export function applyEssayOption(ws: Workspace, patch: Record<string, number | null>): Workspace {
+  return { ...ws, essayOption: withoutNulls(ws.essayOption || {}, patch) as Record<string, number> };
 }
 
 export function applyEssayHidden(ws: Workspace, patch: Record<string, true | null>): Workspace {
