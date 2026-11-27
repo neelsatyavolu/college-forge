@@ -55,7 +55,8 @@ async function callGrok(
   model: string,
   messages: GrokMessage[],
   tools: ToolSpec[],
-  timeoutMs = UPSTREAM_TIMEOUT_MS
+  timeoutMs = UPSTREAM_TIMEOUT_MS,
+  effort?: GrokEffort
 ): Promise<{
   text: string;
   toolCalls: AssistantToolCall[];
@@ -76,6 +77,8 @@ async function callGrok(
         tools: tools.map((t) => ({ type: "function", function: t })),
         temperature: 0.4,
         max_tokens: 16384,
+        // Grok 4.5+ reasons at "high" unless told otherwise; that alone can take minutes per request.
+        ...(effort ? { reasoning_effort: effort } : {}),
         stream: false,
       }),
       signal: controller.signal,
@@ -140,6 +143,8 @@ async function defaultExecuteTool(name: string, argsJson: string): Promise<strin
   return `Unknown tool: ${name}`;
 }
 
+export type GrokEffort = "low" | "medium" | "high";
+
 export type GrokChatResult = {
   text: string;
   model: string;
@@ -162,6 +167,8 @@ export async function runGrokChat(params: {
   maxRounds?: number;
   /** Ends a long turn in time: the final round offers only the finishing tools. */
   wrapUp?: WrapUp;
+  /** Reasoning effort: "low" keeps interview turns quick; "medium" for research and the copilot. */
+  effort?: GrokEffort;
 }): Promise<GrokChatResult> {
   const { emit } = params;
   const tools = params.tools ?? DEFAULT_TOOLS;
@@ -192,7 +199,7 @@ export async function runGrokChat(params: {
     });
 
     const sent = final ? messages.map((m) => (m.role === "tool" && typeof m.content === "string" ? { ...m, content: trimForFinal(m.content) } : m)) : messages;
-    const { text, toolCalls, finishReason } = await callGrok(params.tokens, model, sent, final ? finalTools(tools, params.wrapUp!) : tools, requestTimeout(params.wrapUp, startedAt, UPSTREAM_TIMEOUT_MS));
+    const { text, toolCalls, finishReason } = await callGrok(params.tokens, model, sent, final ? finalTools(tools, params.wrapUp!) : tools, requestTimeout(params.wrapUp, startedAt, UPSTREAM_TIMEOUT_MS), params.effort);
     lastFinishReason = finishReason;
     if (finishReason === "length") truncated = true;
 
