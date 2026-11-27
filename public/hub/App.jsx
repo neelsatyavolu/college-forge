@@ -238,7 +238,7 @@ function App() {
           {view === "explore" && <Explore data={data} favorites={favorites} onToggleFavorite={toggleFav} onWorkspaceChange={refresh} />}
           {view === "shortlist" && <Shortlist data={data} tracker={tracker} onTrackerChange={setTracker} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "essays" && <Essays data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
-          {view === "track" && <Track data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
+          {view === "track" && <Track data={data} tracker={tracker} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "share" && <ShareExport data={data} onWorkspaceChange={applyWorkspace} onWorkspaceSwitch={switchWorkspace} />}
           {view === "settings" && <Settings theme={theme} account={account} onToggleTheme={toggleTheme} onStartOnboarding={() => setRunOnboarding(true)} onWorkspaceChange={switchWorkspace} />}
         </main>

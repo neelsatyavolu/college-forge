@@ -23,6 +23,28 @@ struct RecommendationEditor: View {
                 }
                 Section {
                     OptionalDateRow(title: "Deadline", date: optional(\.deadline))
+                    OptionalDateRow(title: "Asked on", date: optional(\.askedAt))
+                    Toggle("Thank-you note sent", isOn: Binding { letter.thankYouSent ?? false } set: { letter.thankYouSent = $0 })
+                }
+                Section {
+                    TextField("teacher@school.org", text: optional(\.email))
+                        .keyboardType(.emailAddress)
+                        .textContentType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                } header: {
+                    Text("Email")
+                } footer: {
+                    if let emailError { Text(emailError).foregroundStyle(Theme.danger) }
+                }
+                LetterSchoolsSection(letter: $letter)
+                Section {
+                    TextField("Activities, a project from their class, your intended major", text: optional(\.bragSheet), axis: .vertical)
+                        .lineLimit(3...10)
+                } header: {
+                    Text("Brag sheet")
+                }
+                Section {
                     TextField("Notes", text: optional(\.notes), axis: .vertical).lineLimit(2...6)
                 }
             }
@@ -32,11 +54,16 @@ struct RecommendationEditor: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(letter.id.isEmpty ? "Add" : "Save", action: save)
-                        .disabled(saving || ApplicationsValidation.trimmed(letter.name).isEmpty)
+                        .disabled(saving || emailError != nil || ApplicationsValidation.trimmed(letter.name).isEmpty)
                 }
             }
             .errorAlert($error)
         }
+    }
+
+    private var emailError: String? {
+        let email = ApplicationsValidation.trimmed(letter.email ?? "")
+        return email.isEmpty || LetterReceipts.isEmail(email) ? nil : "Enter a valid email."
     }
 
     private func optional(_ key: WritableKeyPath<Recommendation, String?>) -> Binding<String> {
@@ -46,6 +73,8 @@ struct RecommendationEditor: View {
     private func save() {
         var row = letter
         row.name = ApplicationsValidation.trimmed(row.name)
+        row.email = row.email.map(ApplicationsValidation.trimmed)
+        if !(row.askedAt ?? "").isEmpty && row.status == .notAsked { row.status = .asked }
         saving = true
         Task {
             defer { saving = false }

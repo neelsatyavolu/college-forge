@@ -1,5 +1,6 @@
 import { studentFacts } from "./list-facts";
 import { EXTRA_TOOL_SPECS, runExtraTool } from "./copilot-extra-tools";
+import { recExtras, trackedAppIds, withoutExtras } from "./recommenders";
 import { bridgeToolSpecs, runBridgeTool } from "./copilot-bridge-tools";
 import type { ToolSpec, ToolExecutor } from "./chat-types";
 import { runWebSearch, runWebFetch } from "./web-search-tool";
@@ -278,7 +279,7 @@ export function makeHubTools(
     {
       name: "set_recommendations",
       description:
-        "Replace the recommendation-letter tracker list. status ∈ not_asked | asked | in_progress | submitted | waived. type ∈ counselor | teacher | other.",
+        "Replace the recommendation-letter tracker list. status ∈ not_asked | asked | in_progress | submitted | waived. type ∈ counselor | teacher | other. schools are application ids from list_applications; askedAt is yyyy-mm-dd. Keep fields you are not changing.",
       parameters: {
         type: "object",
         properties: {
@@ -294,6 +295,11 @@ export function makeHubTools(
                 status: { type: "string" },
                 deadline: { type: "string" },
                 notes: { type: "string" },
+                askedAt: { type: "string" },
+                email: { type: "string" },
+                schools: { type: "array", items: { type: "string" } },
+                thankYouSent: { type: "boolean" },
+                bragSheet: { type: "string" },
               },
               required: ["name", "type"],
             },
@@ -463,7 +469,7 @@ export function makeHubTools(
         : "";
       const profileReply = await runProfileTool(name, a, mutate);
       if (profileReply !== null) return profileReply + countNote;
-      const extraReply = await runExtraTool(workspaceId, mutate, name, a);
+      const extraReply = await runExtraTool(workspaceId, mutate, name, a, scopedWorkspace);
       if (extraReply !== null) return extraReply;
       switch (name) {
         case "get_college_recommendations": {
@@ -601,12 +607,24 @@ export function makeHubTools(
         }
         case "set_recommendations": {
           if (!Array.isArray(a.recommendations)) return "set_recommendations requires a recommendations array.";
-          const recommendations = (a.recommendations as Workspace["recommendations"]).map((r, i) => ({
-            ...r,
-            id: r.id || `rec-${i + 1}`,
-            status: r.status || "not_asked",
-          }));
-          await mutate((ws) => ({ ...ws, recommendations }));
+          const given = a.recommendations as Workspace["recommendations"];
+          if (given.some((r) => !r || typeof r !== "object" || typeof r.name !== "string" || !r.name.trim())) return "Each recommender needs a name.";
+          const recommendations = await mutate((ws) => {
+            const ids = trackedAppIds(ws);
+            return {
+              ...ws,
+              recommendations: given.map((r, i) => {
+                // Per-school fields the model leaves out (email, schools, brag sheet...) keep their saved values.
+                const existing = r.id ? ws.recommendations.find((x) => x.id === r.id) : undefined;
+                return {
+                  ...withoutExtras(r),
+                  ...recExtras(r as Record<string, unknown>, existing, ids),
+                  id: r.id || `rec-${i + 1}`,
+                  status: r.status || "not_asked",
+                };
+              }),
+            };
+          }).then((ws) => ws.recommendations);
           return `Saved ${recommendations.length} recommenders.`;
         }
         case "set_scholarships": {

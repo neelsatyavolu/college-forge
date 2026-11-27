@@ -92,6 +92,7 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
       {addOpen ? <AddSchool tracked={tracker.apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setAddOpen(false)} /> : null}
       {sharing ? <SharePanel data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setSharing(false)} /> : null}
       {tracker.apps.length && Chances ? <Chances data={data} onWorkspaceChange={onWorkspaceChange} /> : null}
+      {window.LetterTasks ? <window.LetterTasks data={data} tracker={tracker} /> : null}
       {tracker.apps.length ? (
         <React.Fragment>
           <ProgressView tracker={tracker} editable act={act} busy={busy} openId={open} oddsFor={oddsFor} onToggle={(id) => setOpen(open === id ? null : id)}

@@ -44,6 +44,13 @@ struct Recommendation: Codable, Hashable, Sendable, Identifiable {
     var status: RecommendationStatus
     var deadline: String?
     var notes: String?
+    /// yyyy-mm-dd the student asked.
+    var askedAt: String?
+    var email: String?
+    /// Tracker application ids this letter goes to; nil leaves the server's list as it is.
+    var schools: [String]?
+    var thankYouSent: Bool?
+    var bragSheet: String?
 }
 
 extension Recommendation {
@@ -56,6 +63,11 @@ extension Recommendation {
         status = c.value(.status, .notAsked)
         deadline = c.optionalString(.deadline)
         notes = c.optionalString(.notes)
+        askedAt = c.optionalString(.askedAt)
+        email = c.optionalString(.email)
+        schools = c.optional([String].self, .schools)
+        thankYouSent = c.optionalBool(.thankYouSent)
+        bragSheet = c.optionalString(.bragSheet)
     }
 }
 

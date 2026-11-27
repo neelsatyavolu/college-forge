@@ -79,7 +79,8 @@ export function parentView(ws: Workspace, level: ParentLevel, today?: string) {
       slug: c.slug, name: c.name, short: c.short, location: c.location, tier: c.tier, deadline: c.deadline,
       admit: c.admit, netPrice: c.netPrice, deadlines: c.deadlines, url: c.url,
     })),
-    recommendations: ws.recommendations.map(({ notes, ...r }) => (keepNotes ? { ...r, notes } : r)),
+    // A recommender's email and the brag sheet are private like notes: only the "full" level keeps them.
+    recommendations: ws.recommendations.map(({ notes, email, bragSheet, ...r }) => (keepNotes ? { ...r, notes, email, bragSheet } : r)),
     // A school's own award comes from its decision letter, so its amount stays private to the student.
     scholarships: ws.scholarships.map(({ notes, ...s }) => ({ ...sharedScholarship(s), ...(keepNotes ? { notes } : {}) })),
     financialAid: { fafsaStatus: ws.financialAid.fafsaStatus, cssStatus: ws.financialAid.cssStatus, idocStatus: ws.financialAid.idocStatus ?? "n_a", fafsaOpenDate: ws.financialAid.fafsaOpenDate },

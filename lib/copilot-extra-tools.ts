@@ -4,9 +4,10 @@
  * deliberately not exposed: students enter those in the Applications tab, never in a chat.
  */
 import type { ToolSpec } from "./chat-types";
-import type { EssayStatus, Workspace } from "./store";
+import { getWorkspace, type EssayStatus, type Workspace } from "./store";
 import { setAutocheck, setEmails } from "./tracker-service";
 import { INTERVIEW_TOOL_SPECS, mergeResearch } from "./interview-tools";
+import { draftRecRequest } from "./recommenders";
 
 type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
@@ -25,12 +26,19 @@ export const EXTRA_TOOL_SPECS: ToolSpec[] = [
     parameters: { type: "object", properties: { autocheck: { type: "string", enum: ["yes", "no"] }, emails: { type: "string", enum: ["yes", "no"] } }, additionalProperties: false },
   },
   researchSpec,
+  {
+    name: "draft_rec_request",
+    description: "Draft a polite recommendation-letter request email and a brag-sheet outline for one recommender (id or name from the letters tracker), from the student's saved activities, intended major and the teacher's subject. Returns text only; show it to the student to edit and send themselves. Never send it or claim it was sent.",
+    parameters: { type: "object", properties: { recommender: { type: "string" } }, required: ["recommender"], additionalProperties: false },
+  },
 ];
 
 const allEssayIds = (ws: Workspace) => new Set([...ws.essays.commonApp, ...Object.values(ws.essays.supplements).flat()].map((e) => e.id));
 
-/** Null when `name` isn't one of these tools. */
-export async function runExtraTool(workspaceId: string, mutate: Mutate, name: string, a: Args): Promise<string | null> {
+/** Null when `name` isn't one of these tools. `read` returns the chat's workspace and refuses one reset since the chat began. */
+export async function runExtraTool(
+  workspaceId: string, mutate: Mutate, name: string, a: Args, read: () => Promise<Workspace> = () => getWorkspace(workspaceId),
+): Promise<string | null> {
   switch (name) {
     case "set_essay_status": {
       const id = typeof a.essay_id === "string" ? a.essay_id.trim() : "";
@@ -60,6 +68,14 @@ export async function runExtraTool(workspaceId: string, mutate: Mutate, name: st
         return r.ws;
       });
       return reply;
+    }
+    case "draft_rec_request": {
+      const key = typeof a.recommender === "string" ? a.recommender.trim().toLowerCase() : "";
+      if (!key) return "draft_rec_request needs a recommender id or name.";
+      const ws = await read();
+      const rec = ws.recommendations.find((r) => String(r.id).toLowerCase() === key) ?? ws.recommendations.find((r) => String(r.name).toLowerCase().includes(key));
+      if (!rec) return `No recommender matching "${key}". Add them on the Letters & aid page first.`;
+      return `Draft for ${rec.name}. Show it to the student to edit and send themselves:\n\n${draftRecRequest(ws, rec)}`;
     }
     default:
       return null;
