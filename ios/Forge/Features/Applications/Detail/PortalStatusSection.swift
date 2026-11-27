@@ -15,17 +15,11 @@ struct PortalStatusSection: View {
                     .font(.subheadline)
                     .foregroundStyle(Theme.danger)
             }
-            if !app.missing.isEmpty {
-                ForEach(app.missing, id: \.self) { item in
-                    Label(item, systemImage: "doc.badge.ellipsis")
-                        .foregroundStyle(Theme.ink)
-                        .badge(Text("Missing").foregroundStyle(Theme.amber))
-                }
-            }
-            if let checklist = visibleChecklist, !checklist.isEmpty {
-                DisclosureGroup("Checklist (\(checklist.filter(\.done).count) of \(checklist.count) received)") {
-                    ForEach(Array(checklist.enumerated()), id: \.offset) { _, item in
-                        PortalChecklistRow(item: item)
+            // Missing items show once, here: first in the checklist, which opens when anything is missing.
+            if !checklistRows.isEmpty {
+                DisclosureGroup(checklistTitle, isExpanded: checklistOpen) {
+                    ForEach(Array(checklistRows.enumerated()), id: \.offset) { _, row in
+                        PortalChecklistRow(item: row.item, missing: row.missing)
                     }
                 }
             }
@@ -54,9 +48,22 @@ struct PortalStatusSection: View {
         }
     }
 
-    /// The checklist, hidden while a decision is unopened.
-    private var visibleChecklist: [PortalItem]? {
-        app.decision.state == .hidden ? nil : app.portal?.checklist
+    /// The student's own open/closed choice; nil until they tap, so it opens when something is missing.
+    @State private var checklistExpanded: Bool?
+
+    private var checklistOpen: Binding<Bool> {
+        Binding(get: { checklistExpanded ?? !app.missing.isEmpty }, set: { checklistExpanded = $0 })
+    }
+
+    private var checklistRows: [PortalChecklistOrder.Row] {
+        PortalChecklistOrder.rows(checklist: app.portal?.checklist ?? [], missing: app.missing, decisionHidden: app.decision.state == .hidden)
+    }
+
+    private var checklistTitle: String {
+        if app.decision.state == .hidden { return "Missing (\(app.missing.count))" }
+        let checklist = app.portal?.checklist ?? []
+        let received = "\(checklist.filter(\.done).count) of \(checklist.count) received"
+        return app.missing.isEmpty ? "Checklist (\(received))" : "Checklist (\(app.missing.count) missing · \(received))"
     }
 
     @ViewBuilder private var summary: some View {
@@ -86,8 +93,28 @@ struct PortalStatusSection: View {
     }
 }
 
+/// Orders the portal checklist for the detail screen: missing items first, in portal order, then the rest.
+enum PortalChecklistOrder {
+    struct Row: Hashable {
+        let item: PortalItem
+        let missing: Bool
+    }
+
+    /// While a decision is unopened the server sends no checklist (it could give the decision away), only the
+    /// safe missing names, so those become name-only rows.
+    static func rows(checklist: [PortalItem], missing: [String], decisionHidden: Bool) -> [Row] {
+        if decisionHidden {
+            return missing.map { Row(item: PortalItem(item: $0, status: "", date: "", done: false, optional: false), missing: true) }
+        }
+        let missingNames = Set(missing)
+        let rows = checklist.map { Row(item: $0, missing: !$0.done && !$0.optional && missingNames.contains($0.item)) }
+        return rows.filter(\.missing) + rows.filter { !$0.missing }
+    }
+}
+
 private struct PortalChecklistRow: View {
     let item: PortalItem
+    var missing = false
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Theme.Spacing.sm) {
@@ -96,7 +123,12 @@ private struct PortalChecklistRow: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(item.item).foregroundStyle(Theme.ink)
                 let detail = [item.status, ForgeDates.short(item.date), item.optional ? "Optional" : ""].filter { !$0.isEmpty }
-                if !detail.isEmpty {
+                if missing {
+                    // "Missing" sits under the name rather than in a trailing badge, so long names wrap freely.
+                    Text(detail.isEmpty ? "Missing" : "Missing · \(detail.joined(separator: " · "))")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(Theme.amber)
+                } else if !detail.isEmpty {
                     Text(detail.joined(separator: " · ")).font(.footnote).foregroundStyle(Theme.muted)
                 }
             }
