@@ -24,8 +24,10 @@ export async function GET(req: NextRequest) {
     const [ws, logins, master] = await Promise.all([getWorkspace(auth.workspaceId), readLogins(auth.workspaceId), readMaster(auth.workspaceId)]);
     const out: Record<string, { username: string; password: string; portalUrl: string }> = {};
     for (const app of ws.tracker.apps) {
+      // A portal host from a forwarded email is the email's word: no login goes out for it until the student saves the link.
+      if (!masterAllowed(app)) continue;
       // A school using the master login gets it here too, under the same host rules as checks.
-      const resolved = resolveLogin(app.id, loginHost(app), logins, masterAllowed(app) ? master : null, { allowFailed: true });
+      const resolved = resolveLogin(app.id, loginHost(app), logins, master, { allowFailed: true });
       if (!resolved || (ids.length && !ids.includes(app.id))) continue;
       const { login, source } = resolved;
       // The master's website is the host it was pinned to, never an edited link.

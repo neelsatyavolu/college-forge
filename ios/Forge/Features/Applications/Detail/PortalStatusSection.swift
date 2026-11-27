@@ -34,7 +34,7 @@ struct PortalStatusSection: View {
                 }
                 .disabled(checks.isChecking(app.id))
             }
-            if let url = URL(string: app.portalUrl), ApplicationDraft.isHTTPS(app.portalUrl) {
+            if let url = app.openablePortalURL {
                 Link(destination: url) {
                     Label("Open \(app.portalName)", systemImage: "arrow.up.right.square")
                 }

@@ -3,7 +3,7 @@ import { logoUrl } from "./catalog";
 import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
 import { clearMaster, readLogins, readMaster, saveLogins, saveMaster, setMasterFor, type PortalLogin } from "./portal-logins";
-import { loginHost, masterAllowed, trustedSchoolLink } from "./portal-check";
+import { catalogUrlsAllowed, loginHost, masterAllowed, trustedSchoolLink } from "./portal-check";
 import { getWorkspace, updateWorkspace, type College, type Workspace } from "./store";
 import { curatedResearchFor, interestOf, interestSignal, upcomingInterviews, type ResearchLike } from "./interest-log";
 import { isUntouchedApp } from "./list-sync";
@@ -64,6 +64,8 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
     logo: app.collegeId ? (logoUrl(app.collegeId) ?? null) : null,
     portalName: app.portalName,
     portalUrl: app.portalUrl,
+    // The link came from a forwarded email and the student hasn't saved it: show it, never as a link to open.
+    portalFromEmail: !!app.portalFromEmail,
     status: app.status,
     statusLabel: info.label,
     stage: info.stage,
@@ -186,8 +188,9 @@ export async function addApp(
       // An untouched application (often the one the list sync made for a list school) takes the details given now.
       const { name: _dn, collegeId: _dc, slug: _ds, portalUrl: dupUrl, portalFromEmail: dupFromEmail, ...dupEdit } = input;
       // As for a new school below: a link from a forwarded email for a school outside the catalog is marked.
-      const dupMark = dupUrl ? { portalUrl: dupUrl, ...(dupFromEmail && !dup.collegeId ? { portalFromEmail: true } : {}) } : {};
-      const filled = isUntouchedApp(dup) && (Object.keys(dupEdit).length || dupUrl)
+      const dupLink = dupFromEmail && dup.collegeId && dupUrl && !catalogUrlsAllowed(dup.collegeId, [dupUrl]) ? undefined : dupUrl;
+      const dupMark = dupLink ? { portalUrl: dupLink, ...(dupFromEmail && !dup.collegeId ? { portalFromEmail: true } : {}) } : {};
+      const filled = isUntouchedApp(dup) && (Object.keys(dupEdit).length || dupLink)
         ? editApp({ ...dup, ...dupMark }, dupEdit)
         : dup;
       // Linking a shortlist school to an application someone already added by name.
@@ -195,7 +198,9 @@ export async function addApp(
       return linked === dup ? tracker : replaceApp(tracker, linked);
     }
     const slug = input.slug ?? current.colleges.find((c) => catalog && matchCatalog(c.name)?.id === catalog.id)?.slug;
-    const { name: _n, collegeId: _c, slug: _s, portalUrl, portalFromEmail, ...edit } = input;
+    const { name: _n, collegeId: _c, slug: _s, portalUrl: given, portalFromEmail, ...edit } = input;
+    // An emailed link for a catalog school is kept only on that school's own hosts; otherwise its catalog login URL.
+    const portalUrl = portalFromEmail && catalog && given && !catalogUrlsAllowed(catalog.id, [given]) ? undefined : given;
     const base = newApp({ name: name || catalog?.name || "", collegeId: catalog?.id ?? null, slug, portalUrl });
     // A catalog school's hosts are known; any other school's link from an email is only the email's word.
     const marked = portalFromEmail && !base.collegeId && base.portalUrl ? { ...base, portalFromEmail: true } : base;
@@ -219,8 +224,9 @@ export async function updateApp(workspaceId: string, ref: string, edit: AppEdit 
     id = app.id;
     const change = typeof edit === "function" ? edit(app) : edit;
     let next = editApp(app, change);
-    // The student (or their copilot) saving the link vouches for it, whatever a forwarded email said.
-    if (change.portalUrl !== undefined && next.portalFromEmail) {
+    // The student (or their copilot) saving a new link vouches for it, whatever a forwarded email said.
+    // Saving another field with the same link vouches for nothing.
+    if (next.portalFromEmail && next.portalUrl !== app.portalUrl) {
       const { portalFromEmail: _f, ...rest } = next;
       next = rest;
     }
@@ -264,6 +270,9 @@ export async function reveal(workspaceId: string, ref: string): Promise<AppView>
 export async function setLogin(workspaceId: string, ref: string, login: PortalLogin | null): Promise<AppView> {
   if (login && (!login.username.trim() || !login.password)) throw new TrackerError("Enter both the portal username and password.");
   const current = mustFind((await getWorkspace(workspaceId)).tracker, ref);
+  if (login && !masterAllowed(current)) {
+    throw new TrackerError("This portal link came from a forwarded email. Check it and save it yourself before saving its login.");
+  }
   const host = loginHost(current);
   if (login && !host) throw new TrackerError("Add the portal link before saving its login.");
   await saveLogins(workspaceId, { [current.id]: login ? { username: login.username.trim(), password: login.password, host: host! } : null });

@@ -27,6 +27,9 @@ const setup = require('../lib/portal-setup.ts');
 const { runChecks } = require('../lib/portal-check.ts');
 const inboxRoute = require('../app/api/service/inbox/route.ts');
 const inbox = require('../lib/inbox.ts');
+const mcp = require('../lib/mcp-tools.ts');
+const oauth = require('../lib/oauth.ts');
+const cliLogins = require('../app/api/cli/logins/route.ts');
 
 /**
  * Forwarded emails are attacker-controlled: anyone who learns a student's forwarding address can send one.
@@ -91,7 +94,7 @@ test('lookup still gives the master for a catalog school whose links are its own
   const { token } = await withMasterForNew('xa_SEC2');
   const ok = await lookup(token, { collegeId: 'purdue', portalUrl: 'https://apply.purdue.edu/apply/status', link: 'https://apply.purdue.edu/account/activate?x=1' });
   assert.equal(ok.usePassword, 'Master-Pass-1');
-  assert.equal((await lookup(token, { collegeId: 'purdue' })).usePassword, 'Master-Pass-1', 'a PIN-only email uses the catalog portal');
+  assert.equal((await lookup(token, { collegeId: 'purdue', portalUrl: 'https://apply.purdue.edu/apply/status' })).usePassword, 'Master-Pass-1', 'a PIN-only email names the catalog portal it will type into');
 }));
 
 test('a forged arrival with an off-catalog link stores no link and shows none', () => isolated(async () => {
@@ -169,4 +172,76 @@ test('the student saving the portal link themselves clears the email mark', () =
   assert.equal((await appNamed(ws, 'Small College')).portalFromEmail, undefined);
   await service.useMasterFor(ws, small.id, true);
   assert.equal((await logins.readMaster(ws)).appIds[small.id].host, 'apply.small.edu');
+}));
+
+test('lookup gives no master when the Worker names a school but no URL it will type into', () => isolated(async () => {
+  const { token } = await withMasterForNew('xa_SEC9');
+  assert.equal((await lookup(token, { collegeId: 'purdue' })).usePassword, undefined, 'no URLs at all');
+  assert.equal((await lookup(token, { collegeId: 'purdue', portalUrl: '', link: '' })).usePassword, undefined, 'only empty URLs');
+}));
+
+test('a forged email for a catalog school never stores its off-catalog portal link', () => isolated(async () => {
+  const { ws, token } = await withMasterForNew('xa_SEC10');
+  await forward(token, arrival({ portalUrl: 'https://evil.example/login' }));
+  const pu = (await store.getWorkspace(ws)).tracker.apps.find((a) => a.collegeId === 'purdue');
+  assert.equal(pu.portalUrl, 'https://apply.purdue.edu/apply/status', 'falls back to the catalog login URL');
+
+  const { ws: ws2, token: token2 } = await withMasterForNew('xa_SEC11');
+  await forward(token2, arrival({ collegeId: null, name: 'Purdue University', portalUrl: 'https://evil.example/login' }));
+  const byName = (await store.getWorkspace(ws2)).tracker.apps.find((a) => a.collegeId === 'purdue');
+  assert.equal(byName.portalUrl, 'https://apply.purdue.edu/apply/status', 'matched by name, same rule');
+
+  const { ws: ws3, token: token3 } = await withMasterForNew('xa_SEC12');
+  await forward(token3, arrival({ portalUrl: 'https://apply.purdue.edu/apply/other' }));
+  const own = (await store.getWorkspace(ws3)).tracker.apps.find((a) => a.collegeId === 'purdue');
+  assert.equal(own.portalUrl, 'https://apply.purdue.edu/apply/other', 'a link on the school\'s own host is kept');
+}));
+
+test('an email-sourced portal link on a non-catalog school is flagged in the view and not given to MCP as a link', () => isolated(async () => {
+  const { ws, token } = await withMasterForNew('xa_SEC13');
+  await forward(token, arrival({ collegeId: null, name: 'Example College', portalUrl: 'https://evil.example/login', link: '' }));
+  const view = (await service.listApps(ws)).apps.find((a) => a.name === 'Example College');
+  assert.equal(view.portalFromEmail, true);
+  const res = await mcp.callTool(ws, 'get_application', { school: 'Example College' });
+  assert.equal(res.structuredContent.portal_link, null);
+  assert.doesNotMatch(JSON.stringify(res.structuredContent), /"portal_link":\s*"https:\/\/evil/);
+}));
+
+test('saving an edit with the same portal link keeps the email mark', () => isolated(async () => {
+  const { ws, token } = await withMasterForNew('xa_SEC14');
+  await forward(token, arrival({ collegeId: null, name: 'Example College', portalUrl: 'https://evil.example/login', link: '' }));
+  const ex = await appNamed(ws, 'Example College');
+  await service.updateApp(ws, ex.id, { deadline: '2027-01-01', portalUrl: 'https://evil.example/login' });
+  assert.equal((await appNamed(ws, 'Example College')).portalFromEmail, true);
+  await assert.rejects(service.useMasterFor(ws, ex.id, true), (e) => e instanceof service.TrackerError);
+}));
+
+test('a school\'s own login is refused on an email-sourced host, and the CLI withholds such schools', () => isolated(async () => {
+  const { ws, token } = await withMasterForNew('xa_SEC15');
+  await forward(token, arrival({ collegeId: null, name: 'Example College', portalUrl: 'https://evil.example/login', link: '', state: 'set', password: 'gen-pass-1' }));
+  const ex = await appNamed(ws, 'Example College');
+  assert.equal((await logins.readLogins(ws))[ex.id], undefined, 'the arrival does not pin a login to the email host');
+  await assert.rejects(service.setLogin(ws, ex.id, { username: 'stu', password: 'real-pass' }), (e) => e instanceof service.TrackerError);
+  assert.equal((await logins.readLogins(ws))[ex.id], undefined);
+
+  // Even a login that got there somehow is never handed to the CLI for an email-sourced host.
+  await logins.saveLogins(ws, { [ex.id]: { username: 'stu', password: 'real-pass', host: 'evil.example' } });
+  const client = await oauth.registerClient({ client_name: 'collegeforge CLI', redirect_uris: ['http://127.0.0.1:45123/callback'] });
+  const verifier = crypto.randomBytes(32).toString('base64url');
+  const challenge = crypto.createHash('sha256').update(verifier).digest('base64url');
+  const code = await oauth.issueCode(client, 'http://127.0.0.1:45123/callback', challenge, 'xa_SEC15', ws, { logins: true });
+  const t = await oauth.exchange(new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: 'http://127.0.0.1:45123/callback', code_verifier: verifier }));
+  const res = await cliLogins.GET(new NextRequest('https://forge.test/api/cli/logins', { headers: { authorization: `Bearer ${t.access_token}` } }));
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.logins[ex.id], undefined);
+  assert.doesNotMatch(JSON.stringify(body), /evil\.example|real-pass/);
+}));
+
+test('adding a school that a forwarded email already created flags it', () => isolated(async () => {
+  const { ws, token } = await withMasterForNew('xa_SEC16');
+  await forward(token, arrival({ collegeId: null, name: 'Example College', portalUrl: 'https://evil.example/login', link: '' }));
+  const again = await service.addApp(ws, { name: 'Example College', portalUrl: 'https://apply.example.edu/' });
+  assert.equal(again.portalFromEmail, true, 'the student is told the link came from an email');
+  assert.equal(again.portalUrl, 'https://evil.example/login');
 }));

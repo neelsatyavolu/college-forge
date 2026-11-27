@@ -123,7 +123,8 @@ export type LookupTarget = { collegeId?: string | null; portalUrl?: string; link
  * `usePassword` is the master password when the student chose it for new portals; the Worker uses it if
  * the school's password rules allow, and generates one otherwise. Anyone can send to the address, so the
  * master is given only for a catalog school whose portal and activation links are all that school's own
- * hosts; without a `target` (or for any other school) there is no master.
+ * hosts; without a `target`, with no link in it, or for any other school there is no master. The Worker
+ * must send every URL it will type the password into, and must not type it after a redirect off those hosts.
  */
 export async function lookupInbox(
   token: string,
@@ -201,7 +202,9 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
   // that arrives carrying it is dropped rather than saved.
   const isMaster = !!master && arrival.password === master.password;
   const masterOk = !!tracked.collegeId && masterAllowed(tracked);
-  const login = arrival.username && arrival.password && (!isMaster || masterOk) ? { username: arrival.username, password: arrival.password } : null;
+  // A host from an email gets no saved login at all; its password stays in the set-up details below.
+  const emailHost = !!tracked.portalFromEmail;
+  const login = arrival.username && arrival.password && !emailHost && (!isMaster || masterOk) ? { username: arrival.username, password: arrival.password } : null;
   // Only a link that goes to the school itself is kept; a forged email's link is never shown as Forge's.
   const link = arrival.link && trustedSchoolLink(tracked, arrival.link) ? arrival.link : "";
 
@@ -229,13 +232,14 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
   }
   if (prior?.pending) await updateDoc<ArrivalRecord>(arrivalKey(arrivalId), (cur) => ({ ...(cur ?? prior), pending: undefined }));
 
-  // Short of verified, keep what the student needs to finish by hand, sealed, instead of throwing it away.
+  // Short of verified, or on a host from an email (no login is saved there), keep what the student needs to
+  // finish by hand, sealed, instead of throwing it away.
   // The master password is never copied in: the student already knows it, and forgetting it must stick.
   const password = isMaster ? "" : arrival.password;
-  if (arrival.state !== "verified" && (arrival.pin || link || password)) {
+  if ((arrival.state !== "verified" || emailHost) && (arrival.pin || link || password)) {
     await saveSetup(workspaceId, app.id, {
       username: arrival.username, password, pin: arrival.pin, link,
-      state: arrival.state, reason: arrival.reason, receivedAt: Date.now(),
+      state: arrival.state === "verified" ? "set" : arrival.state, reason: arrival.reason, receivedAt: Date.now(),
     });
     await markSetupWaiting(workspaceId, app.id);
   }

@@ -31,11 +31,15 @@ function catalogAllows(college: NonNullable<ReturnType<typeof collegeById>>, hos
   return college.domains.some((d) => host === d || host.endsWith(`.${d}`));
 }
 
-/** True when every given link is https on one of this catalog school's own hosts. Not for schools outside the catalog. */
+/**
+ * True when at least one link is given and every given link is https on one of this catalog school's own
+ * hosts. No links proves nothing, so it is false. Not for schools outside the catalog.
+ */
 export function catalogUrlsAllowed(collegeId: string | null | undefined, urls: string[]): boolean {
   const college = collegeId ? collegeById(collegeId) : undefined;
-  if (!college) return false;
-  return urls.filter(Boolean).every((u) => {
+  const given = urls.filter(Boolean);
+  if (!college || !given.length) return false;
+  return given.every((u) => {
     const host = hostOf(u);
     return !!host && catalogAllows(college, host);
   });

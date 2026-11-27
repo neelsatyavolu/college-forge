@@ -45,18 +45,20 @@ function PortalLine({ app }) {
 
 function AppDetails({ app, act, busy, checking, onCheck, master }) {
   const { APP_ROUNDS, fmtDate } = window.cfApp;
-  const [form, setForm] = React.useState({ round: app.roundFromPortal ? "" : app.round || "", deadline: app.deadline || "", decisionDate: app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "", submittedAt: app.submittedAt || "", notes: app.notes || "", portalUrl: app.portalUrl || "" });
+  const initial = { round: app.roundFromPortal ? "" : app.round || "", deadline: app.deadline || "", decisionDate: app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "", submittedAt: app.submittedAt || "", notes: app.notes || "", portalUrl: app.portalUrl || "" };
+  const [form, setForm] = React.useState(initial);
   const [fu, setFu] = React.useState({ text: "", due: "" });
   const [login, setLogin] = React.useState({ username: (app.login && app.login.username) || "", password: "" });
   const [confirmRemove, setConfirmRemove] = React.useState(false);
-  const dirty = form.round !== (app.roundFromPortal ? "" : app.round || "") || form.deadline !== (app.deadline || "") || form.notes !== (app.notes || "") || form.portalUrl !== (app.portalUrl || "") || form.submittedAt !== (app.submittedAt || "") ||
-    form.decisionDate !== (app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "");
+  // Only changed fields are sent: resending an unchanged portal link must not count as the student checking it.
+  const changed = Object.fromEntries(Object.entries(form).filter(([k, v]) => v !== initial[k]));
+  const dirty = Object.keys(changed).length > 0;
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const id = app.id;
 
   return (
     <div className="cf-app-details">
-      <form className="cf-fields" onSubmit={(e) => { e.preventDefault(); act({ action: "update", id, edit: form }, "Saved."); }}>
+      <form className="cf-fields" onSubmit={(e) => { e.preventDefault(); act({ action: "update", id, edit: changed }, "Saved."); }}>
         <label className="cf-field">Round
           <select value={form.round} onChange={set("round")}>
             {APP_ROUNDS.map((r) => <option key={r.id} value={r.id}>{r.id === "" && app.roundFromPortal ? `From portal (${app.round})` : r.label}</option>)}
@@ -74,6 +76,7 @@ function AppDetails({ app, act, busy, checking, onCheck, master }) {
         </label>
         <label className="cf-field" style={{ gridColumn: "1 / -1" }}>Portal link
           <input type="url" value={form.portalUrl} onChange={set("portalUrl")} placeholder="https://" />
+          {app.portalFromEmail ? <small>This link came from a forwarded email. Check it goes to the school, then edit and save it before opening it or saving a login.</small> : null}
         </label>
         {app.hasAidItems || app.ignoreAid ? (
           <label className="cf-check" style={{ gridColumn: "1 / -1", display: "flex", gap: 8, alignItems: "center" }}>
@@ -86,7 +89,7 @@ function AppDetails({ app, act, busy, checking, onCheck, master }) {
         </label>
         <div className="cf-row-actions" style={{ gridColumn: "1 / -1" }}>
           <Button type="submit" size="sm" disabled={busy || !dirty}>Save changes</Button>
-          {app.portalUrl ? <a href={app.portalUrl} target="_blank" rel="noopener noreferrer" className="cf-link-btn" style={{ display: "inline-flex", alignItems: "center" }}>Open {app.portalName || "portal"} ↗</a> : null}
+          {app.portalUrl && !app.portalFromEmail ? <a href={app.portalUrl} target="_blank" rel="noopener noreferrer" className="cf-link-btn" style={{ display: "inline-flex", alignItems: "center" }}>Open {app.portalName || "portal"} ↗</a> : null}
         </div>
       </form>
 
@@ -318,7 +321,9 @@ function Applications({ data, tracker, onTrackerChange }) {
     // A portal exists once you've applied, so a school added here starts as submitted.
     const j = await window.cfApi.applications({ action: "add", status: "submitted", ...input });
     onTrackerChange(j.data);
-    setNotice(`${j.app.name} added. Set its round and deadline, and save the portal login so Forge can check it.`);
+    setNotice(j.app.portalFromEmail
+      ? `${j.app.name} was already added from a forwarded email. Its portal link came from that email: check it and save it yourself.`
+      : `${j.app.name} added. Set its round and deadline, and save the portal login so Forge can check it.`);
     setOpen({ id: j.app.id, attention: window.cfApp.attentionOf(j.app).length > 0 });
   };
 

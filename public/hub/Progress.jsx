@@ -55,7 +55,9 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
   const onAdd = async (input) => {
     const j = await window.cfApi.applications({ action: "add", ...input });
     onTrackerChange(j.data);
-    setNotice(`${j.app.name} added. Open it to set the round, deadline and follow-ups.`);
+    setNotice(j.app.portalFromEmail
+      ? `${j.app.name} was already added from a forwarded email. Its portal link came from that email: check it and save it yourself.`
+      : `${j.app.name} added. Open it to set the round, deadline and follow-ups.`);
     setOpen(j.app.id);
   };
   const act = async (body, message) => {

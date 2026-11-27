@@ -64,7 +64,7 @@ struct DecisionPanel: View {
             Text("The portal posted a decision. Open the portal to read it.")
                 .font(.subheadline).foregroundStyle(Theme.muted)
         }
-        if words.isEmpty, !app.hasRecordedOutcome, let url = URL(string: app.portalUrl), ApplicationDraft.isHTTPS(app.portalUrl) {
+        if words.isEmpty, !app.hasRecordedOutcome, let url = app.openablePortalURL {
             Link(destination: url) { Label("Open \(app.portalName)", systemImage: "arrow.up.right.square") }
                 .font(.subheadline.weight(.medium))
                 .buttonStyle(.borderless)

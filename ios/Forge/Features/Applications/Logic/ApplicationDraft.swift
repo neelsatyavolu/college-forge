@@ -61,6 +61,14 @@ struct ApplicationDraft: Equatable, Sendable {
     }
 }
 
+extension TrackedApplication {
+    /// The portal to open, or nil when there is none, it isn't https, or it came from a forwarded email.
+    var openablePortalURL: URL? {
+        guard !portalFromEmail, ApplicationDraft.isHTTPS(portalUrl) else { return nil }
+        return URL(string: portalUrl)
+    }
+}
+
 /// Validation for the small add forms (follow-ups, logins, letters and scholarships).
 enum ApplicationsValidation {
     static let followUpLimit = 300

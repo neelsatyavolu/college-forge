@@ -23,6 +23,17 @@ struct PortalOpsTests {
         #expect(try decode(PortalLogin.self, #"{"username":"m","hasPassword":true}"#).isMaster == false)
     }
 
+    @Test func emailSourcedPortalLinkIsNeverOpenable() throws {
+        let fromEmail = try decode(TrackedApplication.self, #"{"id":"a","name":"Example College","portalUrl":"https://evil.example/login","portalFromEmail":true,"updatedAt":1}"#)
+        #expect(fromEmail.portalFromEmail)
+        #expect(fromEmail.openablePortalURL == nil)
+        let saved = try decode(TrackedApplication.self, #"{"id":"b","name":"Example College","portalUrl":"https://apply.example.edu/","updatedAt":1}"#)
+        #expect(saved.portalFromEmail == false)
+        #expect(saved.openablePortalURL == URL(string: "https://apply.example.edu/"))
+        let plain = try decode(TrackedApplication.self, #"{"id":"c","name":"X","portalUrl":"http://apply.example.edu/","updatedAt":1}"#)
+        #expect(plain.openablePortalURL == nil)
+    }
+
     @Test func responsesCarryMasterAndSetup() throws {
         let r = try decode(ApplicationsResponse.self, #"{"success":true,"master":{"on":true,"username":"stu@example.com","appCount":2},"applied":2,"setup":{"username":"u","password":"p","pin":"123","link":"https://x.edu","state":"todo","reason":"PIN expired"}}"#)
         #expect(r.master?.appCount == 2)

@@ -81,6 +81,8 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     var interestSignal: InterestSignal?
     /// A forwarded set-up email left a PIN, link or password to finish with (`.setupDetails`).
     var setupWaiting: Bool = false
+    /// The portal link came from a forwarded email and the student hasn't saved it: never offer it as a link.
+    var portalFromEmail: Bool = false
 
     var lastCheckedDate: Date? { lastChecked.map(Date.init(milliseconds:)) }
 }
@@ -121,6 +123,7 @@ extension TrackedApplication {
         interest = c.array(.interest)
         interestSignal = c.optional(InterestSignal.self, .interestSignal)
         setupWaiting = c.bool(.setupWaiting)
+        portalFromEmail = c.bool(.portalFromEmail)
     }
 }
 

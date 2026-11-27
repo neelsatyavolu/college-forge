@@ -22,6 +22,7 @@ const arrival = z.object({
 });
 const input = z.discriminatedUnion("op", [
   // The school the email is about, read before the lookup, so the master password is offered only for its own hosts.
+  // The Worker sends every URL it will type into; with none, no master. It must not type after a redirect off them.
   z.object({ op: z.literal("lookup"), token, collegeId: z.string().max(40).nullable().optional(), portalUrl: text(1000).optional(), link: text(1000).optional() }),
   z.object({ op: z.literal("arrival"), token, arrivalId: z.string().uuid(), final: z.boolean(), arrival }),
   z.object({ op: z.literal("not-portal"), token, subject: text(300) }),

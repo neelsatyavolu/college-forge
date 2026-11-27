@@ -41,6 +41,10 @@ struct EditApplicationSheet: View {
                         .autocorrectionDisabled()
                 } header: {
                     Text("Portal link")
+                } footer: {
+                    if app.portalFromEmail {
+                        Text("This link came from a forwarded email. Check it goes to the school, then edit and save it before opening it or saving a login.")
+                    }
                 }
                 Section {
                     TextField("Interview notes, what to send, anything else", text: $draft.notes, axis: .vertical)
