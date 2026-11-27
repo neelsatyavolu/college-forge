@@ -60,9 +60,9 @@ export async function GET(req: NextRequest) {
 <h1>Let ${esc(ar.client.client_name)} use your applications?</h1>
 <p class="oa__lede">It will act for <!--email_off--><strong>${esc(session.email)}</strong><!--/email_off--> until you disconnect it in Forge settings.</p>
 <dl class="oa__list">
-  <div><dt>It can</dt><dd>See and change your applications page: schools, statuses, deadlines, decision dates, follow-ups, flags, notes and portal checks. Record decisions, and open a decision a portal posted when you ask (which marks it as seen). Create and turn off progress links for parents and counselors (never full advisor links), and read the notes they leave. See your shortlist and profile summary (school, major, GPA and scores).</dd></div>
+  <div><dt>It can</dt><dd>See and change your applications page: schools, statuses, deadlines, decision dates, follow-ups, flags, notes and portal checks. Record decisions, and open a decision a portal posted when you ask (which marks it as seen). Create and turn off progress links for parents and counselors (never full advisor links), and read the notes they leave. See your shortlist and profile summary (school, major, GPA and scores). Read your essays, including drafts, and change essay prompts and which essays you're writing (it doesn't rewrite your drafts).</dd></div>
 ${ar.logins ? `  <div><dt>Passwords</dt><dd>It can also read your saved portal usernames and passwords, for the collegeforge command-line tool on your computer. Only allow this if you just ran <code>collegeforge login</code>.</dd></div>
-  <div><dt>It can't</dt><dd>See your essays, change portal links or logins, or change your Forge account.</dd></div>` : `  <div><dt>It can't</dt><dd>See your portal passwords or essays, change portal links or logins, or change your Forge account.</dd></div>`}
+  <div><dt>It can't</dt><dd>Change portal links or logins, or change your Forge account.</dd></div>` : `  <div><dt>It can't</dt><dd>See your portal passwords, change portal links or logins, or change your Forge account.</dd></div>`}
   <div><dt>Returns to</dt><dd><code>${esc(host)}</code></dd></div>
 </dl>
 <form method="post" class="oa__actions">

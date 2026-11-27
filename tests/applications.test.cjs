@@ -357,6 +357,7 @@ test('applications API requires a session and never returns passwords', () => is
   assert.equal((await post({ action: 'add', name: 'Purdue University' }, 'https://evil.example')).status, 403);
   const added = await (await post({ action: 'add', name: 'Purdue University', status: 'submitted' })).json();
   assert.equal(added.success, true);
+  assert.equal((await post({ action: 'add', name: 'Tiny College', portalUrl: 'javascript:alert(1)' })).status, 400);
   const withLogin = await (await post({ action: 'login', id: added.app.id, username: 'stu', password: 'topsecret' })).json();
   assert.doesNotMatch(JSON.stringify(withLogin), /topsecret/);
   const invalid = await post({ action: 'update', id: added.app.id, edit: { status: 'accepted' } });

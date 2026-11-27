@@ -9,8 +9,9 @@ import { dedupeParagraphs, makeInterviewTools, recordTurn } from "@/lib/intervie
 import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
 import { sensitiveRefusal, toolAllowed } from "@/lib/tool-policy";
 import { DECISION_SYSTEM } from "@/lib/decision-plan";
-import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { getSession, getWorkspaceId } from "@/lib/workspace-cookie";
 import { sameSite } from "@/lib/same-site";
+import { allow, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,6 +34,10 @@ function sanitize(messages: unknown): ChatTurn[] {
   }
   return cleaned;
 }
+
+// Signed-out students on one school or carrier network share an address, so the address cap is generous.
+const CHAT_PER_HOUR_ANONYMOUS = 400;
+const CHAT_PER_HOUR_SIGNED_IN = 200;
 
 export async function POST(req: NextRequest) {
   if (!sameSite(req)) return Response.json({ error: "Not allowed." }, { status: 403 });
@@ -58,6 +63,14 @@ export async function POST(req: NextRequest) {
   const turns = sanitize(body.messages);
   if (turns.length === 0) {
     return Response.json({ error: "No messages provided." }, { status: 400 });
+  }
+
+  // Each request can spend Forge's own model key, so cap it per account (or per address when signed out).
+  // Setup alone runs one request per interview answer plus one per school researched.
+  const chatSession = getSession(req);
+  const chatBucket = chatSession ? `ai-chat:sub:${chatSession.sub}` : `ai-chat:ip:${clientIp(req)}`;
+  if (!(await allow(chatBucket, chatSession ? CHAT_PER_HOUR_SIGNED_IN : CHAT_PER_HOUR_ANONYMOUS, 60 * 60 * 1000))) {
+    return Response.json({ error: "You've sent a lot of messages in the last hour. Take a short break and try again soon." }, { status: 429 });
   }
 
   const { id: workspaceId, setCookie } = await getWorkspaceId(req);

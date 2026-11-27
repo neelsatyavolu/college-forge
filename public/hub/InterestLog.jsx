@@ -27,6 +27,8 @@ function fmtTime(hhmm) {
 /** One sourced policy line: what the school says, linked to the page it came from. */
 function PolicyChip({ text, fact }) {
   if (!text || !fact) return null;
+  // Research facts come from the assistant; only an http(s) source becomes a link.
+  if (!/^https?:\/\//.test(fact.sourceUrl || "")) return <span className="cf-interest__chip" title={fact.text}>{text}</span>;
   return (
     <a className="cf-interest__chip" href={fact.sourceUrl} target="_blank" rel="noopener noreferrer" title={fact.text}>
       {text} <span aria-hidden="true">↗</span><span className="cf-sr-only"> (source: {fact.text})</span>

@@ -15,6 +15,28 @@ export function slugify(s: string): string {
     .slice(0, 80);
 }
 
+/** An absolute http(s) address. Pages render these as links, so any other scheme (javascript:, data:) is refused. */
+export const isHttpUrl = (s: unknown): s is string => typeof s === "string" && /^https?:\/\/\S+\.\S+/.test(s);
+
+/** Drops links a page couldn't safely open: research items whose source isn't http(s), and non-http(s) site links. */
+export function withWebLinks<T extends Partial<College>>(c: T): T {
+  const next: T = { ...c };
+  for (const k of ["url", "priceCalcUrl"] as const) {
+    const v = next[k];
+    if (v === undefined || v === null) continue;
+    // Scorecard gives bare hosts like "www.harvard.edu/": make those https rather than dropping them.
+    const fixed = typeof v === "string" && /^[a-z0-9.-]+\.[a-z]{2,}(\/\S*)?$/i.test(v.trim()) ? `https://${v.trim()}` : v;
+    if (isHttpUrl(fixed)) next[k] = fixed as T[typeof k];
+    else delete next[k];
+  }
+  const r = c.research;
+  if (r && typeof r === "object") {
+    const keep = <I,>(xs: I[] | undefined) => (Array.isArray(xs) ? xs.filter((x) => isHttpUrl((x as { sourceUrl?: unknown })?.sourceUrl)) : xs);
+    next.research = { ...r, facts: keep(r.facts) ?? [], deadlines: keep(r.deadlines) ?? [], supplements: keep(r.supplements) ?? [] };
+  }
+  return next;
+}
+
 function sameCollege(a: College, b: College): boolean {
   if (a.slug && b.slug && a.slug === b.slug) return true;
   if (
@@ -38,7 +60,7 @@ function sameCollege(a: College, b: College): boolean {
  */
 export function upsertCollegeInto(ws: Workspace, incoming: College): Workspace {
   const slug = incoming.slug || slugify(incoming.name || "");
-  const row = { ...incoming, slug };
+  const row = { ...withWebLinks(incoming), slug };
   const idx = ws.colleges.findIndex((c) => sameCollege(c, row));
   const colleges =
     idx >= 0

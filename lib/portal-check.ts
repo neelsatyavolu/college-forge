@@ -16,7 +16,7 @@ import { notifyChanges } from "./notify/send";
 
 const COLLEGEAPPS_URL = "https://collegeapps.n3el.dev";
 
-const hostOf = (url: string): string | null => {
+export const hostOf = (url: string): string | null => {
   try {
     const u = new URL(url);
     return u.protocol === "https:" ? u.hostname : null;

@@ -13,6 +13,7 @@ import type {
   Essay,
 } from "./store";
 import { mergeSupplements, syncEssaySupplements } from "./essay-supplements";
+import { withWebLinks } from "./colleges";
 import {
   applyCommonAppPrompt,
   applyEssayHidden,
@@ -313,7 +314,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
   if (patch.ed !== undefined) next = { ...next, ed: patch.ed };
   if (patch.criticalDates) next = { ...next, criticalDates: patch.criticalDates };
   if (patch.colleges) {
-    next = syncEssaySupplements({ ...next, colleges: patch.colleges });
+    next = syncEssaySupplements({ ...next, colleges: patch.colleges.map((c) => withWebLinks(c)) });
   }
 
   if (patch.essays) {
@@ -466,7 +467,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
   }
 
   if (patch.collegePatch?.slug) {
-    const { slug, ...fields } = patch.collegePatch;
+    const { slug, ...fields } = withWebLinks(patch.collegePatch);
     next = {
       ...next,
       colleges: next.colleges.map((c) =>

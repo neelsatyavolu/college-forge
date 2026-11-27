@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getWorkspace } from "@/lib/store";
+import { emptyWorkspace, peekWorkspace } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { aidPlan } from "@/lib/aid-plan";
 
@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
   const headers: Record<string, string> = { "cache-control": "no-store" };
   if (setCookie) headers["set-cookie"] = setCookie;
   try {
-    const ws = await getWorkspace(id);
+    // Read only: a visitor without a stored workspace gets an empty checklist, and none is created.
+    const ws = (await peekWorkspace(id)) ?? emptyWorkspace();
     return Response.json({ success: true, data: aidPlan(ws) }, { headers });
   } catch (error) {
     console.error("aid plan failed", error instanceof Error ? error.name : "unknown");

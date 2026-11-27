@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { slugify } from "./colleges";
+import { isHttpUrl, slugify } from "./colleges";
 
 export const RESEARCH_KEYS = [
   "admit_rate",
@@ -59,7 +59,7 @@ export type SchoolResearch = {
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const CYCLE = /^\d{4}-\d{2}$/;
-const httpsUrl = (s: unknown) => typeof s === "string" && /^https?:\/\/[^\s]+\.[^\s]+/.test(s);
+const httpsUrl = (s: unknown) => isHttpUrl(s);
 
 /** Problems with one research file; empty when it is valid. */
 export function validateSchoolResearch(r: unknown): string[] {
