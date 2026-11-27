@@ -28,8 +28,8 @@
    "sourceUrl": "https://nursing.ucla.edu/programs-admissions/academic-programs/bachelor-of-science/apply"
   },
   "emory-university": {
-   "entry": "competitive",
-   "note": "Students enter Emory College or Oxford College, take two years of prerequisites, and apply to the BSN in their 3rd semester; a 3.0 cumulative GPA gives guaranteed admission, below that applicants are waitlisted for committee review.",
+   "entry": "direct",
+   "note": "Guaranteed with a 3.0: students take two years of prerequisites at Emory or Oxford College and apply in their 3rd semester; a 3.0 cumulative GPA guarantees a BSN seat (below that, committee review).",
    "sourceUrl": "https://www.nursing.emory.edu/program-details/high-school-students"
   },
   "georgetown-university": {
@@ -272,5 +272,6 @@
    "note": "12-15 students are admitted directly each year; others apply competitively in the fall of sophomore year (about a 3.0 GPA).",
    "sourceUrl": "https://wp.stolaf.edu/nursing/nursing-admissions/"
   }
- }
+ },
+ "classification": "direct = every admit who meets the stated progression rules (e.g. a GPA) gets a nursing seat; both = only some admits (honors, scholars) have a guaranteed route and the rest compete later; competitive = all compete for limited seats later."
 }
