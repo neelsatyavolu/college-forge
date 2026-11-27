@@ -3,7 +3,7 @@
  * recommendation are drawn by the client from streamed events, and each one ends the AI's turn so
  * the student answers before the AI goes on. Profile answers are saved with the regular profile tools.
  */
-import type { ChatEmitter, ToolSpec, UiEdIdea, UiQuestion, UiSchool, UiStrategy } from "./chat-types";
+import type { ChatEmitter, ToolSpec, UiEdIdea, UiQuestion, UiSchool, UiStrategy, UiTransferPath } from "./chat-types";
 import { dataTier, studentAcademics, testRequired } from "./college-recommendations";
 import { BUDGET_CAP, studentFacts } from "./list-facts";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
@@ -150,6 +150,15 @@ export function tooManyNonresidentPublics(ws: Workspace, schools: UiSchool[], ap
   const allowed = Math.max(1, Math.floor(apps / 5));
   if (names.length <= allowed) return null;
   return `${names.length} out-of-state public universities (${names.join(", ")}) on a budget under $${cap.toLocaleString("en-US")} with need-based aid: publics rarely give need-based aid to nonresidents, so these usually cost $40,000-60,000 a year. Keep at most ${allowed}; use in-state publics (including regional ones), and private colleges that meet full need or give large merit aid, instead.`;
+}
+
+/** A transfer path the student can act on: both colleges named, and they aren't the same college. */
+export function parseTransferPath(raw: Args): UiTransferPath | undefined {
+  const college = text(raw.college, 120), transfersTo = text(raw.transfersTo, 120), reason = text(raw.reason, 400);
+  if (!college || !transfersTo || !reason) return undefined;
+  const base = (name: string) => name.toLowerCase().replace(/[^a-z ]/g, " ").replace(/\b(rn|bsn|to|program|bridge|online)\b/g, " ").replace(/\s+/g, " ").trim();
+  if (base(transfersTo).startsWith(base(college)) || base(college).startsWith(base(transfersTo))) return undefined;
+  return { college, transfersTo, reason };
 }
 
 /** The balance problem in words for the student, shown on a list Forge accepted anyway. */
@@ -340,6 +349,7 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
           },
         },
         edIdea: { type: "object", properties: { school: str, reason: str }, required: ["reason"], additionalProperties: false, description: "Your early-round idea for now (an ED school, or why none), confirmed after research." },
+        transferPath: { type: "object", properties: { college: str, transfersTo: str, reason: str }, required: ["college", "transfersTo", "reason"], additionalProperties: false, description: "Optional low-cost backstop for tight budgets: a community college near the student and the four-year college its transfer agreement feeds (name the agreement and its GPA/course conditions in reason). Only when you've checked the agreement exists." },
       },
       required: ["schools"],
       additionalProperties: false,
@@ -471,9 +481,12 @@ export function makeInterviewTools(
         const warning = problem ? studentWarning(problem) : undefined;
         const ideaRaw = (a.edIdea ?? {}) as Args;
         const edIdea: UiEdIdea | undefined = text(ideaRaw.reason, 400) ? { ...(text(ideaRaw.school, 120) ? { school: text(ideaRaw.school, 120) } : {}), reason: text(ideaRaw.reason, 400)! } : undefined;
-        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, listRefusals: 0, ...(edIdea ? { edIdea } : {}) }));
-        emit({ type: "list", schools, ...(edIdea ? { edIdea } : {}), ...(warning ? { warning } : {}) });
-        stop({ list: schools, ...(edIdea ? { edIdea } : {}), ...(warning ? { warning } : {}) });
+        const pathRaw = (a.transferPath ?? {}) as Args;
+        const transferPath = parseTransferPath(pathRaw);
+        const extras = { ...(edIdea ? { edIdea } : {}), ...(transferPath ? { transferPath } : {}) };
+        await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, listRefusals: 0, ...extras }));
+        emit({ type: "list", schools, ...extras, ...(warning ? { warning } : {}) });
+        stop({ list: schools, ...extras, ...(warning ? { warning } : {}) });
         return `Shown to the student${changed.length ? `. Forge set these tiers from its admissions data: ${changed.join(", ")}` : ""}. Stop now; they will approve, drop or ask for changes.`;
       }
       case "recommend_strategy": {

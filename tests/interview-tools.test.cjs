@@ -255,3 +255,19 @@ test('an international student who needs aid is not required to have likely US s
   const us = wsWith({ budget: '30-50', needAid: true, citizenship: 'us', suppCount: 10, noSuppCount: 0 });
   assert.match(T.checkListProposal(us, schools) || T.checkMix(us, schools) || '', /likely/);
 });
+
+test('a transfer path is saved with the list and shown with it', async () => {
+  const ws = complete(wsWith({ budget: 'lt15', needAid: true, suppCount: 6, noSuppCount: 4 }));
+  const h = harness(ws, () => true);
+  const transferPath = { college: 'San Antonio College', transfersTo: 'University of Texas at San Antonio', reason: 'Alamo Colleges transfer agreement: complete the nursing prerequisites with a 3.0 GPA.' };
+  await h.tools.execute('propose_list', JSON.stringify({ schools: list(10, 2, 'yes'), transferPath }));
+  assert.deepEqual(h.events.find((e) => e.type === 'list').transferPath, transferPath);
+  assert.deepEqual(h.ws.onboarding.interview.transferPath, transferPath);
+  assert.deepEqual(h.tools.shown().transferPath, transferPath);
+});
+
+test('a transfer path must lead to a different college', () => {
+  assert.equal(T.parseTransferPath({ college: 'San Antonio College', transfersTo: 'San Antonio College RN-to-BSN', reason: 'r' }), undefined);
+  assert.deepEqual(T.parseTransferPath({ college: 'San Antonio College', transfersTo: 'Texas State University', reason: 'r' }), { college: 'San Antonio College', transfersTo: 'Texas State University', reason: 'r' });
+  assert.equal(T.parseTransferPath({ college: 'X', reason: 'r' }), undefined);
+});

@@ -143,6 +143,7 @@ export type InterviewState = {
   listRefusals?: number;
   /** The early-round idea shown with the draft list. */
   edIdea?: import("./chat-types").UiEdIdea;
+  transferPath?: import("./chat-types").UiTransferPath;
   startedAt: number;
 };
 

@@ -248,7 +248,7 @@ function OcSchoolTile({ s, off, disabled, onToggle }) {
   );
 }
 
-function OcListTiles({ schools, edIdea, warning, disabled, onApprove, onRevise }) {
+function OcListTiles({ schools, edIdea, transferPath, warning, disabled, onApprove, onRevise }) {
   const [dropped, setDropped] = React.useState([]);
   const [note, setNote] = React.useState("");
   const kept = schools.filter((s) => !dropped.includes(s.name));
@@ -278,6 +278,13 @@ function OcListTiles({ schools, edIdea, warning, disabled, onApprove, onRevise }
           </div>
         </section>
       ))}
+      {transferPath && (
+        <div className="oc-ed-idea oc-transfer">
+          <span className="oc-ed-label">Backup path: start at community college</span>
+          <strong>{transferPath.college} → {transferPath.transfersTo}</strong>
+          <p>{transferPath.reason}</p>
+        </div>
+      )}
       <div className="oc-list-actions">
         <OcButton disabled={disabled || kept.length < 1} onClick={() => onApprove(kept.map((s) => s.name), schools.filter((s) => s.current && dropped.includes(s.name)).map((s) => s.name))}>
           Research these {kept.length}

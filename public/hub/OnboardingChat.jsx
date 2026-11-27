@@ -127,7 +127,7 @@ function OcMessage({ m, live, busy, data, profile, revision, onAnswer, onApprove
     <div className={"oc-msg oc-msg--" + m.role}>
       {content && <div className="oc-bubble">{content}</div>}
       {live && ui.question && <window.OcQuestion q={ui.question} lead={content} data={data} profile={profile} revision={revision} disabled={busy} onAnswer={onAnswer} />}
-      {live && ui.list && <window.OcListTiles schools={ui.list} edIdea={ui.edIdea} warning={ui.warning} disabled={busy} onApprove={onApprove} onRevise={onRevise} />}
+      {live && ui.list && <window.OcListTiles schools={ui.list} edIdea={ui.edIdea} transferPath={ui.transferPath} warning={ui.warning} disabled={busy} onApprove={onApprove} onRevise={onRevise} />}
       {live && ui.strategy && <window.OcStrategyTiles strategy={ui.strategy} disabled={busy} onConfirm={onConfirm} onAnswer={onAnswer} />}
     </div>
   );
@@ -209,7 +209,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         if (ev.type === "status") setStatus(window.cfChatStatus?.softenStatusMessage ? window.cfChatStatus.softenStatusMessage(ev.message) : ev.message);
         if (ev.type === "delta") reply += ev.text;
         if (ev.type === "question") ui = { question: ev.question };
-        if (ev.type === "list") ui = { list: ev.schools, ...(ev.edIdea ? { edIdea: ev.edIdea } : {}), ...(ev.warning ? { warning: ev.warning } : {}) };
+        if (ev.type === "list") ui = { list: ev.schools, ...(ev.edIdea ? { edIdea: ev.edIdea } : {}), ...(ev.transferPath ? { transferPath: ev.transferPath } : {}), ...(ev.warning ? { warning: ev.warning } : {}) };
         if (ev.type === "strategy") ui = { strategy: ev.strategy };
         if (ev.type === "delta" || ev.type === "question" || ev.type === "list" || ev.type === "strategy") {
           setTurns([...history, { role: "assistant", content: reply, ui }]);
