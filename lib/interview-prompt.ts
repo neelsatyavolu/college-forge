@@ -1,6 +1,6 @@
 /** System prompts for the onboarding interview and the per-school research steps. */
 import type { Workspace } from "./store";
-import { snapshot } from "./hub-context";
+import { scatterSection, snapshot } from "./hub-context";
 import { SECTIONS, SECTION_LABELS, firstIncomplete, missingFields } from "./interview-checklist";
 import { interviewOf } from "./interview-tools";
 
@@ -58,7 +58,7 @@ const LIST_RULES = `When every section is done (advance_section to "list" succee
 If the student asks for changes, revise and call propose_list again.`;
 
 /** System prompt for one onboarding interview turn, built from the live workspace. */
-export function buildInterviewPrompt(ws: Workspace): string {
+export function buildInterviewPrompt(ws: Workspace, scattergrams = ""): string {
   const iv = interviewOf(ws);
   const gap = firstIncomplete(ws);
   const missing = SECTIONS.map((s) => [s, missingFields(ws, s)] as const).filter(([, m]) => m.length).map(([s, m]) => `${SECTION_LABELS[s]}: ${m.join(", ")}`);
@@ -76,6 +76,7 @@ export function buildInterviewPrompt(ws: Workspace): string {
     LIST_RULES,
     `## Where things stand\n${phase}\nStill missing: ${missing.join("; ") || "nothing"}.\nDeeper answers so far: ${iv.deep.length}.\nSection notes:\n${notes.join("\n") || "none yet"}`,
     `## Profile snapshot\n${snapshot(ws)}`,
+    ...(scattergrams ? [scatterSection(scattergrams)] : []),
   ].join("\n\n");
 }
 

@@ -14,6 +14,7 @@
     { id: "recommendations", label: "Colleges for you", group: "Find colleges", icon: "spark" },
     { id: "explore", label: "Explore colleges", group: "Find colleges", icon: "search" },
     { id: "shortlist", label: "Your shortlist", group: "Find colleges", icon: "bookmark" },
+    { id: "scattergrams", label: "Scattergrams", group: "Find colleges", icon: "scatter" },
     { id: "official", label: "Official rankings", group: "Find colleges", icon: "award" },
     { id: "profile", label: "Your profile", group: "You", icon: "user" },
     { id: "share", label: "Share & export", group: "You", icon: "share" },

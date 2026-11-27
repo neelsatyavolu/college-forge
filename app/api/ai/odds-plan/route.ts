@@ -4,6 +4,7 @@ import { oddsPlan, openTargets } from "@/lib/odds-plan";
 import { oddsTargets } from "@/lib/admission-odds";
 import { lookupStats, type SchoolStats } from "@/lib/school-stats";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { loadScattergrams } from "@/lib/scattergram-summary";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,6 +32,6 @@ export async function GET(req: NextRequest) {
     }
     if (Object.keys(found).length) ws = await updateWorkspace(id, (w) => ({ ...w, schoolStats: { ...(w.schoolStats || {}), ...found } }));
   }
-  const plan = oddsPlan(ws);
+  const plan = oddsPlan(ws, await loadScattergrams(id));
   return Response.json(plan, { headers: { "cache-control": "no-store" } });
 }

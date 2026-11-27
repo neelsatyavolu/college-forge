@@ -12,6 +12,8 @@ import { decisionOf, statusInfo } from "./tracker";
 import { isEssayHidden, skippedEssayIds } from "./essay-tools";
 import { essayGroupKey } from "./essay-supplements";
 import { interestOf } from "./interest-log";
+import type { ScattergramDoc } from "./scattergrams";
+import { studentPoint, summarizeCollege, summaryLine } from "./scattergram-summary";
 
 export const ODDS_SCHOOLS_PER_STEP = 2;
 const ESSAY_CHARS = 24_000;
@@ -134,7 +136,7 @@ For each school, run at most two web_search calls (issue both schools' calls tog
 - what this school weighs most (CDS C7: rigor, essays, interview, demonstrated interest, recommendations) and any institutional priorities that fit or miss this student.
 
 Then call set_admission_odds once per school, passing its key:
-- percent: your estimate. Start from the starting point given and move it for this applicant's actual strengths against what the school weighs. An admit at a more selective school is evidence the application reads well; denials at peer schools are evidence against. Deferrals say little.
+- percent: your estimate. Start from the starting point given and move it for this applicant's actual strengths against what the school weighs. An admit at a more selective school is evidence the application reads well; denials at peer schools are evidence against. Deferrals say little. When a school's line gives your high school's past applicants, weigh how applicants near this student's GPA and SAT fared there (and in this round) as local evidence, discounted for small samples; name it as a factor.
 - low and high: an honest range. Admissions at selective schools are noisy; keep ranges wide when evidence is thin.
 - factors: up to six, each {label, effect: up|down|neutral, detail}.
 - sources: the https pages you used. If you found a newer or round-specific rate than the starting point, pass it as published_rate (number) with published_rate_label and its page in sources. Otherwise leave published_rate out; never repeat the starting point as one.
@@ -151,8 +153,14 @@ export function openTargets(ws: Workspace): OddsTarget[] {
   });
 }
 
-export function oddsPlan(ws: Workspace): OddsPlan {
+/** `scattergrams`: the student's imported Maia data, so each estimate sees how their own school's applicants fared. */
+export function oddsPlan(ws: Workspace, scattergrams: ScattergramDoc | null = null): OddsPlan {
   const open = openTargets(ws);
+  const student = scattergrams ? studentPoint(scattergrams, ws) : null;
+  const local = (slug: string) => {
+    const c = scattergrams?.colleges[slug];
+    return c ? ` Your high school's past applicants (Maia scattergram): ${summaryLine(summarizeCollege(c, student)).replace(/^[^:]+: /, "")}.` : "";
+  };
   const decided = knownDecisions(ws).slice(0, MAX_DECISIONS_LISTED);
   const schools: OddsStep[] = [];
   for (let i = 0; i < open.length; i += ODDS_SCHOOLS_PER_STEP) {
@@ -160,9 +168,9 @@ export function oddsPlan(ws: Workspace): OddsPlan {
     const lines = batch.map(({ key, college: c, app }) => {
       const base = baselineFor(c, ws, undefined, app);
       const round = chosenRound(c, ws, app) || "round not chosen";
-      if (!base) return `- ${c.name} [${key}], ${round}: no admission rate saved; find its published rate and pass it as published_rate.`;
+      if (!base) return `- ${c.name} [${key}], ${round}: no admission rate saved; find its published rate and pass it as published_rate.${local(c.slug)}`;
       const { min, max } = boundsFor(base.percent);
-      return `- ${c.name} [${key}], ${round}: starting point ${base.percent}% (${base.source}); estimates are held between ${min}% and ${max}%.`;
+      return `- ${c.name} [${key}], ${round}: starting point ${base.percent}% (${base.source}); estimates are held between ${min}% and ${max}%.${local(c.slug)}`;
     });
     schools.push({
       label: batch.map(({ college: c }) => c.short || c.name).join(" & "),
