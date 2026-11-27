@@ -39,10 +39,10 @@ test('a closed tab resumes at the first unfinished school', () => {
 test('curated research is imported: facts, current deadlines, current prompts over placeholders', () => {
   const ws = emptyWorkspace();
   ws.colleges = [college('alpha')];
-  const out = R.importCurated(ws, (s) => (s === 'alpha' ? curated : null));
+  const out = R.importCurated(ws, (s) => (s === 'alpha' ? curated : null), Date.parse('2027-01-10'));
   const c = out.colleges[0];
   assert.equal(c.research.facts.length, 2);
-  assert.equal(c.research.complete, false, 're-verified before complete');
+  assert.equal(c.research.complete, false, 'an older file is re-verified before complete');
   assert.deepEqual(c.deadlines, [{ plan: 'ED', date: '2026-11-01' }]);
   assert.equal(out.essays.supplements.alpha[0].prompt, 'Why Alpha? (200 words)');
   assert.equal(out.essays.supplements.alpha[0].id, 'alpha-supp-1');
@@ -66,4 +66,14 @@ test('the prompt includes facts on file and stays under the chat limit', () => {
   assert.match(p, /Already on file/);
   assert.ok(p.length < 8000);
   assert.match(R.researchPrompt(college('beta'), ws), /from scratch/);
+});
+
+test('a complete curated file checked in the last two weeks needs no AI step', () => {
+  const ws = emptyWorkspace();
+  ws.colleges = [college('alpha')];
+  const out = R.importCurated(ws, () => curated, Date.parse('2026-11-27'));
+  assert.equal(out.colleges[0].research.complete, true);
+  assert.deepEqual(R.researchQueue(out), []);
+  const partial = R.importCurated(ws, () => ({ ...curated, complete: false }), Date.parse('2026-11-27'));
+  assert.equal(partial.colleges[0].research.complete, false, 'a partial file still gets a step');
 });

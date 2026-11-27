@@ -40,6 +40,8 @@ export type UiSchool = {
   fitsBudget?: "yes" | "no" | "unknown";
   /** Already on the student's list before this draft. */
   current?: boolean;
+  /** The round the AI plans for this school (ED I, ED II, EA, REA, RD, Rolling); confirmed after research. */
+  round?: string;
   /** Whether the application needs supplemental essays ("yes" for UC: the Personal Insight Questions). */
   supplements?: "yes" | "no" | "unknown";
   /** The AI's tier, kept when Forge's data put the school in a different one. */
@@ -49,7 +51,8 @@ export type UiSchool = {
 export type UiEdIdea = { school?: string; reason: string };
 /** A community-college start with a transfer agreement into a four-year college: a low-cost backstop. */
 export type UiTransferPath = { college: string; transfersTo: string; reason: string };
-export type UiStrategy = { ed?: string; ea: string[]; reasons: string };
+/** rounds: the round the AI recommends at every school on the list (ED I, ED II, EA, REA, RD, Rolling). */
+export type UiStrategy = { ed?: string; ea: string[]; reasons: string; rounds?: { school: string; round: string; deadline?: string }[] };
 export type ResearchStage = "searching" | "reading" | "saved" | "done" | "needs_review";
 
 export type ChatEvent =

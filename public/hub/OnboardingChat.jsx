@@ -10,7 +10,8 @@ const OC_CONFIRM = "Yes, that plan sounds right. Save my Early Decision and Earl
 const OC_SHOW_LIST = "Show me my draft college list.";
 /** Messages Forge sends on the student's behalf: kept in the AI's history, not shown as theirs. */
 const OC_HIDDEN = new Set([OC_KICKOFF, OC_RESEARCH_DONE, OC_CONFIRM, OC_SHOW_LIST]);
-const OC_RESEARCH_CONCURRENCY = 3;
+const OC_RESEARCH_CONCURRENCY = 6;
+const OC_POLL_MS = 4000;
 const OC_HISTORY = 16;
 
 function ocProviderBody() {
@@ -258,8 +259,48 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   };
   const revise = (note, dropped) => send(dropped.length ? `${note} (I'd drop: ${dropped.join(", ")})` : note);
 
-  /** Researches each school while the student watches, three at a time; resumes where it stopped. */
+  /** Finishes research: the AI recommends rounds, unless some schools failed. */
+  const afterResearch = async (failedCount) => {
+    await reload();
+    setBusy(false); setStatus("");
+    if (failedCount) {
+      setError(`Research didn't finish for ${failedCount} ${failedCount === 1 ? "school" : "schools"} because the AI didn't answer.`);
+      return;
+    }
+    const ok = await send(OC_RESEARCH_DONE);
+    // The AI must answer with a recommendation; without one the phase can't move, so offer a retry.
+    if (ok && (await reload())?.onboarding?.interview?.phase === "research") setError("The AI didn't suggest an early plan yet.");
+  };
+
+  /**
+   * Research runs on Forge's server (app/api/ai/research-run), six schools at a time, and keeps going
+   * if this tab closes; the page only shows progress. Without the server set up, it runs here instead.
+   */
   const runResearch = async () => {
+    setBusy(true); setError(""); setStatus("Researching your schools… You can close this tab; it keeps going.");
+    try {
+      const res = await fetch("/api/ai/research-run", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "start", ...ocProviderBody() }) });
+      const j = await res.json().catch(() => ({}));
+      if (res.status === 503 && j.fallback) return runResearchHere();
+      if (!res.ok) throw new Error(j.error || "Research couldn't start. Try again.");
+      let view = j;
+      for (;;) {
+        setCards(view.cards || []);
+        if (view.finished) break;
+        setStatus(view.error ? `Retrying a few schools (${view.error})` : "Researching your schools… You can close this tab; it keeps going.");
+        if (view.error && !view.active) throw new Error(view.error);
+        await new Promise((r) => setTimeout(r, OC_POLL_MS));
+        view = await fetch("/api/ai/research-run", { credentials: "same-origin" }).then((r) => r.json()).catch(() => view);
+      }
+      const stuck = (view.cards || []).filter((c) => c.stage === "queued").length;
+      await afterResearch(stuck);
+    } catch (e) {
+      setError(e.message || "Research stopped. Try again."); setBusy(false); setStatus("");
+    }
+  };
+
+  /** The in-browser fallback: researches each school while the student watches; resumes where it stopped. */
+  const runResearchHere = async () => {
     setBusy(true); setError(""); setStatus("Researching your schools…");
     try {
       const startRes = await fetch("/api/ai/research-plan", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "start" }) }).then((r) => r.json());
@@ -301,15 +342,7 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         }
       };
       await Promise.all(Array.from({ length: OC_RESEARCH_CONCURRENCY }, worker));
-      await reload();
-      setBusy(false); setStatus("");
-      if (failed.size) {
-        setError(`Research didn't finish for ${failed.size} ${failed.size === 1 ? "school" : "schools"} because the AI didn't answer.`);
-        return;
-      }
-      const ok = await send(OC_RESEARCH_DONE);
-      // The AI must answer with a recommendation; without one the phase can't move, so offer a retry.
-      if (ok && (await reload())?.onboarding?.interview?.phase === "research") setError("The AI didn't suggest an early plan yet.");
+      await afterResearch(failed.size);
     } catch (e) {
       setError(e.message || "Research stopped. Try again."); setBusy(false); setStatus("");
     }

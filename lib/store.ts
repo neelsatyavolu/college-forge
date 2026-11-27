@@ -121,6 +121,21 @@ export type IncomeBracket = "lt30" | "30-48" | "48-75" | "75-110" | "gt110" | "u
 export type ListBudget = "lt15" | "15-30" | "30-50" | "50plus" | "unsure";
 
 export type InterviewSection = "basics" | "school" | "testing" | "activities" | "campus" | "money" | "early" | "deep";
+export type ResearchRun = {
+  runId: string;
+  startedAt: number;
+  workers: number;
+  /** slug → claim expiry (ms): a worker researching that school. */
+  claims: Record<string, number>;
+  /** slug → card stage: queued | searching | done | needs_review. */
+  live: Record<string, string>;
+  /** worker index → last time it claimed a school. */
+  heartbeats: Record<string, number>;
+  /** Set while one worker refreshes the stored AI sign-in. */
+  refreshLease?: number;
+  finishedAt?: number;
+  error?: string;
+};
 export type InterviewPhase = "interview" | "list" | "research" | "strategy" | "plan" | "done";
 /** One stored chat turn of the onboarding interview. `ui` is the tile/list/strategy the AI showed with it. */
 export type InterviewTurn = { role: "user" | "assistant"; content: string; ui?: unknown; at: number };
@@ -138,6 +153,8 @@ export type InterviewState = {
   meritInterest?: "yes" | "no" | "unsure";
   /** The find-your-major quiz for an undecided student: "done" once suggest_majors ran, "declined" when they said no. */
   majorFinder?: "done" | "declined";
+  /** Background research (lib/research-runner.ts): workers claim one school at a time; live is each card's stage. */
+  researchRun?: ResearchRun;
   /** The AI's ED/EA recommendation once the student confirmed it. */
   strategy?: { ed?: string; ea: string[]; reasons: string; confirmed: boolean };
   /** The last draft list the AI proposed (UiSchool[] from lib/chat-types.ts). */
@@ -513,6 +530,8 @@ const uploadKey = (id: string, name: string) => `uploads/${safeId(id)}/${safeNam
 const scattergramKey = (id: string) => `scattergrams/${safeId(id)}.json`;
 // Same reason: a student's own judged ranking stays out of share links, exports and AI context.
 const careerAiKey = (id: string) => `career-ai/${safeId(id)}.json`;
+/** The student's encrypted AI sign-in, held only while background research runs (lib/token-vault.ts). */
+const aiVaultKey = (id: string) => `ai-vault/${safeId(id)}.json`;
 
 export function newWorkspaceId(): string {
   return randomUUID();
@@ -754,8 +773,22 @@ export async function updateWorkspace(id: string, mutate: WorkspaceMutation): Pr
 
 export async function resetWorkspace(id: string): Promise<Workspace> {
   await deleteScattergramText(id);
+  await deleteAiVaultText(id).catch(() => undefined);
   await deleteCareerAiText(id).catch(() => undefined);
   return updateWorkspace(id, () => emptyWorkspace());
+}
+
+/** Encrypted AI sign-in for background research (lib/token-vault.ts); never part of the workspace document. */
+export async function readAiVaultText(id: string): Promise<string | null> {
+  return readText(aiVaultKey(id));
+}
+
+export async function writeAiVaultText(id: string, text: string): Promise<void> {
+  await writeText(aiVaultKey(id), text, "application/json");
+}
+
+export async function deleteAiVaultText(id: string): Promise<void> {
+  await deleteText(aiVaultKey(id));
 }
 
 /** Maia scattergrams (lib/scattergrams.ts), kept apart from the workspace document. */

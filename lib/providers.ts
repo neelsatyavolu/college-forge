@@ -110,8 +110,12 @@ export async function runChat(params: {
   effort?: "low" | "medium";
   /** Onboarding writes the hub through tools, which only the Codex and Grok clients take. */
   requireTools?: boolean;
+  /** Tokens to use instead of the browser's cookies: background research has no request (lib/research-runner.ts). */
+  sessions?: { codex: Awaited<ReturnType<typeof getActiveCodexSession>>; grok: Awaited<ReturnType<typeof getActiveGrokSession>> };
 }): Promise<RunChatResult> {
-  const { session, grokSession, connectionErrors } = await connections(params.preferred);
+  const { session, grokSession, connectionErrors } = params.sessions
+    ? { session: params.sessions.codex, grokSession: params.sessions.grok, connectionErrors: {} as Record<string, string> }
+    : await connections(params.preferred);
   const apiKey = getOpencodeKey();
 
   const wantOpencode = params.preferred === "opencode" && apiKey;
