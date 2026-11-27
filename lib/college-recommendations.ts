@@ -255,8 +255,14 @@ export function dataTier(ws: Workspace, name: string, slug?: string): NonNullabl
 
 const TIERS = new Set(["reach", "target", "safety"]);
 
+/** Planning cutoffs for an AI chance estimate, fixed in advance: 70%+ likely, 30-69% target, under 30% reach. */
+function oddsTier(percent: number | undefined): Tier | null {
+  if (typeof percent !== "number" || !Number.isFinite(percent)) return null;
+  return percent >= 70 ? "safety" : percent >= 30 ? "target" : "reach";
+}
+
 /**
- * Gives every list school without a tier its data tier (schools added from Applications arrive unassessed).
+ * Gives every list school without a tier its data tier, or failing that a tier from its AI chance estimate (schools added from Applications arrive unassessed).
  * Tiers already set stay; schools Forge has no admissions numbers for stay unassessed and are named in `unknown`.
  */
 export function assessUntiered(ws: Workspace): { workspace: Workspace; assessed: string[]; unknown: string[] } {
@@ -264,7 +270,7 @@ export function assessUntiered(ws: Workspace): { workspace: Workspace; assessed:
   const unknown: string[] = [];
   const colleges = ws.colleges.map((c) => {
     if (c.tier && TIERS.has(c.tier)) return c;
-    const tier = dataTier(ws, c.name, c.slug);
+    const tier = dataTier(ws, c.name, c.slug) ?? oddsTier(ws.admissionOdds?.[c.slug]?.percent);
     if (!tier) {
       unknown.push(c.name);
       return c;
