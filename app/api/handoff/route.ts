@@ -9,7 +9,8 @@ function safePath(p: string | null, origin: string): string {
   if (p && p.startsWith("/")) {
     try {
       const url = new URL(p, origin);
-      if (url.origin === origin) return `${url.pathname}${url.search}${url.hash}`;
+      // A pathname like "//evil.example" (from "/..//evil.example") would be read as another host when used again.
+      if (url.origin === origin && !url.pathname.startsWith("//")) return `${url.pathname}${url.search}${url.hash}`;
     } catch {
       // Not a URL: fall through to the hub.
     }

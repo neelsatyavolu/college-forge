@@ -36,7 +36,8 @@ export function safeReturn(path: string | null | undefined): string {
   if (!path || !path.startsWith("/")) return "/";
   try {
     const url = new URL(path, RETURN_BASE);
-    return url.origin === RETURN_BASE ? `${url.pathname}${url.search}${url.hash}` : "/";
+    // "/..//evil.example" resolves to the pathname "//evil.example", which is another host once used again.
+    return url.origin === RETURN_BASE && !url.pathname.startsWith("//") ? `${url.pathname}${url.search}${url.hash}` : "/";
   } catch {
     return "/";
   }

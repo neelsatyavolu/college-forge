@@ -150,10 +150,10 @@ test('claim-recovery answers an owned workspace like an unknown code, and create
 
 // 5. Redirect targets.
 test('return paths reject tab, newline, carriage-return and backslash tricks', () => isolated(async () => {
-  const tricks = ['/\t/evil.example', '/\n/evil.example', '/\r/evil.example', '/\\evil.example', '/\t\\evil.example', '//evil.example', 'https://evil.example'];
+  const tricks = ['/\t/evil.example', '/\n/evil.example', '/\r/evil.example', '/\\evil.example', '/\t\\evil.example', '//evil.example', 'https://evil.example', '/..//evil.example', '/.//evil.example', '/a/..//evil.example', '/%2e%2e//evil.example'];
   for (const p of tricks) assert.equal(safeReturn(p), '/', JSON.stringify(p));
   assert.equal(safeReturn('/hub/index.html?x=1#essays'), '/hub/index.html?x=1#essays');
-  for (const next of ['%2F%09%2Fevil.example', '%2F%0A%2Fevil.example', '%2F%0D%2Fevil.example', '%2F%5Cevil.example', '%2F%09%5Cevil.example']) {
+  for (const next of ['%2F%09%2Fevil.example', '%2F%0A%2Fevil.example', '%2F%0D%2Fevil.example', '%2F%5Cevil.example', '%2F%09%5Cevil.example', '%2F..%2F%2Fevil.example', '%2F.%2F%2Fevil.example']) {
     const res = await handoff.GET(new NextRequest('http://localhost/api/handoff?next=' + next));
     const location = new URL(res.headers.get('location'));
     assert.equal(location.origin, 'http://localhost', next);
@@ -177,6 +177,12 @@ test('share-link notes are rate limited, essay ids validated and the list capped
   assert.equal(next.advisorNotes.length, 500);
   assert.equal(next.advisorNotes[0].body, 'old 1');
   assert.equal(next.advisorNotes.at(-1).body, 'newest');
+
+  // Link spam never pushes out counselor or coach notes.
+  const followerNotes = [{ id: 'c1', body: 'counselor', author: 'C', createdAt: 0, via: 'counselor' }, { id: 'k1', body: 'coach', author: 'K', createdAt: 0, via: 'coach' }];
+  const spammed = applyWorkspacePatch({ ...store.emptyWorkspace(), advisorNotes: [...followerNotes, ...many] }, { advisorNote: { body: 'spam', via: 'progress' } });
+  assert.deepEqual(spammed.advisorNotes.filter((n) => n.via === 'counselor' || n.via === 'coach').map((n) => n.id), ['c1', 'k1']);
+  assert.equal(spammed.advisorNotes.filter((n) => n.via !== 'counselor' && n.via !== 'coach').length, 500);
 }));
 
 // 7. Cookie-authenticated writes check Origin.
