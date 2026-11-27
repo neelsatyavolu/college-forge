@@ -253,6 +253,28 @@ export function dataTier(ws: Workspace, name: string, slug?: string): NonNullabl
   return row ? fitWithEstimate(row, studentAcademics(ws)).fit.tier ?? null : null;
 }
 
+const TIERS = new Set(["reach", "target", "safety"]);
+
+/**
+ * Gives every list school without a tier its data tier (schools added from Applications arrive unassessed).
+ * Tiers already set stay; schools Forge has no admissions numbers for stay unassessed and are named in `unknown`.
+ */
+export function assessUntiered(ws: Workspace): { workspace: Workspace; assessed: string[]; unknown: string[] } {
+  const assessed: string[] = [];
+  const unknown: string[] = [];
+  const colleges = ws.colleges.map((c) => {
+    if (c.tier && TIERS.has(c.tier)) return c;
+    const tier = dataTier(ws, c.name, c.slug);
+    if (!tier) {
+      unknown.push(c.name);
+      return c;
+    }
+    assessed.push(c.name);
+    return { ...c, tier };
+  });
+  return { workspace: { ...ws, colleges }, assessed, unknown };
+}
+
 /** A cautious planning signal, never a calibrated admission prediction. */
 export function assessAcademicFit(school: UsNewsCollege | undefined, ws: Workspace): AcademicFit {
   return fitWithEstimate(school, studentAcademics(ws)).fit;

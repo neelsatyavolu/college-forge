@@ -374,3 +374,21 @@ test('test-optional notes in everyday words', () => {
  for (const n of ['Test optional','applying test-optional',"won't submit scores","didn't take the SAT",'never take the ACT','no SAT scores','not sending scores']) assert.equal(isTestOptionalNote(n),true,n);
  for (const n of ['1450 superscore','Math 780, EBRW 700','taking the SAT in March']) assert.equal(isTestOptionalNote(n),false,n);
 });
+test('assessUntiered gives unassessed schools their data tier and leaves set tiers and unknown schools alone', () => {
+ const { assessUntiered, dataTier } = require('../lib/college-recommendations.ts');
+ const ws = profile();
+ const [a, b] = US_NEWS_TOP_250;
+ ws.colleges = [
+  { name: a.name, slug: a.slug },
+  { name: b.name, slug: b.slug, tier: 'safety' },
+  { name: 'Nowhere Test College', slug: 'nowhere-test-college' },
+ ];
+ const { workspace, assessed, unknown } = assessUntiered(ws);
+ assert.equal(workspace.colleges[0].tier, dataTier(ws, a.name, a.slug));
+ assert.ok(workspace.colleges[0].tier);
+ assert.equal(workspace.colleges[1].tier, 'safety', 'a tier the student set is kept');
+ assert.equal(workspace.colleges[2].tier, undefined);
+ assert.deepEqual(assessed, [a.name]);
+ assert.deepEqual(unknown, ['Nowhere Test College']);
+ assert.equal(ws.colleges[0].tier, undefined, 'the input workspace is not mutated');
+});

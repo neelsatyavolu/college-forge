@@ -11,7 +11,7 @@ import {
   type Activity,
   type Honor,
 } from "@/lib/store";
-import { rebalanceWorkspace, seedRecommendedColleges, type Rebalance } from "@/lib/college-recommendations";
+import { assessUntiered, rebalanceWorkspace, seedRecommendedColleges, type Rebalance } from "@/lib/college-recommendations";
 import { applyApprovedList, finishOnboarding, setInterviewPhase } from "@/lib/onboarding-list";
 import { startInterview } from "@/lib/interview-checklist";
 import { splitStoryNotes } from "@/lib/story-notes";
@@ -169,6 +169,17 @@ export async function POST(req: NextRequest) {
       const { workspace, ...changes } = rebalanceWorkspace(ws);
       result = changes;
       return syncEssaySupplements(workspace);
+    });
+    return withCookie({ success: true, data: next, ...result }, setCookie);
+  }
+
+  if (action === "assess-tiers") {
+    // Reach / target / likely from Forge's admissions data for list schools that have no tier yet.
+    let result: { assessed: string[]; unknown: string[] } = { assessed: [], unknown: [] };
+    const next = await updateWorkspace(id, (ws) => {
+      const { workspace, ...changes } = assessUntiered(ws);
+      result = changes;
+      return workspace;
     });
     return withCookie({ success: true, data: next, ...result }, setCookie);
   }
