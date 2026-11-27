@@ -15,6 +15,7 @@ import type {
 import { mergeSupplements, syncEssaySupplements } from "./essay-supplements";
 import { applyEssayStatus, checkEssayStatus, checkEssaySuggestionDismissals, dismissSuggestions } from "./essay-tools";
 import { checkAidPatch, linkKind, mergeScholarshipList } from "./aid-validate";
+import { recExtras, recExtrasError, trackedAppIds, withoutExtras } from "./recommenders";
 import { parseApplicantFields, parseProfileFields, rankActivities, toAps, toHonors, type Parsed, type WriteMode } from "./profile-fields";
 
 function assignDefined<T extends object>(base: T, patch: Record<string, unknown>): T {
@@ -148,6 +149,22 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
       const kept = Object.entries(lp).filter(([k, v]) => !blank(v) && (v !== 0 || k === "suppCount" || k === "noSuppCount") && !(Array.isArray(v) && v.length === 0));
       next = { ...next, listPrefs: Object.fromEntries(kept) as Partial<OnboardingListPrefs> };
     }
+  }
+  if (patch.recommendations !== undefined && patch.recommendations !== null) {
+    const rows = patch.recommendations as unknown;
+    if (!Array.isArray(rows) || rows.some((r) => !r || typeof r !== "object" || Array.isArray(r))) {
+      return { ok: false, error: "recommendations must be a list of recommenders." };
+    }
+    for (const r of rows) {
+      const problem = recExtrasError(r as Record<string, unknown>);
+      if (problem) return { ok: false, error: problem };
+    }
+  }
+  if (patch.recommendation) {
+    const rec = patch.recommendation as Record<string, unknown>;
+    if (typeof rec !== "object" || Array.isArray(rec)) return { ok: false, error: "recommendation must be an object." };
+    const problem = recExtrasError(rec);
+    if (problem) return { ok: false, error: problem };
   }
   if (patch.essayStatus !== undefined) {
     const parsed = checkEssayStatus(patch.essayStatus);
@@ -302,7 +319,10 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     };
   }
 
-  if (patch.recommendations) next = { ...next, recommendations: patch.recommendations };
+  if (patch.recommendations) {
+    const ids = trackedAppIds(next);
+    next = { ...next, recommendations: patch.recommendations.map((r) => ({ ...withoutExtras(r), ...recExtras(r, undefined, ids) })) };
+  }
   if (patch.recommendation) {
     const r = patch.recommendation;
     const id = r.id || randomUUID().slice(0, 8);
@@ -315,6 +335,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       status: r.status || existing?.status || "not_asked",
       deadline: r.deadline ?? existing?.deadline,
       notes: r.notes ?? existing?.notes,
+      ...recExtras(r, existing, trackedAppIds(next)),
     };
     next = {
       ...next,

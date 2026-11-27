@@ -184,6 +184,14 @@ export type Recommendation = {
   status: "not_asked" | "asked" | "in_progress" | "submitted" | "waived";
   deadline?: string;
   notes?: string;
+  /** yyyy-mm-dd the student asked for the letter. */
+  askedAt?: string;
+  email?: string;
+  /** Tracker application ids this letter goes to (lib/recommenders.ts). */
+  schools?: string[];
+  thankYouSent?: boolean;
+  /** What the student gave the recommender about themselves (at most 4000 characters). */
+  bragSheet?: string;
 };
 
 export type Scholarship = {

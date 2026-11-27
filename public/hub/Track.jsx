@@ -1,6 +1,5 @@
-const { Badge, Button, SectionLabel } = window.CollegeForgeDesignSystem_e95e63;
+const { Button, SectionLabel } = window.CollegeForgeDesignSystem_e95e63;
 
-const REC_STATUSES = ["not_asked", "asked", "in_progress", "submitted", "waived"];
 const SCH_STATUSES = ["researching", "in_progress", "submitted", "won", "lost", "skipped"];
 const AID = ["not_started", "in_progress", "submitted", "processed"];
 const CSS = ["not_started", "in_progress", "submitted", "processed", "n_a"];
@@ -17,11 +16,10 @@ function Panel({ title, action, children }) {
   );
 }
 
-function Track({ data, onAsk, onWorkspaceChange }) {
+function Track({ data, tracker, onAsk, onWorkspaceChange }) {
   const recs = data.recommendations || [];
   const sch = data.scholarships || [];
   const fa = data.financialAid || { fafsaStatus: "not_started", cssStatus: "not_started", idocStatus: "n_a" };
-  const [recForm, setRecForm] = React.useState({ name: "", type: "teacher", subject: "", deadline: "" });
   const [schForm, setSchForm] = React.useState({ name: "", amount: "", deadline: "", url: "", slug: "" });
   const colleges = data.colleges || [];
   const schoolName = (slug) => { const c = colleges.find((x) => x.slug === slug); return c ? (c.short || c.name) : "school award"; };
@@ -46,20 +44,6 @@ function Track({ data, onAsk, onWorkspaceChange }) {
     return true;
     } catch (e) { setError(e.message || "Could not save. Your changes are still here; please retry."); return false; }
     finally { setBusy(false); }
-  };
-
-  const addRec = async () => {
-    if (!recForm.name.trim()) return;
-    const saved = await patch({
-      recommendation: {
-        name: recForm.name.trim(),
-        type: recForm.type,
-        subject: recForm.subject || undefined,
-        deadline: recForm.deadline || undefined,
-        status: "not_asked",
-      },
-    });
-    if (saved) setRecForm({ name: "", type: "teacher", subject: "", deadline: "" });
   };
 
   const addSch = async () => {
@@ -146,39 +130,7 @@ function Track({ data, onAsk, onWorkspaceChange }) {
         <window.AidBySchool revision={data.revision} />
       </Panel>
 
-      <Panel title={`Recommendation letters (${recs.length})`} action={<Badge variant="cream" uppercase>LOR tracker</Badge>}>
-        {recs.length === 0 ? (
-          <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--muted)" }}>No recommenders yet. Add your counselor and teachers here.</p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-            {recs.map((r) => (
-              <div key={r.id} className="cf-tracker-row" style={{ display: "grid", gridTemplateColumns: "1fr auto auto", gap: 10, alignItems: "center", padding: "10px 12px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)" }}>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)" }}>{r.name}</div>
-                  <div style={{ fontSize: 12, color: "var(--muted)" }}>{r.type}{r.subject ? ` · ${r.subject}` : ""}{r.deadline ? ` · due ${r.deadline}` : ""}</div>
-                </div>
-                <select aria-label={`Status for ${r.name}`} disabled={busy} value={r.status} onChange={(e) => patch({ recommendation: { id: r.id, status: e.target.value } })}
-                  style={fieldStyle}>
-                  {REC_STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
-                </select>
-                <button type="button" disabled={busy} onClick={() => patch({ removeRecommendationId: r.id })}
-                  style={{ border: "none", background: "transparent", color: "var(--muted)", cursor: "pointer", fontSize: 12 }}>Remove</button>
-              </div>
-            ))}
-          </div>
-        )}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8 }}>
-          <input aria-label="Recommender name" placeholder="Name" value={recForm.name} onChange={(e) => setRecForm((f) => ({ ...f, name: e.target.value }))} style={fieldStyle} />
-          <select aria-label="Recommender type" value={recForm.type} onChange={(e) => setRecForm((f) => ({ ...f, type: e.target.value }))} style={fieldStyle}>
-            <option value="counselor">counselor</option>
-            <option value="teacher">teacher</option>
-            <option value="other">other</option>
-          </select>
-          <input aria-label="Recommender subject" placeholder="Subject" value={recForm.subject} onChange={(e) => setRecForm((f) => ({ ...f, subject: e.target.value }))} style={fieldStyle} />
-          <input aria-label="Recommender deadline" placeholder="Deadline" value={recForm.deadline} onChange={(e) => setRecForm((f) => ({ ...f, deadline: e.target.value }))} style={fieldStyle} />
-          <Button size="sm" onClick={addRec} disabled={busy || !recForm.name.trim()}>Add</Button>
-        </div>
-      </Panel>
+      <LettersPanel Panel={Panel} recs={recs} tracker={tracker} busy={busy} patch={patch} fieldStyle={fieldStyle} onAsk={onAsk} />
 
       <Panel title={`Scholarships (${sch.length})`}>
         {wonCount ? (

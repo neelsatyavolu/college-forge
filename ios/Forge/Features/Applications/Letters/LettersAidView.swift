@@ -70,6 +70,7 @@ struct LettersAidView: View {
 
 private struct RecommendationRow: View {
     let letter: Recommendation
+    @Environment(WorkspaceStore.self) private var store
 
     var body: some View {
         HStack {
@@ -78,6 +79,12 @@ private struct RecommendationRow: View {
                 let detail = [letter.type.label, letter.subject ?? "", letter.deadline.map { "due \(ForgeDates.short($0).isEmpty ? $0 : ForgeDates.short($0))" } ?? ""]
                     .filter { !$0.isEmpty }
                 Text(detail.joined(separator: " · ")).font(.subheadline).foregroundStyle(Theme.muted)
+                let receipts = LetterReceipts.receipts(for: letter, apps: store.applications, others: store.workspace.recommendations)
+                if !receipts.isEmpty {
+                    let received = receipts.filter { $0.state == .received }.count
+                    Text("\(received) of \(receipts.count) schools show it received")
+                        .font(.caption).foregroundStyle(received == receipts.count ? Theme.success : Theme.muted)
+                }
             }
             Spacer()
             Badge(text: letter.status.label, tone: LettersAidTone.recommendation(letter.status))
