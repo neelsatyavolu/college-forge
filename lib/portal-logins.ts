@@ -11,7 +11,8 @@ import { deleteDoc, readDoc, updateDoc } from "./doc-store";
 export type PortalLogin = { username: string; password: string; host?: string };
 export type Sealed = { v: 1; iv: string; ct: string; tag: string };
 
-function key(): Buffer {
+/** The 32-byte server key from PORTAL_LOGINS_KEY; throws when it is missing or malformed. */
+export function portalLoginsKey(): Buffer {
   const raw = process.env.PORTAL_LOGINS_KEY;
   if (!raw) throw new Error("PORTAL_LOGINS_KEY is not set");
   const k = Buffer.from(raw, "base64");
@@ -27,14 +28,14 @@ const docKey = (workspaceId: string) => `logins/${workspaceId.replace(/[^a-zA-Z0
  */
 export function sealJson(aad: string, value: unknown): Sealed {
   const iv = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", key(), iv);
+  const cipher = createCipheriv("aes-256-gcm", portalLoginsKey(), iv);
   cipher.setAAD(Buffer.from(aad));
   const ct = Buffer.concat([cipher.update(JSON.stringify(value), "utf8"), cipher.final()]);
   return { v: 1, iv: iv.toString("base64"), ct: ct.toString("base64"), tag: cipher.getAuthTag().toString("base64") };
 }
 
 export function openJson<T>(aad: string, sealed: Sealed): T {
-  const decipher = createDecipheriv("aes-256-gcm", key(), Buffer.from(sealed.iv, "base64"));
+  const decipher = createDecipheriv("aes-256-gcm", portalLoginsKey(), Buffer.from(sealed.iv, "base64"));
   decipher.setAAD(Buffer.from(aad));
   decipher.setAuthTag(Buffer.from(sealed.tag, "base64"));
   const plain = Buffer.concat([decipher.update(Buffer.from(sealed.ct, "base64")), decipher.final()]);

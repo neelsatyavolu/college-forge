@@ -285,3 +285,59 @@ test('decision emails and pushes send the student to Forge without naming the ou
   assert.doesNotMatch(email.html + email.text + email.subject, /admit|denied|waitlist|defer/i);
   assert.equal(pushBody([{ kind: 'decision' }]), 'Decision received. Open Forge to see it.');
 });
+
+// ── Letter blobs never outlive their record ──────────────────────────────────
+
+const letterFiles = (dir, ws) => {
+  try { return fs.readdirSync(path.join(dir, 'letters', ws)); } catch { return []; }
+};
+
+test('a letter captured for a school removed mid-check is not left behind', () => isolated(async (dir) => {
+  const { ws, id } = await owned('xa_ORPHAN');
+  globalThis.fetch = async (url) => {
+    if (String(url) !== 'https://collegeapps.n3el.dev/api/service/check') throw new Error(`unexpected fetch ${url}`);
+    await service.removeApp(ws, id);
+    return new Response(JSON.stringify({ snapshot: { ...DECISION, letter: { text: ADMIT } } }), { status: 200 });
+  };
+  await runChecks(ws, { appIds: [id] });
+  assert.equal((await store.getWorkspace(ws)).tracker.apps.length, 0);
+  assert.deepEqual(letterFiles(dir, ws), [], 'no sealed letter without a record');
+}));
+
+test('letters past the last 10 lose their sealed body too', () => isolated(async (dir) => {
+  const portal = stubPortal({ ...DECISION });
+  const { ws, id } = await owned('xa_TRIM');
+  for (let i = 0; i < 11; i++) {
+    portal.snapshot = { statusText: 'Decision Released', update: `View Update ${i}`, checklist: [], letter: { text: `Letter number ${i}` } };
+    await runChecks(ws, { appIds: [id] });
+  }
+  const kept = (await store.getWorkspace(ws)).tracker.apps.find((a) => a.id === id).letters;
+  assert.equal(kept.length, 10);
+  const files = letterFiles(dir, ws).sort();
+  assert.deepEqual(files, kept.map((l) => `${id}.${l.id}.json`).sort(), 'only the kept letters have bodies');
+}));
+
+test('letter ids are keyed with the server secret, stay deterministic, and old ids still read and dedupe', () => isolated(async () => {
+  const decisionKey = 'Decision Released|View Update';
+  const legacy = crypto.createHash('sha256').update(decisionKey).digest('hex').slice(0, 32);
+  const keyed = crypto.createHmac('sha256', Buffer.from(process.env.PORTAL_LOGINS_KEY, 'base64')).update(`forge-letter-id:${decisionKey}`).digest('hex').slice(0, 32);
+  assert.equal(letter.letterKey(decisionKey), keyed);
+  assert.notEqual(letter.letterKey(decisionKey), legacy, 'not guessable from the portal words alone');
+  assert.equal(letter.letterKey(decisionKey), letter.letterKey(decisionKey));
+
+  const portal = stubPortal({ ...DECISION });
+  const { ws, id } = await owned('xa_LEGACY');
+  await runChecks(ws, { appIds: [id] });
+  // A letter saved before keyed ids, under the old unsalted id.
+  await letters.saveLetter(ws, id, legacy, { kind: 'text', text: 'Old deferral letter', capturedAt: 1 });
+  await store.updateWorkspace(ws, (cur) => ({
+    ...cur,
+    tracker: tracker.replaceApp(cur.tracker, tracker.withLetter(cur.tracker.apps.find((a) => a.id === id), { id: legacy, decisionKey, capturedAt: 1, kind: 'text', result: 'deferred', awards: [], seen: false })),
+  }));
+  portal.snapshot = { ...DECISION, letter: { text: ADMIT } };
+  await runChecks(ws, { appIds: [id] });
+  const app = (await store.getWorkspace(ws)).tracker.apps.find((a) => a.id === id);
+  assert.deepEqual(app.letters.map((l) => l.id), [legacy], 'the same decision keeps its first letter');
+  await service.reveal(ws, id);
+  assert.match((await service.getLetter(ws, id)).text, /Old deferral/, 'an old id still reads');
+}));

@@ -5,7 +5,7 @@ import type { CleanLetter } from "./decision-letter";
 /**
  * Decision letter bodies, one sealed document per posted decision at `letters/<ws>/<appId>.<letterId>.json`.
  * They never go in the workspace document, so exports, share links, parent views, the AI copilot and MCP
- * can't see them. Kept until the school or the workspace is removed.
+ * can't see them. Kept until the school or the workspace is removed, or the letter falls out of the last 10 kept for a school.
  */
 
 export interface StoredLetter extends CleanLetter {
@@ -24,6 +24,10 @@ export async function saveLetter(workspaceId: string, appId: string, letterId: s
 export async function readLetter(workspaceId: string, appId: string, letterId: string): Promise<StoredLetter | null> {
   const sealed = await readDoc<Sealed>(key(workspaceId, appId, letterId));
   return sealed ? openJson<StoredLetter>(aad(workspaceId, appId), sealed) : null;
+}
+
+export async function deleteLetter(workspaceId: string, appId: string, letterId: string): Promise<void> {
+  await deleteDoc(key(workspaceId, appId, letterId));
 }
 
 /** Deletes one school's letters, or with no `appId` every letter in the workspace. */

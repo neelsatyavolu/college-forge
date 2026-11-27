@@ -492,9 +492,12 @@ export const currentLetter = (app: TrackedApp): LetterMeta | undefined => {
   return key ? app.letters?.find((l) => l.decisionKey === key) : undefined;
 };
 
-/** Adds a captured letter's metadata once; at most 10 kept per school (the oldest go first). */
+/**
+ * Adds a captured letter's metadata once per decision (by id, or by decision for ids saved before keyed ids);
+ * at most 10 kept per school (the oldest go first). The caller deletes the bodies of letters this drops.
+ */
 export function withLetter(app: TrackedApp, meta: LetterMeta): TrackedApp {
-  if (app.letters?.some((l) => l.id === meta.id)) return app;
+  if (app.letters?.some((l) => l.id === meta.id || l.decisionKey === meta.decisionKey)) return app;
   return { ...app, letters: [...(app.letters ?? []), meta].slice(-10) };
 }
 

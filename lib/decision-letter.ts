@@ -1,5 +1,6 @@
-import { createHash } from "node:crypto";
+import { createHmac } from "node:crypto";
 import * as cheerio from "cheerio";
+import { portalLoginsKey } from "./portal-logins";
 
 /**
  * Decision letters: what a portal's letter says (outcome and merit awards), and making its HTML safe to keep.
@@ -203,4 +204,10 @@ export function cleanLetter(raw: unknown): CleanLetter | null {
 }
 
 /** A stable id for the letter behind one posted decision: never the decision's words themselves. */
-export const letterKey = (decisionKey: string): string => createHash("sha256").update(decisionKey).digest("hex").slice(0, 32);
+/**
+ * A letter's id: HMAC-SHA256 of the decision, keyed with PORTAL_LOGINS_KEY, so the id (in the workspace and
+ * the blob path) can't be matched to an outcome by hashing guesses. Deterministic, so one decision keeps one
+ * letter. Ids saved earlier as an unsalted sha256 are kept as they are and still read.
+ */
+export const letterKey = (decisionKey: string): string =>
+  createHmac("sha256", portalLoginsKey()).update(`forge-letter-id:${decisionKey}`).digest("hex").slice(0, 32);
