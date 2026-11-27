@@ -5,6 +5,7 @@ import { allow } from "@/lib/rate-limit";
 import { parentAccess, type Access } from "@/lib/parents";
 import { PARENT_LEVEL_INFO, followerView } from "@/lib/parent-view";
 import { applyWorkspacePatch } from "@/lib/workspace-patch";
+import { isEssayHidden } from "@/lib/essay-tools";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,7 +46,9 @@ function crossSite(req: NextRequest): boolean {
   return !(req.headers.get("content-type") ?? "").toLowerCase().startsWith("application/json");
 }
 
-const essayIds = (ws: Workspace) => new Set([...ws.essays.commonApp, ...Object.values(ws.essays.supplements).flat()].map((e) => e.id));
+// Only essays the student hasn't hidden can take a comment: a hidden essay isn't in any follower's view.
+const essayIds = (ws: Workspace) =>
+  new Set([...ws.essays.commonApp, ...Object.values(ws.essays.supplements).flat()].filter((e) => !isEssayHidden(ws, e)).map((e) => e.id));
 
 class AccessEnded extends Error {}
 class NoEssay extends Error {}

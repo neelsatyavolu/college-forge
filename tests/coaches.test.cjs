@@ -213,3 +213,29 @@ test('coach consent text says supplements name their school and never claims the
   assert.doesNotMatch(coachIntro, /\blist\b/, 'the invite card does not claim the list is hidden');
   assert.match(coachIntro, /school each supplement is for/);
 });
+
+test('a coach never sees an essay the student hid, nor its draft, status or comments, and cannot comment on it', async () => {
+  const { student, coach, token } = await setup();
+  await acceptPost(coach.cookie, token);
+  const ws = await getWorkspace(student.account.workspaceId);
+  const hiddenId = ws.essays.commonApp[0].id;
+  const list = await (await call(parentList.GET, '/api/parent', coach.cookie)).json();
+  const linkId = list.data.students[0].id;
+  await updateWorkspace(student.account.workspaceId, (w) => ({
+    ...w,
+    essayHidden: { [hiddenId]: true, 'tu-why': true },
+    advisorNotes: [...w.advisorNotes, { id: 'n-coach-hidden', body: 'comment on hidden essay', author: 'Coach', createdAt: 3, essayId: hiddenId, via: 'coach', byLink: linkId }],
+  }));
+  const v = essaysView(await getWorkspace(student.account.workspaceId));
+  assert.ok(!v.essays.commonApp.some((e) => e.id === hiddenId), 'hidden Common App essay left out');
+  assert.equal(v.essays.supplements['test-u'], undefined, 'a school whose essays are all hidden is left out');
+  assert.deepEqual(v.schools, []);
+  assert.equal(v.essayDrafts[hiddenId], undefined);
+  assert.equal(v.essayStatus[hiddenId], undefined);
+  const res = await call(parentOne.GET, `/api/parent/${linkId}`, coach.cookie, null, { ctx: ctx(linkId) });
+  const text = JSON.stringify(await res.json());
+  assert.ok(!text.includes('comment on hidden essay'), 'comments on a hidden essay are not shown');
+  assert.ok(!text.includes('Synthetic why-us draft'));
+  const post = await call(parentOne.POST, `/api/parent/${linkId}`, coach.cookie, { action: 'note', body: 'hi', essayId: hiddenId }, { ctx: ctx(linkId) });
+  assert.equal(post.status, 404, 'cannot comment on a hidden essay');
+});
