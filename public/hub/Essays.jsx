@@ -622,7 +622,15 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
   });
   const active = allItems.find((it) => it.id === activeId) || allItems[0];
 
-  // Collapsed university sections — default: Common App open, schools with drafts open, first school open
+  // Collapsed university sections. Which ones the student left open or closed is kept in this browser, per
+  // workspace; schools without a saved state default to: Common App open, schools with drafts open, first school open.
+  const openStoreKey = "cf-essay-open:" + (data.draftStorageKey || "local");
+  const savedOpen = React.useMemo(() => {
+    try {
+      const raw = JSON.parse(window.localStorage.getItem(openStoreKey) || "null");
+      return raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    } catch (e) { return {}; }
+  }, [openStoreKey]);
   const [openKeys, setOpenKeys] = React.useState(() => {
     const open = new Set(["common"]);
     groups.forEach((g, i) => {
@@ -630,8 +638,16 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
       const hasDraft = (g.items || []).some((it) => wordCount(serverDrafts[it.id] || it.starter || "") > 0);
       if (hasDraft || i === 1) open.add(g.key);
     });
+    Object.entries(savedOpen).forEach(([key, isOpen]) => { if (isOpen === true) open.add(key); else if (isOpen === false) open.delete(key); });
     return open;
   });
+  React.useEffect(() => {
+    try {
+      const state = { ...savedOpen };
+      groups.forEach((g) => { state[g.key] = openKeys.has(g.key); });
+      window.localStorage.setItem(openStoreKey, JSON.stringify(state));
+    } catch (e) { /* private mode or full storage: the sidebar just won't remember */ }
+  }, [openKeys, groups, openStoreKey, savedOpen]);
 
   // When groups change (list update), keep prior open state and auto-open new school keys once
   const prevGroupKeys = React.useRef(groups.map((g) => g.key).join("|"));
@@ -641,9 +657,9 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     prevGroupKeys.current = sig;
     setOpenKeys((prev) => {
       const next = new Set(prev);
-      next.add("common");
+      if (savedOpen.common !== false) next.add("common");
       groups.forEach((g) => {
-        if (!prev.has(g.key) && g.kind === "school") next.add(g.key);
+        if (!prev.has(g.key) && g.kind === "school" && !(g.key in savedOpen)) next.add(g.key);
       });
       return next;
     });
