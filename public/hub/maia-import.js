@@ -7,7 +7,7 @@
   "use strict";
 
   var MAIA_ORIGIN = "https://app.maialearning.com";
-  var SAVE_BATCH = 25; // colleges per POST, to stay well under the request size limit
+  var SAVE_BATCH = 5; // colleges per POST: small, so little is lost if a run stops
   var QUEUE_KEY = "cf.maiaQueue"; // written by Scattergrams.jsx
   var FRESH_MS = 14 * 24 * 60 * 60 * 1000; // a school imported in the last two weeks isn't fetched again
   var remaining = []; // what a stopped run didn't get to, for the Resume button
@@ -30,6 +30,7 @@
     stopping = false;
     setStatus(text, isError);
     el("cancel").textContent = "Close";
+    el("cancel").disabled = false;
     el("open").hidden = false;
     el("lookup").hidden = !maiaOpen();
     el("resume").hidden = !(remaining.length && maiaOpen());
@@ -78,25 +79,57 @@
     if (!res.ok || j.success === false) throw new Error(j.error || "Save failed");
   }
 
+  // Schools are saved as they arrive (a few per request, one request at a time), so
+  // stopping, closing this window or a Maia error loses at most the last few.
+  var pending = [];
+  var savedSlugs = {};
+  var savedCount = 0;
+  var meta = { classOfYears: null, student: null };
+  var saving = Promise.resolve();
+  var saveError = null;
+
+  function flush() {
+    if (!pending.length) return saving;
+    var batch = pending.splice(0, pending.length);
+    saving = saving.then(function () {
+      return post({ classOfYears: meta.classOfYears, student: meta.student, colleges: batch }).then(function () {
+        batch.forEach(function (c) { savedSlugs[c.slug] = true; });
+        savedCount += batch.length;
+        dropFromQueue(batch.map(function (c) { return c.slug; }));
+      }, function (e) { saveError = e; });
+    });
+    return saving;
+  }
+
+  function received(college, classOfYears, student) {
+    if (!college || typeof college.slug !== "string" || savedSlugs[college.slug] || pending.some(function (c) { return c.slug === college.slug; })) return;
+    if (classOfYears) meta.classOfYears = classOfYears;
+    if (student && !meta.student) meta.student = student;
+    pending.push(college);
+    if (pending.length >= SAVE_BATCH) flush();
+  }
+
   async function save(payload, missing, cancelled, stopped) {
     showMissing(missing);
-    var done = {};
-    payload.colleges.concat((missing || []).filter(function (m) { return m.reason === "Not found in Maia"; })).forEach(function (c) { done[c.slug] = true; });
-    remaining = stopped || cancelled ? colleges.filter(function (c) { return !done[c.slug]; }) : [];
+    payload.colleges.forEach(function (c) { received(c, payload.classOfYears, payload.student); });
+    setStatus("Saving to College Forge…");
+    await flush();
+    // Resume covers what isn't saved yet, except schools Maia doesn't have.
+    var notFound = {};
+    (missing || []).forEach(function (m) { if (m.reason === "Not found in Maia") notFound[m.slug] = true; });
+    remaining = stopped || cancelled || saveError ? colleges.filter(function (c) { return !savedSlugs[c.slug] && !notFound[c.slug]; }) : [];
+    if (saveError) { finish("Saved " + savedCount + " colleges, then couldn’t save more: " + (saveError.message || "unknown error") + ". Resume to try the rest.", true); return; }
     if (!payload.colleges.length) { finish(stopped ? String(stopped) : "Maia didn’t return scattergrams for " + (colleges.length === 1 ? colleges[0].name : "any of these colleges") + ".", true); return; }
     var total = payload.colleges.length;
-    try {
-      for (var i = 0; i < total; i += SAVE_BATCH) {
-        setStatus("Saving to College Forge… (" + Math.min(i + SAVE_BATCH, total) + " of " + total + ")");
-        await post({ classOfYears: payload.classOfYears, student: payload.student, colleges: payload.colleges.slice(i, i + SAVE_BATCH) });
-      }
-      dropFromQueue(payload.colleges.map(function (c) { return c.slug; }));
-      var withData = payload.colleges.filter(function (c) { return c.points.length > 0; }).length;
-      var what = total === 1 ? colleges[0].name + (withData ? "" : " (no applicants from your school)") : total + " colleges (" + withData + " with applicants from your school)";
-      finish((cancelled ? "Stopped early. " : "") + "Imported " + what + "." + (stopped ? " " + stopped : ""), Boolean(stopped));
-    } catch (e) {
-      finish("Couldn’t save: " + (e.message || "unknown error") + ". Try again.", true);
-    }
+    var withData = payload.colleges.filter(function (c) { return c.points.length > 0; }).length;
+    var what = total === 1 ? colleges[0].name + (withData ? "" : " (no applicants from your school)") : total + " colleges (" + withData + " with applicants from your school)";
+    finish((cancelled ? "Stopped early. " : "") + "Imported " + what + "." + (stopped ? " " + stopped : ""), Boolean(stopped));
+  }
+
+  function showDiagnostic(diagnostic) {
+    if (!Array.isArray(diagnostic)) return;
+    el("diagnostic-text").textContent = diagnostic.map(function (d) { return JSON.stringify(d); }).join("\n").slice(0, 4000);
+    el("diagnostic").hidden = false;
   }
 
   function onMessage(event) {
@@ -104,34 +137,39 @@
     var msg = event.data || {};
     if (msg.type === "cf-maia:ping") { if (colleges && busy) send("cf-maia:hello", colleges); return; }
     if (!busy) return;
-    if (msg.type === "cf-maia:progress") {
+    if (msg.type === "cf-maia:college") {
+      received(msg.college, msg.classOfYears, msg.student);
+    } else if (msg.type === "cf-maia:progress") {
       if (stopping) return;
       var pct = msg.total ? Math.round((msg.done / msg.total) * 100) : 0;
       el("bar").style.width = pct + "%";
-      if (msg.waitSeconds) setStatus("Maia asked us to slow down. Waiting " + msg.waitSeconds + " seconds, then trying " + msg.name + " again…");
-      else setStatus(msg.name ? "Checking " + msg.name + " (" + (msg.done + 1) + " of " + msg.total + ")…" : "Finishing up…");
+      var saved = savedCount ? " · " + savedCount + " saved" : "";
+      if (msg.waitSeconds) setStatus("Maia asked us to slow down. Waiting " + msg.waitSeconds + " seconds, then trying " + msg.name + " again…" + saved);
+      else setStatus((msg.name ? "Checking " + msg.name + " (" + (msg.done + 1) + " of " + msg.total + ")…" : "Finishing up…") + saved);
     } else if (msg.type === "cf-maia:error") {
-      finish(String(msg.error || "Something went wrong in Maia."), true);
-      if (Array.isArray(msg.diagnostic)) {
-        el("diagnostic-text").textContent = msg.diagnostic.map(function (d) { return JSON.stringify(d); }).join("\n").slice(0, 4000);
-        el("diagnostic").hidden = false;
-      }
+      // Keep whatever already arrived before reporting the error.
+      flush().then(function () { finish(String(msg.error || "Something went wrong in Maia.") + (savedCount ? " " + savedCount + " colleges were saved." : ""), true); });
+      showDiagnostic(msg.diagnostic);
     } else if (msg.type === "cf-maia:result" && msg.payload && Array.isArray(msg.payload.colleges)) {
       save(msg.payload, msg.missing, msg.cancelled, msg.stopped);
-      if (Array.isArray(msg.diagnostic)) {
-        el("diagnostic-text").textContent = msg.diagnostic.map(function (d) { return JSON.stringify(d); }).join("\n").slice(0, 4000);
-        el("diagnostic").hidden = false;
-      }
+      showDiagnostic(msg.diagnostic);
     }
   }
 
-  // While a run is going, the first click stops it and keeps what was fetched; otherwise it closes.
+  // While a run is going, the button stops it; it stays disabled until what was fetched is saved.
   el("cancel").addEventListener("click", function () {
-    if (!busy || stopping || !maiaOpen()) { window.close(); return; }
+    if (!busy || !maiaOpen()) { window.close(); return; }
+    if (stopping) return;
     stopping = true;
     maia.postMessage({ type: "cf-maia:cancel" }, MAIA_ORIGIN);
     setStatus("Stopping… saving what’s done so far.");
-    el("cancel").textContent = "Close";
+    el("cancel").textContent = "Stopping…";
+    el("cancel").disabled = true;
+  });
+
+  // Closing mid-run would drop the schools not yet saved, so ask first.
+  window.addEventListener("beforeunload", function (e) {
+    if (busy || pending.length) { e.preventDefault(); e.returnValue = ""; }
   });
 
   var known = {}; // slug → stored scattergram, for Maia ids and import times
@@ -150,6 +188,7 @@
   function begin(list, first) {
     colleges = list;
     busy = true;
+    saveError = null;
     el("lookup").hidden = true;
     el("open").hidden = true;
     el("resume").hidden = true;

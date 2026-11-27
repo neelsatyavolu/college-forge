@@ -310,7 +310,10 @@
           }, waiting);
           var norm = normalizeScatter(raw);
           if (!student && (norm.student.gpa || norm.student.sat)) student = norm.student;
-          out.push({ slug: c.slug, nid: Number(hit.nid), maiaTitle: hit.title, averages: norm.averages, points: norm.points });
+          var item = { slug: c.slug, nid: Number(hit.nid), maiaTitle: hit.title, averages: norm.averages, points: norm.points };
+          out.push(item);
+          // Hand each school over as soon as it's fetched, so the popup can save as it goes.
+          send({ type: "cf-maia:college", classOfYears: CLASS_OF_YEARS, student: student, college: item });
           streak = { signature: null, count: 0 };
         } catch (e) {
           if (e.fatal) { stopped = e.message; break; }
