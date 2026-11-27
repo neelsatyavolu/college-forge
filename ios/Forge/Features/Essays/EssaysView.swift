@@ -49,9 +49,13 @@ private struct EssaysList: View {
     @State private var byType = false
     @State private var search = ""
     @State private var promptForm: EssayPromptDraft?
+    @State private var visibilityError: APIError?
 
     private var queue: EssayDraftQueue { EssayDraftQueues.queue(for: store) }
-    private var groups: [EssayGroup] { EssayCatalog.groups(colleges: store.workspace.colleges, essays: store.workspace.essays) }
+    private var groups: [EssayGroup] {
+        EssayCatalog.groups(colleges: store.workspace.colleges, essays: store.workspace.essays,
+                            hidden: store.workspace.essayHidden, commonAppPrompt: store.workspace.commonAppPrompt)
+    }
 
     var body: some View {
         let groups = groups
@@ -127,6 +131,7 @@ private struct EssaysList: View {
             syncExpanded(groups)
             Task { await queue.flush() }
         }
+        .errorAlert($visibilityError)
         .onChange(of: groups.map(\.key)) { _, _ in syncExpanded(groups) }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { EssayBackgroundSave.flush(queue) }
@@ -140,12 +145,21 @@ private struct EssaysList: View {
         let isOpen = expanded?.contains(group.key) ?? true
         Section {
             if isOpen {
-                if group.essays.isEmpty {
+                if group.kind == .common { commonAppChoiceRow(group) }
+                if group.essays.isEmpty && group.hiddenEssays.isEmpty {
                     placeholderRow(group)
                 } else {
                     ForEach(group.essays) { essay in
                         row(EssayItem(essay: essay, groupKey: group.key, groupTitle: group.title), queue: queue)
                     }
+                }
+                if !group.hiddenEssays.isEmpty {
+                    DisclosureGroup("Hidden (\(group.hiddenEssays.count))") {
+                        ForEach(group.hiddenEssays) { essay in
+                            row(EssayItem(essay: essay, groupKey: group.key, groupTitle: group.title), queue: queue, isHidden: true)
+                        }
+                    }
+                    .foregroundStyle(Theme.muted)
                 }
             }
         } header: {
@@ -156,7 +170,7 @@ private struct EssaysList: View {
         }
     }
 
-    private func row(_ item: EssayItem, queue: EssayDraftQueue, showGroup: Bool = false) -> some View {
+    private func row(_ item: EssayItem, queue: EssayDraftQueue, showGroup: Bool = false, isHidden: Bool = false) -> some View {
         let text = queue.text(for: item.essay, serverDrafts: store.workspace.essayDrafts)
         return NavigationLink(value: EssayRoute(id: item.id)) {
             EssayRow(essay: item.essay, count: EssayMetrics.count(text, for: item.essay),
@@ -165,14 +179,67 @@ private struct EssaysList: View {
         .swipeActions(edge: .trailing) {
             Button { promptForm = .editing(item) } label: { Label("Edit prompt", systemImage: "pencil") }
                 .tint(Theme.accent)
+            hideButton(item.essay, isHidden: isHidden).tint(Theme.muted)
         }
         .contextMenu {
             Button { promptForm = .editing(item) } label: { Label("Edit prompt", systemImage: "pencil") }
+            hideButton(item.essay, isHidden: isHidden)
+            if EssayMetrics.isPersonalStatement(item.essay) && store.workspace.commonAppPrompt == nil {
+                Button { Task { await chooseCommonAppPrompt(item.essay.id) } } label: {
+                    Label("Choose this prompt", systemImage: "checkmark.circle")
+                }
+            }
             if !text.isEmpty {
                 Button { UIPasteboard.general.string = text } label: { Label("Copy draft", systemImage: "doc.on.doc") }
                 ShareLink(item: text) { Label("Share draft", systemImage: "square.and.arrow.up") }
             }
         }
+    }
+
+    private func hideButton(_ essay: Essay, isHidden: Bool) -> some View {
+        Button { Task { await setHidden(essay.id, !isHidden) } } label: {
+            isHidden ? Label("Show essay", systemImage: "eye") : Label("Hide essay", systemImage: "eye.slash")
+        }
+        .accessibilityHint(isHidden ? "Shows this essay again and counts it" : "Hides an essay you won't write. Its draft is kept.")
+    }
+
+    /// The Common App choice, like the web's CommonAppChoice: once chosen, the other prompts drop out.
+    @ViewBuilder
+    private func commonAppChoiceRow(_ group: EssayGroup) -> some View {
+        if store.workspace.commonAppPrompt != nil {
+            Button { Task { await chooseCommonAppPrompt(nil) } } label: {
+                LabeledContent("Your prompt is chosen") { Text("Change prompt").foregroundStyle(Theme.accent) }
+            }
+        } else if group.essays.contains(where: EssayMetrics.isPersonalStatement) {
+            Menu {
+                ForEach(group.essays.filter(EssayMetrics.isPersonalStatement)) { essay in
+                    Button(essay.label.isEmpty ? essay.id : essay.label) { Task { await chooseCommonAppPrompt(essay.id) } }
+                }
+            } label: {
+                LabeledContent("Choose your prompt") { Image(systemName: "chevron.up.chevron.down").foregroundStyle(Theme.accent) }
+            }
+        }
+    }
+
+    private func setHidden(_ id: String, _ hide: Bool) async {
+        do {
+            try await store.patch(.with { $0.essayHidden = [id: hide ? true : nil] }) { ws in
+                ws.essayHidden[id] = hide ? true : nil
+            }
+            Haptics.selection()
+        } catch { report(error) }
+    }
+
+    private func chooseCommonAppPrompt(_ id: String?) async {
+        do {
+            try await store.patch(.with { $0.commonAppPrompt = .some(id) }) { ws in ws.commonAppPrompt = id }
+            Haptics.selection()
+        } catch { report(error) }
+    }
+
+    private func report(_ error: Error) {
+        let apiError = APIError.wrap(error)
+        if apiError != .cancelled { visibilityError = apiError }
     }
 
     private func placeholderRow(_ group: EssayGroup) -> some View {

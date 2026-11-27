@@ -65,19 +65,36 @@
     return null;
   }
 
+  /**
+   * Hidden by the student (opts.hidden: id → true), or a Common App personal essay prompt other than the
+   * chosen one (opts.commonAppPrompt). Matches isEssayHidden in lib/essay-tools.ts.
+   */
+  function isHidden(it, opts) {
+    opts = opts || {};
+    if (opts.hidden && opts.hidden[it.id]) return true;
+    var choice = choiceOf(it);
+    return !!(opts.commonAppPrompt && choice && choice.group === "common" && it.id !== opts.commonAppPrompt);
+  }
+
+  /** The items a group shows and counts, with hidden ones left out. */
+  function visibleItems(items, opts) {
+    return (items || []).filter(function (it) { return !isHidden(it, opts); });
+  }
+
   function wordCount(s) { var t = String(s || "").trim(); return t ? t.split(/\s+/).length : 0; }
   function countOf(it, text) { return isCharacters(it) ? Array.from(String(text || "")).length : wordCount(text); }
 
   /**
    * The essays the student has to write: required prompts, plus the N picks of each
    * choose-N set. Final prompts are picked first, then started ones, then the longest.
+   * Hidden essays don't count, and a chosen Common App prompt is the set's one pick.
    */
-  function requiredItems(groups, drafts, status) {
+  function requiredItems(groups, drafts, status, opts) {
     var out = [];
     (groups || []).forEach(function (group) {
       if (group.kind === "orphan") return;
       var sets = {};
-      (group.items || []).forEach(function (it) {
+      visibleItems(group.items, opts).forEach(function (it) {
         var choice = choiceOf(it);
         if (choice) {
           var set = sets[choice.group] || (sets[choice.group] = { choose: choice.choose, items: [] });
@@ -97,10 +114,10 @@
   }
 
   /** Counts for the summary strip. Words cover word-limit prompts only, each capped at its limit. */
-  function writingTotals(groups, drafts, status) {
+  function writingTotals(groups, drafts, status, opts) {
     drafts = drafts || {};
     status = status || {};
-    var items = requiredItems(groups, drafts, status);
+    var items = requiredItems(groups, drafts, status, opts);
     var totals = { required: items.length, drafted: 0, final: 0, wordsWritten: 0, wordsRequired: 0 };
     items.forEach(function (it) {
       var count = countOf(it, drafts[it.id]);
@@ -147,6 +164,8 @@
     ARCHETYPES: ARCHETYPES,
     archetypeOf: archetypeOf,
     isOptional: isOptional,
+    isHidden: isHidden,
+    visibleItems: visibleItems,
     writingTotals: writingTotals,
     nextDeadline: nextDeadline,
     byPromptType: byPromptType,

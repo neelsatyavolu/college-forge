@@ -202,7 +202,10 @@ test('adding the same school twice links instead of duplicating', () => isolated
   await service.addApp(ws, { name: 'purdue university', slug: 'purdue-u' });
   const t = await service.listApps(ws);
   assert.equal(t.apps.length, 1);
-  assert.equal(t.apps[0].slug, 'purdue-u');
+  // The first add already put Purdue on the college list, so the application stays linked to that row.
+  const colleges = (await store.getWorkspace(ws)).colleges;
+  assert.equal(colleges.length, 1);
+  assert.equal(t.apps[0].slug, colleges[0].slug);
   await assert.rejects(service.updateApp(ws, 'Nowhere State', { status: 'admitted' }), /No application matches/);
 }));
 
@@ -638,4 +641,19 @@ test('moved endpoint needs the service key and returns hashes only', () => isola
   const { hashes } = JSON.parse(text);
   assert.ok(hashes.includes('a'.repeat(64)));
   assert.ok(hashes.includes(crypto.createHash('sha256').update('forge.user@example.com').digest('hex')));
+}));
+
+test('adding an application puts the school on the list and in Essays; removing an untouched one clears both', () => isolated(async () => {
+  const cookie = `forge_session=${session.signSession({ sub: 'xa_LS', workspaceId: 'list-sync-ws-1', email: 'a@b.co', name: 'A' })}`;
+  const post = (body) => appsRoute.POST(new NextRequest('http://localhost/api/applications', { method: 'POST', headers: { cookie, 'content-type': 'application/json' }, body: JSON.stringify(body) }));
+  const added = (await (await post({ action: 'add', name: 'Rice University' })).json()).data.apps[0];
+  let ws = await store.getWorkspace('list-sync-ws-1');
+  assert.equal(ws.colleges.length, 1);
+  assert.equal(added.slug, ws.colleges[0].slug);
+  assert.ok(ws.essays.supplements[added.slug]?.length, 'Rice has an Essays group');
+  assert.equal(added.untouched, true);
+  await post({ action: 'remove', id: added.id });
+  ws = await store.getWorkspace('list-sync-ws-1');
+  assert.deepEqual([ws.colleges.length, ws.tracker.apps.length], [0, 0]);
+  assert.ok(ws.essays.supplements[added.slug]?.length, 'essay prompts and drafts are kept');
 }));

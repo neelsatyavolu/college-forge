@@ -3,6 +3,8 @@ import schoolMajors from "../public/data/rankings/majors/bachelors_by_school.jso
 import type { College, Workspace } from "./store";
 import { US_NEWS_BY_SCORECARD_ID, type UsNewsCollege } from "./us-news-rankings";
 import { slugify, isTestOptionalNote } from "./colleges";
+import { isSeededRow } from "./seed-rows";
+export { isSeededRow };
 import { actToSat } from "./act-concordance";
 import { loadSchoolResearch } from "./school-research";
 import { aidsNoInternationals, internationalAid } from "./international-aid";
@@ -454,25 +456,6 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
  * earlier seeded rows are dropped and refilled, keeping priority schools and anything the student or
  * an agent added.
  */
-const SEED_TAGS = new Set(["Fair-ranking evidence", "In-state"]);
-/**
- * Every field the list builder writes on a row, plus `supp` (derived from the essay prompts) and `priority`
- * (set false on every row when another school is starred). A row with any other field was edited by hand.
- */
-const SEED_FIELDS = new Set(["slug", "name", "short", "scorecardId", "location", "setting", "photo", "tier", "verdict", "admit", "satRange", "netPrice", "tags", "supp", "priority"]);
-
-/**
- * Whether the automatic list builder may replace this row. Rows saved before `origin` existed carry no
- * origin; those count as seeded only when they look exactly like a builder row: its tags and its fields.
- */
-export function isSeededRow(c: College): boolean {
-  if (c.priority) return false;
-  if (c.origin) return c.origin === "seed";
-  const tags = c.tags || [];
-  return tags.some(t => t.label === "Fair-ranking evidence") && tags.every(t => SEED_TAGS.has(t.label))
-    && Object.keys(c).every(k => SEED_FIELDS.has(k));
-}
-
 export function seedRecommendedColleges(ws: Workspace, options: { keepUserSchools?: boolean } = {}): { colleges: College[]; gaps: ListGap[] } {
   const kept = options.keepUserSchools ? ws.colleges.filter(c => !isSeededRow(c)) : ws.colleges;
   const { count: desired, goals } = listQuotas(ws.onboarding.listPrefs);

@@ -8,6 +8,7 @@ import { getWorkspace, type EssayStatus, type Workspace } from "./store";
 import { setAutocheck, setEmails } from "./tracker-service";
 import { INTERVIEW_TOOL_SPECS, mergeResearch } from "./interview-tools";
 import { draftRecRequest } from "./recommenders";
+import { withEssayVisibility } from "./essay-tools";
 
 type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
@@ -19,6 +20,11 @@ export const EXTRA_TOOL_SPECS: ToolSpec[] = [
     name: "set_essay_status",
     description: "Mark an essay (by id from list_essays or get_essay) as 'draft' or 'final', or 'clear' to remove the mark. Only when the student says so.",
     parameters: { type: "object", properties: { essay_id: { type: "string" }, status: { type: "string", enum: ["draft", "final", "clear"] } }, required: ["essay_id", "status"], additionalProperties: false },
+  },
+  {
+    name: "set_essay_visibility",
+    description: "Only when the student asks: hide essays they won't write (hide: ids), show hidden ones again (show: ids), or choose their Common App personal essay prompt (common_app_prompt: a ca-ps-* id, or 'clear' to show all six again). Hidden essays keep their drafts.",
+    parameters: { type: "object", properties: { hide: { type: "array", items: { type: "string" } }, show: { type: "array", items: { type: "string" } }, common_app_prompt: { type: "string" } }, additionalProperties: false },
   },
   {
     name: "set_portal_settings",
@@ -52,6 +58,18 @@ export async function runExtraTool(
         return { ...ws, essayStatus: status === "clear" ? rest : { ...rest, [id]: status as EssayStatus } };
       });
       return missing ? `No essay with id "${id}". Use list_essays for ids.` : `Marked ${id} ${status === "clear" ? "unmarked" : status}.`;
+    }
+    case "set_essay_visibility": {
+      const prompt = a.common_app_prompt === "clear" ? null : a.common_app_prompt;
+      let reply = "";
+      await mutate((ws) => {
+        const r = withEssayVisibility(ws, { hide: a.hide, show: a.show, commonAppPrompt: prompt });
+        if (!r.ok) { reply = r.error; return ws; }
+        const hidden = Object.keys(r.value.essayHidden ?? {}).length;
+        reply = `Saved. ${hidden} essay${hidden === 1 ? "" : "s"} hidden${r.value.commonAppPrompt ? `; Common App prompt: ${r.value.commonAppPrompt}` : ""}.`;
+        return r.value;
+      });
+      return reply;
     }
     case "set_portal_settings": {
       const done: string[] = [];

@@ -39,8 +39,8 @@ struct ShortlistView: View {
         ) { college in
             Button("Remove school", role: .destructive) { Task { await remove(college) } }
             Button("Keep school", role: .cancel) {}
-        } message: { _ in
-            Text("Saved essay drafts will remain.")
+        } message: { college in
+            Text(CollegesShortlist.removalMessage(for: store.shortlistTrackedApplication(for: college)))
         }
         .errorAlert($error)
         .task(id: "\(store.workspace.draftStorageKey)/\(store.workspace.revision)") {
@@ -99,7 +99,7 @@ struct ShortlistView: View {
     }
 
     private var disclaimer: String {
-        var text = "Reach, target and likely are planning categories, not admission or aid guarantees. Overall admission rates are not your personal odds. Track application moves a school to Applications."
+        var text = "Reach, target and likely are planning categories, not admission or aid guarantees. Overall admission rates are not your personal odds. Schools you add here also show on Applications as Not started; a suggested school joins them once you track or star it."
         if colleges.contains(where: CollegesShortlist.isUCCampus) {
             text += " UC campuses share one UC Application, so they count as one app slot."
         }

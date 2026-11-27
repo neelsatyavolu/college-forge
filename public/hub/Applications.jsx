@@ -140,7 +140,11 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
       <div className="cf-row-actions">
         {!confirmRemove ? <button type="button" className="cf-link-btn cf-link-btn--danger" onClick={() => setConfirmRemove(true)}>Remove {app.name}</button> : (
           <React.Fragment>
-            <span className="cf-help">Remove this school and its saved login?</span>
+            <span className="cf-help">{app.offList
+              ? "Remove this school and its saved login?"
+              : app.untouched
+                ? "Remove this school? It also leaves your college list. Essay drafts are kept."
+                : "Remove this application and its saved login? The school stays on your college list. Essay drafts are kept."}</span>
             <Button size="sm" disabled={busy} onClick={() => act({ action: "remove", id }, `${app.name} removed.`)}>Remove</Button>
             <Button size="sm" variant="secondary" onClick={() => setConfirmRemove(false)}>Keep it</Button>
           </React.Fragment>

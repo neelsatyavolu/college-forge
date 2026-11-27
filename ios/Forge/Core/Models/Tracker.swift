@@ -35,6 +35,10 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     var collegeId: String?
     /// The shortlist slug this application belongs to.
     var slug: String?
+    /// The student took the school off the college list but kept this application.
+    var offList: Bool = false
+    /// Nothing saved yet (Not started, no login, notes or follow-ups): removing it also removes the list school.
+    var untouched: Bool = false
     var name: String
     /// Site-relative logo path ("/logos/mit.png"); resolve with `AppConfig.resolve(_:)`.
     var logo: String?
@@ -82,6 +86,8 @@ extension TrackedApplication {
         id = c.string(.id)
         collegeId = c.optionalString(.collegeId)
         slug = c.optionalString(.slug)
+        offList = c.bool(.offList)
+        untouched = c.bool(.untouched)
         name = c.string(.name)
         logo = c.optionalString(.logo)
         portalName = c.string(.portalName, "Applicant portal")

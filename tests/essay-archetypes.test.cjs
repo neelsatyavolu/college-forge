@@ -114,3 +114,21 @@ test('a final personal statement is the one counted, even when another draft is 
   const t = writingTotals(groups, { 'ca-ps-1': words(300), 'ca-ps-2': words(100) }, { 'ca-ps-2': 'final' });
   assert.deepEqual([t.required, t.final, t.wordsWritten], [1, 1, 100]);
 });
+
+test('hidden essays and unchosen Common App prompts leave the totals', () => {
+  const { visibleItems } = require('../public/hub/essay-archetypes.js');
+  const groups = [
+    { key: 'common', kind: 'common', items: [e('ca-ps-1', 650), e('ca-ps-2', 650), { ...e('ca-additional-info', 650), required: false }] },
+    { key: 'rice', kind: 'school', items: [e('rice-1', 250), e('rice-2', 100)] },
+  ];
+  const drafts = { 'ca-ps-1': words(500), 'ca-ps-2': words(10) };
+  assert.equal(writingTotals(groups, drafts, {}).required, 3);
+  const hidden = writingTotals(groups, drafts, {}, { hidden: { 'rice-2': true } });
+  assert.deepEqual([hidden.required, hidden.wordsRequired], [2, 900]);
+  // The chosen prompt is the counted pick even though another draft is longer.
+  const chosen = writingTotals(groups, drafts, {}, { commonAppPrompt: 'ca-ps-2' });
+  assert.deepEqual([chosen.required, chosen.wordsWritten], [3, 10]);
+  // Additional information stays optional.
+  assert.equal(writingTotals([groups[0]], {}, {}, { commonAppPrompt: 'ca-ps-2' }).required, 1);
+  assert.deepEqual(visibleItems(groups[0].items, { commonAppPrompt: 'ca-ps-2' }).map((i) => i.id), ['ca-ps-2', 'ca-additional-info']);
+});

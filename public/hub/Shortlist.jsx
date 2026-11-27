@@ -267,7 +267,13 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
             {!confirmRemove ? <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirmRemove(true)}>Remove school</Button> : null}
           </div>
           {confirmRemove ? <div style={{ marginTop: 12, padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-sm)" }}>
-            <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--body)" }}>Remove {s.name || s.short} from your list? Saved essay drafts will remain.</p>
+            <p style={{ margin: "0 0 10px", fontSize: 13, color: "var(--body)" }}>
+              Remove {s.name || s.short} from your list?{" "}
+              {!tracked ? "" : tracked.untouched
+                ? "Its Not started application leaves Applications and Progress too. "
+                : `Its application (${tracked.statusLabel}) stays on Applications and Progress, no longer linked to the list. `}
+              Saved essay drafts will remain.
+            </p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <Button size="sm" disabled={busy} onClick={() => onRemove(s.slug)}>Confirm removal</Button>
               <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirmRemove(false)}>Keep school</Button>
@@ -431,7 +437,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
         <div>
           <h1 className="cf-page-title">Your shortlist</h1>
           <p className="cf-page-lede">
-            Schools you’re considering. When you decide to apply, choose Track application and it moves to your Progress tab. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds; Your chances below estimates those for you.
+            Schools you’re considering. Schools you add here also show on Applications and Progress as Not started; a suggested school joins them once you track or star it. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds; Your chances below estimates those for you.
             {ucCount > 0
               ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
               : ""}
