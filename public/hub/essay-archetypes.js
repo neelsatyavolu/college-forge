@@ -170,6 +170,27 @@
     return shown.length === 1 ? shown[0] : shown.length === 0 ? "" : null;
   }
 
+  /**
+   * A prompt's sidebar label: without its college prefix (the group's college picker says which college) and
+   * with "(optional)" / "(only if this applies to you)" as a short tag instead of label text.
+   */
+  function sidebarLabel(it) {
+    var text = String((it && it.label) || "").trim();
+    var applies = /\s*\(only if this applies to you\)$/i.test(text);
+    var optional = /\s*\(optional\)$/i.test(text);
+    text = text.replace(/\s*\((only if this applies to you|optional)\)$/i, "").trim();
+    var audience = it && it.audience ? String(it.audience).trim() : "";
+    var forCollege = false;
+    if (audience && text.toLowerCase().indexOf(audience.toLowerCase() + ":") === 0) {
+      text = text.slice(audience.length + 1).trim();
+      forCollege = true;
+    } else if (audience && text.toLowerCase() === audience.toLowerCase()) {
+      forCollege = true;
+    }
+    var tag = optional ? "Optional" : applies && !forCollege ? "If it applies" : "";
+    return { text: text, tag: tag };
+  }
+
   var UC_APPLICATION_SLUG = "uc-application";
 
   /** A University of California campus; they share one UC Application essay group. */
@@ -308,6 +329,7 @@
     pickSets: pickSets,
     pickPatch: pickPatch,
     markSegments: markSegments,
+    sidebarLabel: sidebarLabel,
     audienceSet: audienceSet,
     audiencePatch: audiencePatch,
     chosenAudience: chosenAudience,

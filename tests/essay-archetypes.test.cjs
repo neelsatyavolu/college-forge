@@ -174,3 +174,12 @@ test('audience sets: pick the college you apply to, hide the other colleges’ p
   assert.equal(chosenAudience(items, { 'cals-1': true, 'cals-2': true, 'eng-1': true, 'as-1': true }), '');
   assert.equal(audienceSet([p('a', 'X'), p('b')]), null, 'one audience is an only-if-it-applies prompt, not a choice');
 });
+
+test('sidebarLabel drops the college prefix and turns optional / only-if notes into tags', () => {
+  const { sidebarLabel } = require('../public/hub/essay-archetypes.js');
+  assert.deepEqual(sidebarLabel({ label: 'Cornell David A. Duffield College of Engineering: Question 2 (only if this applies to you)', audience: 'Cornell David A. Duffield College of Engineering' }), { text: 'Question 2', tag: '' });
+  assert.deepEqual(sidebarLabel({ label: 'DC Start essay (only if this applies to you)', audience: 'Brooks School' }), { text: 'DC Start essay', tag: 'If it applies' });
+  assert.deepEqual(sidebarLabel({ label: 'Written supplement (optional)' }), { text: 'Written supplement', tag: 'Optional' });
+  assert.deepEqual(sidebarLabel({ label: 'Why Wake?' }), { text: 'Why Wake?', tag: '' });
+  assert.deepEqual(sidebarLabel({ label: 'College of Arts and Sciences (only if this applies to you)', audience: 'College of Arts and Sciences' }), { text: 'College of Arts and Sciences', tag: '' });
+});

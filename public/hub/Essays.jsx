@@ -274,150 +274,47 @@ function WritingSummary({ totals, next, today }) {
   );
 }
 
+/** One prompt in the Essays sidebar: status dot, a two-line label without the college prefix, and progress. */
 function SidebarItem({ it, active, count, onClick, label, final }) {
   const over = count > it.limit;
   const started = count > 0;
+  const short = ESSAY_PLAN.sidebarLabel(it);
+  const text = label ? `${label} · ${short.text}` : short.text;
+  const state = over ? "over" : final ? "final" : started ? "draft" : "empty";
+  const stateWords = { over: `Over the limit: ${count} of ${it.limit} ${it.unit}`, final: "Marked final", draft: `Draft, ${count} ${it.unit}`, empty: "Not started" }[state];
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="cf-press"
-      style={{
-        width: "100%",
-        textAlign: "left",
-        cursor: "pointer",
-        border: "none",
-        borderRadius: "var(--radius-sm)",
-        padding: "8px 10px",
-        minHeight: 36,
-        display: "flex",
-        alignItems: "center",
-        gap: 9,
-        background: active ? "var(--surface-card)" : "transparent",
-        transitionProperty: "background",
-        transitionDuration: "120ms",
-      }}
-    >
-      <span
-        style={{
-          flexShrink: 0,
-          width: 7,
-          height: 7,
-          borderRadius: "50%",
-          background: over ? "var(--error)" : final ? "var(--ink)" : started ? "var(--accent-teal)" : "var(--hairline)",
-        }}
-      />
-      <span
-        style={{
-          flex: 1,
-          minWidth: 0,
-          fontSize: 13,
-          fontWeight: active ? 500 : 400,
-          color: active ? "var(--ink)" : "var(--body)",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {label || it.label}
+    <button type="button" onClick={onClick} className={"cf-press cf-essay-nav" + (active ? " is-active" : "")} aria-current={active ? "true" : undefined}
+      title={`${it.label}. ${stateWords}.`}>
+      <span className={"cf-essay-nav__dot is-" + state} aria-hidden />
+      <span className="cf-essay-nav__text">
+        <span className="cf-essay-nav__label">{text}</span>
+        {short.tag ? <span className="cf-essay-nav__tag">{short.tag}</span> : null}
       </span>
-      <span
-        className="cf-nums"
-        style={{
-          flexShrink: 0,
-          fontFamily: "var(--font-mono)",
-          fontSize: 11,
-          color: over ? "var(--error)" : "var(--muted-soft)",
-        }}
-      >
-        {count}
+      <span className={"cf-essay-nav__meta cf-nums" + (over ? " is-over" : "")}>
+        {final ? "Final" : started ? count : ""}
+        <span className="cf-sr-only">{stateWords}</span>
       </span>
     </button>
   );
 }
 
+/** A school's row in the Essays sidebar: its name, how many prompts are started, campuses, and the deadline. */
 function GroupHeader({ group, open, onToggle, startedCount, totalCount, unfinished, today }) {
   const days = group.due ? daysUntil(group.due.date, today) : null;
-  const chevron = open ? "▾" : "▸";
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-expanded={open}
-      className="cf-press"
-      style={{
-        width: "100%",
-        textAlign: "left",
-        cursor: "pointer",
-        border: "none",
-        background: "transparent",
-        padding: "6px 8px",
-        borderRadius: "var(--radius-sm)",
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 6,
-        minHeight: 32,
-      }}
-    >
-      <span
-        aria-hidden
-        style={{
-          flexShrink: 0,
-          width: 14,
-          fontSize: 11,
-          color: "var(--muted)",
-          lineHeight: "16px",
-          marginTop: 1,
-          fontFamily: "var(--font-mono)",
-        }}
-      >
-        {chevron}
-      </span>
-      <span style={{ flex: 1, minWidth: 0 }}>
-        <span
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            gap: 6,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "1.2px",
-              color: group.kind === "orphan" ? "var(--muted-soft)" : "var(--muted)",
-            }}
-          >
-            {group.title}
-          </span>
-          <span className="cf-nums" style={{ fontSize: 10, color: "var(--muted-soft)", flexShrink: 0 }}>
-            {totalCount > 0 ? `${startedCount}/${totalCount}` : "0"}
-          </span>
+    <button type="button" onClick={onToggle} aria-expanded={open} className={"cf-press cf-essay-group" + (group.kind === "orphan" ? " is-orphan" : "")}>
+      <svg className="cf-essay-group__chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
+        <path d={open ? "M4 6l4 4 4-4" : "M6 4l4 4-4 4"} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span className="cf-essay-group__body">
+        <span className="cf-essay-group__top">
+          <span className="cf-essay-group__title">{group.title}</span>
+          {totalCount > 0 ? <span className="cf-essay-group__count cf-nums">{startedCount} of {totalCount}</span> : null}
         </span>
-        {group.subtitle ? (
-          <span
-            style={{
-              display: "block",
-              fontSize: 11,
-              color: "var(--muted-soft)",
-              lineHeight: 1.35,
-              marginTop: 2,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {group.subtitle}
-          </span>
-        ) : null}
+        {group.subtitle ? <span className="cf-essay-group__sub" title={group.subtitle}>{group.subtitle}</span> : null}
         {group.due ? (
-          <span style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-            <span className="cf-nums" style={{ fontSize: 11, color: "var(--body)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {dueLabel(group)}
-            </span>
+          <span className="cf-essay-group__due cf-nums">
+            {dueLabel(group)}
             {unfinished && days < SOON_DAYS ? <DueChip days={days} /> : null}
           </span>
         ) : null}
@@ -985,7 +882,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                     <SidebarItem
                       key={it.id}
                       it={it}
-                      label={`${it.group} · ${it.label}`}
+                      label={it.group}
                       active={activeId === it.id}
                       final={status[it.id] === "final"}
                       count={essayCount(it, local[it.id] || "")}
