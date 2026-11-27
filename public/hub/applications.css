@@ -353,9 +353,11 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-interest__check input { accent-color: var(--coral); }
 
 /* Portal ops: check schedule, master login, forwarded set-up details */
-.cf-apps-schedule { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; margin: -6px 0 18px; }
-.cf-apps-schedule select { font: 400 13px/1.4 var(--font-sans); color: var(--ink); background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-sm); padding: 4px 8px; min-height: 32px; }
-.cf-apps-schedule .cf-help { flex: 1 1 100%; margin: 0; }
+.cf-apps-autocheck { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.cf-apps-auto { white-space: nowrap; }
+.cf-apps-schedule { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--body); }
+.cf-apps-schedule select { font: 400 13px/1.4 var(--font-sans); color: var(--ink); background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-sm); padding: 3px 6px; min-height: 30px; }
+.cf-apps-schedule__next { color: var(--muted); font-size: 12.5px; cursor: help; }
 .cf-mono { font-family: var(--font-mono); }
 .cf-setup-details { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: 14px; }
 .cf-setup-details dt { color: var(--muted); }

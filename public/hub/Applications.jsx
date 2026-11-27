@@ -378,17 +378,19 @@ function Applications({ data, tracker, onTrackerChange, onWorkspaceChange }) {
               {[["status", "By status"], ["dates", "By date"]].map(([id, label]) => <button key={id} type="button" className={"cf-filter-pill cf-press" + (view === id ? " is-active" : "")} aria-pressed={view === id} onClick={() => setView(id)}>{label}</button>)}
             </div>
             <div className="cf-apps-toolbar__auto">
-            <label className="cf-apps-auto">
-              <input type="checkbox" checked={tracker.autocheck} disabled={busy} onChange={(e) => act({ action: "autocheck", on: e.target.checked }, e.target.checked ? "Automatic checks are on." : "Automatic checks are off.")} />
-              Check portals automatically
-            </label>
-            <label className="cf-apps-auto">
-              <input type="checkbox" checked={tracker.emails !== false} disabled={busy || !tracker.autocheck} onChange={(e) => act({ action: "emails", on: e.target.checked }, e.target.checked ? "Forge will email you when a portal changes." : "Portal emails are off.")} />
-              Email me when a portal changes
-            </label>
+              <span className="cf-apps-autocheck">
+                <label className="cf-apps-auto">
+                  <input type="checkbox" checked={tracker.autocheck} disabled={busy} onChange={(e) => act({ action: "autocheck", on: e.target.checked }, e.target.checked ? "Automatic checks are on." : "Automatic checks are off.")} />
+                  Check portals
+                </label>
+                {tracker.autocheck ? <window.CheckSchedule schedule={tracker.schedule} act={act} busy={busy} /> : <span className="cf-apps-schedule__next">automatically</span>}
+              </span>
+              <label className="cf-apps-auto">
+                <input type="checkbox" checked={tracker.emails !== false} disabled={busy || !tracker.autocheck} onChange={(e) => act({ action: "emails", on: e.target.checked }, e.target.checked ? "Forge will email you when a portal changes." : "Portal emails are off.")} />
+                Email me on changes
+              </label>
             </div>
           </div>
-          <window.CheckSchedule schedule={tracker.schedule} act={act} busy={busy} disabled={!tracker.autocheck} />
           {view === "dates" ? <DatesView apps={apps} criticalDates={data.criticalDates} colleges={data.colleges} scholarships={data.scholarships} /> : [{ id: "attention", label: "Needs attention", list: attention }].concat(APP_STAGES.map((s) => ({ id: s.id, label: s.label, list: quiet.filter((a) => a.stage === s.id), compact: true }))).map((group) => {
             if (!group.list.length) return null;
             const list = group.list.slice().sort(group.compact ? bySoonest : byUrgency);
