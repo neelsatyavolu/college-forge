@@ -322,7 +322,7 @@ Portal checks can capture the decision letter. Its body stays sealed on the serv
 - Each board school's `aidOffer` is the application's `AidOffer` (see Aid above). The board's cost is `costOfAttendance - grants` when the offer has a cost of attendance, else the estimate. Awards are the won `kind "school"` scholarships tied to the school's slug (letter awards land there). A school counts once its status is admitted/committed/waitlisted/deferred, or, while still pending, once a revealed `decision.result` says so.
 - `profile.switchTo` and `profile.pathNote` (≤200 / ≤500 chars, `PATCH /api/workspace` profile) feed the board and its AI picks only; they never change the List tab ranking.
 - `workspace.decisionBoard` holds the saved picks. It, and every `aidOffer`, is left out of share links, progress links and the parent views.
-- Entry: a "Compare your offers" row at the top of Decisions when two or more schools admitted the student, pushing `ApplicationsDestination.decisionBoard`. No fifth segment.
+- Entry: a "See your offers" row at the top of Decisions when at least one school admitted the student, pushing `ApplicationsDestination.decisionBoard`. No fifth segment.
 
 ## Essay schools (feat/essay-schools)
 

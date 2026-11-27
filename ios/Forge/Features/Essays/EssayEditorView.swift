@@ -135,6 +135,11 @@ private struct EssayEditorContent: View {
         }
         .disabled(!metadata.loaded || (!final && !text.contains(where: { !$0.isWhitespace })))
         .padding(.horizontal, Theme.Spacing.md)
+
+        Text("The AI writing check (GPTZero) is on the web for now.")
+            .font(.footnote)
+            .foregroundStyle(Theme.muted)
+            .padding(.horizontal, Theme.Spacing.md)
     }
 
     private func askCopilot(_ action: EssayCopilotAction) {

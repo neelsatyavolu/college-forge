@@ -8,9 +8,9 @@
     { id: "progress", label: "Progress", group: "Applications", icon: "progress" },
     { id: "decisions", label: "Decisions", group: "Applications", icon: "mail" },
     { id: "board", label: "Decision board", group: "Applications", icon: "columns", needsAdmit: true },
-    { id: "list", label: "List", group: "Applications", icon: "list" },
-    { id: "essays", label: "Essays", group: "Apply", icon: "edit" },
-    { id: "track", label: "Letters & aid", group: "Apply", icon: "folder" },
+    { id: "list", label: "Ranked list", group: "Applications", icon: "list" },
+    { id: "essays", label: "Essays", group: "Materials", icon: "edit" },
+    { id: "track", label: "Recs & aid", group: "Materials", icon: "folder" },
     { id: "recommendations", label: "Colleges for you", group: "Find colleges", icon: "spark" },
     { id: "explore", label: "Explore colleges", group: "Find colleges", icon: "search" },
     { id: "shortlist", label: "Your shortlist", group: "Find colleges", icon: "bookmark" },
@@ -19,7 +19,7 @@
     { id: "share", label: "Share & export", group: "You", icon: "share" },
     { id: "settings", label: "Settings", group: "You", icon: "settings" },
   ];
-  var GROUPS = ["Applications", "Apply", "Find colleges", "You"];
+  var GROUPS = ["Applications", "Materials", "Find colleges", "You"];
   // Full pages outside the hash-routed views, listed after the views in their group.
   var PAGE_LINKS = [{ href: "/rankings", label: "Career rankings", group: "Find colleges", icon: "chart" }];
   var ICONS = {

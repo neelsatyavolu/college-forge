@@ -109,8 +109,16 @@ function attentionOf(app) {
   return out;
 }
 
+/** A short note for a collapsed row naming what its expanded view holds, such as "Testing plan · Interest log (2)". */
+function detailsHint(app) {
+  const logged = (app.interest || []).length;
+  // Every app has a testing plan view, so only a decided one is worth pointing at.
+  const decided = app.testingPlan?.choice?.plan && app.testingPlan.choice.plan !== "undecided";
+  return [decided ? "Testing plan" : "", logged ? `Interest log (${logged})` : ""].filter(Boolean).join(" · ");
+}
+
 function Chevron() {
   return <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m2 4 4 4 4-4" /></svg>;
 }
 
-window.cfApp = { APP_STATUSES, APP_STAGES, APP_ROUNDS, statusMeta, todayIso, fmtDate, daysUntil, relDays, ago, attentionOf, SchoolMark, StatusSelect, Chevron };
+window.cfApp = { APP_STATUSES, APP_STAGES, APP_ROUNDS, statusMeta, todayIso, fmtDate, daysUntil, relDays, ago, attentionOf, detailsHint, SchoolMark, StatusSelect, Chevron };

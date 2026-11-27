@@ -166,8 +166,9 @@ function AppDetails({ app, act, busy, checking, onCheck, master, data, onWorkspa
 
 /** One school. Compact rows fit on one line and keep the portal's full message for the expanded view. */
 function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, master, data, onWorkspaceChange }) {
-  const { SchoolMark, StatusSelect, fmtDate, daysUntil, relDays, ago, Chevron } = window.cfApp;
+  const { SchoolMark, StatusSelect, fmtDate, daysUntil, relDays, ago, Chevron, detailsHint } = window.cfApp;
   const next = app.nextDate;
+  const hint = open ? "" : detailsHint(app);
   const soon = next && daysUntil(next.date) <= 7;
   const summary = app.portal && app.portal.ok ? portalSummary(app) : null;
   const said = summary ? `${summary.quoted ? `“${summary.text}”` : summary.text} · ${ago(app.portal.checkedAt)}` : app.login ? "Not checked yet" : "";
@@ -182,6 +183,7 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, ma
           {!next && app.deadline && app.stage === "working" ? <span>Deadline <b>{fmtDate(app.deadline)}</b> · passed</span> : null}
           {compact && said && !checking ? <span className="cf-app-row__said">{said}</span> : null}
           {checking ? <span>Checking portal…</span> : null}
+          {hint ? <span className="cf-app-row__hint">{hint}</span> : null}
         </div>
       </div>
       <div className="cf-app-row__side">
@@ -227,6 +229,8 @@ function DatesView({ apps, criticalDates, colleges, scholarships }) {
     if (last && last.key === key) last.rows.push(r); else months.push({ key, rows: [r] });
   });
   return (
+    <React.Fragment>
+    <p className="cf-help" style={{ margin: "0 0 8px" }}><a className="cf-link-btn" href="#share/calendar">Subscribe in your calendar →</a></p>
     <div className="cf-dates">
       {months.map((m) => (
         <section key={m.key} aria-label={m.key}>
@@ -243,6 +247,7 @@ function DatesView({ apps, criticalDates, colleges, scholarships }) {
         </section>
       ))}
     </div>
+    </React.Fragment>
   );
 }
 

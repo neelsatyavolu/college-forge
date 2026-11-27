@@ -442,6 +442,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
               ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
               : ""}
           </p>
+          {data.colleges.length > 0 ? <a className="cf-link-btn" href="#list" style={{ display: "inline-flex", alignItems: "center" }}>See them ranked →</a> : null}
         </div>
         <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to adjust ✱</Button>
       </header>

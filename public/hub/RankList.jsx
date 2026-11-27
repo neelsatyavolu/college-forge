@@ -45,8 +45,12 @@ function RankList({ tracker, data, onWorkspaceChange }) {
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
-          <h1 className="cf-page-title">List</h1>
-          <p className="cf-page-lede">Your schools, ordered by a weighted average of six rankings. U.S. News, Forbes and your own <a href="/rankings">career ranking</a> (My path, with the majors you picked there) count fully; Niche ¾, since part of it is student reviews; WSJ ½, since it swings year to year and only its top 100 is public; the Princeton Review ¼, since it rates cost and aid rather than overall strength. Liberal arts, Princeton Review and career ranks count at the national rank of the same standing, and a list a school isn’t on is left out.</p>
+          <h1 className="cf-page-title">Ranked list</h1>
+          <p className="cf-page-lede">Your schools, ordered by a weighted average of six rankings.</p>
+          <details className="cf-rank-how">
+            <summary>How the order is set</summary>
+            <p className="cf-page-lede">U.S. News, Forbes and your own <a href="/rankings">career ranking</a> (My path, with the majors you picked there) count fully; Niche ¾, since part of it is student reviews; WSJ ½, since it swings year to year and only its top 100 is public; the Princeton Review ¼, since it rates cost and aid rather than overall strength. Liberal arts, Princeton Review and career ranks count at the national rank of the same standing, and a list a school isn’t on is left out.</p>
+          </details>
         </div>
         {rows.length ? <div className="cf-row-actions">
           {(data.colleges || []).length ? <Button size="sm" variant="secondary" onClick={() => setPicking(true)}>Pick essay schools</Button> : null}
