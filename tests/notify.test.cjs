@@ -262,3 +262,89 @@ test('a check an assistant runs still emails what it finds', () => isolated(asyn
   await callTool(ws, 'check_portals', {});
   assert.equal(net.sent.length, 1);
 }));
+
+// ── One digest per sweep ─────────────────────────────────────────────────────
+
+const SCHOOLS = ['Purdue University', 'Baylor University', 'Auburn University'];
+
+async function ownedWorkspaceWith(names) {
+  const account = await session.signInAccount({ sub: 'xa_DIGEST', email: 'student@example.com', name: 'Stu' }, null);
+  const ids = [];
+  for (const name of names) {
+    const a = await service.addApp(account.workspaceId, { name });
+    await service.setLogin(account.workspaceId, a.id, { username: 'u', password: 'p' });
+    ids.push(a.id);
+  }
+  return { ws: account.workspaceId, ids };
+}
+
+/** Resend's default limit: two requests a second. A third inside the same second gets a 429. */
+function rateLimitResend(net) {
+  const real = globalThis.fetch;
+  const times = [];
+  globalThis.fetch = async (url, init) => {
+    if (String(url) === 'https://api.resend.com/emails') {
+      const now = Date.now();
+      while (times.length && now - times[0] >= 1000) times.shift();
+      if (times.length >= 2) return new Response('{"name":"rate_limit_exceeded"}', { status: 429 });
+      times.push(now);
+    }
+    return real(url, init);
+  };
+  return net;
+}
+
+test('several schools changing in one sweep all arrive in one email', () => isolated(async () => {
+  const net = rateLimitResend(stubNetwork());
+  const { ws, ids } = await ownedWorkspaceWith(SCHOOLS);
+  await runChecks(ws, { appIds: ids, notify: true });
+  assert.equal(net.sent.length, 0, 'the first check only sets a baseline');
+  net.portal.snapshot = { statusText: 'Application complete', update: '', checklist: [] };
+  await runChecks(ws, { appIds: ids, notify: true });
+  assert.equal(net.sent.length, 1, 'one email for the whole sweep');
+  for (const name of SCHOOLS) {
+    assert.ok(net.sent[0].text.includes(name), `${name} is in the email`);
+    assert.ok(net.sent[0].html.includes(name), `${name} is in the HTML`);
+  }
+  assert.equal(net.sent[0].subject, 'Updates from 3 schools');
+  // Every school was told: the next sweep has nothing new to send.
+  await runChecks(ws, { appIds: ids, notify: true });
+  assert.equal(net.sent.length, 1);
+}));
+
+test('a digest with decisions says a decision posted and never the outcome', () => isolated(async () => {
+  const net = rateLimitResend(stubNetwork());
+  const { ws, ids } = await ownedWorkspaceWith(SCHOOLS);
+  await runChecks(ws, { appIds: ids, notify: true });
+  net.portal.snapshot = { statusText: 'Admitted', update: 'Congratulations! You have been admitted', checklist: [] };
+  await runChecks(ws, { appIds: ids, notify: true });
+  assert.equal(net.sent.length, 1);
+  const { subject, text, html } = net.sent[0];
+  assert.equal(subject, 'Decision received at 3 schools');
+  assert.ok(!/admit|accept|congratulations|denied|waitlist/i.test(subject + text + html));
+  for (const name of SCHOOLS) assert.ok(text.includes(name));
+}));
+
+test('a failed digest keeps every school for the next sweep', () => isolated(async () => {
+  const net = stubNetwork();
+  const { ws, ids } = await ownedWorkspaceWith(SCHOOLS);
+  await runChecks(ws, { appIds: ids, notify: true });
+  net.portal.snapshot = { statusText: 'Application complete', update: '', checklist: [] };
+  net.resend.fail = true;
+  await runChecks(ws, { appIds: ids, notify: true });
+  net.resend.fail = false;
+  await runChecks(ws, { appIds: ids, notify: true });
+  assert.equal(net.sent.length, 1);
+  for (const name of SCHOOLS) assert.ok(net.sent[0].text.includes(name));
+}));
+
+test('each sweep sends one email, not one per school, so the daily cap counts emails', () => isolated(async () => {
+  const net = stubNetwork();
+  const { ws, ids } = await ownedWorkspaceWith(SCHOOLS);
+  await runChecks(ws, { appIds: ids, notify: true });
+  for (let i = 0; i < 2; i++) {
+    net.portal.snapshot = { statusText: `Status ${i}`, update: '', checklist: [] };
+    await runChecks(ws, { appIds: ids, notify: true });
+  }
+  assert.equal(net.sent.length, 2, 'one email per sweep, not one per school');
+}));

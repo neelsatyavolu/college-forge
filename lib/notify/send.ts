@@ -6,16 +6,17 @@ import { openJson, sealJson, type Sealed } from "../portal-logins";
 import { getAccount, ownerOf } from "../session";
 import type { PortalResult, TrackedApp } from "../tracker";
 import { pushToWorkspace } from "./apns";
-import { changesBetween, composeEmail, pushBody, stateAfter, type Change, type CheckOutcome, type CheckState } from "./changes";
+import { changesBetween, composeDigest, pushBody, stateAfter, type Change, type CheckOutcome, type CheckState } from "./changes";
 
 /**
- * Emails a workspace's owner when an automatic check finds something new. The last check's summary per
+ * Emails a workspace's owner when an automatic check finds something new: one email per sweep that lists
+ * every school with news, so a sweep that finds several never sends a burst (Resend allows two a second). The last check's summary per
  * school is kept encrypted beside the workspace (it can hold a decision's wording), and only moves on once
  * the student has been told, so a failed send is retried on the next sweep. Registered iPhones also get a
  * push per school; that skips the email cap and the email switch, and never holds the state back.
  */
 
-/** Emails per workspace per UTC day, as College Apps had. */
+/** Emails per workspace per UTC day, as College Apps had. Each sweep sends at most one. */
 export const MAX_EMAILS_PER_DAY = 20;
 
 /** `pushed` remembers which pending news already reached the phone, so an email retry doesn't push it again. */
@@ -66,8 +67,8 @@ type Pending = { app: TrackedApp; changes: Change[]; next: CheckState };
 
 /**
  * Compares each check with the last one and, when `send` is on (an automatic sweep), pushes and emails the
- * owner one message per school with news. `email: false` (the student turned emails off) keeps the push.
- * Returns how many emails went out.
+ * owner one email listing every school with news. `email: false` (the student turned emails off) keeps the push.
+ * Returns how many emails went out (0 or 1).
  */
 export async function notifyChanges(
   workspaceId: string,
@@ -88,17 +89,19 @@ export async function notifyChanges(
   }
 
   const told = new Set<string>();
-  let used = before.day === day ? before.count : 0;
+  const used = before.day === day ? before.count : 0;
+  let emailed = 0;
   // The push runs beside the emails (it has its own deadline and never throws), so a slow APNs can't delay them.
   const pushing = opts.send ? push(workspaceId, pending, before.pushed ?? {}) : Promise.resolve(new Set<string>());
   const to = opts.send && emailOn && pending.some((p) => p.changes.length) ? await recipientOf(workspaceId) : null;
-  for (const p of pending) {
-    if (!p.changes.length || !to || used >= MAX_EMAILS_PER_DAY) continue;
+  const news = pending.filter((p) => p.changes.length);
+  if (news.length && to && used < MAX_EMAILS_PER_DAY) {
     try {
-      await sendEmail(to, emailFor(workspaceId, p));
-      told.add(p.app.id);
-      used++;
+      await sendEmail(to, emailFor(workspaceId, news));
+      for (const p of news) told.add(p.app.id);
+      emailed = 1;
     } catch (err) {
+      // Every school keeps its old summary, so the next sweep sends them all again.
       console.error("portal email failed", err instanceof Error ? err.name : "unknown");
     }
   }
@@ -122,9 +125,9 @@ export async function notifyChanges(
       }
     }
     const base = latest.day === day ? latest.count : 0;
-    return sealJson(aad(workspaceId), { apps, day, count: base + told.size, pushed: sentPush });
+    return sealJson(aad(workspaceId), { apps, day, count: base + emailed, pushed: sentPush });
   });
-  return told.size;
+  return emailed;
 }
 
 const newsKey = (p: Pending) => JSON.stringify(p.next);
@@ -141,12 +144,19 @@ async function push(workspaceId: string, pending: Pending[], alreadyPushed: Reco
 
 const ORIGIN = () => (process.env.FORGE_ORIGIN || "https://forge.xanom.co").replace(/\/$/, "");
 
-function emailFor(workspaceId: string, p: Pending) {
+function emailFor(workspaceId: string, news: Pending[]) {
   const origin = ORIGIN();
-  const logo = p.app.collegeId ? logoUrl(p.app.collegeId) : undefined;
-  return composeEmail(p.app.name, p.changes, origin, {
-    unsubscribeUrl: `${origin}/api/notify/unsubscribe?t=${encodeURIComponent(unsubscribeToken(workspaceId))}`,
-    ...(p.app.portalUrl ? { portalUrl: p.app.portalUrl } : {}),
-    ...(logo ? { logo: `${origin}${logo}` } : {}),
-  });
+  return composeDigest(
+    news.map((p) => {
+      const logo = p.app.collegeId ? logoUrl(p.app.collegeId) : undefined;
+      return {
+        school: p.app.name,
+        changes: p.changes,
+        ...(p.app.portalUrl ? { portalUrl: p.app.portalUrl } : {}),
+        ...(logo ? { logo: `${origin}${logo}` } : {}),
+      };
+    }),
+    origin,
+    { unsubscribeUrl: `${origin}/api/notify/unsubscribe?t=${encodeURIComponent(unsubscribeToken(workspaceId))}` },
+  );
 }
