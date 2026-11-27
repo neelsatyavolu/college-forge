@@ -35,3 +35,12 @@ test('the final round sends short tool outputs', () => {
   assert.ok(t.length < 1300);
   assert.match(t, /trimmed; you read the full text earlier/);
 });
+
+test('the copilot’s last round offers no tools, so it has to reply with what it saved', () => {
+  const tools = ['update_profile', 'upsert_activity', 'read_upload'].map((name) => ({ name, description: '', parameters: {} }));
+  assert.deepEqual(B.finalTools(tools, B.COPILOT_WRAP_UP), []);
+  assert.match(B.COPILOT_WRAP_UP.note, /what you saved/);
+  assert.ok(B.COPILOT_WRAP_UP.deadlineMs < 300_000, 'inside the route limit');
+  assert.ok(B.COPILOT_WRAP_UP.deadlineMs - B.COPILOT_WRAP_UP.afterMs >= 60_000, 'a minute for the summary');
+  assert.equal(B.isFinalRound(B.COPILOT_WRAP_UP, 0, 9, 10, 1000), true, 'the tenth round is the summary');
+});

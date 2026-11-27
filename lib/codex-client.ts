@@ -78,7 +78,8 @@ async function callCodex(
     model,
     instructions,
     input,
-    tools: tools.map((t) => ({ type: "function", ...t })),
+    // A wrap-up round offers no tools; leave the field out rather than send an empty list.
+    ...(tools.length ? { tools: tools.map((t) => ({ type: "function", ...t })) } : {}),
     stream: true,
     store: false,
   };

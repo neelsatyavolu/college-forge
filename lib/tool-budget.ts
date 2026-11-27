@@ -43,6 +43,17 @@ export function trimForFinal(output: string): string {
 }
 
 /** Onboarding: research must not run past the server's 300-second limit; the list or question must come out. */
+/**
+ * The hub copilot's last round: no tools, just a reply. Without it a long turn (reading several uploads into the
+ * profile) ran out of rounds and the student got only the step-limit note, never hearing what was saved.
+ */
+export const COPILOT_WRAP_UP: WrapUp = {
+  afterMs: 210_000,
+  deadlineMs: 290_000,
+  tools: [],
+  note: "You're at this turn's step limit, so stop calling tools. In a few short sentences, tell the student what you saved to their hub this turn and what's still left, and that they can say \"continue\" for you to finish.",
+};
+
 export const ONBOARDING_WRAP_UP: WrapUp = {
   afterMs: 80_000,
   deadlineMs: 290_000,
