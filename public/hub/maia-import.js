@@ -12,6 +12,8 @@
   var FRESH_MS = 14 * 24 * 60 * 60 * 1000; // a school imported in the last two weeks isn't fetched again
   var remaining = []; // what a stopped run didn't get to, for the Resume button
   var countdown = null; // ticks the "trying again in N seconds" status
+  var SEARCH_BUSY = "Maia's college search is busy; the next run tries again"; // same text as public/maia/import.js
+  var unitIds = {}; // slug → federal Scorecard id, so Maia can find a school without its rate-limited name search
   var maia = window.opener;
   var colleges = null;
   var busy = false;
@@ -119,13 +121,15 @@
     // Resume covers what isn't saved yet, except schools Maia doesn't have.
     var notFound = {};
     (missing || []).forEach(function (m) { if (m.reason === "Not found in Maia") notFound[m.slug] = true; });
-    remaining = stopped || cancelled || saveError ? colleges.filter(function (c) { return !savedSlugs[c.slug] && !notFound[c.slug]; }) : [];
+    var searchBusy = (missing || []).filter(function (m) { return m.reason === SEARCH_BUSY; }).length;
+    remaining = stopped || cancelled || saveError || searchBusy ? colleges.filter(function (c) { return !savedSlugs[c.slug] && !notFound[c.slug]; }) : [];
+    var later = searchBusy ? " " + searchBusy + " couldn’t be looked up because Maia’s search is busy; click the bookmark again in a while to get them." : "";
     if (saveError) { finish("Saved " + savedCount + " colleges, then couldn’t save more: " + (saveError.message || "unknown error") + ". Resume to try the rest.", true); return; }
-    if (!payload.colleges.length) { finish(stopped ? String(stopped) : "Maia didn’t return scattergrams for " + (colleges.length === 1 ? colleges[0].name : "any of these colleges") + ".", true); return; }
+    if (!payload.colleges.length) { finish(stopped ? String(stopped) : later ? later.trim() : "Maia didn’t return scattergrams for " + (colleges.length === 1 ? colleges[0].name : "any of these colleges") + ".", true); return; }
     var total = payload.colleges.length;
     var withData = payload.colleges.filter(function (c) { return c.points.length > 0; }).length;
     var what = total === 1 ? colleges[0].name + (withData ? "" : " (no applicants from your school)") : total + " colleges (" + withData + " with applicants from your school)";
-    finish((cancelled ? "Stopped early. " : "") + "Imported " + what + "." + (stopped ? " " + stopped : ""), Boolean(stopped));
+    finish((cancelled ? "Stopped early. " : "") + "Imported " + what + "." + (stopped ? " " + stopped : "") + later, Boolean(stopped));
   }
 
   function showDiagnostic(diagnostic) {
@@ -192,7 +196,7 @@
   var known = {}; // slug → stored scattergram, for Maia ids and import times
   function toTarget(c) {
     var k = known[c.slug];
-    return { slug: c.slug, name: c.name, scorecardId: c.scorecardId || null, nid: (k && k.maiaNid) || null };
+    return { slug: c.slug, name: c.name, scorecardId: c.scorecardId || unitIds[c.slug] || null, nid: (k && k.maiaNid) || null };
   }
 
   el("resume").addEventListener("click", function () {
@@ -268,6 +272,15 @@
       return;
     }
     // Your list first, then schools you queued from the Scattergrams tab.
+    // Schools without a saved Maia id or Scorecard id would need Maia's rate-limited
+    // name search; Forge's catalog supplies the Scorecard id for most of them.
+    var needIds = list.concat(readQueue()).some(function (c) { return !c.scorecardId && !(known[c.slug] && known[c.slug].maiaNid); });
+    if (needIds) {
+      try {
+        var cat = await fetch("/api/colleges/search?browse=1", { credentials: "same-origin" }).then(function (r) { return r.json(); });
+        (cat && Array.isArray(cat.data) ? cat.data : []).forEach(function (c) { if (c && c.slug && c.scorecardId) unitIds[c.slug] = c.scorecardId; });
+      } catch (e) { /* the name search still works, just slower to get through */ }
+    }
     var seen = {};
     var all = list.concat(readQueue()).filter(function (c) { return !seen[c.slug] && (seen[c.slug] = true); }).map(toTarget);
     if (!all.length) { finish("Your list is empty. Look up any school below, or add colleges in College Forge first."); return; }
