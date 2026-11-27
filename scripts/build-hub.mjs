@@ -60,7 +60,8 @@ await buildHub();
 // deploy fresh asset URLs so browsers never pair old hub code with a new API.
 if (process.env.VERCEL) {
   const version = (process.env.VERCEL_GIT_COMMIT_SHA || process.env.VERCEL_DEPLOYMENT_ID || String(Date.now())).slice(0, 12);
-  for (const page of ['index.html', 'share.html']) {
+  // maia-import.html too: a stale cached maia-import.js re-imported schools the student already had.
+  for (const page of ['index.html', 'share.html', 'maia-import.html']) {
     const file = join(hub, page);
     await writeFile(file, stampAssetVersions(await readFile(file, 'utf8'), version));
   }
