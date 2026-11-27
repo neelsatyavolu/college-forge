@@ -424,6 +424,19 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
     if (summary) setNotice((nextAmbition ? `List balance set to ${AMBITION_LABEL[nextAmbition].toLowerCase()}. ` : "") + summary);
   };
   const onShift = (dir) => rebalance(AMBITION_STEPS[Math.max(0, Math.min(AMBITION_STEPS.length - 1, AMBITION_STEPS.indexOf(ambition) + dir))]);
+  const onAssessAll = async () => {
+    let message = "";
+    await saveChange("__assess", async () => {
+      const j = await window.cfApi.postAction("assess-tiers", {});
+      if (!j.data) throw new Error("Could not assess your schools. Please try again.");
+      const done = (j.assessed || []).length;
+      const unknown = j.unknown || [];
+      message = (done ? `Sorted ${done} school${done === 1 ? "" : "s"} into reach, target or likely.` : "")
+        + (unknown.length ? ` No admissions data for ${unknown.join(", ")}; pick a tier for ${unknown.length === 1 ? "it" : "them"} yourself.` : "");
+      return j.data;
+    }, "");
+    if (message) setNotice(message.trim());
+  };
   const onRemove = (slug) => saveChange(slug, async () => {
     const response = await fetch(`/api/workspace/colleges?slug=${encodeURIComponent(slug)}`, { method: "DELETE", credentials: "same-origin" });
     const result = await response.json();
@@ -514,7 +527,14 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
 
           {filter === "all" && untiered.length > 0 ? (
             <section style={{ marginBottom: 40 }}>
-              <h2 className="cf-display" style={{ margin: "0 0 16px", fontSize: 22, color: "var(--ink)" }}>Not assessed yet</h2>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
+                <h2 className="cf-display" style={{ margin: 0, fontSize: 22, color: "var(--ink)" }}>Not assessed yet</h2>
+                <Button size="sm" variant="secondary" disabled={busy} onClick={onAssessAll}
+                  title="Sorts each school into reach, target or likely from its admissions data and your grades and scores">
+                  Assess all {untiered.length}
+                </Button>
+              </div>
+              {error && error.slug === "__assess" ? <p role="alert" style={{ margin: "0 0 12px", fontSize: 13, color: "var(--error)" }}>{error.message}</p> : null}
               <div style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                 {untiered.map((s, i) => (
                   <SchoolRow key={s.slug} s={s} odds={(data.admissionOdds || {})[s.slug]} oddsStale={isStaleOdds((data.admissionOdds || {})[s.slug], fingerprint)} last={i === untiered.length - 1}
