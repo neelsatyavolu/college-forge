@@ -146,3 +146,16 @@ test('pickSets finds choose-N sets with more than one pick, and pickPatch hides 
     'uc-piq-5': null, 'uc-piq-6': true, 'uc-piq-7': true, 'uc-piq-8': null,
   });
 });
+
+test('markSegments splits a draft into plain and flagged runs, skipping sentences no longer in the text', () => {
+  const { markSegments } = require('../public/hub/essay-archetypes.js');
+  const text = 'I grew up near the sea. The waves taught me patience.\n\nLater I left.';
+  assert.deepEqual(markSegments(text, ['The waves taught me patience.', 'A sentence I deleted.', '  Later I left. ']), [
+    { text: 'I grew up near the sea. ', mark: false },
+    { text: 'The waves taught me patience.', mark: true },
+    { text: '\n\n', mark: false },
+    { text: 'Later I left.', mark: true },
+  ]);
+  assert.deepEqual(markSegments('abc', []), [{ text: 'abc', mark: false }]);
+  assert.deepEqual(markSegments('', ['x']), []);
+});
