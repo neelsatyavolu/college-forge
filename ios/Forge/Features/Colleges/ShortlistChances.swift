@@ -5,6 +5,12 @@ struct ShortlistChancesSection: View {
     @Environment(WorkspaceStore.self) private var store
     @Environment(CollegesChancesModel.self) private var chances
 
+    private var estimateLabel: String {
+        if chances.isRunning { return "Estimating…" }
+        if chances.metadata(for: store.workspace)?.staleNotice != nil { return "Re-estimate" }
+        return store.workspace.admissionOdds.isEmpty ? "Estimate my chances" : "Estimate again"
+    }
+
     var body: some View {
         Section {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -13,18 +19,24 @@ struct ShortlistChancesSection: View {
                     .font(.subheadline)
                     .foregroundStyle(Theme.body)
                     .fixedSize(horizontal: false, vertical: true)
+                if let error = chances.metadataError {
+                    ErrorBanner(message: error.message, retry: { Task { await chances.loadMetadata(store: store) } })
+                }
                 status
                 Button {
                     Task { await chances.run(store: store) }
                 } label: {
                     HStack {
                         if chances.isRunning { ProgressView().tint(Theme.canvas) }
-                        Text(chances.isRunning ? "Estimating…" : store.workspace.admissionOdds.isEmpty ? "Estimate my chances" : "Estimate again")
+                        Text(estimateLabel)
                     }
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.forgePrimary)
                 .disabled(chances.isRunning)
+                if !chances.isRunning, let message = chances.metadata(for: store.workspace)?.staleNotice {
+                    Text(message).font(.footnote).foregroundStyle(Theme.amber)
+                }
             }
             .padding(.vertical, Theme.Spacing.xxs)
         } footer: {

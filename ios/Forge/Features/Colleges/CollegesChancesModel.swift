@@ -15,6 +15,29 @@ final class CollegesChancesModel {
     private(set) var progress = ""
     private(set) var outcome: Outcome?
 
+    private var shortlistMetadata: CollegesShortlistMetadata?
+    private(set) var metadataError: APIError?
+
+    func metadata(for workspace: Workspace) -> CollegesShortlistMetadata? {
+        guard let shortlistMetadata, shortlistMetadata.draftStorageKey == workspace.draftStorageKey,
+              shortlistMetadata.revision == workspace.revision else { return nil }
+        return shortlistMetadata
+    }
+
+    func loadMetadata(store: WorkspaceStore) async {
+        guard metadata(for: store.workspace) == nil else { return }
+        metadataError = nil
+        do {
+            let snapshot = try await store.api.collegesShortlistMetadata()
+            try Task.checkCancellation()
+            guard snapshot.draftStorageKey == store.workspace.draftStorageKey else { return }
+            shortlistMetadata = snapshot
+            if snapshot.revision > store.workspace.revision { await store.refresh() }
+        } catch {
+            if !Task.isCancelled { metadataError = APIError.wrap(error) }
+        }
+    }
+
     private static let concurrency = 3
 
     func run(store: WorkspaceStore) async {

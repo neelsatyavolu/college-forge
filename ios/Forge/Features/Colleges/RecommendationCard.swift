@@ -5,6 +5,7 @@ struct RecommendationCard: View {
     let recommendation: CollegesRecommendation
 
     @Environment(WorkspaceStore.self) private var store
+    @Environment(Router.self) private var router
     @State private var showsCautions = false
     @State private var isSaving = false
     @State private var error: APIError?
@@ -34,6 +35,10 @@ struct RecommendationCard: View {
             reasons
             cautions
             actions
+            Button("Ask AI") {
+                router.openChat(prompt: "Use the recommendation evidence to explain whether \(college.name) fits my profile. Use the published evidence and flag uncertainty. Do not change my shortlist.")
+            }
+            .font(.subheadline.weight(.medium))
         }
         .forgeCard()
         .errorAlert($error)

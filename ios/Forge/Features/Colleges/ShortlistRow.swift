@@ -7,6 +7,7 @@ struct ShortlistRow: View {
     let odds: AdmissionOdds?
 
     @Environment(WorkspaceStore.self) private var store
+    @Environment(CollegesChancesModel.self) private var chances
     @State private var showsOdds = false
 
     var body: some View {
@@ -29,7 +30,14 @@ struct ShortlistRow: View {
                     .font(.forgeNumber(.caption, weight: .regular))
                     .foregroundStyle(Theme.muted)
             }
-            if let odds { oddsLine(odds) }
+            if let odds {
+                oddsLine(odds)
+                if chances.metadata(for: store.workspace)?.staleKeys.contains(college.slug) == true {
+                    Text("Estimated before your profile changed")
+                        .font(.caption)
+                        .foregroundStyle(Theme.amber)
+                }
+            }
             if let app = store.shortlistTrackedApplication(for: college) {
                 Label("Applying · \(app.statusLabel)", systemImage: "paperplane.fill")
                     .font(.caption.weight(.medium))
