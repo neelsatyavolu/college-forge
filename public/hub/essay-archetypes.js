@@ -102,6 +102,39 @@
     return patch;
   }
 
+  /**
+   * The draft cut into runs for highlighting: each flagged sentence still found in the text (first match,
+   * in order, no overlaps) is a marked run. Sentences the student has since edited away are skipped.
+   */
+  function markSegments(text, sentences) {
+    text = String(text || "");
+    if (!text) return [];
+    var ranges = [];
+    (sentences || []).forEach(function (s) {
+      var needle = String(s || "").trim();
+      if (!needle) return;
+      var from = 0;
+      while (from <= text.length) {
+        var at = text.indexOf(needle, from);
+        if (at < 0) return;
+        var end = at + needle.length;
+        var overlaps = ranges.some(function (r) { return at < r[1] && end > r[0]; });
+        if (!overlaps) { ranges.push([at, end]); return; }
+        from = at + 1;
+      }
+    });
+    ranges.sort(function (a, b) { return a[0] - b[0]; });
+    var out = [];
+    var pos = 0;
+    ranges.forEach(function (r) {
+      if (r[0] > pos) out.push({ text: text.slice(pos, r[0]), mark: false });
+      out.push({ text: text.slice(r[0], r[1]), mark: true });
+      pos = r[1];
+    });
+    if (pos < text.length) out.push({ text: text.slice(pos), mark: false });
+    return out;
+  }
+
   var UC_APPLICATION_SLUG = "uc-application";
 
   /** A University of California campus; they share one UC Application essay group. */
@@ -239,6 +272,7 @@
     visibleItems: visibleItems,
     pickSets: pickSets,
     pickPatch: pickPatch,
+    markSegments: markSegments,
     isUcCampus: isUcCampus,
     essayGroupKey: essayGroupKey,
     isSchoolSkipped: isSchoolSkipped,

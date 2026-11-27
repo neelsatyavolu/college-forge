@@ -90,8 +90,11 @@ function AiBars({ r }) {
   );
 }
 
-/** The editor's AI check: button, last result, and the sentences GPTZero flagged (shown, not stored). */
-function AiCheckPanel({ essayId, words, check, pending, onFlush, onWorkspaceChange }) {
+/**
+ * The editor's AI check, one strip under the prompt: verdict, bars, a toggle for highlighting the sentences
+ * GPTZero flagged (onFlagged hands them to the editor; they're shown, not stored), and the check button.
+ */
+function AiCheckPanel({ essayId, words, check, pending, onFlush, onWorkspaceChange, onFlagged, highlighting, onToggleHighlight }) {
   const { Button } = window.CollegeForgeDesignSystem_e95e63;
   const [status, setStatus] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
@@ -107,6 +110,7 @@ function AiCheckPanel({ essayId, words, check, pending, onFlush, onWorkspaceChan
       if (onFlush) await onFlush();
       const j = await gptzeroApi("/api/gptzero/scan", { essayId });
       setResult(j.result);
+      if (onFlagged) onFlagged((j.result && j.result.flagged || []).map((f) => f.sentence));
       if (onWorkspaceChange && j.data) onWorkspaceChange(j.data);
     } catch (e) { setErr(e.message); }
     setBusy(false);
@@ -114,40 +118,30 @@ function AiCheckPanel({ essayId, words, check, pending, onFlush, onWorkspaceChan
 
   const shown = result || check;
   const connected = status && status.connected;
+  const flaggedCount = result ? (result.flaggedCount || result.flagged.length) : 0;
+  const privacy = `Your essay text is sent to GPTZero with your own account. Detectors make mistakes, more so on short or heavily edited text.${result && result.message ? ` GPTZero: ${result.message}` : ""}`;
   return (
-    <div style={{ marginBottom: 16, padding: "10px 14px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)", background: "var(--surface-soft)", display: "grid", gap: 8 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 13, color: "var(--ink)" }}>
-          {shown && shown.verdict && VERDICT_WORDS[shown.verdict] ? <strong>{VERDICT_WORDS[shown.verdict]}</strong> : <strong>AI writing check</strong>}
-          {!result && check ? <span className="cf-nums" style={{ color: "var(--muted)" }}> · checked {new Date(check.checkedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })} at {check.words} words</span> : null}
-        </span>
-        {status === null ? null : connected ? (
-          <Button size="sm" variant="secondary" disabled={busy || pending || words < 50} onClick={run}>{busy ? "Checking…" : shown ? "Check again" : "Check for AI writing"}</Button>
-        ) : (
-          <a className="cf-link-btn" href="#settings/gptzero">{status.failed ? "GPTZero sign-in failed. Re-enter your login in Settings" : "Connect GPTZero in Settings"}</a>
-        )}
-      </div>
+    <div className="cf-ai-strip">
+      <span className="cf-ai-strip__verdict" title={privacy}>
+        {shown && shown.verdict && VERDICT_WORDS[shown.verdict] ? VERDICT_WORDS[shown.verdict] : "AI writing check"}
+        {!result && check ? <span className="cf-nums cf-ai-strip__meta"> · {new Date(check.checkedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}, {check.words} words</span> : null}
+      </span>
       {shown && shown.verdict ? <AiBars r={shown} /> : null}
-      {result && result.message ? <p style={{ margin: 0, fontSize: 13, color: "var(--body)" }}>{result.message}</p> : null}
-      {result && result.flagged.length ? (
-        <details>
-          <summary style={{ cursor: "pointer", fontSize: 13, color: "var(--ink)" }}>{result.flaggedCount || result.flagged.length} of {result.sentences} sentences flagged as AI{result.flaggedCount > result.flagged.length ? ` (first ${result.flagged.length} shown)` : ""}</summary>
-          <ul style={{ margin: "8px 0 0", paddingLeft: 18, display: "grid", gap: 6 }}>
-            {result.flagged.map((s, i) => (
-              <li key={i} style={{ fontSize: 13, lineHeight: 1.5, color: "var(--body)" }}>
-                <mark style={{ background: "color-mix(in srgb, var(--accent-amber) 28%, transparent)", color: "inherit" }}>{s.sentence}</mark>
-                <span className="cf-nums" style={{ marginLeft: 6, fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--muted)" }}>{pct(s.prob)}</span>
-              </li>
-            ))}
-          </ul>
-        </details>
-      ) : null}
-      {err ? <p role="alert" style={{ margin: 0, fontSize: 13, color: "var(--error)" }}>{err}</p> : null}
-      <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>
-        {connected
-          ? `Your essay text is sent to GPTZero. Detectors make mistakes, more so on short or heavily edited text${words < 50 ? ". Write at least 50 words to check" : ""}.`
-          : "Checks use your own GPTZero account."}
-      </p>
+      {flaggedCount ? (
+        <button type="button" className="cf-link-btn" aria-pressed={!!highlighting} onClick={onToggleHighlight}>
+          {highlighting ? "Hide" : "Highlight"} {flaggedCount} flagged sentence{flaggedCount === 1 ? "" : "s"}
+        </button>
+      ) : result ? <span className="cf-ai-strip__meta">No sentences flagged</span> : null}
+      <span className="cf-ai-strip__action">
+        {status === null ? null : connected ? (
+          <Button size="sm" variant="secondary" disabled={busy || pending || words < 50} title={words < 50 ? "Write at least 50 words to check." : privacy} onClick={run}>
+            {busy ? "Checking…" : shown ? "Check again" : "Check for AI writing"}
+          </Button>
+        ) : (
+          <a className="cf-link-btn" href="#settings/gptzero">{status.failed ? "GPTZero sign-in failed. Fix it in Settings" : "Connect GPTZero to check for AI writing"}</a>
+        )}
+      </span>
+      {err ? <p role="alert" className="cf-ai-strip__error">{err}</p> : null}
     </div>
   );
 }

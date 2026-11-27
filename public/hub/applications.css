@@ -451,3 +451,17 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
 .cf-pick-set { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 10px; font-size: 12px; color: var(--muted); }
 .cf-essay-skipped { margin: 0 0 14px; font-size: 13px; }
 .cf-essay-skipped .cf-link-btn { min-height: 28px; }
+
+/* Essay draft: an invisible copy of the text under the textarea sets its height and shows AI-check highlights. */
+.cf-essay-draft { display: grid; min-height: 100%; }
+.cf-essay-draft > .cf-essay-draft__marks, .cf-essay-draft > .cf-essay-textarea { grid-area: 1 / 1; margin: 0; padding: 0; border: 0; font: 400 16px/1.7 var(--font-body); letter-spacing: normal; white-space: pre-wrap; overflow-wrap: break-word; }
+.cf-essay-draft__marks { color: transparent; pointer-events: none; user-select: none; }
+.cf-essay-draft__marks mark { color: transparent; background: color-mix(in srgb, var(--accent-amber) 32%, transparent); border-radius: 2px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-amber) 32%, transparent); }
+.cf-essay-draft > .cf-essay-textarea { position: relative; width: 100%; height: 100%; min-height: 280px; box-sizing: border-box; resize: none; overflow: hidden; background: transparent; color: var(--ink); }
+
+/* The AI writing check, one line under the essay prompt. */
+.cf-ai-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hairline); font-size: 13px; color: var(--body); }
+.cf-ai-strip__verdict { font-weight: 600; color: var(--ink); cursor: help; }
+.cf-ai-strip__meta { font-weight: 400; color: var(--muted); }
+.cf-ai-strip__action { margin-left: auto; }
+.cf-ai-strip__error { flex-basis: 100%; margin: 0; color: var(--error); }

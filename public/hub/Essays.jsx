@@ -444,7 +444,7 @@ function SuggestionPanel({ suggestion, unit, onUse, onDismiss, busy }) {
   );
 }
 
-function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden, aiCheck }) {
+function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, onSetStatus, statusBusy, statusError, startFrom, suggestion, onUseSuggestion, onDismissSuggestion, hidden, onToggleHidden, aiCheck, flagged }) {
   const count = essayCount(it, value);
   const over = count > it.limit;
   const underMin = /^ca-ps-/.test(it.id) && count > 0 && count < 250;
@@ -481,12 +481,15 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
           {it.label}
         </h2>
         <p
+          className="cf-essay-prompt"
           style={{
-            margin: "6px 0 0",
-            fontSize: 14,
-            color: "var(--muted)",
-            lineHeight: 1.5,
-            maxWidth: 720,
+            margin: "10px 0 0",
+            padding: "2px 0 2px 14px",
+            borderLeft: "2px solid var(--coral)",
+            fontSize: 16,
+            color: "var(--ink)",
+            lineHeight: 1.55,
+            maxWidth: 760,
             textWrap: "pretty",
           }}
         >
@@ -499,10 +502,10 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
             <Button variant="secondary" size="sm" onClick={() => onAsk(essayAsk(it, "check"))}>Check against prompt</Button>
           </div>
         ) : null}
+        {aiCheck}
       </div>
 
       <div className="cf-essay-writing-area" style={{ flex: 1, minHeight: 0, padding: "20px 28px", overflowY: "auto" }}>
-        {aiCheck}
         {suggestion ? (
           <SuggestionPanel suggestion={suggestion} unit={it.unit} busy={statusBusy} onUse={onUseSuggestion} onDismiss={onDismissSuggestion} />
         ) : null}
@@ -523,26 +526,21 @@ function Editor({ it, value, onChange, saveState, schoolLabel, onAsk, status, on
             </select>
           </label>
         ) : null}
-        <textarea
-          className="cf-essay-textarea"
-          aria-label={it.label + " draft"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Start writing, or paste a draft. The copilot can outline, tighten, or fact-check any paragraph. Drafts save to your hub (all devices with your recovery code)."
-          spellCheck="true"
-          style={{
-            width: "100%",
-            minHeight: "100%",
-            boxSizing: "border-box",
-            border: "none",
-            resize: "none",
-            background: "transparent",
-            color: "var(--ink)",
-            fontFamily: "var(--font-body)",
-            fontSize: 16,
-            lineHeight: 1.7,
-          }}
-        />
+        <div className="cf-essay-draft">
+          {/* Same text, invisible, under the textarea: it sets the height and carries the AI-check highlights. */}
+          <div className="cf-essay-draft__marks" aria-hidden="true">
+            {ESSAY_PLAN.markSegments(value, flagged || []).map((seg, i) => (seg.mark ? <mark key={i}>{seg.text}</mark> : <span key={i}>{seg.text}</span>))}
+            {"\n"}
+          </div>
+          <textarea
+            className="cf-essay-textarea"
+            aria-label={it.label + " draft"}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Start writing, or paste a draft. The copilot can outline, tighten, or fact-check any paragraph. Drafts save to your hub (all devices with your recovery code)."
+            spellCheck="true"
+          />
+        </div>
       </div>
 
       <div
@@ -698,6 +696,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
     [allGroups, data.essaySchools]
   );
   const [picking, setPicking] = React.useState(false);
+  // GPTZero's flagged sentences for one essay, highlighted in its draft. Not stored, like the scan route.
+  const [flaggedFor, setFlaggedFor] = React.useState(null);
   const allItems = React.useMemo(
     () =>
       groups.flatMap((g) =>
@@ -958,7 +958,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
             borderRadius: "var(--radius-lg)",
             overflow: "hidden",
             background: "var(--canvas)",
-            height: "min(620px, calc(100vh - 220px))",
+            height: "max(560px, calc(100dvh - 120px))",
           }}
         >
           <aside
@@ -1125,8 +1125,12 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                     pending={saveState !== "saved"}
                     onFlush={flush}
                     onWorkspaceChange={onWorkspaceChange}
+                    highlighting={!!flaggedFor && flaggedFor.id === active.id && flaggedFor.show}
+                    onFlagged={(sentences) => setFlaggedFor(sentences.length ? { id: active.id, sentences, show: true } : null)}
+                    onToggleHighlight={() => setFlaggedFor(flaggedFor && { ...flaggedFor, show: !flaggedFor.show })}
                   />
                 ) : null}
+                flagged={flaggedFor && flaggedFor.id === active.id && flaggedFor.show ? flaggedFor.sentences : null}
               />
             ) : (
               <div className="cf-empty" style={{ border: "none", margin: "auto" }}>
