@@ -168,24 +168,57 @@ function LettersPanel({ Panel, recs, tracker, busy, patch, fieldStyle, onAsk }) 
   );
 }
 
-/** "Letters still missing" on Progress: what the student owes their recommenders, soonest first. */
-function LetterTasks({ data, tracker }) {
-  const tasks = recHelpers().letterTasks((data && data.recommendations) || [], tracker, todayIso());
+/** "Letters still missing" on Progress: what the student owes their recommenders, soonest first. Each line can be
+ * cleared: Asked and Sent update the recommender; Dismiss hides a portal nudge in this browser. */
+function LetterTasks({ data, tracker, onWorkspaceChange }) {
+  const { Button } = window.CollegeForgeDesignSystem_e95e63;
+  const hiddenKey = "cf-letter-nudges-hidden:" + ((data && data.draftStorageKey) || "local");
+  const [hidden, setHidden] = React.useState(() => {
+    try { return new Set(JSON.parse(window.localStorage.getItem(hiddenKey) || "[]")); } catch (e) { return new Set(); }
+  });
+  const [busy, setBusy] = React.useState("");
+  const [error, setError] = React.useState("");
+  const nudgeId = (t) => `${t.recId}:${t.appId || ""}:${t.due || ""}`;
+  const tasks = recHelpers().letterTasks((data && data.recommendations) || [], tracker, todayIso())
+    .filter((t) => t.kind !== "nudge" || !hidden.has(nudgeId(t)));
   if (!tasks.length) return null;
+  const save = async (t, recommendation) => {
+    setBusy(`${t.recId}-${t.kind}`);
+    setError("");
+    try {
+      const ws = await window.cfApi.patch({ recommendation: { id: t.recId, ...recommendation } });
+      if (onWorkspaceChange) onWorkspaceChange(ws);
+    } catch (e) {
+      setError(e.message || "Couldn’t save. Try again.");
+    } finally { setBusy(""); }
+  };
+  const dismiss = (t) => {
+    const next = new Set(hidden).add(nudgeId(t));
+    setHidden(next);
+    try { window.localStorage.setItem(hiddenKey, JSON.stringify([...next])); } catch (e) { /* this session only */ }
+  };
+  const action = (t) => {
+    const working = busy === `${t.recId}-${t.kind}`;
+    if (t.kind === "ask") return <Button variant="secondary" size="sm" disabled={!!busy} onClick={() => save(t, { status: "asked", askedAt: todayIso() })}>{working ? "Saving…" : "Asked"}</Button>;
+    if (t.kind === "thank") return <Button variant="secondary" size="sm" disabled={!!busy} onClick={() => save(t, { thankYouSent: true })}>{working ? "Saving…" : "Sent"}</Button>;
+    return <button type="button" className="cf-link-btn" onClick={() => dismiss(t)}>Dismiss</button>;
+  };
   return (
     <section className="cf-panel" aria-labelledby="letter-tasks-title">
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
         <h2 id="letter-tasks-title">Letters still missing</h2>
         <a className="cf-link-btn" href="#track">Recs, aid &amp; scholarships →</a>
       </div>
-      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 4 }}>
         {tasks.map((t, i) => (
-          <li key={`${t.recId}-${t.kind}-${t.appId || i}`} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14, color: "var(--ink)" }}>
-            <span>{t.text}</span>
+          <li key={`${t.recId}-${t.kind}-${t.appId || i}`} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 36, fontSize: 14, color: "var(--ink)" }}>
+            <span style={{ flex: 1, minWidth: 0 }}>{t.text}</span>
             {t.due ? <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: t.overdue ? "var(--error)" : "var(--muted)" }}>{t.overdue ? "overdue · " : t.kind === "ask" ? "ask by " : "due "}{t.due}</span> : null}
+            {action(t)}
           </li>
         ))}
       </ul>
+      {error ? <p role="alert" style={{ margin: "8px 0 0", fontSize: 13, color: "var(--error)" }}>{error}</p> : null}
     </section>
   );
 }

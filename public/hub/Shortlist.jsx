@@ -139,7 +139,7 @@ async function runOddsSteps(onProgress) {
   return { ws, total: wanted.length, missed };
 }
 
-function ChancesPanel({ data, onWorkspaceChange }) {
+function ChancesPanel({ data, onWorkspaceChange, compact }) {
   const [running, setRunning] = React.useState(false);
   const [progress, setProgress] = React.useState("");
   const [result, setResult] = React.useState(null);
@@ -160,6 +160,18 @@ function ChancesPanel({ data, onWorkspaceChange }) {
       setResult({ tone: "error", text: e.message || "The estimate stopped. Try again." });
     } finally { setRunning(false); setProgress(""); }
   };
+  const label = running ? "Estimating…" : staleCount ? "Re-estimate chances" : estimated.length ? "Estimate chances again" : "Estimate my chances";
+  if (compact) {
+    // A header button (Progress); progress, results and a stale warning show in one short line under it.
+    const line = running ? progress : result ? result.text : staleCount ? `${staleCount} of ${estimated.length} estimates predate profile changes.` : "";
+    return (
+      <span style={{ position: "relative", display: "inline-flex" }}>
+        <Button size="sm" variant="secondary" disabled={running} onClick={run}
+          title="The AI reads your profile, essays, each school's supplements and your uploads, starts from each school's published rate for your round, and can move at most threefold from it. A rough guide.">{label}</Button>
+        {line ? <span role="status" aria-live="polite" style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, width: "max-content", maxWidth: 320, zIndex: 2, fontSize: 12, lineHeight: 1.35, textAlign: "right", color: result && result.tone === "error" ? "var(--error)" : staleCount && !running && !result ? "var(--warning)" : "var(--muted)" }}>{line}</span> : null}
+      </span>
+    );
+  }
   return (
     <section style={{ marginBottom: 28, padding: "16px 20px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
