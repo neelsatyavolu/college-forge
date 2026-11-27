@@ -216,7 +216,7 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
   const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//College Forge//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:College Forge deadlines", "REFRESH-INTERVAL;VALUE=DURATION:PT6H", "X-PUBLISHED-TTL:PT6H"];
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   // alarm: application deadlines get a reminder 3 days before.
-  const events: { date: string; title: string; detail?: string; alarm?: boolean; time?: string }[] = [];
+  const events: { date: string; title: string; detail?: string; alarm?: boolean; time?: string; uid?: string }[] = [];
   for (const date of ws.criticalDates || []) events.push({ date: date.date, title: date.label, detail: date.detail });
   const tracked = ws.tracker?.apps || [];
   for (const app of tracked) {
@@ -239,8 +239,8 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
   }
   // Interviews and visits ahead, at their time when one is set (an hour long), otherwise all day.
   if (ws.tracker) {
-    for (const { school, event } of calendarInterest(ws.tracker, today)) {
-      events.push({ date: event.date, time: event.time, title: `${school} — ${INTEREST_LABELS[event.kind].toLowerCase()}${event.who ? ` with ${event.who}` : ""}`, detail: school });
+    for (const { appId, school, event } of calendarInterest(ws.tracker, today)) {
+      events.push({ date: event.date, time: event.time, title: `${school} — ${INTEREST_LABELS[event.kind].toLowerCase()}${event.who ? ` with ${event.who}` : ""}`, detail: school, uid: `interest:${appId}:${event.id}` });
     }
   }
   for (const scholarship of ws.scholarships || []) {
@@ -256,7 +256,7 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
     const date = toIcsDate(event.date, Number(ws.profile.gradYear));
     if (!date) { skipped += 1; continue; }
     const time = event.time && /^([01]\d|2[0-3]):[0-5]\d$/.test(event.time) ? event.time.replace(":", "") : "";
-    const uid = createHash("sha256").update(JSON.stringify([ws.draftStorageKey, date, event.title, event.detail || "", ...(time ? [time] : [])])).digest("hex").slice(0, 32);
+    const uid = createHash("sha256").update(JSON.stringify(event.uid ? [ws.draftStorageKey, event.uid] : [ws.draftStorageKey, date, event.title, event.detail || ""])).digest("hex").slice(0, 32);
     if (seen.has(uid)) continue;
     seen.add(uid);
     included += 1;

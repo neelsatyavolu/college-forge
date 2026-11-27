@@ -115,12 +115,31 @@ function compact(e: InterestEvent): InterestEvent {
 export function interestOf(app: TrackedApp): InterestEvent[] {
   const list: unknown = app.interest;
   if (!Array.isArray(list)) return [];
-  return list.filter(
-    (e): e is InterestEvent => !!e && typeof e === "object" && typeof e.id === "string" && isKind(e.kind) && typeof e.date === "string" && DATE.test(e.date),
-  );
+  const str = (v: unknown) => (typeof v === "string" ? v : undefined);
+  return list.flatMap((raw): InterestEvent[] => {
+    if (!raw || typeof raw !== "object") return [];
+    const e = raw as Record<string, unknown>;
+    if (typeof e.id !== "string" || !isKind(e.kind) || typeof e.date !== "string" || !validDate(e.date)) return [];
+    const time = str(e.time);
+    return [compact({
+      id: e.id,
+      kind: e.kind,
+      date: e.date,
+      time: time && TIME.test(time) ? time : undefined,
+      who: str(e.who),
+      notes: str(e.notes),
+      prep: str(e.prep),
+      thankYouSent: typeof e.thankYouSent === "boolean" ? e.thankYouSent : e.kind === "interview" ? false : undefined,
+      done: e.done === true,
+      createdAt: typeof e.createdAt === "number" ? e.createdAt : 0,
+    })];
+  });
 }
 
-/** A past date counts as done unless said otherwise; an upcoming one (an interview you booked) is not done yet. */
+/**
+ * A past date counts as done unless said otherwise. An interview counts as done only once its day has passed,
+ * so one booked for later today stays on the calendar and doesn't ask for a thank-you note yet.
+ */
 export function addInterest(app: TrackedApp, input: InterestInput, today: string, now = Date.now()): TrackedApp {
   const list = interestOf(app);
   if (list.length >= MAX_INTEREST) throw new InterestError(`Already ${MAX_INTEREST} entries for this school. Remove some first.`);
@@ -135,7 +154,7 @@ export function addInterest(app: TrackedApp, input: InterestInput, today: string
     notes: clean.notes,
     prep: clean.prep,
     thankYouSent: clean.kind === "interview" ? (clean.thankYouSent ?? false) : undefined,
-    done: clean.done ?? clean.date! <= today,
+    done: clean.done ?? (clean.kind === "interview" ? clean.date! < today : clean.date! <= today),
     createdAt: now,
   });
   return { ...app, interest: sortEvents([...list, event]), updatedAt: now };
@@ -184,6 +203,7 @@ export function parseInterestPolicy(text: string | undefined): InterestPolicy {
 export function parseInterviewPolicy(text: string | undefined): InterviewPolicy {
   const t = String(text ?? "").toLowerCase();
   if (!t.trim()) return "unknown";
+  if (/\b(discontinued|no longer (offers?|conducts?)|stopped (offering|admissions? interviews|interviews)|ended)\b/.test(t)) return "not_offered";
   if (/\bby invitation\b|\binvit(ed|ation) only\b|\bif (you are |you're )?(invited|assigned)\b|\bwhen assigned\b|\bmay be offered\b|\binterview possible\b/.test(t)) return "by_invitation";
   if (/\bnot evaluative\b|\binformational\b|\binformal\b|\bno evaluative\b|\bno disadvantage\b|\bconversations?\b/.test(t) && !/\band evaluative\b/.test(t)) return "informational";
   if (/^no\b/.test(t)) return "not_offered";
@@ -194,7 +214,7 @@ export function parseInterviewPolicy(text: string | undefined): InterviewPolicy 
   const plain = t.replace(/\bnot required\b/g, " ");
   if (
     /\bevaluative\b|\brequired\b|\bevaluated\b|\bpart of (the application|the file|holistic review)\b|\bconsiderable weight\b|\b(encouraged|recommended)\b|\bexpected\b/.test(plain) ||
-    /\b(rates|rated|lists) (the )?interview (as )?'?(very )?important\b/.test(plain)
+    /\b(rates|rated|lists) (the )?interview (as )?'?(very )?important\b|\brated '?(very )?important\b/.test(plain)
   ) return "evaluative";
   if (/\boptional\b|\boffered\b|\bavailable\b|\bschedule\b/.test(t)) return "informational";
   if (/\bconsidered\b/.test(t) && !/\bnot considered\b/.test(t)) return "evaluative";

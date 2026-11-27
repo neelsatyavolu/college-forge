@@ -272,3 +272,40 @@ test('MCP tools log interest, list it, and gather interview prep from the studen
   assert.equal(unknown.isError, true);
   assert.match(unknown.content[0].text, /No interest entry/);
 }));
+
+// ── Review fixes ────────────────────────────────────────────────────────────
+
+test('an interview booked for later today stays pending; a visit today counts as done', () => {
+  const iv = L.addInterest(app(), { kind: 'interview', date: TODAY, time: '16:00' }, TODAY);
+  assert.equal(iv.interest[0].done, false);
+  assert.equal(L.upcomingInterviews({ ...tracker.emptyTracker(), apps: [iv] }, TODAY).length, 1);
+  assert.equal(L.thankYousOwed({ ...tracker.emptyTracker(), apps: [iv] }).length, 0);
+  assert.equal(L.addInterest(app(), { kind: 'visit', date: TODAY }, TODAY).interest[0].done, true);
+});
+
+test('explicit discontinuation and CDS ratings beat incidental words (Penn, MIT)', () => {
+  const iv = (slug) => loadSchoolResearch(slug).facts.find((f) => f.key === 'interview').value;
+  assert.equal(L.parseInterviewPolicy(iv('university-of-pennsylvania')), 'not_offered');
+  assert.equal(L.parseInterviewPolicy(iv('massachusetts-institute-of-technology')), 'evaluative');
+});
+
+test('malformed stored fields are dropped field by field', () => {
+  const a = app({ interest: [{ id: 'e', kind: 'interview', date: '2026-12-01', time: 930, who: 5, notes: 'ok', thankYouSent: 'yes', done: 'true', createdAt: 'x' }] });
+  const [e] = L.interestOf(a);
+  assert.equal(e.time, undefined);
+  assert.equal(e.who, undefined);
+  assert.equal(e.notes, 'ok');
+  assert.equal(e.thankYouSent, false);
+  assert.equal(e.done, false);
+  assert.equal(e.createdAt, 0);
+  assert.deepEqual(L.interestOf(app({ interest: [{ id: 'e', kind: 'visit', date: '2026-02-30', done: true }] })), []);
+});
+
+test('a calendar interview keeps its UID when its time or interviewer changes', () => {
+  const ws = store.emptyWorkspace();
+  const ahead = new Date(Date.now() + 10 * 864e5).toISOString().slice(0, 10);
+  const a = L.addInterest(tracker.newApp({ name: 'Tulane University' }, 1000), { kind: 'interview', date: ahead, time: '15:30', who: 'Alum' }, tracker.todayIso());
+  const b = L.setInterest(a, a.interest[0].id, { time: '10:00', who: 'Regional AO' });
+  const uid = (x) => exportCalendar({ ...ws, tracker: { ...ws.tracker, apps: [x] } }).text.match(/UID:(\S+)/)[1];
+  assert.equal(uid(a), uid(b));
+});

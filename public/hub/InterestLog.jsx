@@ -77,7 +77,7 @@ function InterestLog({ app, act, busy }) {
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const ask = typeof window.cfAsk === "function" ? window.cfAsk : null;
   const onPrep = ask
-    ? (event) => ask(`Help me prepare for my ${app.name} interview on ${event.date}${event.who ? ` with ${event.who}` : ""}. Use interview_prep, draft 8 likely questions with talking points from my own activities and why-us draft, and save them to the interview once I've seen them.`)
+    ? (event) => ask(`Help me prepare for my ${app.name} interview on ${event.date}${event.who ? ` with ${event.who}` : ""}. Use interview_prep with entry_id ${event.id}, draft 8 likely questions with talking points from my own activities and why-us draft, and save them to that interview (set_interest, entry_id ${event.id}) once I've seen them.`)
     : null;
   const submit = (e) => {
     e.preventDefault();

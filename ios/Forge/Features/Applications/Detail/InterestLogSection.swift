@@ -145,7 +145,7 @@ private struct AddInterestSheet: View {
                         DatePicker("Time", selection: $time, displayedComponents: .hourAndMinute)
                     }
                 } footer: {
-                    if kind == .interview { Text("Booked interviews show on your calendar and Progress page.") }
+                    if kind == .interview { Text("Booked interviews show in your calendar export and on the web Progress page.") }
                 }
                 Section {
                     TextField(kind == .interview ? "Interviewer" : "Regional officer or event", text: $who)
