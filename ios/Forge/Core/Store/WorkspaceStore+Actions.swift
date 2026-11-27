@@ -90,5 +90,10 @@ extension TrackedApplication {
         if let decisionDate = edit.decisionDate {
             self.decisionDate = decisionDate.isEmpty ? nil : KeyDate(date: decisionDate, kind: "Decision", estimated: false)
         }
+        if let testing = edit.testing, let plan = testingPlan {
+            let choice = plan.choice.applying(testing)
+            testingPlan?.choice = choice
+            testingPlan?.needsScoreSend = choice.plan == .send && choice.method == .official && (choice.officialSent ?? "").isEmpty
+        }
     }
 }

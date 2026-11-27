@@ -188,6 +188,8 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
   const attention = apps.filter((a) => a.stage !== "working" && (window.cfApp.attentionOf(a).length || (a.followUps && a.followUps.length)))
     .sort((a, b) => (a.decision.state === "hidden" ? 0 : 1) - (b.decision.state === "hidden" ? 0 : 1) || byDeadline(a, b));
   const waiting = apps.filter((a) => a.stage === "waiting" && !attention.includes(a)).sort(byDeadline);
+  // Official score reports planned but not yet ordered (share links carry no testing plan, so this stays empty there).
+  const scoreSends = apps.filter((a) => a.testingPlan && a.testingPlan.needsScoreSend && a.status !== "withdrawn").sort(byDeadline);
   const rowProps = onToggle
     ? { editable, act, busy, openId, onToggle, renderDetails, checking, oddsFor }
     : { editable, act, busy, openId: ownOpen, onToggle: (id) => setOwnOpen(ownOpen === id ? null : id), renderDetails, checking, oddsFor };
@@ -220,6 +222,21 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
                     <span className="cf-flags__text">{f.text}</span>
                     <span className="cf-flags__scope">{f.scope}</span>
                     {editable ? <button type="button" className="cf-link-btn" disabled={busy} onClick={() => act({ action: "flag-resolve", flagId: f.id }, "Flag cleared.")}>Resolve</button> : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+          {editable && scoreSends.length ? (
+            <section className="cf-psection" aria-labelledby="p-scores">
+              <h2 id="p-scores" className="cf-psection__title">Score sends <span className="cf-ptab__n">{scoreSends.length}</span></h2>
+              <p className="cf-help" style={{ marginBottom: 8 }}>Official SAT/ACT reports to order from College Board or ACT. Record the date on each school once it's sent.</p>
+              <ul className="cf-flags">
+                {scoreSends.map((a) => (
+                  <li key={a.id}>
+                    <span className="cf-flags__mark" aria-hidden="true">→</span>
+                    <span className="cf-flags__text">{a.name}</span>
+                    <span className="cf-flags__scope">{a.deadline ? `application due ${fmtDate(a.deadline)}` : ""}</span>
                   </li>
                 ))}
               </ul>

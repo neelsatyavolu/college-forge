@@ -62,6 +62,8 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     var notes: String
     var decisionNote: String
     var login: PortalLogin?
+    /// Send or withhold SAT/ACT scores here, with the sourced policy and Forge's suggestion.
+    var testingPlan: TestingPlanView?
     /// Milliseconds since 1970.
     var lastChecked: Double?
     var updatedAt: Double
@@ -96,6 +98,7 @@ extension TrackedApplication {
         notes = c.string(.notes)
         decisionNote = c.string(.decisionNote)
         login = c.optional(PortalLogin.self, .login)
+        testingPlan = c.optional(TestingPlanView.self, .testingPlan)
         lastChecked = c.optionalDouble(.lastChecked)
         updatedAt = c.double(.updatedAt)
     }

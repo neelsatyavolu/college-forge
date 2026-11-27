@@ -12,6 +12,7 @@ import { syncEssaySupplements } from "./essay-supplements";
 import { essayList, essayPromptsSchema, essayView, withEssayPrompts } from "./essay-tools";
 import { isTestOptionalNote } from "./colleges";
 import { ROUNDS, STATUSES, STATUS_IDS, findApp, todayIso } from "./tracker";
+import { TEST_METHODS, TEST_PLANS, studentScores } from "./testing-plan";
 import {
   TrackerError,
   addApp,
@@ -72,6 +73,17 @@ function brief(a: AppView) {
     portal_login_saved: !!a.login?.hasPassword,
     notes: a.notes || null,
     decision_note: a.decisionNote || null,
+    testing: {
+      policy: a.testingPlan.policy.kind,
+      policy_text: a.testingPlan.policy.text || null,
+      recommendation: a.testingPlan.recommendation.label,
+      reason: a.testingPlan.recommendation.reason,
+      source: a.testingPlan.recommendation.sourceUrl || null,
+      plan: a.testingPlan.choice.plan,
+      method: a.testingPlan.choice.method ?? null,
+      official_sent: a.testingPlan.choice.officialSent ?? null,
+      ap_self_reported: a.testingPlan.choice.apSelfReported ?? null,
+    },
   };
 }
 
@@ -94,6 +106,23 @@ const toEdit = (f: { status?: string; round?: string; deadline?: string; decisio
   ...(f.notes !== undefined ? { notes: f.notes } : {}),
   ...(f.decision_note !== undefined ? { decisionNote: f.decision_note } : {}),
 });
+
+const testingFields = {
+  test_plan: z.enum(TEST_PLANS).optional(),
+  test_method: z.enum(TEST_METHODS).or(z.literal("")).optional(),
+  official_scores_sent: date.optional(),
+  // "yes" | "no" rather than a boolean: agents fill unused optional booleans with false.
+  ap_self_reported: z.enum(["yes", "no"]).or(z.literal("")).optional(),
+};
+const toTestingEdit = (f: { test_plan?: (typeof TEST_PLANS)[number]; test_method?: (typeof TEST_METHODS)[number] | ""; official_scores_sent?: string; ap_self_reported?: "yes" | "no" | "" }) => {
+  const t = {
+    ...(f.test_plan !== undefined ? { plan: f.test_plan } : {}),
+    ...(f.test_method !== undefined ? { method: f.test_method } : {}),
+    ...(f.official_scores_sent !== undefined ? { officialSent: f.official_scores_sent } : {}),
+    ...(f.ap_self_reported ? { apSelfReported: f.ap_self_reported === "yes" } : {}),
+  };
+  return Object.keys(t).length ? { testing: t } : {};
+};
 
 /** A refused profile write; its message is safe to show the assistant. */
 class ProfileInputError extends Error {}
@@ -208,9 +237,10 @@ export const TOOLS: Tool[] = [
     input: z.object({ school: z.string().min(1) }),
     readOnly: true,
     run: async (ws, { school }) => {
-      const app = findApp((await getWorkspace(ws)).tracker, school);
+      const w = await getWorkspace(ws);
+      const app = findApp(w.tracker, school);
       if (!app) throw new TrackerError(`No single application matches "${school}". Use list_applications to see the schools.`);
-      return brief(viewApp(app));
+      return brief(viewApp(app, todayIso(), studentScores(w)));
     },
   }),
   tool({
@@ -224,10 +254,11 @@ export const TOOLS: Tool[] = [
   tool({
     name: "update_application",
     title: "Update an application",
-    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date (when the decision is expected, e.g. from a school email or website; replaces Forge's estimate from last year, "" goes back to the estimate), submitted_date (yyyy-mm-dd or "" to clear), notes (replaces the notes) or decision_note (the note shown with the decision on the Progress tab and progress links; "" to clear). Moving an application to submitted records today as its submitted date unless you pass one. Only the fields you pass change. Portal links and logins can only be changed in Forge itself.`,
-    input: z.object({ school: z.string().min(1), ...fields }),
+    description: `Changes an application's status (${STATUS_HELP}), round (${ROUNDS.join(", ")} or "" to clear), deadline, decision_date (when the decision is expected, e.g. from a school email or website; replaces Forge's estimate from last year, "" goes back to the estimate), submitted_date (yyyy-mm-dd or "" to clear), notes (replaces the notes) or decision_note (the note shown with the decision on the Progress tab and progress links; "" to clear). Moving an application to submitted records today as its submitted date unless you pass one. Testing plan for this school: test_plan (send, withhold or undecided: whether SAT/ACT scores go to this school; get_application shows Forge's sourced recommendation), test_method (self_report or official, "" to clear), official_scores_sent (yyyy-mm-dd the College Board/ACT report was ordered, "" to clear), ap_self_reported (yes or no). Only the fields you pass change. Portal links and logins can only be changed in Forge itself.`,
+    input: z.object({ school: z.string().min(1), ...fields, ...testingFields }),
     readOnly: false,
-    run: async (ws, { school, ...f }) => brief(await updateApp(ws, school, toEdit(f))),
+    run: async (ws, { school, test_plan, test_method, official_scores_sent, ap_self_reported, ...f }) =>
+      brief(await updateApp(ws, school, { ...toEdit(f), ...toTestingEdit({ test_plan, test_method, official_scores_sent, ap_self_reported }) })),
   }),
   tool({
     name: "record_decision",
@@ -314,7 +345,8 @@ export const TOOLS: Tool[] = [
       // The assistant may not tell the student what it found, so news from this check is emailed as usual.
       const checked = await runChecks(ws, { appIds: ids, concurrency: 4, notify: true });
       if (!checked.length) return { checked: 0, note: "No portal logins are saved in Forge yet. The student can add them on the Portals tab." };
-      return { checked: checked.length, applications: checked.map((a) => brief(viewApp(a))) };
+      const scores = studentScores(await getWorkspace(ws));
+      return { checked: checked.length, applications: checked.map((a) => brief(viewApp(a, todayIso(), scores))) };
     },
   }),
   tool({
