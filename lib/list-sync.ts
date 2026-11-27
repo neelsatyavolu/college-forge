@@ -11,7 +11,8 @@
  *   sync doesn't add it back. Essay drafts are never deleted.
  */
 import type { College, Workspace } from "./store";
-import { matchCatalog, matchCatalogExact, newApp, type TrackedApp } from "./tracker";
+import { matchCatalog, matchCatalogExact, newApp, relink, type TrackedApp } from "./tracker";
+import { collegeByWebsite } from "./catalog";
 import { slugify, usNewsToCollege } from "./colleges";
 import { US_NEWS_BY_SLUG, US_NEWS_TOP_250, type UsNewsCollege } from "./us-news-rankings";
 import { isSeededRow } from "./seed-rows";
@@ -29,7 +30,7 @@ export function linksOf(ws: Pick<Workspace, "colleges" | "tracker">): Map<string
   const links = new Map<string, string>();
   const claimed = new Set<string>();
   const colleges = ws.colleges.filter((c) => c.slug);
-  const catalogIds = new Map(colleges.map((c) => [c.slug, c.name ? matchCatalogExact(c.name)?.id : undefined] as const));
+  const catalogIds = new Map(colleges.map((c) => [c.slug, (collegeByWebsite(c.url) ?? (c.name ? matchCatalogExact(c.name) : undefined))?.id] as const));
   const passes: ((app: TrackedApp, c: College) => boolean)[] = [
     (app, c) => !!app.slug && app.slug === c.slug,
     (app, c) => {
@@ -96,9 +97,11 @@ export function linkListAndApplications(ws: Workspace): Workspace {
       noApplication.delete(slug);
       // An application makes the school the student's, so a rebalance never drops it.
       if (isSeededRow(bySlug.get(slug)!)) promoted.add(slug);
-      if (app.slug === slug && !app.offList) return app;
+      // A school whose name the catalog doesn't know ("Fresno State" saved as written) is found by its list row's website.
+      const linked = relink(app, bySlug.get(slug)!.url);
+      if (linked === app && app.slug === slug && !app.offList) return app;
       changed = true;
-      const { offList: _o, ...rest } = app;
+      const { offList: _o, ...rest } = linked;
       return { ...rest, slug };
     }
     if (app.offList) return app;
@@ -114,7 +117,7 @@ export function linkListAndApplications(ws: Workspace): Workspace {
   for (const c of ws.colleges) {
     if (!c.slug || linkedSlugs.has(c.slug) || noApplication.has(c.slug) || isSeededRow(c)) continue;
     linkedSlugs.add(c.slug);
-    const app = newApp({ name: c.name || c.short || c.slug, slug: c.slug });
+    const app = newApp({ name: c.name || c.short || c.slug, slug: c.slug, website: c.url });
     // Two list schools on one catalog entry (Ann Arbor and Dearborn): the second keeps its own name.
     const named = app.collegeId && catalogIds.has(app.collegeId) ? { ...app, name: (c.name || app.name).slice(0, 120) } : app;
     if (named.collegeId) catalogIds.add(named.collegeId);

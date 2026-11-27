@@ -30,6 +30,16 @@ test('an application with no list school adds one with origin "user" and links i
   assert.equal(out.tracker.apps[0].slug, out.colleges[0].slug);
 });
 
+test('a list school the catalog only knows by website gets its catalog entry and logo', () => {
+  const row = college('tennessee-technological-university', 'Tennessee Technological University', { origin: 'user', url: 'www.tntech.edu/' });
+  const created = sync.linkListAndApplications(ws({ colleges: [row] }));
+  assert.equal(created.tracker.apps[0].collegeId, 'tntech');
+  const saved = { ...newApp({ name: 'Tennessee Technological University', slug: row.slug }), collegeId: null };
+  const relinked = sync.linkListAndApplications(withApps(ws({ colleges: [row] }), [saved]));
+  assert.equal(relinked.tracker.apps[0].collegeId, 'tntech');
+  assert.equal(relinked.tracker.apps[0].slug, row.slug);
+});
+
 test('a kept list school gets a Not started application; a seed suggestion does not', () => {
   const out = sync.linkListAndApplications(ws({
     colleges: [college('rice-university', 'Rice University', { origin: 'user' }), college('tulane-university', 'Tulane University', { origin: 'seed' })],
