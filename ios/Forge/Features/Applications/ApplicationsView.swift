@@ -33,13 +33,14 @@ enum ApplicationsDestination: Hashable {
 
 /// Which presentation of the list is showing.
 enum ApplicationsMode: String, CaseIterable, Identifiable {
-    case status, dates, decisions
+    case status, dates, decisions, list
     var id: String { rawValue }
     var title: String {
         switch self {
         case .status: "Status"
         case .dates: "Dates"
         case .decisions: "Decisions"
+        case .list: "List"
         }
     }
 }
@@ -79,6 +80,7 @@ private struct ApplicationsHome: View {
         case .status: ApplicationsStatusList(picker: picker, sheet: $sheet)
         case .dates: ApplicationsDatesList(picker: picker)
         case .decisions: DecisionsList(picker: picker)
+        case .list: ApplicationsRankList(picker: picker)
         }
     }
 
@@ -87,7 +89,7 @@ private struct ApplicationsHome: View {
     }
 }
 
-/// Status / Dates / Decisions. Sits in the first list row so the large title stays visible.
+/// Status / Dates / Decisions / List. Sits in the first list row so the large title stays visible.
 struct ApplicationsModePicker: View {
     @Binding var mode: ApplicationsMode
     var hiddenDecisions = 0

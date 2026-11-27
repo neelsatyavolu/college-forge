@@ -295,6 +295,23 @@
     return out;
   }
 
+  function rankText(n) { return n == null ? "\u2014" : "#" + n; }
+
+  /** The short rank line under a school ("USN #12 · Niche #9 · …") and its longer spoken version. */
+  function rankSummary(ranks) {
+    var usn = "USN " + rankText(ranks.usn) + (ranks.lac ? (ranks.usnNational ? " LAC \u2248" + Math.round(ranks.usnNational) : " LAC") : "");
+    var parts = [usn, "Niche " + rankText(ranks.niche), "Forbes " + rankText(ranks.forbes), "WSJ " + rankText(ranks.wsj)];
+    if (ranks.pr) parts.push("PR #" + ranks.pr.rank + " " + ranks.pr.kind);
+    if (ranks.career) parts.push("Career #" + ranks.career.rank);
+    var title = [
+      ranks.lac ? (ranks.usnNational ? "U.S. News #" + ranks.usn + " liberal arts, counted as about #" + Math.round(ranks.usnNational) + " national" : "U.S. News liberal arts (not averaged)") : "U.S. News",
+      "Niche", "Forbes", "WSJ/College Pulse",
+      ranks.pr ? "Princeton Review Best Value #" + ranks.pr.rank + " " + ranks.pr.kind + (ranks.pr.national ? ", counted as about #" + Math.round(ranks.pr.national) : "") : null,
+      ranks.career ? "Your career ranking (My path) #" + ranks.career.rank + (ranks.career.national ? ", counted as about #" + Math.round(ranks.career.national) : "") : null,
+    ].filter(Boolean).join(" \u00b7 ");
+    return { text: parts.join(" \u00b7 "), title: title };
+  }
+
   var UC_NAME = /^(university of california|uc )/i;
   // Restrictive early action is still early action for this list.
   var ROUND_LABEL = { ED: "ED1", ED2: "ED2", EA: "EA", REA: "EA", RD: "RD", Rolling: "Rolling" };
@@ -307,7 +324,7 @@
     }).join("\n");
   }
 
-  var api = { matchSchool: matchSchool, rankList: rankList, officialSchools: officialSchools, copyText: copyText, lacLink: lacLink, prLinks: prLinks, WEIGHTS: WEIGHTS, forgeRanking: forgeRanking };
+  var api = { matchSchool: matchSchool, rankList: rankList, officialSchools: officialSchools, copyText: copyText, rankSummary: rankSummary, lacLink: lacLink, prLinks: prLinks, WEIGHTS: WEIGHTS, forgeRanking: forgeRanking };
   root.cfRankList = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
