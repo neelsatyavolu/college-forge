@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { COLLEGES, collegeById, expectedDecision, logoUrl, type College } from "./catalog";
+import { COLLEGES, collegeById, collegeByWebsite, expectedDecision, logoUrl, type College } from "./catalog";
 import { applyTestingEdit, type TestingChoice, type TestingEdit } from "./testing-plan";
 import { checkAidOffer, type AidOffer } from "./aid-validate";
 import type { InterestEvent } from "./interest-log";
@@ -334,8 +334,10 @@ export function withResult(app: TrackedApp, result: PortalResult): TrackedApp {
 
 // ── Catalog ───────────────────────────────────────────────────────────────
 
+// "San José" is "San Jose", and "Cal State Northridge", "CSU Northridge" and "California State University-Northridge" are one school.
 const norm = (s: string) =>
-  s.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9 ]/g, " ").replace(/\b(the|at)\b/g, " ").replace(/\s+/g, " ").trim();
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\b(the|at)\b/g, " ").replace(/\s+/g, " ").trim().replace(/^(california state university|cal state|csu)\b/, "csu");
 const BY_NAME = new Map<string, College>();
 /** Full names the catalog writes short ("UC Davis" is also "University of California, Davis"). */
 const LONG_NAMES: Record<string, string[]> = {
@@ -385,8 +387,8 @@ export function catalogForClient() {
   }));
 }
 
-export function newApp(input: { name: string; collegeId?: string | null; slug?: string; portalUrl?: string }, now = Date.now()): TrackedApp {
-  const college = input.collegeId ? collegeById(input.collegeId) : matchCatalog(input.name);
+export function newApp(input: { name: string; collegeId?: string | null; slug?: string; portalUrl?: string; website?: string }, now = Date.now()): TrackedApp {
+  const college = input.collegeId ? collegeById(input.collegeId) : collegeByWebsite(input.website) ?? matchCatalog(input.name);
   return {
     id: randomUUID(),
     collegeId: college?.id ?? null,
@@ -537,10 +539,10 @@ export function migrateOldStatuses(
   return added.length ? { ...tracker, apps: [...tracker.apps, ...added] } : tracker;
 }
 
-/** A school saved without a catalog match (an older name form) picks up its catalog entry, logo and portal. */
-function relink(app: TrackedApp): TrackedApp {
+/** A school saved without a catalog match (an older name form) picks up its catalog entry, logo and portal, by name or its list row's website. */
+export function relink(app: TrackedApp, website?: string): TrackedApp {
   if (app.collegeId) return app;
-  const c = matchCatalog(app.name);
+  const c = collegeByWebsite(website) ?? matchCatalog(app.name);
   if (!c) return app;
   return {
     ...app,
@@ -556,7 +558,7 @@ export function normalizeTracker(raw: unknown): Tracker {
   if (!raw || typeof raw !== "object") return emptyTracker();
   const t = raw as Partial<Tracker>;
   const apps = Array.isArray(t.apps)
-    ? t.apps.filter((a): a is TrackedApp => !!a && typeof a.id === "string" && typeof a.name === "string" && isStatus(a.status)).map(relink)
+    ? t.apps.filter((a): a is TrackedApp => !!a && typeof a.id === "string" && typeof a.name === "string" && isStatus(a.status)).map((a) => relink(a))
     : [];
   const flags = Array.isArray(t.flags) ? t.flags.filter((f): f is Flag => !!f && typeof f.id === "string" && typeof f.text === "string") : [];
   return {

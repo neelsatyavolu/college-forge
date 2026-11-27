@@ -65,6 +65,15 @@ export function collegeById(id: string): College | undefined {
   return BY_ID.get(id);
 }
 
+/** "https://www.csun.edu/admissions" → "csun.edu". */
+const siteHost = (url: string) => url.trim().toLowerCase().replace(/^[a-z]+:\/\//, "").replace(/^www\./, "").replace(/[/?#:].*$/, "");
+const BY_HOST = new Map(COLLEGES.filter((c) => c.website).map((c) => [siteHost(c.website), c]));
+
+/** The catalog school whose website is this URL's host ("www.sjsu.edu/" is San José State), however the name was written. */
+export function collegeByWebsite(url: string | null | undefined): College | undefined {
+  return url ? BY_HOST.get(siteHost(String(url))) : undefined;
+}
+
 /**
  * Last cycle's decision date for a round, moved to the current cycle: an application cycle runs from
  * August to July, so August to December dates fall in the first year and January to July in the next.

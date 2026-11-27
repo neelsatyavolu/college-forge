@@ -17,6 +17,7 @@ process.env.PORTAL_LOGINS_KEY = crypto.randomBytes(32).toString('base64');
 
 const { NextRequest } = require('next/server');
 const tracker = require('../lib/tracker.ts');
+const catalog = require('../lib/catalog/index.ts');
 const session = require('../lib/session.ts');
 const service = require('../lib/tracker-service.ts');
 const oauth = require('../lib/oauth.ts');
@@ -595,6 +596,29 @@ test('UC campuses match by their full names, and older saved schools relink to t
   const t = tracker.normalizeTracker({ apps: [stale], autocheck: true, flags: [] });
   assert.equal(t.apps[0].collegeId, 'ucdavis');
   assert.match(t.apps[0].portalUrl, /^https:/);
+});
+
+test('Cal States match however the name is written, and get their logo', () => {
+  for (const [name, id] of [
+    ['Cal State Northridge', 'csun'], ['CSU Northridge', 'csun'], ['California State University-Northridge', 'csun'],
+    ['San Jose State University', 'sjsu'], ['San José State University', 'sjsu'],
+    ['Cal State Long Beach', 'csulb'], ['CSU Long Beach', 'csulb'], ['California State University, Long Beach', 'csulb'],
+    ['Cal Poly Pomona', 'cpp'],
+  ]) {
+    const a = tracker.newApp({ name });
+    assert.equal(a.collegeId, id, name);
+    assert.equal(catalog.logoUrl(a.collegeId), `/logos/${id}.png`, name);
+  }
+});
+
+test('a school the name misses is found by its website', () => {
+  assert.equal(catalog.collegeByWebsite('https://www.csun.edu/')?.id, 'csun');
+  assert.equal(catalog.collegeByWebsite('www.cpp.edu/')?.id, 'cpp');
+  assert.equal(catalog.collegeByWebsite('example.com'), undefined);
+  assert.equal(tracker.newApp({ name: 'California State Polytechnic University-Pomona', website: 'www.cpp.edu/' }).collegeId, 'cpp');
+  assert.equal(tracker.newApp({ name: 'California State University--Fresno', website: 'www.fresnostate.edu/' }).collegeId, 'fresno');
+  const stale = { ...app(), collegeId: null, name: 'Tennessee Technological University', portalName: 'Applicant portal', portalUrl: '', platform: 'other' };
+  assert.equal(tracker.relink(stale, 'https://www.tntech.edu/').collegeId, 'tntech');
 });
 
 test('applications action emails toggles tracker.emails', () => isolated(async () => {
