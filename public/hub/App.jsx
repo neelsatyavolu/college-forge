@@ -132,9 +132,10 @@ function App() {
     if (mainRef.current) mainRef.current.focus({ preventScroll: true });
   }, [view]);
   // "#settings/gptzero" scrolls to the element with that id once the view has rendered it.
+  // "#shortlist/<slug>" is a school's page, not an anchor.
   React.useEffect(() => {
     const anchor = hash.slice(1).split("/")[1];
-    if (!anchor) return undefined;
+    if (!anchor || view === "shortlist") return undefined;
     let tries = 0;
     let timer = 0;
     const seek = () => {
@@ -270,7 +271,7 @@ function App() {
           {view === "recommendations" && <Recommendations data={data} onAsk={openChat} onNavigate={navigate} onWorkspaceChange={applyWorkspaceAndTracker} onStartSetup={() => setRunOnboarding(true)} />}
           {view === "explore" && <Explore data={data} favorites={favorites} onToggleFavorite={toggleFav} onWorkspaceChange={refresh} />}
           {view === "scattergrams" && <Scattergrams data={data} />}
-          {view === "shortlist" && <Shortlist data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onAsk={openChat} onWorkspaceChange={applyWorkspaceAndTracker} />}
+          {view === "shortlist" && <Shortlist data={data} tracker={tracker} detailSlug={window.cfSchoolDetail.slugFromHash(hash)} onTrackerChange={setTrackerAndList} onAsk={openChat} onWorkspaceChange={applyWorkspaceAndTracker} />}
           {view === "essays" && <Essays data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "track" && <Track data={data} tracker={tracker} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "share" && <ShareExport data={data} onWorkspaceChange={applyWorkspace} onWorkspaceSwitch={switchWorkspace} />}

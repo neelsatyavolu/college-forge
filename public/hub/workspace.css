@@ -340,3 +340,75 @@ button:disabled { cursor: wait; }
   .cf-explore-grades { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cf-explore-ranks li, .cf-explore-ranks li + li { padding: 10px 14px 10px 0; margin-right: 14px; border-left: none; }
 }
+
+/* Shortlist cards open a school's page (#shortlist/<slug>, SchoolDetail.jsx). */
+.cf-short-card { cursor: pointer; transition: background-color 120ms; }
+.cf-short-card:hover { background-color: color-mix(in srgb, var(--surface-card) 45%, transparent) !important; }
+.cf-short-card__name { color: inherit; text-decoration: none; }
+.cf-short-card__name:hover { color: var(--workspace-accent); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.cf-short-card__name:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: 3px; border-radius: 2px; }
+.cf-short-round { font-size: 12px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink); }
+.cf-short-round[data-chosen="false"] { color: var(--muted); text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+/* A school's page */
+.cf-sd-back { display: inline-flex; align-items: center; min-height: 36px; margin-bottom: 18px; font-size: 13px; color: var(--workspace-accent); }
+.cf-sd-head { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 26px; }
+.cf-sd-mark .cf-school-mark { width: 64px; height: 64px; font-size: 16px; border-radius: var(--radius-md); }
+.cf-sd-mark .cf-school-mark img { padding: 6px; }
+.cf-sd-head__text { min-width: 0; }
+.cf-sd-title { margin: 0 0 6px; font-size: clamp(32px, 3.4vw, 44px); outline: none; overflow-wrap: anywhere; }
+.cf-sd-meta { margin: 0 0 12px; font-size: 14px; color: var(--body); }
+.cf-sd-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cf-sd-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 8px; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+.cf-sd-stats > div { padding: 16px 18px 16px 0; min-width: 0; }
+.cf-sd-stats > div + div { padding-left: 18px; border-left: 1px solid var(--hairline); }
+.cf-sd-stats dt { font-size: 11px; font-weight: 500; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.cf-sd-stats dd { margin: 0; font-size: 24px; line-height: 1.15; color: var(--ink); overflow-wrap: anywhere; }
+.cf-sd-notice { min-height: 18px; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+.cf-sd-notice:empty { min-height: 0; margin-bottom: 18px; }
+.cf-sd-section { margin-bottom: 36px; }
+.cf-sd-section__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--ink); }
+.cf-sd-section__head h2 { margin: 0; font-size: clamp(24px, 2.6vw, 30px); letter-spacing: -0.3px; color: var(--ink); }
+.cf-sd-note { font-size: 12px; color: var(--muted); }
+.cf-sd-rows { margin: 0; }
+.cf-sd-rows > div { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+.cf-sd-rows dt { font-size: 13px; color: var(--muted); padding-top: 1px; }
+.cf-sd-rows dd { margin: 0; font-size: 14px; line-height: 1.55; color: var(--body); min-width: 0; overflow-wrap: anywhere; }
+.cf-sd-rows strong { color: var(--ink); font-weight: 600; }
+.cf-sd-rows--tight > div { grid-template-columns: 150px minmax(0, 1fr); gap: 14px; padding: 9px 0; border-bottom-color: var(--hairline-soft, var(--hairline)); }
+.cf-sd-rows--tight dd { font-size: 13px; }
+.cf-sd-stack { display: grid; gap: 6px; justify-items: start; }
+.cf-sd-inline { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.cf-sd-muted { color: var(--muted); }
+.cf-sd-source { font-size: 12px; color: var(--workspace-accent); }
+.cf-sd-odds > div { margin-top: 0 !important; }
+.cf-sd .cf-badge { min-height: 24px; padding: 0 8px; font-size: 10px; }
+.cf-sd-deadlines { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.cf-sd-deadlines li { display: inline-flex; align-items: baseline; gap: 8px; padding: 5px 10px; border: 1px solid var(--hairline); border-radius: var(--radius-xs); font-size: 13px; color: var(--body); }
+.cf-sd-deadlines li.is-chosen { border-color: var(--workspace-accent); background: var(--workspace-accent-soft); color: var(--ink); }
+.cf-sd-deadlines li > :first-child { font-weight: 600; }
+.cf-sd-chosen { font-size: 11px; color: var(--workspace-accent); }
+.cf-sd-subhead { margin: 22px 0 10px; font-size: 12px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+.cf-sd-scatter { min-width: 0; width: 100%; }
+.cf-sd-scatter > section { padding: 12px !important; }
+.cf-sd-essays { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.cf-sd-essays li { padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+.cf-sd-essay__top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--ink); }
+.cf-sd-essay__prompt { margin: 6px 0 8px; max-width: 72ch; font-size: 13px; line-height: 1.55; color: var(--body); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.cf-sd-essay__foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.cf-sd-essay__foot a { color: var(--workspace-accent); }
+.cf-sd-empty { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+.cf-sd-research { columns: 2 380px; column-gap: 40px; }
+/* Rows, not whole groups, stay together, so the two columns come out the same height. */
+.cf-sd-research__group { padding-top: 14px; }
+.cf-sd-research__group dl > div { break-inside: avoid; }
+.cf-sd-research__group h3 { break-after: avoid; margin: 0 0 2px; font-size: 12px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 760px) {
+  .cf-sd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cf-sd-stats > div:nth-child(3) { padding-left: 0; border-left: none; }
+  .cf-sd-stats > div:nth-child(n+3) { border-top: 1px solid var(--hairline); }
+  .cf-sd-stats dd { font-size: 20px; }
+  .cf-sd-rows > div, .cf-sd-rows--tight > div { grid-template-columns: 1fr; gap: 4px; }
+  .cf-sd-head { gap: 14px; }
+  .cf-sd-mark .cf-school-mark { width: 48px; height: 48px; }
+}
