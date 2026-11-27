@@ -827,9 +827,9 @@ export function publicShareView(ws: Workspace) {
     financialAid: { fafsaStatus: ws.financialAid.fafsaStatus, cssStatus: ws.financialAid.cssStatus },
     // Hidden essays, opted-out schools and unchosen Common App prompts, with their drafts, never leave the server.
     ...visibleEssays(ws),
-    // Notes left through share links only: a coach's or counselor's comments are theirs and the student's.
+    // Notes left through share links only (older ones have no via): a coach's or counselor's comments are theirs and the student's.
     advisorNotes: ws.advisorNotes
-      .filter((n) => n.via === "full" || n.via === "progress")
+      .filter((n) => !n.via || n.via === "full" || n.via === "progress")
       .map(({ id, body, author, createdAt, essayId, via }) => ({ id, body, author, createdAt, essayId, via })),
     onboarding: { completed: ws.onboarding.completed },
   };
