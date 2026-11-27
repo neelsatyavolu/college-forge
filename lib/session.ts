@@ -1,8 +1,8 @@
-import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
-import { deleteDoc, readDoc, updateDoc, writeDoc } from "./doc-store";
+import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { readDoc, updateDoc } from "./doc-store";
 import { getShare, putShare } from "./share-store";
-import { copyWorkspace, getWorkspace, retireWorkspace } from "./store";
-import { moveFeed } from "./calendar-feed";
+import { copyWorkspace, retireWorkspace, updateWorkspace } from "./store";
+import { revokeFeed } from "./calendar-feed";
 
 /**
  * Forge accounts are Xanom accounts. Each Xanom `sub` owns exactly one workspace; the signed `forge_session`
@@ -67,7 +67,7 @@ export const getAccount = (sub: string) => readDoc<Account>(accountKey(sub));
 /**
  * Finds or creates the account for a Xanom user. A first sign-in brings along the browser's anonymous
  * workspace (so what someone did before signing in is kept) by moving it to a new id that only this
- * account's session can open. Share links follow it.
+ * account's session can open. Its share links, calendar feed and recovery code do not: they end here.
  */
 export async function signInAccount(
   user: { sub: string; email: string; name: string },
@@ -86,8 +86,7 @@ export async function signInAccount(
       if (copied) {
         await updateDoc<{ sub: string }>(ownerKey(claim.movedTo), (cur) => cur ?? { sub: user.sub });
         const account = await touchAccount(user, claim.movedTo, now);
-        await moveShareLinks(claim.movedTo);
-        await moveFeed(claim.movedTo);
+        await revokeCarriedLinks(claim.movedTo, now);
         await retireWorkspace(anon);
         return account;
       }
@@ -110,43 +109,23 @@ function touchAccount(user: { sub: string; email: string; name: string }, worksp
   }));
 }
 
-async function moveShareLinks(workspaceId: string): Promise<void> {
-  const ws = await getWorkspace(workspaceId);
-  for (const meta of ws.shares || []) {
+/**
+ * Anyone holding the anonymous workspace's share links, calendar feed or recovery code held an unowned workspace.
+ * They must not follow it into the account, so the adopted copy starts with all of them ended.
+ */
+async function revokeCarriedLinks(workspaceId: string, now: number): Promise<void> {
+  const ws = await updateWorkspace(workspaceId, (cur) => {
+    const { recoveryCode: _r, ...rest } = cur;
+    return { ...rest, shares: (cur.shares || []).map((s) => (s.revokedAt ? s : { ...s, revokedAt: now })) };
+  });
+  for (const meta of ws.shares) {
     const rec = await getShare(meta.token);
-    if (rec) await putShare({ ...rec, workspaceId });
+    if (rec && !rec.revokedAt) await putShare({ ...rec, revokedAt: now });
   }
+  await revokeFeed(workspaceId);
 }
 
 /** Who owns a workspace (for the automatic-check sweep and summaries). */
 export async function ownerOf(workspaceId: string): Promise<string | null> {
   return (await readDoc<{ sub: string }>(ownerKey(workspaceId)))?.sub ?? null;
-}
-
-const handoffKey = (token: string) => `handoff/${createHash("sha256").update(token).digest("hex")}.json`;
-
-/**
- * One-time token that carries a forge.n3el.dev workspace cookie over to forge.xanom.co. The URL holds only
- * a random token; the workspace id stays in storage for two minutes.
- */
-export async function createHandoff(workspaceId: string, now = Date.now()): Promise<string> {
-  const token = randomBytes(24).toString("base64url");
-  await writeDoc(handoffKey(token), { ws: workspaceId, exp: now + 120_000 });
-  return token;
-}
-
-export async function claimHandoff(token: string, now = Date.now()): Promise<string | null> {
-  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
-  let ws: string | null = null;
-  try {
-    await updateDoc<{ ws: string; exp: number; used?: boolean }>(handoffKey(token), (cur) => {
-      if (!cur || cur.used || cur.exp < now) throw new Error("expired");
-      ws = cur.ws;
-      return { ...cur, used: true };
-    });
-  } catch {
-    return null;
-  }
-  await deleteDoc(handoffKey(token)).catch(() => undefined);
-  return ws && /^[a-zA-Z0-9_-]{8,64}$/.test(ws) ? ws : null;
 }

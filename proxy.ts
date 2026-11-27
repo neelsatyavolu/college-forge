@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { APP_GRANT_HEADER, verifyAccess } from "@/lib/oauth";
-import { SESSION_COOKIE, createHandoff, getAccount, readSession, signSession } from "@/lib/session";
+import { SESSION_COOKIE, getAccount, readSession, signSession } from "@/lib/session";
 
-/** Forge moved from forge.n3el.dev to forge.xanom.co. Old links keep working and keep the browser's workspace. */
+/** Forge moved from forge.n3el.dev to forge.xanom.co. Old links keep working as plain redirects. */
 const OLD_HOSTS = new Set(["forge.n3el.dev"]);
 const NEW_ORIGIN = "https://forge.xanom.co";
 
@@ -26,16 +26,9 @@ export async function proxy(req: NextRequest) {
   return NextResponse.next();
 }
 
-async function oldHost(req: NextRequest) {
-  const path = `${req.nextUrl.pathname}${req.nextUrl.search}`;
-  const ws = req.cookies.get("cf_workspace")?.value;
-  if (req.method === "GET" && ws && /^[a-zA-Z0-9_-]{8,64}$/.test(ws)) {
-    const url = new URL("/api/handoff", NEW_ORIGIN);
-    url.searchParams.set("t", await createHandoff(ws));
-    url.searchParams.set("next", path.startsWith("/api/") ? "/hub/index.html" : path);
-    return NextResponse.redirect(url, 302);
-  }
-  return NextResponse.redirect(new URL(path, NEW_ORIGIN), 308);
+function oldHost(req: NextRequest) {
+  // The workspace cookie stays behind: carrying it over would let a link plant someone else's workspace.
+  return NextResponse.redirect(new URL(`${req.nextUrl.pathname}${req.nextUrl.search}`, NEW_ORIGIN), 308);
 }
 
 const fail = (status: number, error: string) =>

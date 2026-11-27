@@ -16,7 +16,9 @@ import { applyApprovedList, finishOnboarding, setInterviewPhase } from "@/lib/on
 import { startInterview } from "@/lib/interview-checklist";
 import { splitStoryNotes } from "@/lib/story-notes";
 import { syncEssaySupplements } from "@/lib/essay-supplements";
-import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { getSession, getWorkspaceId } from "@/lib/workspace-cookie";
+import { ownerOf } from "@/lib/session";
+import { sameSite } from "@/lib/same-site";
 import { deleteAllLogins } from "@/lib/portal-logins";
 import { deleteAllSetup } from "@/lib/portal-setup";
 import { deleteGptzero } from "@/lib/gptzero-login";
@@ -127,6 +129,7 @@ function str(v: unknown): string {
 }
 
 export async function POST(req: NextRequest) {
+  if (!sameSite(req)) return withCookie({ success: false, error: "Not allowed." }, undefined, 403);
   const { id, setCookie } = await getWorkspaceId(req);
   let body: Body = {};
   try {
@@ -171,6 +174,8 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "create-recovery") {
+    // A signed-in workspace opens with the account on any device; a code would be a second way in.
+    if (getSession(req)) return withCookie({ success: false, error: "Signed-in accounts sign in on the other device instead." }, setCookie, 403);
     const candidate = newRecoveryCode();
     const next = await updateWorkspace(id, (ws) => ({ ...ws, recoveryCode: ws.recoveryCode || candidate }));
     const code = next.recoveryCode!;
@@ -185,6 +190,10 @@ export async function POST(req: NextRequest) {
     }
     const rec = await getRecovery(code);
     if (!rec) {
+      return withCookie({ success: false, error: "Unknown or expired recovery code." }, setCookie, 404);
+    }
+    // An account's workspace opens only with that account's session, so its code reads as unknown.
+    if (await ownerOf(rec.workspaceId)) {
       return withCookie({ success: false, error: "Unknown or expired recovery code." }, setCookie, 404);
     }
     const ws = await getWorkspace(rec.workspaceId);
@@ -386,6 +395,7 @@ export async function POST(req: NextRequest) {
 
 /** PATCH /api/workspace with a WorkspacePatch body */
 export async function PATCH(req: NextRequest) {
+  if (!sameSite(req)) return withCookie({ success: false, error: "Not allowed." }, undefined, 403);
   const { id, setCookie } = await getWorkspaceId(req);
   let patch: WorkspacePatch = {};
   try {

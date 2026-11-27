@@ -232,6 +232,8 @@ export function isStalePatch(ws: Workspace, patch: WorkspacePatch): boolean {
   return typeof patch.baseRevision === "number" && patch.baseRevision !== ws.revision && replacesProfileLists(patch);
 }
 
+const MAX_ADVISOR_NOTES = 500;
+
 export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Workspace {
   let next: Workspace = { ...ws };
 
@@ -449,7 +451,8 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       ...(patch.advisorNote.byLink ? { byLink: patch.advisorNote.byLink } : {}),
       ...(patch.advisorNote.authorLevel ? { authorLevel: patch.advisorNote.authorLevel } : {}),
     };
-    next = { ...next, advisorNotes: [...next.advisorNotes, note] };
+    // Share links let anyone holding one write notes, so only the newest are kept.
+    next = { ...next, advisorNotes: [...next.advisorNotes, note].slice(-MAX_ADVISOR_NOTES) };
   }
   if (patch.removeAdvisorNoteId) {
     next = {

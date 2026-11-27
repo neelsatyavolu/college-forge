@@ -34,7 +34,7 @@ async function workspace(run) {
   }
 }
 const reply = {text:'A grounded reply.',provider:'codex',model:'test-fixture',finishReason:'stop',rounds:1,truncated:false};
-const request = (id,body) => ({json:async()=>body,cookies:{get:()=>({value:id})}});
+const request = (id,body,headers={'content-type':'application/json'}) => ({json:async()=>body,cookies:{get:()=>({value:id})},headers:new Headers(headers),nextUrl:new URL('http://localhost/api/ai/chat')});
 async function events(response) { return (await response.text()).trim().split('\n').map(line=>JSON.parse(line)); }
 
 test('asking a read-only shortlist question never prunes saved schools', async()=>workspace(async(id,before)=>{

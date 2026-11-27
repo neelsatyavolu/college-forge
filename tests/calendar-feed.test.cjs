@@ -111,13 +111,14 @@ test('the calendar has open follow-ups and estimated decisions, not done follow-
   for (const line of exportCalendar(ws, '2026-11-01').text.split('\r\n')) assert.ok(Buffer.byteLength(line, 'utf8') <= 75);
 });
 
-test('signing in moves the feed with the workspace, so the subscribed link keeps working', () => isolated(async () => {
+test('signing in ends the anonymous feed: whoever had its link held an unowned workspace', () => isolated(async (dir) => {
   const token = tokenOf((await (await linkRoute.POST(link('create'))).json()).data.https);
   const account = await session.signInAccount({ sub: 'xa_CAL', email: 'cal@example.com', name: 'Cal' }, WS);
   assert.notEqual(account.workspaceId, WS);
   assert.equal(await store.peekWorkspace(WS), null);
-  assert.equal((await fetchFeed(token)).status, 200);
-  assert.equal((await store.getWorkspace(account.workspaceId)).calendarFeed.token, token);
+  assert.equal((await fetchFeed(token)).status, 404);
+  assert.equal((await store.getWorkspace(account.workspaceId)).calendarFeed, undefined);
+  assert.equal(fs.existsSync(path.join(dir, 'calendars', `${token}.json`)), false, 'index record removed');
 }));
 
 test('the subscription leaves out scholarship notes that the download keeps', () => isolated(async () => {

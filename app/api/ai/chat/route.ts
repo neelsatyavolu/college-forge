@@ -10,6 +10,7 @@ import { buildInterviewPrompt, RESEARCH_RULES } from "@/lib/interview-prompt";
 import { sensitiveRefusal, toolAllowed } from "@/lib/tool-policy";
 import { DECISION_SYSTEM } from "@/lib/decision-plan";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
+import { sameSite } from "@/lib/same-site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,6 +35,7 @@ function sanitize(messages: unknown): ChatTurn[] {
 }
 
 export async function POST(req: NextRequest) {
+  if (!sameSite(req)) return Response.json({ error: "Not allowed." }, { status: 403 });
   let body: {
     messages?: unknown;
     provider?: unknown;

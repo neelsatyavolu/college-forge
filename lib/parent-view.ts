@@ -1,6 +1,6 @@
 import type { FollowerLevel, FollowerRole, ParentLevel } from "./parents";
 import type { Essay, Workspace } from "./store";
-import { isEssayHidden } from "./essay-tools";
+import { isEssayHidden, visibleEssays } from "./essay-tools";
 import { shareTracker } from "./tracker-service";
 import { sharedAidPlan } from "./aid-plan";
 import { sharedScholarship } from "./aid-validate";
@@ -108,20 +108,6 @@ export function followerView(ws: Workspace, access: { level: FollowerLevel; role
   const level = access.level;
   const view = parentView(ws, level, today);
   return access.role === "counselor" ? { ...view, role: access.role, notes: counselorNotes(ws, level, access.linkId) } : { ...view, role: access.role };
-}
-
-/** The essays a parent may see: everything the student hasn't hidden (or whose school they opted out of), without the hidden ones' drafts and statuses. */
-function visibleEssays(ws: Workspace) {
-  const all = [
-    ...ws.essays.commonApp.map((e) => [e, "common"] as const),
-    ...Object.entries(ws.essays.supplements || {}).flatMap(([key, list]) => (list || []).map((e) => [e, key] as const)),
-  ];
-  const hidden = new Set(all.filter(([e, key]) => isEssayHidden(ws, e, key)).map(([e]) => e.id));
-  const shown = (list: Essay[]) => (list || []).filter((e) => !hidden.has(e.id));
-  const commonApp = shown(ws.essays.commonApp);
-  const supplements = Object.fromEntries(Object.entries(ws.essays.supplements || {}).map(([k, v]) => [k, shown(v)] as const).filter(([, v]) => v.length));
-  const only = <T,>(map: Record<string, T> | undefined) => Object.fromEntries(Object.entries(map || {}).filter(([k]) => !hidden.has(k)));
-  return { essays: { commonApp, supplements }, essayDrafts: only(ws.essayDrafts), essayStatus: only(ws.essayStatus) };
 }
 
 export function parentView(ws: Workspace, level: ParentLevel, today?: string) {

@@ -26,9 +26,20 @@ const b64url = (bytes: Uint8Array) =>
 const random = (n = 32) => b64url(crypto.getRandomValues(new Uint8Array(n)));
 const sha256 = async (s: string) => b64url(new Uint8Array(await crypto.subtle.digest("SHA-256", enc.encode(s))));
 
-/** Only same-site paths, so `return` can't send people off-site. */
-function safeReturn(path: string | null | undefined): string {
-  return path && path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/\\") ? path : "/";
+const RETURN_BASE = "https://return.invalid";
+
+/**
+ * Only same-site paths, so `return` can't send people off-site. Resolving first catches "/\t/evil.example" and
+ * "/\\evil.example", which a browser reads as another host.
+ */
+export function safeReturn(path: string | null | undefined): string {
+  if (!path || !path.startsWith("/")) return "/";
+  try {
+    const url = new URL(path, RETURN_BASE);
+    return url.origin === RETURN_BASE ? `${url.pathname}${url.search}${url.hash}` : "/";
+  } catch {
+    return "/";
+  }
 }
 
 /**

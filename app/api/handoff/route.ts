@@ -1,19 +1,24 @@
 import { NextRequest } from "next/server";
-import { claimHandoff } from "@/lib/session";
 import { appOrigin } from "@/lib/origin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const safePath = (p: string | null) => (p && p.startsWith("/") && !p.startsWith("//") && !p.startsWith("/\\") ? p : "/hub/index.html");
-
-/** Arrives from forge.n3el.dev with that browser's workspace, so the first Xanom sign-in can keep it. */
-export async function GET(req: NextRequest) {
-  const ws = await claimHandoff(req.nextUrl.searchParams.get("t") ?? "");
-  const headers = new Headers({ location: new URL(safePath(req.nextUrl.searchParams.get("next")), appOrigin(req)).toString() });
-  if (ws && !req.cookies.get("cf_workspace")) {
-    const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-    headers.append("set-cookie", `cf_workspace=${ws}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax${secure}`);
+/** A path on this origin, or the hub. Resolving first catches "/\t/evil.example" and "/\\evil.example", which browsers read as off-site. */
+function safePath(p: string | null, origin: string): string {
+  if (p && p.startsWith("/")) {
+    try {
+      const url = new URL(p, origin);
+      if (url.origin === origin) return `${url.pathname}${url.search}${url.hash}`;
+    } catch {
+      // Not a URL: fall through to the hub.
+    }
   }
-  return new Response(null, { status: 302, headers });
+  return "/hub/index.html";
+}
+
+/** Old forge.n3el.dev handoff links. The workspace no longer comes along, so this is a plain redirect. */
+export async function GET(req: NextRequest) {
+  const origin = appOrigin(req);
+  return new Response(null, { status: 302, headers: { location: new URL(safePath(req.nextUrl.searchParams.get("next"), origin), origin).toString() } });
 }

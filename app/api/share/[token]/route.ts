@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { getShare } from "@/lib/share-store";
+import { allow } from "@/lib/rate-limit";
 import { getWorkspace, updateWorkspace, publicShareView, type Workspace } from "@/lib/store";
 import { shareTracker } from "@/lib/tracker-service";
 import { applyWorkspacePatch } from "@/lib/workspace-patch";
@@ -80,6 +81,10 @@ export async function POST(req: NextRequest, ctx: Ctx) {
   if (!noteBody || noteBody.length > 4000) {
     return json({ success: false, error: "Note must be 1–4000 characters." }, 400);
   }
+  if (!(await allow(`share-note:${token}`, 60, 60 * 60 * 1000))) {
+    return json({ success: false, error: "Too many notes. Try again in an hour." }, 429);
+  }
+  const essayId = typeof body.essayId === "string" && /^[A-Za-z0-9_-]{1,80}$/.test(body.essayId) ? body.essayId : undefined;
 
   try {
     const next = await updateWorkspace(share.workspaceId, (ws) => {
@@ -88,7 +93,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
         advisorNote: {
           body: noteBody,
           author: typeof body.author === "string" ? body.author.slice(0, 80) : "Advisor",
-          essayId: share.scope === "progress" ? undefined : typeof body.essayId === "string" ? body.essayId : undefined,
+          essayId: share.scope === "progress" ? undefined : essayId,
           via: share.scope === "progress" ? "progress" : "full",
         },
       });
