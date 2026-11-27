@@ -20,7 +20,7 @@ struct FinishSetupRow: View {
                 if !details.username.isEmpty { detail("Username", details.username) }
                 if !details.pin.isEmpty { detail("PIN", details.pin) }
                 if !details.password.isEmpty { detail("Password Forge made", details.password) }
-                if let url = URL(string: details.link), url.scheme == "https" {
+                if let url = details.checkedLink {
                     Link("Open the set-up page", destination: url)
                 }
             } else {

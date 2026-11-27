@@ -228,7 +228,7 @@ test('lookup offers the master password only when it is on for new portals', () 
   await service.setMasterLogin(ws, { username: 'stu@example.com', password: 'Master-Pass-1' });
   assert.equal((await (await service_call({ op: 'lookup', token })).json()).usePassword, undefined, 'off by default');
   await inbox.setInbox(ws, { on: true, useMasterForNew: true });
-  assert.equal((await (await service_call({ op: 'lookup', token })).json()).usePassword, 'Master-Pass-1');
+  assert.equal((await (await service_call({ op: 'lookup', token, collegeId: 'purdue', link: 'https://apply.purdue.edu/activate' })).json()).usePassword, 'Master-Pass-1');
   assert.equal((await inbox.inboxStatus(ws)).useMasterForNew, true);
 }));
 

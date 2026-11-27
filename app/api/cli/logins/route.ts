@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { verifyAccess } from "@/lib/oauth";
 import { readLogins, readMaster, resolveLogin } from "@/lib/portal-logins";
-import { loginHost } from "@/lib/portal-check";
+import { loginHost, masterAllowed } from "@/lib/portal-check";
 import { allow } from "@/lib/rate-limit";
 import { getWorkspace } from "@/lib/store";
 
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const out: Record<string, { username: string; password: string; portalUrl: string }> = {};
     for (const app of ws.tracker.apps) {
       // A school using the master login gets it here too, under the same host rules as checks.
-      const resolved = resolveLogin(app.id, loginHost(app), logins, master, { allowFailed: true });
+      const resolved = resolveLogin(app.id, loginHost(app), logins, masterAllowed(app) ? master : null, { allowFailed: true });
       if (!resolved || (ids.length && !ids.includes(app.id))) continue;
       const { login, source } = resolved;
       // The master's website is the host it was pinned to, never an edited link.

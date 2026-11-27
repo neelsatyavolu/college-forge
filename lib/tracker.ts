@@ -102,6 +102,11 @@ export interface TrackedApp {
   testing?: TestingChoice;
   /** The school's financial aid offer as the student entered it (lib/aid-validate.ts AidOffer). Private to the student. */
   aidOffer?: AidOffer;
+  /**
+   * The portal link came from a forwarded email, which anyone who knows the address can send, for a school
+   * outside the catalog. Such a host never gets the master login; the student saving the link clears it.
+   */
+  portalFromEmail?: boolean;
   createdAt: number;
   updatedAt: number;
 }

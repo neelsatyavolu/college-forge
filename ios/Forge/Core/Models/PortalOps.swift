@@ -71,6 +71,8 @@ struct SetupDetails: Codable, Hashable, Sendable {
     var password: String
     var pin: String
     var link: String
+    /// The server found `link` on the school's own host. A link without it is never shown.
+    var linkChecked: Bool
     /// "set" or "todo".
     var state: String
     var reason: String
@@ -83,8 +85,17 @@ extension SetupDetails {
         password = c.string(.password)
         pin = c.string(.pin)
         link = c.string(.link)
+        linkChecked = c.bool(.linkChecked)
         state = c.string(.state)
         reason = c.string(.reason)
+    }
+}
+
+extension SetupDetails {
+    /// The set-up link, only when the server checked it goes to the school and it is https.
+    var checkedLink: URL? {
+        guard linkChecked, let url = URL(string: link), url.scheme == "https" else { return nil }
+        return url
     }
 }
 

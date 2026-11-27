@@ -134,7 +134,7 @@ function FinishSetup({ app }) {
           {details.username ? <React.Fragment><dt>Username</dt><dd>{details.username}</dd></React.Fragment> : null}
           {details.pin ? <React.Fragment><dt>PIN</dt><dd className="cf-mono">{details.pin}</dd></React.Fragment> : null}
           {details.password ? <React.Fragment><dt>Password Forge made</dt><dd className="cf-mono">{details.password}</dd></React.Fragment> : null}
-          {details.link && /^https:\/\//.test(details.link) ? <React.Fragment><dt>Link</dt><dd><a href={details.link} target="_blank" rel="noopener noreferrer">Open the set-up page ↗</a></dd></React.Fragment> : null}
+          {details.linkChecked === true && details.link && /^https:\/\//.test(details.link) ? <React.Fragment><dt>Link</dt><dd><a href={details.link} target="_blank" rel="noopener noreferrer">Open the set-up page ↗</a></dd></React.Fragment> : null}
         </dl>
       )}
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>{error}</p> : null}

@@ -5,6 +5,8 @@ import { arrivalEmail, notPortalEmail } from "./notify/inbox-mail";
 import { recipientOf } from "./notify/send";
 import { openJson, readLogins, readMaster, sealJson, type Sealed } from "./portal-logins";
 import { saveSetup } from "./portal-setup";
+import { catalogUrlsAllowed, masterAllowed, trustedSchoolLink } from "./portal-check";
+import { getWorkspace } from "./store";
 import { TrackerError, addApp, markSetupWaiting, setLogin, updateApp, useMasterFor } from "./tracker-service";
 import type { PortalResult } from "./tracker";
 
@@ -113,14 +115,20 @@ async function workspaceOf(token: string): Promise<string | null> {
   return p?.token === token ? entry.workspaceId : null;
 }
 
+/** The school an email is about, as the Worker read it: where it will type a password. */
+export type LookupTarget = { collegeId?: string | null; portalUrl?: string; link?: string };
+
 /**
  * One email arrived for this address. Counts it against the daily limit. Null for an unknown address.
  * `usePassword` is the master password when the student chose it for new portals; the Worker uses it if
- * the school's password rules allow, and generates one otherwise.
+ * the school's password rules allow, and generates one otherwise. Anyone can send to the address, so the
+ * master is given only for a catalog school whose portal and activation links are all that school's own
+ * hosts; without a `target` (or for any other school) there is no master.
  */
 export async function lookupInbox(
   token: string,
   now = Date.now(),
+  target: LookupTarget = {},
 ): Promise<{ email: string; birthdate: string; allowed: boolean; usePassword?: string } | null> {
   const workspaceId = await workspaceOf(token);
   if (!workspaceId) return null;
@@ -139,7 +147,8 @@ export async function lookupInbox(
     masterForNew = !!p.masterForNew;
     return sealJson(aad(workspaceId), { ...p, day, count: allowed ? count + 1 : count });
   });
-  const master = masterForNew && allowed ? await readMaster(workspaceId) : null;
+  const trusted = catalogUrlsAllowed(target.collegeId, [target.portalUrl ?? "", target.link ?? ""]);
+  const master = masterForNew && allowed && trusted ? await readMaster(workspaceId) : null;
   return { email, birthdate, allowed, ...(master ? { usePassword: master.password } : {}) };
 }
 
@@ -152,7 +161,10 @@ async function logArrival(workspaceId: string, entry: RecentArrival): Promise<vo
   });
 }
 
-/** Saves the login a final arrival set: as the master login when it is the master's password, else the school's own. */
+/**
+ * Saves the login a final arrival set: as the master login when it is the master's password, else the school's
+ * own. applyArrival only passes the master's password for a school allowed to have it.
+ */
 async function saveArrivalLogin(workspaceId: string, appId: string, login: { username: string; password: string }): Promise<void> {
   const master = await readMaster(workspaceId);
   if (master && master.password === login.password && master.username === login.username) {
@@ -180,10 +192,18 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
   if (prior?.emailed) return true;
   const app = prior
     ? { id: prior.appId }
-    : await addApp(workspaceId, { ...(arrival.collegeId ? { collegeId: arrival.collegeId } : {}), name: arrival.name, portalUrl: arrival.portalUrl });
-  const login = arrival.username && arrival.password ? { username: arrival.username, password: arrival.password } : null;
+    : await addApp(workspaceId, { ...(arrival.collegeId ? { collegeId: arrival.collegeId } : {}), name: arrival.name, portalUrl: arrival.portalUrl, portalFromEmail: true });
+  const tracked = (await getWorkspace(workspaceId)).tracker.apps.find((a) => a.id === app.id);
+  if (!tracked) return false;
   const saved = (await readLogins(workspaceId))[app.id];
   const master = await readMaster(workspaceId);
+  // The master password goes only to a catalog school whose host didn't come from an email; anything else
+  // that arrives carrying it is dropped rather than saved.
+  const isMaster = !!master && arrival.password === master.password;
+  const masterOk = !!tracked.collegeId && masterAllowed(tracked);
+  const login = arrival.username && arrival.password && (!isMaster || masterOk) ? { username: arrival.username, password: arrival.password } : null;
+  // Only a link that goes to the school itself is kept; a forged email's link is never shown as Forge's.
+  const link = arrival.link && trustedSchoolLink(tracked, arrival.link) ? arrival.link : "";
 
   if (!final) {
     // Before anything is typed into the portal: keep the password, but never over a login that works,
@@ -211,10 +231,10 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
 
   // Short of verified, keep what the student needs to finish by hand, sealed, instead of throwing it away.
   // The master password is never copied in: the student already knows it, and forgetting it must stick.
-  const password = master && arrival.password === master.password ? "" : arrival.password;
-  if (arrival.state !== "verified" && (arrival.pin || arrival.link || password)) {
+  const password = isMaster ? "" : arrival.password;
+  if (arrival.state !== "verified" && (arrival.pin || link || password)) {
     await saveSetup(workspaceId, app.id, {
-      username: arrival.username, password, pin: arrival.pin, link: arrival.link,
+      username: arrival.username, password, pin: arrival.pin, link,
       state: arrival.state, reason: arrival.reason, receivedAt: Date.now(),
     });
     await markSetupWaiting(workspaceId, app.id);

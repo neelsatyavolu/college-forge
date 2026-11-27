@@ -31,6 +31,31 @@ function catalogAllows(college: NonNullable<ReturnType<typeof collegeById>>, hos
   return college.domains.some((d) => host === d || host.endsWith(`.${d}`));
 }
 
+/** True when every given link is https on one of this catalog school's own hosts. Not for schools outside the catalog. */
+export function catalogUrlsAllowed(collegeId: string | null | undefined, urls: string[]): boolean {
+  const college = collegeId ? collegeById(collegeId) : undefined;
+  if (!college) return false;
+  return urls.filter(Boolean).every((u) => {
+    const host = hostOf(u);
+    return !!host && catalogAllows(college, host);
+  });
+}
+
+/**
+ * A link from a forwarded email is shown only if it goes to the school: a catalog school's own hosts, or for
+ * another school the portal host the student saved. A host that itself came from an email proves nothing.
+ */
+export function trustedSchoolLink(app: TrackedApp, url: string): boolean {
+  const host = hostOf(url);
+  if (!host) return false;
+  const college = app.collegeId ? collegeById(app.collegeId) : undefined;
+  if (college) return catalogAllows(college, host);
+  return !app.portalFromEmail && host === hostOf(app.portalUrl);
+}
+
+/** The master login may go to this school only when its portal host didn't come from a forwarded email. */
+export const masterAllowed = (app: TrackedApp): boolean => !app.portalFromEmail;
+
 /** Where a portal login for this application may be sent, or null. */
 export function loginHost(app: TrackedApp): string | null {
   const college = app.collegeId ? collegeById(app.collegeId) : undefined;
@@ -152,7 +177,7 @@ export async function runChecks(
   // A sign-in the master failed on is retried only when the student asks for a check.
   const resolved = new Map<string, { login: PortalLogin; source: "own" | "master" }>();
   for (const a of ws.tracker.apps) {
-    const r = resolveLogin(a.id, loginHost(a), logins, master, { allowFailed: !opts.onlyDue });
+    const r = resolveLogin(a.id, loginHost(a), logins, masterAllowed(a) ? master : null, { allowFailed: !opts.onlyDue });
     if (r) resolved.set(a.id, r);
   }
   const targets = ws.tracker.apps.filter((a) => (opts.appIds ? opts.appIds.includes(a.id) : resolved.has(a.id)));

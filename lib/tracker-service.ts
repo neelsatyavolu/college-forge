@@ -3,7 +3,7 @@ import { logoUrl } from "./catalog";
 import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
 import { clearMaster, readLogins, readMaster, saveLogins, saveMaster, setMasterFor, type PortalLogin } from "./portal-logins";
-import { loginHost } from "./portal-check";
+import { loginHost, masterAllowed, trustedSchoolLink } from "./portal-check";
 import { getWorkspace, updateWorkspace, type College, type Workspace } from "./store";
 import { curatedResearchFor, interestOf, interestSignal, upcomingInterviews, type ResearchLike } from "./interest-log";
 import { isUntouchedApp } from "./list-sync";
@@ -171,7 +171,7 @@ export async function listApps(workspaceId: string) {
 
 export async function addApp(
   workspaceId: string,
-  input: { name?: string; collegeId?: string; slug?: string; portalUrl?: string } & AppEdit,
+  input: { name?: string; collegeId?: string; slug?: string; portalUrl?: string; portalFromEmail?: boolean } & AppEdit,
 ): Promise<AppView> {
   const name = (input.name ?? "").trim();
   if (!name && !input.collegeId) throw new TrackerError("Give the school's name.");
@@ -184,17 +184,22 @@ export async function addApp(
     if (dup) {
       createdId = dup.id;
       // An untouched application (often the one the list sync made for a list school) takes the details given now.
-      const { name: _dn, collegeId: _dc, slug: _ds, portalUrl: dupUrl, ...dupEdit } = input;
+      const { name: _dn, collegeId: _dc, slug: _ds, portalUrl: dupUrl, portalFromEmail: dupFromEmail, ...dupEdit } = input;
+      // As for a new school below: a link from a forwarded email for a school outside the catalog is marked.
+      const dupMark = dupUrl ? { portalUrl: dupUrl, ...(dupFromEmail && !dup.collegeId ? { portalFromEmail: true } : {}) } : {};
       const filled = isUntouchedApp(dup) && (Object.keys(dupEdit).length || dupUrl)
-        ? editApp({ ...dup, ...(dupUrl ? { portalUrl: dupUrl } : {}) }, dupEdit)
+        ? editApp({ ...dup, ...dupMark }, dupEdit)
         : dup;
       // Linking a shortlist school to an application someone already added by name.
       const linked = input.slug && !filled.slug ? { ...filled, slug: input.slug } : filled;
       return linked === dup ? tracker : replaceApp(tracker, linked);
     }
     const slug = input.slug ?? current.colleges.find((c) => catalog && matchCatalog(c.name)?.id === catalog.id)?.slug;
-    const { name: _n, collegeId: _c, slug: _s, portalUrl, ...edit } = input;
-    const app = editApp(newApp({ name: name || catalog?.name || "", collegeId: catalog?.id ?? null, slug, portalUrl }), edit);
+    const { name: _n, collegeId: _c, slug: _s, portalUrl, portalFromEmail, ...edit } = input;
+    const base = newApp({ name: name || catalog?.name || "", collegeId: catalog?.id ?? null, slug, portalUrl });
+    // A catalog school's hosts are known; any other school's link from an email is only the email's word.
+    const marked = portalFromEmail && !base.collegeId && base.portalUrl ? { ...base, portalFromEmail: true } : base;
+    const app = editApp(marked, edit);
     createdId = app.id;
     return { ...tracker, apps: [...tracker.apps, app] };
   });
@@ -212,7 +217,13 @@ export async function updateApp(workspaceId: string, ref: string, edit: AppEdit 
   const ws = await mutate(workspaceId, (tracker) => {
     const app = mustFind(tracker, ref);
     id = app.id;
-    let next = editApp(app, typeof edit === "function" ? edit(app) : edit);
+    const change = typeof edit === "function" ? edit(app) : edit;
+    let next = editApp(app, change);
+    // The student (or their copilot) saving the link vouches for it, whatever a forwarded email said.
+    if (change.portalUrl !== undefined && next.portalFromEmail) {
+      const { portalFromEmail: _f, ...rest } = next;
+      next = rest;
+    }
     dropLogin = !!app.login && loginHost(next) !== loginHost(app);
     if (dropLogin) {
       const { login: _l, ...rest } = next;
@@ -297,7 +308,9 @@ export async function setupDetails(workspaceId: string, ref: string) {
     }
     throw new TrackerError("There are no set-up details waiting for this school.");
   }
-  return details;
+  // Checked again on the way out: clients show a link only when the server says it goes to the school.
+  const linkChecked = !!details.link && trustedSchoolLink(app, details.link);
+  return { ...details, link: linkChecked ? details.link : "", linkChecked };
 }
 
 // ── The master login ────────────────────────────────────────────────────────
@@ -352,6 +365,7 @@ export async function useMasterFor(workspaceId: string, ref: string, on: boolean
   if (on) {
     const master = await readMaster(workspaceId);
     if (!master) throw new TrackerError("Save a master login first.");
+    if (!masterAllowed(app)) throw new TrackerError("This portal link came from a forwarded email. Check it and save it yourself before using the master login here.");
     const host = loginHost(app);
     if (!host) throw new TrackerError("Add the portal link before using the master login here.");
     // Opt in first and confirm it stuck (the master could be forgotten meanwhile) before dropping the own login.
@@ -385,7 +399,7 @@ export async function applyMasterToAll(workspaceId: string): Promise<{ applied: 
   const changes: Record<string, { host: string }> = {};
   for (const a of tracker.apps) {
     const host = loginHost(a);
-    if (!a.collegeId || !host || own[a.id] || a.login?.hasPassword) continue;
+    if (!a.collegeId || !masterAllowed(a) || !host || own[a.id] || a.login?.hasPassword) continue;
     changes[a.id] = { host };
   }
   const ids = new Set(Object.keys(changes));
