@@ -4,7 +4,7 @@
  * the student answers before the AI goes on. Profile answers are saved with the regular profile tools.
  */
 import type { ChatEmitter, ToolSpec, UiEdIdea, UiQuestion, UiSchool, UiStrategy, UiTransferPath } from "./chat-types";
-import { dataTier, studentAcademics, testRequired } from "./college-recommendations";
+import { dataTier, REGIONS, schoolPlace, studentAcademics, testRequired } from "./college-recommendations";
 import { BUDGET_CAP, studentFacts } from "./list-facts";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
@@ -152,6 +152,34 @@ export function tooManyNonresidentPublics(ws: Workspace, schools: UiSchool[], ap
   return `${names.length} out-of-state public universities (${names.join(", ")}) on a budget under $${cap.toLocaleString("en-US")} with need-based aid: publics rarely give need-based aid to nonresidents, so these usually cost $40,000-60,000 a year. Keep at most ${allowed}; use in-state publics (including regional ones), and private colleges that meet full need or give large merit aid, instead.`;
 }
 
+/**
+ * Likely schools are the ones a student may actually attend, so they should be where the student said they
+ * want to be. With specific regions chosen, at most one likely school may sit outside them. Schools Forge
+ * can't place are given the benefit of the doubt.
+ */
+export function farLikelySchools(ws: Workspace, schools: UiSchool[]): string | null {
+  const regions = (ws.onboarding.listPrefs?.regions ?? []).filter((r) => REGIONS[r]);
+  if (!regions.length) return null;
+  const states = new Set(regions.flatMap((r) => REGIONS[r]));
+  const far = schools.filter((s) => s.tier === "likely").flatMap((s) => {
+    const place = schoolPlace(s.name, s.slug);
+    return place && !states.has(place.state) ? [`${s.name} (${place.state})`] : [];
+  });
+  if (far.length <= 1) return null;
+  return `Likely schools outside the regions the student chose (${regions.join(", ")}): ${far.join(", ")}. Keep at most one; pick likely schools they'd be glad to attend where they want to be.`;
+}
+
+/** Why a list is too short to show at all: more than two applications short of what the student asked for (never under five). */
+/** When `hurried` (the turn is out of time), half the request is enough: a short list with a warning beats no list. */
+export function tooShort(ws: Workspace, schools: UiSchool[], hurried = false): string | null {
+  const prefs = ws.onboarding.listPrefs;
+  const wanted = typeof prefs?.suppCount === "number" && typeof prefs?.noSuppCount === "number" ? prefs.suppCount + prefs.noSuppCount : null;
+  const floor = wanted ? Math.max(5, hurried ? Math.ceil(wanted / 2) : wanted - 2) : 5;
+  const apps = applicationCount(schools);
+  if (apps >= floor) return null;
+  return `this list has ${apps} applications${wanted ? ` and the student asked for ${wanted}` : ""}; Forge won't show fewer than ${floor}. Add schools from get_college_recommendations (its "more" and "inState" candidates) or your research, then call propose_list again.`;
+}
+
 /** A transfer path the student can act on: both colleges named, and they aren't the same college. */
 export function parseTransferPath(raw: Args): UiTransferPath | undefined {
   const college = text(raw.college, 120), transfersTo = text(raw.transfersTo, 120), reason = text(raw.reason, 400);
@@ -167,6 +195,7 @@ export function studentWarning(problem: string): string {
   if (/Include at least 2 likely/.test(problem)) return "Heads up: this list has fewer than two likely schools. Add a school you're very likely to get into before you finalize.";
   if (/tiers \(after Forge's data\)/.test(problem)) return `Heads up: the mix doesn't quite match what you chose. ${problem.replace(/^The tiers \(after Forge's data\) are /, "It's ").replace(/ Swap schools to fix .*$/, "")}`;
   if (/SAT or ACT scores, and this student is applying without them/.test(problem)) return `Heads up: ${problem.replace(/, and this student is applying without them\..*$/, "")}. You said you're applying without scores, so confirm each policy or drop them.`;
+  if (/Likely schools outside the regions/.test(problem)) return "Heads up: some likely schools here are outside the regions you chose. Swap them for likely schools closer to where you want to be, or tell me if you're open to them.";
   if (/out-of-state public universities/.test(problem)) return "Heads up: several schools here are out-of-state public universities, which rarely give need-based aid to nonresidents. Run each one's net price calculator before counting on it.";
   if (/applications with supplements/.test(problem)) return "Heads up: the number of schools doesn't exactly match the counts you gave. Drop or ask for schools until it does.";
   return `Heads up: ${problem}`;
@@ -230,6 +259,8 @@ export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | 
   } else if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
   const nonresident = tooManyNonresidentPublics(ws, schools, apps);
   if (nonresident) return nonresident;
+  const far = farLikelySchools(ws, schools);
+  if (far) return far;
   // US colleges that fund international students are almost all selective, so their real backups are
   // universities at home or elsewhere abroad (named in the reply), not two likely US schools.
   if (needsInternationalAid(ws)) return null;
@@ -469,6 +500,9 @@ export function makeInterviewTools(
         if (gap) return `Not shown: finish the interview first (${gap} still needs ${missingFields(ws, gap).join(", ")}).`;
         const { schools: tiered, changed } = applyDataTiers(ws, markCurrent(ws, parseSchools(a.schools)));
         const schools = applyStudentFacts(ws, tiered);
+        // A list far short of what the student asked for is never shown, however many tries it takes.
+        const short = tooShort(ws, schools, hurry());
+        if (short) return `Not shown: ${short}`;
         const problem = checkListProposal(ws, schools) ?? checkMix(ws, schools);
         // Push back twice so the AI can fix the list; some students' situations can't meet every rule
         // (two likely schools under a very tight budget may not exist), so the third try is shown with
