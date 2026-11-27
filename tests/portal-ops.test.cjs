@@ -204,6 +204,40 @@ test('own logins, forgetting and portal moves all clear the master opt-in', () =
   assert.equal(off.on, false);
 }));
 
+test('a school the list sync drops loses its saved login, master entry and set-up details too', () => isolated(async () => {
+  const ws = 'ops-m-6';
+  const app = await service.addApp(ws, { name: 'Tiny Slate College', portalUrl: 'https://apply.tiny.edu/apply/status' });
+  const keep = await service.addApp(ws, { name: 'Other Place', portalUrl: 'https://apply.other.edu/apply/status' });
+  await service.setMasterLogin(ws, { username: 'm', password: 'Master-Pass-1' });
+  // Records left outside the workspace while the application itself stays untouched (no login mirrored).
+  await logins.saveLogins(ws, { [app.id]: { username: 'u', password: 'p', host: 'apply.tiny.edu' }, [keep.id]: { username: 'k', password: 'q', host: 'apply.other.edu' } });
+  await logins.setMasterFor(ws, { [app.id]: { host: 'apply.tiny.edu' } });
+  await setup.saveSetup(ws, app.id, { username: 'u', password: 'p', pin: '1234', link: '', state: 'todo', reason: '', receivedAt: Date.now() });
+  const { slug } = (await store.getWorkspace(ws)).tracker.apps.find((a) => a.id === app.id);
+  assert.ok(slug, 'the application is linked to a list school');
+  await store.updateWorkspace(ws, (w) => ({ ...w, colleges: w.colleges.filter((c) => c.slug !== slug) }));
+  const after = await store.getWorkspace(ws);
+  assert.equal(after.tracker.apps.find((a) => a.id === app.id), undefined, 'the untouched application went with its list school');
+  assert.equal((await logins.readLogins(ws))[app.id], undefined, 'its login is gone');
+  assert.ok((await logins.readLogins(ws))[keep.id], 'another school keeps its login');
+  assert.equal((await logins.readMaster(ws)).appIds[app.id], undefined, 'its master entry is gone');
+  assert.equal(await setup.readSetup(ws, app.id), null, 'its set-up details are gone');
+}));
+
+test('a forwarded email never replaces a link an existing school already has', () => isolated(async () => {
+  const ws = 'ops-m-7';
+  const app = await service.addApp(ws, { name: 'Tiny Slate College', portalUrl: 'https://apply.tiny.edu/apply/status' });
+  await service.addApp(ws, { name: 'Tiny Slate College', portalUrl: 'https://evil.example/apply/status', portalFromEmail: true });
+  const after = (await store.getWorkspace(ws)).tracker.apps.find((a) => a.id === app.id);
+  assert.equal(after.portalUrl, 'https://apply.tiny.edu/apply/status');
+  assert.equal(after.portalFromEmail, undefined);
+  const bare = await service.addApp(ws, { name: 'Bare College' });
+  await service.addApp(ws, { name: 'Bare College', portalUrl: 'https://apply.bare.edu/apply/status', portalFromEmail: true });
+  const filled = (await store.getWorkspace(ws)).tracker.apps.find((a) => a.id === bare.id);
+  assert.equal(filled.portalUrl, 'https://apply.bare.edu/apply/status');
+  assert.equal(filled.portalFromEmail, true, 'a non-catalog link from an email is marked as the email\'s');
+}));
+
 // ── Forwarded set-up emails ───────────────────────────────────────────────
 
 async function withAddress(sub = 'xa_OPSIN', email = 'stu@example.com') {

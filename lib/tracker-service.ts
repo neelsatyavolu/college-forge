@@ -187,8 +187,9 @@ export async function addApp(
       createdId = dup.id;
       // An untouched application (often the one the list sync made for a list school) takes the details given now.
       const { name: _dn, collegeId: _dc, slug: _ds, portalUrl: dupUrl, portalFromEmail: dupFromEmail, ...dupEdit } = input;
-      // As for a new school below: a link from a forwarded email for a school outside the catalog is marked.
-      const dupLink = dupFromEmail && dup.collegeId && dupUrl && !catalogUrlsAllowed(dup.collegeId, [dupUrl]) ? undefined : dupUrl;
+      // A forwarded email never replaces a link the school already has. Otherwise, as for a new school below:
+      // a catalog school keeps it only on its own hosts, and any other school's link is marked as the email's.
+      const dupLink = dupFromEmail && dupUrl && (dup.portalUrl || (dup.collegeId && !catalogUrlsAllowed(dup.collegeId, [dupUrl]))) ? undefined : dupUrl;
       const dupMark = dupLink ? { portalUrl: dupLink, ...(dupFromEmail && !dup.collegeId ? { portalFromEmail: true } : {}) } : {};
       const filled = isUntouchedApp(dup) && (Object.keys(dupEdit).length || dupLink)
         ? editApp({ ...dup, ...dupMark }, dupEdit)
