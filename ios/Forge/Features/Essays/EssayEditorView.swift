@@ -24,12 +24,16 @@ private struct EssayEditorContent: View {
     let queue: EssayDraftQueue
 
     @Environment(WorkspaceStore.self) private var store
+    @Environment(EssaysMetadata.self) private var metadata
     @Environment(Router.self) private var router
     @Environment(\.scenePhase) private var scenePhase
     @FocusState private var writing: Bool
     @State private var promptExpanded = true
     @State private var promptForm: EssayPromptDraft?
     @State private var showingNotes = false
+    @State private var busy = false
+    @State private var error: APIError?
+    @State private var visible = false
 
     private var text: String { queue.text(for: item.essay, serverDrafts: store.workspace.essayDrafts) }
     private var notes: [AdvisorNote] {
@@ -38,16 +42,18 @@ private struct EssayEditorContent: View {
 
     var body: some View {
         let count = EssayMetrics.count(text, for: item.essay)
-        VStack(spacing: 0) {
-            EssayEditorHeader(item: item, expanded: $promptExpanded)
-            if queue.errorMessage != nil || (queue.storageUnavailable && queue.hasUnsaved) {
-                EssaySaveErrorBanner(queue: queue)
-                    .padding(.horizontal, Theme.Spacing.md)
-                    .padding(.bottom, Theme.Spacing.xs)
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                ViewThatFits(in: .vertical) {
+                    editorHeader.fixedSize(horizontal: false, vertical: true)
+                    ScrollView { editorHeader }
+                }
+                .frame(maxHeight: geometry.size.height * 0.55, alignment: .top)
+                Divider().overlay(Theme.hairline)
+                editor
             }
-            Divider().overlay(Theme.hairline)
-            editor
         }
+        .disabled(busy)
         .background(Theme.canvas.ignoresSafeArea())
         .safeAreaInset(edge: .bottom) {
             if !writing { EssayCountBar(essay: item.essay, count: count, state: queue.state) }
@@ -69,7 +75,99 @@ private struct EssayEditorContent: View {
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { EssayBackgroundSave.flush(queue) }
         }
-        .onDisappear { Task { await queue.flush() } }
+        .onAppear { visible = true }
+        .onDisappear {
+            visible = false
+            Task { await queue.flush() }
+        }
+        .errorAlert($error)
+    }
+
+    private var editorHeader: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+            EssayEditorHeader(item: item, expanded: $promptExpanded)
+            if !writing { draftActions }
+            if queue.errorMessage != nil || (queue.storageUnavailable && queue.hasUnsaved) {
+                EssaySaveErrorBanner(queue: queue)
+                    .padding(.horizontal, Theme.Spacing.md)
+            }
+        }
+        .padding(.bottom, Theme.Spacing.xs)
+    }
+
+    @ViewBuilder
+    private var draftActions: some View {
+        ScrollView(.horizontal) {
+            HStack {
+                ForEach(EssayCopilotAction.allCases, id: \.self) { action in
+                    Button(action.rawValue) { askCopilot(action) }
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.md)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+
+        if let suggestion = metadata.suggestions[item.id] {
+            EssaySuggestionPanel(text: suggestion, essay: item.essay,
+                                 replace: { applySuggestion(suggestion) },
+                                 dismiss: { update(.dismiss(id: item.id)) })
+                .padding(.horizontal, Theme.Spacing.md)
+        }
+
+        if !text.contains(where: { !$0.isWhitespace }) {
+            let drafts = store.workspace.essayDrafts.merging(queue.pending) { _, local in local }
+            let sources = EssayArchetype.copySources(for: item.essay, items: EssayCatalog.items(in: groups), drafts: drafts)
+            if !sources.isEmpty {
+                Menu("Start from a copy of another draft") {
+                    ForEach(sources) { source in
+                        Button(source.label) { queue.edit(id: item.id, text: source.text) }
+                    }
+                }
+                .padding(.horizontal, Theme.Spacing.md)
+            }
+        }
+        let final = metadata.status[item.id] == "final"
+        Button(final ? "Final · Undo" : "Mark final") {
+            update(.final(id: item.id, marked: !final))
+        }
+        .disabled(!metadata.loaded || (!final && !text.contains(where: { !$0.isWhitespace })))
+        .padding(.horizontal, Theme.Spacing.md)
+    }
+
+    private func askCopilot(_ action: EssayCopilotAction) {
+        performAction {
+            await queue.flush()
+            guard queue.isCurrent(), queue.state == .saved, visible else { return }
+            router.openChat(prompt: action.prompt(for: item))
+        }
+    }
+
+    private func applySuggestion(_ suggestion: String) {
+        performAction {
+            queue.edit(id: item.id, text: suggestion)
+            await queue.flush()
+            guard queue.isCurrent(), queue.state == .saved else { return }
+            try await metadata.apply(.dismiss(id: item.id), store: store)
+        }
+    }
+
+    private func update(_ patch: EssaysMetadataPatch) {
+        performAction {
+            guard queue.isCurrent() else { return }
+            try await metadata.apply(patch, store: store)
+        }
+    }
+
+    private func performAction(_ operation: @escaping @MainActor () async throws -> Void) {
+        guard !busy else { return }
+        busy = true
+        writing = false
+        Task {
+            defer { busy = false }
+            do { try await operation() }
+            catch { self.error = APIError.wrap(error) }
+        }
     }
 
     private var editor: some View {
@@ -99,10 +197,6 @@ private struct EssayEditorContent: View {
         ToolbarItem(placement: .primaryAction) {
             Menu {
                 Button { promptForm = .editing(item) } label: { Label("Edit prompt", systemImage: "pencil") }
-                Button {
-                    writing = false
-                    router.openChat(prompt: "Help me draft my \(item.essay.label) essay. Ask me questions first, then suggest an outline. Don't save anything until I ask.")
-                } label: { Label("Ask copilot to draft", systemImage: "sparkles") }
                 if !notes.isEmpty {
                     Button { showingNotes = true } label: {
                         Label("Advisor notes (\(notes.count))", systemImage: "text.bubble")
@@ -139,5 +233,6 @@ private struct EssayEditorContent: View {
     NavigationStack {
         EssayEditorView(id: "ca-1")
     }
+    .environment(EssaysMetadata())
     .previewEnvironment()
 }

@@ -2,7 +2,18 @@ import SwiftUI
 
 /// The Essays tab: Common App, UC and each school's supplements, with a full-screen editor per essay.
 struct EssaysView: View {
+    @Environment(WorkspaceStore.self) private var store
+
+    var body: some View {
+        EssaysNavigation().id(store.workspace.draftStorageKey)
+    }
+}
+
+private struct EssaysNavigation: View {
     @Environment(Router.self) private var router
+    @Environment(WorkspaceStore.self) private var store
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var metadata = EssaysMetadata()
 
     var body: some View {
         @Bindable var router = router
@@ -12,17 +23,30 @@ struct EssaysView: View {
                 .forgeScreenBackground()
                 .navigationDestination(for: EssayRoute.self) { EssayEditorView(id: $0.id) }
         }
+        .environment(metadata)
+        .safeAreaInset(edge: .top) {
+            if let error = metadata.error {
+                ErrorBanner(message: error.message, retry: { Task { await metadata.refresh(store: store) } })
+            }
+        }
+        .task(id: store.hasLoaded && router.selectedTab == .essays && scenePhase == .active) {
+            if store.hasLoaded, router.selectedTab == .essays, scenePhase == .active {
+                await metadata.refresh(store: store)
+            }
+        }
     }
 }
 
 /// The grouped list of every prompt.
 private struct EssaysList: View {
+    @Environment(EssaysMetadata.self) private var metadata
     @Environment(WorkspaceStore.self) private var store
     @Environment(Router.self) private var router
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var expanded: Set<String>?
     @State private var knownGroupKeys: [String] = []
+    @State private var byType = false
     @State private var search = ""
     @State private var promptForm: EssayPromptDraft?
 
@@ -32,6 +56,8 @@ private struct EssaysList: View {
     var body: some View {
         let groups = groups
         let queue = queue
+        let drafts = store.workspace.essayDrafts.merging(queue.pending) { _, local in local }
+        let progress = EssayWritingProgress(groups: groups, drafts: drafts, status: metadata.status, rules: metadata.rules)
         List {
             if let refreshError = store.refreshError {
                 ErrorBanner(message: refreshError.message, retry: { Task { await store.refresh() } },
@@ -45,8 +71,33 @@ private struct EssaysList: View {
                     .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
             }
             if search.isEmpty {
-                EssaysOverview(groups: groups, queue: queue, drafts: store.workspace.essayDrafts)
-                ForEach(groups) { section(for: $0, queue: queue) }
+                if metadata.loaded {
+                    EssaysOverview(progress: progress, saveState: queue.state)
+                } else if metadata.error == nil {
+                    Section("Writing progress") { ProgressView("Loading writing progress…") }
+                }
+                Picker("Sort essays", selection: $byType) {
+                    Text("By school").tag(false)
+                    Text("By prompt type").tag(true)
+                }
+                .pickerStyle(.segmented)
+                if byType {
+                    ForEach(EssayArchetype.sections(for: EssayCatalog.items(in: groups))) { section in
+                        Section {
+                            ForEach(section.items) { row($0, queue: queue, showGroup: true) }
+                        } header: {
+                            HStack {
+                                Text(section.label)
+                                Spacer()
+                                Text(section.items.count, format: .number)
+                            }
+                        }
+                    }
+                } else {
+                    ForEach(groups) { group in
+                        section(for: group, queue: queue, unfinished: progress.unfinishedGroups.contains(group.key))
+                    }
+                }
             } else {
                 searchResults(groups: groups, queue: queue)
             }
@@ -54,7 +105,10 @@ private struct EssaysList: View {
         .listStyle(.insetGrouped)
         .overlay { emptyState(groups) }
         .searchable(text: $search, prompt: "Search prompts")
-        .refreshable { await store.refresh() }
+        .refreshable {
+            await store.refresh()
+            await metadata.refresh(store: store)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { promptForm = .new(in: EssayCatalog.commonKey) } label: {
@@ -82,7 +136,7 @@ private struct EssaysList: View {
     // MARK: Sections
 
     @ViewBuilder
-    private func section(for group: EssayGroup, queue: EssayDraftQueue) -> some View {
+    private func section(for group: EssayGroup, queue: EssayDraftQueue, unfinished: Bool) -> some View {
         let isOpen = expanded?.contains(group.key) ?? true
         Section {
             if isOpen {
@@ -95,17 +149,18 @@ private struct EssaysList: View {
                 }
             }
         } header: {
-            EssayGroupHeader(group: group, started: startedCount(group, queue), isExpanded: isOpen) {
+            EssayGroupHeader(group: group, started: startedCount(group, queue), isExpanded: isOpen, unfinished: unfinished) {
                 withAnimation(.snappy) { toggle(group.key) }
                 Haptics.selection()
             }
         }
     }
 
-    private func row(_ item: EssayItem, queue: EssayDraftQueue) -> some View {
+    private func row(_ item: EssayItem, queue: EssayDraftQueue, showGroup: Bool = false) -> some View {
         let text = queue.text(for: item.essay, serverDrafts: store.workspace.essayDrafts)
         return NavigationLink(value: EssayRoute(id: item.id)) {
-            EssayRow(essay: item.essay, count: EssayMetrics.count(text, for: item.essay))
+            EssayRow(essay: item.essay, count: EssayMetrics.count(text, for: item.essay),
+                     group: showGroup ? item.badge : nil, isFinal: metadata.status[item.id] == "final")
         }
         .swipeActions(edge: .trailing) {
             Button { promptForm = .editing(item) } label: { Label("Edit prompt", systemImage: "pencil") }
@@ -192,29 +247,25 @@ private struct EssaysList: View {
 
 /// The summary at the top of the list.
 private struct EssaysOverview: View {
-    let groups: [EssayGroup]
-    let queue: EssayDraftQueue
-    let drafts: [String: String]
+    let progress: EssayWritingProgress
+    let saveState: EssayDraftQueue.SaveState
 
     var body: some View {
-        let essays = groups.flatMap(\.essays)
-        let started = essays.filter { EssayMetrics.wordCount(queue.text(for: $0, serverDrafts: drafts)) > 0 }.count
-        Section {
-            HStack(spacing: Theme.Spacing.md) {
-                ProgressRing(progress: essays.isEmpty ? 0 : Double(started) / Double(essays.count),
-                             lineWidth: 5, tint: Theme.teal, label: "\(started)/\(essays.count)", size: 52)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(started) of \(essays.count) started")
-                        .font(.forgeDisplay(.headline))
-                        .foregroundStyle(Theme.ink)
-                    Text("Personal statement: 250–650 words. Check each prompt against the current application.")
-                        .font(.caption)
-                        .foregroundStyle(Theme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                    EssaySaveStatusLabel(state: queue.state)
+        Section("Writing progress") {
+            LabeledContent("Essays drafted", value: "\(progress.drafted) of \(progress.required)")
+            LabeledContent("Marked final", value: "\(progress.final) of \(progress.required)")
+            LabeledContent("Words written", value: "\(progress.wordsWritten.formatted()) of \(progress.wordsRequired.formatted())")
+            LabeledContent("Next deadline") {
+                if let due = progress.next, let days = ForgeDates.daysUntil(due.date) {
+                    let remaining = days == 0 ? "today" : "\(days) " + (days == 1 ? "day" : "days")
+                    Text("\(due.shortDate) · \(due.school) \(due.round) (\(remaining))")
+                        .foregroundStyle(days < 14 ? Theme.danger : Theme.body)
+                        .multilineTextAlignment(.trailing)
+                } else {
+                    Text("None saved")
                 }
             }
-            .padding(.vertical, 4)
+            EssaySaveStatusLabel(state: saveState)
         }
     }
 }
