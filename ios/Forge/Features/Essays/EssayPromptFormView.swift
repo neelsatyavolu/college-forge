@@ -97,7 +97,7 @@ struct EssayPromptFormView: View {
         Task {
             defer { saving = false }
             do {
-                let id = try await store.saveEssayPrompt(draft, currentItems: group.essays)
+                let id = try await store.saveEssayPrompt(draft, currentItems: store.savedEssayPrompts(in: group.key))
                 Haptics.success()
                 dismiss()
                 onSaved(id)

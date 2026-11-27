@@ -31,6 +31,15 @@ struct Essay: Codable, Hashable, Sendable, Identifiable {
     /// "words" or "characters".
     var unit: String
     var starter: String?
+    /// false: optional, or only for some applicants (see `audience`). Missing counts as required unless the label says optional.
+    var required: Bool?
+    /// Prompts sharing a chooseGroup form a set where the student answers `choose` of them (UC PIQs: 4 of 8).
+    var chooseGroup: String?
+    var choose: Int?
+    /// A choose-one prompt's options; `Workspace.essayOption` says which one the student answers.
+    var options: [String]?
+    /// The school, program or degree inside the university the prompt is for.
+    var audience: String?
 
     init(id: String, label: String, prompt: String, limit: Int = 650, unit: String = "words") {
         self.id = id
@@ -58,5 +67,11 @@ extension Essay {
         limit = c.int(.limit, 650)
         unit = c.string(.unit, "words")
         starter = c.optionalString(.starter)
+        required = c.optionalBool(.required)
+        chooseGroup = c.optionalString(.chooseGroup)
+        choose = c.optionalInt(.choose)
+        let options: [String] = c.array(.options)
+        self.options = options.isEmpty ? nil : options
+        audience = c.optionalString(.audience).flatMap { $0.isEmpty ? nil : $0 }
     }
 }

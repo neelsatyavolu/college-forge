@@ -20,10 +20,12 @@ struct EssayPromptDraft: Equatable, Identifiable, Sendable {
         EssayPromptDraft(groupKey: groupKey)
     }
 
-    static func editing(_ item: EssayItem) -> EssayPromptDraft {
-        EssayPromptDraft(essayID: item.essay.id, groupKey: item.groupKey, label: item.essay.label,
-                         prompt: item.essay.prompt, limit: item.essay.limit,
-                         unit: item.essay.countsCharacters ? "characters" : "words")
+    /// `saved` is the prompt as stored, so a picked option's own limit isn't saved as the prompt's limit.
+    static func editing(_ item: EssayItem, saved: Essay? = nil) -> EssayPromptDraft {
+        let essay = saved ?? item.essay
+        return EssayPromptDraft(essayID: essay.id, groupKey: item.groupKey, label: essay.label,
+                                prompt: essay.prompt, limit: essay.limit,
+                                unit: essay.countsCharacters ? "characters" : "words")
     }
 
     var trimmedLabel: String { label.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -60,6 +62,16 @@ struct EssayPromptDraft: Equatable, Identifiable, Sendable {
 }
 
 extension WorkspaceStore {
+    /// A group's prompts as saved: hidden ones included, without a picked option's limit.
+    func savedEssayPrompts(in groupKey: String) -> [Essay] {
+        groupKey == EssayCatalog.commonKey ? workspace.essays.commonApp : workspace.essays.supplements[groupKey] ?? []
+    }
+
+    /// The draft for editing `item`'s prompt.
+    func editingDraft(_ item: EssayItem) -> EssayPromptDraft {
+        .editing(item, saved: savedEssayPrompts(in: item.groupKey).first { $0.id == item.id })
+    }
+
     /// Adds or edits an essay prompt. Returns the saved essay's id.
     @discardableResult
     func saveEssayPrompt(_ draft: EssayPromptDraft, currentItems: [Essay]) async throws -> String {

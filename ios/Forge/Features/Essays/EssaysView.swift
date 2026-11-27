@@ -55,11 +55,14 @@ private struct EssaysList: View {
     private var groups: [EssayGroup] {
         EssayCatalog.groups(colleges: store.workspace.colleges, essays: store.workspace.essays,
                             hidden: store.workspace.essayHidden, commonAppPrompt: store.workspace.commonAppPrompt,
-                            essaySchools: store.workspace.essaySchools)
+                            essaySchools: store.workspace.essaySchools, essayOption: store.workspace.essayOption)
+    }
+    private var expansionMemory: EssayExpansionMemory {
+        EssayExpansionMemory(workspaceKey: store.workspace.draftStorageKey)
     }
     @State private var pickingSchools = false
-    private var skippedSchools: [EssaySchool] {
-        EssayCatalog.schools(colleges: store.workspace.colleges, essaySchools: store.workspace.essaySchools).filter { !$0.writing }
+    private var skippedSchoolCount: Int {
+        EssayCatalog.schools(colleges: store.workspace.colleges, essaySchools: store.workspace.essaySchools).filter { !$0.writing }.count
     }
 
     var body: some View {
@@ -104,8 +107,9 @@ private struct EssaysList: View {
                         }
                     }
                 } else {
-                    ForEach(groups) { group in
-                        section(for: group, queue: queue, unfinished: progress.unfinishedGroups.contains(group.key))
+                    ForEach(progress.sidebarOrder(groups)) { group in
+                        section(for: group, queue: queue, unfinished: progress.unfinishedGroups.contains(group.key),
+                                done: progress.finishedGroups.contains(group.key))
                     }
                 }
             } else {
@@ -145,6 +149,9 @@ private struct EssaysList: View {
         }
         .errorAlert($visibilityError)
         .onChange(of: groups.map(\.key)) { _, _ in syncExpanded(groups) }
+        .onChange(of: expanded) { _, open in
+            if let open { expansionMemory.save(open: open, groups: groups.map(\.key)) }
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { EssayBackgroundSave.flush(queue) }
         }
@@ -153,11 +160,13 @@ private struct EssaysList: View {
     // MARK: Sections
 
     @ViewBuilder
-    private func section(for group: EssayGroup, queue: EssayDraftQueue, unfinished: Bool) -> some View {
+    private func section(for group: EssayGroup, queue: EssayDraftQueue, unfinished: Bool, done: Bool) -> some View {
         let isOpen = expanded?.contains(group.key) ?? true
         Section {
             if isOpen {
                 if group.kind == .common { commonAppChoiceRow(group) }
+                EssayAudienceRow(essays: group.allEssays, onError: { visibilityError = $0 })
+                ForEach(EssayChoiceRules.pickSets(group.allEssays)) { EssayPickSetRow(set: $0) }
                 if group.essays.isEmpty && group.hiddenEssays.isEmpty {
                     placeholderRow(group)
                 } else {
@@ -175,7 +184,7 @@ private struct EssaysList: View {
                 }
             }
         } header: {
-            EssayGroupHeader(group: group, started: startedCount(group, queue), isExpanded: isOpen, unfinished: unfinished) {
+            EssayGroupHeader(group: group, started: startedCount(group, queue), isExpanded: isOpen, unfinished: unfinished, done: done) {
                 withAnimation(.snappy) { toggle(group.key) }
                 Haptics.selection()
             }
@@ -189,12 +198,12 @@ private struct EssaysList: View {
                      group: showGroup ? item.badge : nil, isFinal: metadata.status[item.id] == "final")
         }
         .swipeActions(edge: .trailing) {
-            Button { promptForm = .editing(item) } label: { Label("Edit prompt", systemImage: "pencil") }
+            Button { promptForm = store.editingDraft(item) } label: { Label("Edit prompt", systemImage: "pencil") }
                 .tint(Theme.accent)
             hideButton(item.essay, isHidden: isHidden).tint(Theme.muted)
         }
         .contextMenu {
-            Button { promptForm = .editing(item) } label: { Label("Edit prompt", systemImage: "pencil") }
+            Button { promptForm = store.editingDraft(item) } label: { Label("Edit prompt", systemImage: "pencil") }
             hideButton(item.essay, isHidden: isHidden)
             if EssayMetrics.isPersonalStatement(item.essay) && store.workspace.commonAppPrompt == nil {
                 Button { Task { await chooseCommonAppPrompt(item.essay.id) } } label: {
@@ -208,31 +217,16 @@ private struct EssaysList: View {
         }
     }
 
-    /// The schools the student isn't writing for, each with a one-tap "Add back", like the web's NotWritingFor.
+    /// One button naming how many schools the student isn't writing for; it opens the essay schools sheet,
+    /// like the web's NotWritingFor. Nothing when there are none.
     @ViewBuilder private var notWritingFor: some View {
-        let skipped = skippedSchools
-        if !skipped.isEmpty {
+        let skipped = skippedSchoolCount
+        if skipped > 0 {
             Section {
-                ForEach(skipped) { school in
-                    LabeledContent(school.title) {
-                        Button("Add back") { Task { await addBack(school.key) } }
-                            .accessibilityLabel("Add \(school.title) back to Essays")
-                    }
-                }
-                Button("Pick essay schools") { pickingSchools = true }
-            } header: {
-                Text("Not writing for")
-            } footer: {
-                Text("Their drafts are kept. Add a school back to see its supplements again.")
+                Button("Not writing for \(skipped) \(skipped == 1 ? "school" : "schools")") { pickingSchools = true }
+                    .accessibilityHint("Shows them so you can add any back to Essays")
             }
         }
-    }
-
-    private func addBack(_ key: String) async {
-        do {
-            try await store.setEssaySchools([key: true])
-            Haptics.selection()
-        } catch { report(error) }
     }
 
     private func hideButton(_ essay: Essay, isHidden: Bool) -> some View {
@@ -334,18 +328,17 @@ private struct EssaysList: View {
         expanded = next
     }
 
-    /// Sets the default open groups once, then opens newly added schools (like the web sidebar).
+    /// Sets the default open groups once, with the saved choices on top, then opens newly added schools (like the web sidebar).
     private func syncExpanded(_ groups: [EssayGroup]) {
         let keys = groups.map(\.key)
         guard keys != knownGroupKeys else { return }
-        if var open = expanded {
-            open.insert(EssayCatalog.commonKey)
-            for group in groups where group.kind == .school && !knownGroupKeys.contains(group.key) {
-                open.insert(group.key)
-            }
-            expanded = open
+        let saved = expansionMemory.saved()
+        if let open = expanded {
+            let added = groups.filter { $0.kind == .school && !knownGroupKeys.contains($0.key) }.map(\.key)
+            expanded = EssayExpansionMemory.adding(added, to: open, saved: saved, commonKey: EssayCatalog.commonKey)
         } else if store.hasLoaded {
-            expanded = EssayCatalog.initiallyExpanded(groups, drafts: store.workspace.essayDrafts)
+            expanded = EssayExpansionMemory.initial(
+                defaults: EssayCatalog.initiallyExpanded(groups, drafts: store.workspace.essayDrafts), saved: saved)
         }
         knownGroupKeys = keys
     }
