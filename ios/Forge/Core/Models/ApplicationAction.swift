@@ -26,6 +26,10 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
     case remove(id: String)
     /// Open a posted decision (`decision.state == .hidden`).
     case reveal(id: String)
+    /// Read the saved letter for a revealed decision; `letterId` picks one from `letterHistory`.
+    case letter(id: String, letterId: String? = nil)
+    /// Add award `index` of a revealed letter to the scholarships list as won.
+    case awardAdd(id: String, index: Int, letterId: String? = nil)
     /// Save a portal login (stored encrypted on the server).
     case login(id: String, username: String, password: String)
     case forgetLogin(id: String)
@@ -62,6 +66,8 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
         case .update: "update"
         case .remove: "remove"
         case .reveal: "reveal"
+        case .letter: "letter"
+        case .awardAdd: "award-add"
         case .login: "login"
         case .forgetLogin: "forget-login"
         case .autocheck: "autocheck"
@@ -112,6 +118,10 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
             try put("id", id); try put("edit", edit)
         case let .remove(id), let .reveal(id), let .forgetLogin(id):
             try put("id", id)
+        case let .letter(id, letterId):
+            try put("id", id); try put("letterId", letterId)
+        case let .awardAdd(id, index, letterId):
+            try put("id", id); try put("index", index); try put("letterId", letterId)
         case let .login(id, username, password):
             try put("id", id); try put("username", username); try put("password", password)
         case let .autocheck(on), let .emails(on):
@@ -167,8 +177,10 @@ struct ApplicationsResponse: Decodable, Sendable {
     var applied: Int?
     /// `.setupDetails` reply.
     var setup: SetupDetails?
+    /// `.letter` reply.
+    var letter: DecisionLetter?
 
-    private enum CodingKeys: String, CodingKey { case data, app, checked, inbox, added, linked, total, master, applied, setup }
+    private enum CodingKeys: String, CodingKey { case data, app, checked, inbox, added, linked, total, master, applied, setup, letter }
 
     init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -182,5 +194,6 @@ struct ApplicationsResponse: Decodable, Sendable {
         master = c.optional(MasterLoginStatus.self, .master)
         applied = c.optionalInt(.applied)
         setup = c.optional(SetupDetails.self, .setup)
+        letter = c.optional(DecisionLetter.self, .letter)
     }
 }

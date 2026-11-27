@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getWorkspace } from "@/lib/store";
+import { getWorkspace, redactWorkspaceBody } from "@/lib/store";
 import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { exportPlainText, exportCounselorBrief, exportCalendar } from "@/lib/export";
 
@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
   if (format === "json") {
     headers["content-type"] = "application/json; charset=utf-8";
     headers["content-disposition"] = `attachment; filename="college-forge-${name}.json"`;
-    return new Response(JSON.stringify(ws, null, 2), { headers });
+    // The same tracker the browser sees: no covered decision's words or decision letter metadata.
+    return new Response(JSON.stringify(redactWorkspaceBody(ws), null, 2), { headers });
   }
 
   if (format === "ics") {

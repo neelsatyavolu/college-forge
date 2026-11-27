@@ -71,6 +71,10 @@ struct TrackedApplication: Codable, Hashable, Sendable, Identifiable {
     var login: PortalLogin?
     /// Send or withhold SAT/ACT scores here, with the sourced policy and Forge's suggestion.
     var testingPlan: TestingPlanView?
+    /// The saved letter for the revealed decision, nil while hidden or when no letter was captured.
+    var letter: DecisionLetterMeta? = nil
+    /// Letters for earlier decisions the student opened, newest first.
+    var letterHistory: [DecisionLetterMeta] = []
     /// Milliseconds since 1970.
     var lastChecked: Double?
     var updatedAt: Double
@@ -117,6 +121,8 @@ extension TrackedApplication {
         decisionNote = c.string(.decisionNote)
         login = c.optional(PortalLogin.self, .login)
         testingPlan = c.optional(TestingPlanView.self, .testingPlan)
+        letter = c.optional(DecisionLetterMeta.self, .letter)
+        letterHistory = c.array(.letterHistory)
         lastChecked = c.optionalDouble(.lastChecked)
         updatedAt = c.double(.updatedAt)
         aidOffer = c.optional(AidOffer.self, .aidOffer)
@@ -150,6 +156,12 @@ struct DecisionView: Codable, Hashable, Sendable {
     var state: DecisionState = .none
     /// The portal's words for the outcome, once revealed and only when it names one.
     var portalText = ""
+    /// The outcome the server read from the letter or the portal's words. Only set once revealed; nil when
+    /// unclear (and from older servers).
+    var result: AppStatus? = nil
+    /// The server sent `result` (even as "" for unclear). False only from older servers, where the app
+    /// falls back to `DecisionLogic.guess`.
+    var hasServerResult = false
 }
 
 extension DecisionView {
@@ -157,6 +169,8 @@ extension DecisionView {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         state = c.value(.state, .none)
         portalText = c.string(.portalText)
+        result = c.optionalString(.result).flatMap { $0.isEmpty ? nil : AppStatus(rawValue: $0) }
+        hasServerResult = c.optionalString(.result) != nil
     }
 }
 

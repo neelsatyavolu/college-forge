@@ -152,7 +152,6 @@ function emailFor(workspaceId: string, news: Pending[]) {
       return {
         school: p.app.name,
         changes: p.changes,
-        ...(p.app.portalUrl ? { portalUrl: p.app.portalUrl } : {}),
         ...(logo ? { logo: `${origin}${logo}` } : {}),
       };
     }),

@@ -20,6 +20,7 @@ import { getWorkspaceId } from "@/lib/workspace-cookie";
 import { deleteAllLogins } from "@/lib/portal-logins";
 import { deleteAllSetup } from "@/lib/portal-setup";
 import { deleteGptzero } from "@/lib/gptzero-login";
+import { deleteLetters } from "@/lib/decision-letters";
 import { createShareLink, revokeShareLink } from "@/lib/sharing";
 import { removeAllParents } from "@/lib/parents";
 import { applyWorkspacePatch, checkWorkspacePatch, isStalePatch, workspacePatchError, type WorkspacePatch } from "@/lib/workspace-patch";
@@ -146,10 +147,11 @@ export async function POST(req: NextRequest) {
       return withCookie({ success: false, error: "Couldn't reset. Try again." }, setCookie, 500);
     }
     const ws = await resetWorkspace(id);
-    // A reset clears the tracker, so its saved portal logins go too.
+    // A reset clears the tracker, so its saved portal logins and decision letters go too.
     await deleteAllLogins(id).catch(() => undefined);
     await deleteAllSetup(id).catch(() => undefined);
     await deleteGptzero(id).catch(() => undefined);
+    await deleteLetters(id).catch(() => undefined);
     return withCookie(ws, setCookie);
   }
 

@@ -17,6 +17,21 @@ enum DecisionLogic {
         return rules.first { text.range(of: $0.0, options: [.regularExpression, .caseInsensitive]) != nil }?.1
     }
 
+    /// The outcome to show: the server's reading (nil when it found none clearly), or with an older server
+    /// that sends no `result`, a guess from the portal's words.
+    static func outcome(_ decision: DecisionView) -> AppStatus? {
+        decision.hasServerResult ? decision.result : guess(decision.portalText)
+    }
+
+    /// A plain line on what a deferral or a waitlist means next (mirrors Decisions.jsx).
+    static func resultNote(_ result: AppStatus?) -> String? {
+        if result == .deferred {
+            return "Your application moves to Regular Decision and gets read again with that pool. Send any new grades or news through the portal."
+        }
+        if result == .waitlisted { return "You're on the waitlist. Most schools ask you to opt in through the portal to stay on it." }
+        return nil
+    }
+
     /// Record buttons in display order: the suggested outcome first.
     static func recordOptions(suggested: AppStatus?) -> [AppStatus] {
         guard let suggested, recordable.contains(suggested) else { return recordable }

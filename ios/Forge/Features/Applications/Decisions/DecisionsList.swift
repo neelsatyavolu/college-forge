@@ -5,6 +5,7 @@ struct DecisionsList: View {
     let picker: ApplicationsModePicker
     @Environment(WorkspaceStore.self) private var store
     @State private var justRevealed: Set<String> = []
+    @State private var celebrate = 0
 
     var body: some View {
         let sections = DecisionLogic.sections(store.applications)
@@ -20,14 +21,14 @@ struct DecisionsList: View {
             }
             if !sections.hidden.isEmpty {
                 Section {
-                    ForEach(sections.hidden) { DecisionRow(app: $0, justRevealed: $justRevealed) }
+                    ForEach(sections.hidden) { DecisionRow(app: $0, justRevealed: $justRevealed, celebrate: $celebrate) }
                 } header: {
                     ApplicationsSectionHeader(title: "Ready when you are", count: sections.hidden.count, tone: Theme.coral)
                 }
             }
             if !sections.known.isEmpty {
                 Section {
-                    ForEach(sections.known) { DecisionRow(app: $0, justRevealed: $justRevealed) }
+                    ForEach(sections.known) { DecisionRow(app: $0, justRevealed: $justRevealed, celebrate: $celebrate) }
                 } header: {
                     ApplicationsSectionHeader(title: "Your decisions", count: sections.known.count, tone: nil)
                 }
@@ -50,12 +51,14 @@ struct DecisionsList: View {
         .listSectionSpacing(.compact)
         .refreshable { await store.refreshApplications() }
         .animation(.smooth, value: sections.hidden.map(\.id))
+        .overlay { CelebrationBurst(trigger: celebrate) }
     }
 }
 
 private struct DecisionRow: View {
     let app: TrackedApplication
     @Binding var justRevealed: Set<String>
+    @Binding var celebrate: Int
     @Environment(WorkspaceStore.self) private var store
 
     /// Two rows: the school (opens its detail) and the decision panel, so the panel's buttons
@@ -67,7 +70,7 @@ private struct DecisionRow: View {
                 Text(app.name).font(.body.weight(.medium)).foregroundStyle(Theme.ink)
             }
         }
-        DecisionPanel(app: app, justRevealed: $justRevealed)
+        DecisionPanel(app: app, justRevealed: $justRevealed, celebrate: $celebrate)
             .padding(.vertical, Theme.Spacing.xxs)
     }
 }

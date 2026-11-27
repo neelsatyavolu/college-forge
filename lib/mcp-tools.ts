@@ -44,7 +44,7 @@ function brief(a: AppView) {
     a.decision.state === "hidden"
       ? "A decision is posted in the portal but the student hasn't opened it. Don't reveal it unless they ask; reveal_decision shows it."
       : a.decision.state === "revealed"
-        ? `Revealed: ${a.decision.portalText || "decision posted (open the portal to read it)"}; recorded status: ${a.statusLabel}`
+        ? `Revealed: ${a.decision.portalText || ("result" in a.decision && a.decision.result) || "decision posted (open the portal to read it)"}${a.letter ? "; the letter is saved in Forge's Decisions tab" : ""}; recorded status: ${a.statusLabel}`
         : a.decision.state === "recorded"
           ? a.statusLabel
           : "none yet";
@@ -58,6 +58,7 @@ function brief(a: AppView) {
     decision_date: a.decisionDate ? `${a.decisionDate.date}${a.decisionDate.estimated ? " (estimated from last year)" : ""}` : null,
     next: a.nextDate ? `${a.nextDate.kind} ${a.nextDate.date}${a.nextDate.estimated ? " (estimated)" : ""}` : null,
     decision,
+    ...(a.letter?.awards.length ? { awards_in_letter: a.letter.awards.map((w) => [w.name, w.amount, w.period].filter(Boolean).join(", ")) } : {}),
     portal: a.portal
       ? {
           checked_at: new Date(a.portal.checkedAt).toISOString(),
@@ -277,7 +278,7 @@ export const TOOLS: Tool[] = [
     name: "reveal_decision",
     title: "Reveal a posted decision",
     description:
-      "Forge hides a decision a portal posted until the student chooses to see it. Call this only when the student asks to know the decision; it marks the decision as seen and returns what the portal says.",
+      "Forge hides a decision a portal posted until the student chooses to see it. Call this only when the student asks to know the decision; it marks the decision as seen, records the outcome as the status while the application is still pending, and returns what the portal and the decision letter say (outcome and any merit awards; the letter itself stays in Forge).",
     input: z.object({ school: z.string().min(1) }),
     readOnly: false,
     run: async (ws, { school }) => brief(await reveal(ws, school)),

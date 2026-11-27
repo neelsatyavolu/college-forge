@@ -36,13 +36,14 @@ private struct ApplicationDetailContent: View {
     @State private var editing = false
     @State private var confirmRemove = false
     @State private var justRevealed: Set<String> = []
+    @State private var celebrate = 0
     @State private var error: APIError?
 
     var body: some View {
         List {
             Section { ApplicationDetailHeader(app: app) }
             if app.decision.state != .none {
-                Section("Decision") { DecisionPanel(app: app, justRevealed: $justRevealed) }
+                Section("Decision") { DecisionPanel(app: app, justRevealed: $justRevealed, celebrate: $celebrate) }
             }
             PortalStatusSection(app: app)
             datesSection
@@ -60,6 +61,7 @@ private struct ApplicationDetailContent: View {
             }
         }
         .listStyle(.insetGrouped)
+        .overlay { CelebrationBurst(trigger: celebrate) }
         .navigationTitle(app.name)
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await store.refreshApplications() }

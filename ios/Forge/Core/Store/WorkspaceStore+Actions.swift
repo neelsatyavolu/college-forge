@@ -28,6 +28,19 @@ extension WorkspaceStore {
         try await perform(.reveal(id: id))
     }
 
+    /// The saved letter for a revealed decision (or, with `letterId`, an earlier one).
+    func decisionLetter(forApplication id: String, letterId: String? = nil) async throws -> DecisionLetter {
+        let response = try await perform(.letter(id: id, letterId: letterId))
+        guard let letter = response.letter else { throw APIError.decoding("letter") }
+        return letter
+    }
+
+    /// Adds one award from a revealed letter to the scholarships list (as won). Safe to call twice.
+    func addLetterAward(_ index: Int, letterId: String, forApplication id: String) async throws {
+        try await perform(.awardAdd(id: id, index: index, letterId: letterId))
+        await refresh()
+    }
+
     func setFollowUp(_ followUpID: String, done: Bool, inApplication id: String) async throws {
         try await perform(.followUpSet(id: id, followUpId: followUpID, done: done)) { tracker in
             guard let i = tracker.apps.firstIndex(where: { $0.id == id }) else { return }

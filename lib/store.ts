@@ -768,13 +768,14 @@ export async function readUpload(id: string, name: string): Promise<string | nul
 
 /**
  * The tracker as the browser may see it in workspace responses: a portal's words for a decision only
- * after the student opened it, and no `decisionSeen` (it contains those words).
+ * after the student opened it, and no `decisionSeen` (it contains those words) or decision letter metadata.
  */
 export function redactTracker(tracker: Tracker): Tracker {
   return {
     ...tracker,
     apps: tracker.apps.map((app) => {
-      const { decisionSeen: _d, ...rest } = app;
+      // Letter metadata carries the outcome and award amounts: only the student's own tracker views show it.
+      const { decisionSeen: _d, letters: _l, ...rest } = app;
       const portal = shownPortal(app);
       return portal ? { ...rest, portal } : rest;
     }),
