@@ -11,6 +11,7 @@ import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-res
 import { SECTIONS, firstIncomplete, missingFields, startInterview } from "./interview-checklist";
 import { isUcCampus } from "./seed-college-list";
 import { isHttpUrl, slugify } from "./colleges";
+import { INTERESTS, suggestMajors } from "./major-finder";
 
 type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
@@ -339,6 +340,20 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
     },
   },
   {
+    name: "suggest_majors",
+    description:
+      `For an undecided student: ranks broad majors (offered at most colleges) against what they enjoy and would rather avoid, and the courses, AP scores and activities on their profile. Each result has the major's label (save that exact label as intended), the interests it matches, readiness (strong | some | none) with the evidence, how many colleges offer it, and a caution where admission to the major is competitive. Interest keys: ${Object.entries(INTERESTS).map(([k, v]) => `${k} (${v})`).join("; ")}.`,
+    parameters: {
+      type: "object",
+      properties: {
+        interests: { type: "array", items: { type: "string", enum: Object.keys(INTERESTS) }, description: "What they enjoy" },
+        dislikes: { type: "array", items: { type: "string", enum: Object.keys(INTERESTS) }, description: "What they'd rather avoid" },
+      },
+      required: ["interests", "dislikes"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "interview_status",
     description: "Current section, every section's missing required fields, the deeper-answer count and your saved section notes. Call it at the start of each turn you're unsure about.",
     parameters: { type: "object", properties: {}, additionalProperties: false },
@@ -452,6 +467,10 @@ export function makeInterviewTools(
         emit({ type: "question", question: q });
         stop({ question: q });
         return "Shown to the student. Stop now and wait for their answer.";
+      }
+      case "suggest_majors": {
+        const majors = suggestMajors(await read(), a.interests, a.dislikes);
+        return majors.length ? JSON.stringify({ majors }) : "No broad major matches those answers. Ask what they liked most in school, or let them stay Undecided.";
       }
       case "interview_status":
         return JSON.stringify(statusOf(await read()));
