@@ -424,18 +424,34 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
     if (summary) setNotice((nextAmbition ? `List balance set to ${AMBITION_LABEL[nextAmbition].toLowerCase()}. ` : "") + summary);
   };
   const onShift = (dir) => rebalance(AMBITION_STEPS[Math.max(0, Math.min(AMBITION_STEPS.length - 1, AMBITION_STEPS.indexOf(ambition) + dir))]);
+  // Data tiers first (grades and scores vs each school's numbers); for the rest, the AI chance estimate, then
+  // its tier (70%+ likely, 30-69% target, under 30% reach). Schools added from Applications arrive untiered.
   const onAssessAll = async () => {
-    let message = "";
-    await saveChange("__assess", async () => {
+    setBusy(true); setError(null); setNotice("Sorting schools from your grades and scores…");
+    const assess = async () => {
       const j = await window.cfApi.postAction("assess-tiers", {});
       if (!j.data) throw new Error("Could not assess your schools. Please try again.");
-      const done = (j.assessed || []).length;
-      const unknown = j.unknown || [];
-      message = (done ? `Sorted ${done} school${done === 1 ? "" : "s"} into reach, target or likely.` : "")
-        + (unknown.length ? ` No admissions data for ${unknown.join(", ")}; pick a tier for ${unknown.length === 1 ? "it" : "them"} yourself.` : "");
-      return j.data;
-    }, "");
-    if (message) setNotice(message.trim());
+      if (onWorkspaceChange) onWorkspaceChange(j.data);
+      return j;
+    };
+    let sorted = 0;
+    try {
+      let j = await assess();
+      sorted += (j.assessed || []).length;
+      if ((j.unknown || []).length) {
+        setNotice(`Estimating your chances with AI for ${j.unknown.length} school${j.unknown.length === 1 ? "" : "s"}…`);
+        const odds = await runOddsSteps(setNotice);
+        if (onWorkspaceChange && odds.ws) onWorkspaceChange(odds.ws);
+        j = await assess();
+        sorted += (j.assessed || []).length;
+      }
+      const left = j.unknown || [];
+      setNotice((sorted ? `Sorted ${sorted} school${sorted === 1 ? "" : "s"} into reach, target or likely.` : "")
+        + (left.length ? ` Couldn’t estimate ${left.join(", ")}; run Assess all again or pick a tier yourself.` : ""));
+    } catch (e) {
+      setNotice(sorted ? `Sorted ${sorted} school${sorted === 1 ? "" : "s"}.` : "");
+      setError({ slug: "__assess", message: e.message || "The AI estimate stopped. Try again." });
+    } finally { setBusy(false); }
   };
   const onRemove = (slug) => saveChange(slug, async () => {
     const response = await fetch(`/api/workspace/colleges?slug=${encodeURIComponent(slug)}`, { method: "DELETE", credentials: "same-origin" });
@@ -460,7 +476,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
         <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to adjust ✱</Button>
       </header>
 
-      <div role="status" aria-live="polite" style={{ fontSize: 13, color: "var(--muted)", marginBottom: notice || busy ? 16 : 0 }}>{busy ? "Saving change…" : notice}</div>
+      <div role="status" aria-live="polite" style={{ fontSize: 13, color: "var(--muted)", marginBottom: notice || busy ? 16 : 0 }}>{busy ? notice || "Saving change…" : notice}</div>
 
       {data.colleges.length > 0 ? (
         <div className="cf-grid-short-stats" style={{ marginBottom: 28 }}>
@@ -530,7 +546,7 @@ function Shortlist({ data, tracker, onTrackerChange, onAsk, onWorkspaceChange })
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
                 <h2 className="cf-display" style={{ margin: 0, fontSize: 22, color: "var(--ink)" }}>Not assessed yet</h2>
                 <Button size="sm" variant="secondary" disabled={busy} onClick={onAssessAll}
-                  title="Sorts each school into reach, target or likely from its admissions data and your grades and scores">
+                  title="Sorts each school into reach, target or likely: from your grades and scores where it can, otherwise from an AI estimate of your chances (needs ChatGPT or Grok connected)">
                   Assess all {untiered.length}
                 </Button>
               </div>

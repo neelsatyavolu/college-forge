@@ -392,3 +392,17 @@ test('assessUntiered gives unassessed schools their data tier and leaves set tie
  assert.deepEqual(unknown, ['Nowhere Test College']);
  assert.equal(ws.colleges[0].tier, undefined, 'the input workspace is not mutated');
 });
+test('assessUntiered falls back to the AI chance estimate when there is no data tier', () => {
+ const { assessUntiered } = require('../lib/college-recommendations.ts');
+ const ws = emptyWorkspace();
+ ws.colleges = [
+  { name: 'Reach Test U', slug: 'reach-test-u' }, { name: 'Target Test U', slug: 'target-test-u' },
+  { name: 'Likely Test U', slug: 'likely-test-u' }, { name: 'Unknown Test U', slug: 'unknown-test-u' },
+ ];
+ const odds = (percent) => ({ percent, low: percent, high: percent, baseline: percent, baselineSource: '', summary: '', factors: [], sources: [], estimatedAt: '2026-11-27T00:00:00Z' });
+ ws.admissionOdds = { 'reach-test-u': odds(12), 'target-test-u': odds(30), 'likely-test-u': odds(70) };
+ const { workspace, assessed, unknown } = assessUntiered(ws);
+ assert.deepEqual(workspace.colleges.map((c) => c.tier), ['reach', 'target', 'safety', undefined]);
+ assert.deepEqual(assessed, ['Reach Test U', 'Target Test U', 'Likely Test U']);
+ assert.deepEqual(unknown, ['Unknown Test U']);
+});
