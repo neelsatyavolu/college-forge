@@ -250,7 +250,7 @@ export async function applyArrival(token: string, arrivalId: string, arrival: Ar
   const note = arrival.state === "verified" ? "Set up from a forwarded email." : `Set up from a forwarded email: ${arrival.reason}`;
   await updateApp(workspaceId, app.id, (a) => ({ notes: [a.notes, note].filter(Boolean).join("\n\n").slice(0, 4000) }));
   await updateDoc<ArrivalRecord>(arrivalKey(arrivalId), (cur) => ({ ...(cur ?? { workspaceId, appId: app.id }), emailed: true }));
-  await tell(workspaceId, arrivalEmail(arrival, ORIGIN()));
+  await tell(workspaceId, arrivalEmail(arrival, ORIGIN(), { saved: !!login }));
   return true;
 }
 

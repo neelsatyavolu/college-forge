@@ -245,3 +245,14 @@ test('adding a school that a forwarded email already created flags it', () => is
   assert.equal(again.portalFromEmail, true, 'the student is told the link came from an email');
   assert.equal(again.portalUrl, 'https://evil.example/login');
 }));
+
+test('the arrival email never says a login was saved when none was', () => {
+  const { arrivalEmail } = require('../lib/notify/inbox-mail.ts');
+  const arrival = { name: 'Example College', state: 'verified', username: 'student', reason: '', pin: '', link: '' };
+  const unsaved = arrivalEmail(arrival, 'https://forge.test', { saved: false });
+  assert.doesNotMatch(unsaved.text, /login is saved/);
+  assert.match(unsaved.text, /didn't save this login/);
+  const set = arrivalEmail({ ...arrival, state: 'set', reason: 'sign-in failed' }, 'https://forge.test', { saved: false });
+  assert.doesNotMatch(set.text, /Forge saved that password/);
+  assert.match(arrivalEmail(arrival, 'https://forge.test', { saved: true }).text, /login is saved/);
+});
