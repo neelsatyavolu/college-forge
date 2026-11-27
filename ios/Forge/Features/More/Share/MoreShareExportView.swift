@@ -8,6 +8,7 @@ struct MoreShareExportView: View {
         List {
             MoreParentsSection()
             MoreShareLinksSection()
+            MoreCalendarFeedSection()
             MoreExportSection()
             MoreAdvisorNotesSection()
         }

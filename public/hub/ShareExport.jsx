@@ -112,6 +112,80 @@ function ParentsPanel() {
   );
 }
 
+async function calendarApi(action) {
+  const res = await fetch("/api/workspace/calendar", action ? {
+    method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ action }),
+  } : { credentials: "same-origin", cache: "no-store" });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || j.success === false) throw new Error((j && j.error) || "That didn’t save. Try again.");
+  return j.data || null;
+}
+
+/** A private webcal link that keeps Google or Apple Calendar current (app/api/workspace/calendar). */
+function CalendarFeedPanel() {
+  const [feed, setFeed] = React.useState(undefined);
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState("");
+  const [note, setNote] = React.useState("");
+
+  // feed: undefined while loading, "failed" if the load failed (never offer to make a link then: it would replace one), null when there is none.
+  const load = () => {
+    setFeed(undefined);
+    setErr("");
+    calendarApi().then(setFeed, (e) => { setFeed("failed"); setErr(e.message); });
+  };
+  React.useEffect(load, []);
+
+  const act = async (action, done) => {
+    setBusy(true);
+    setErr("");
+    setNote("");
+    try {
+      const next = await calendarApi(action);
+      setFeed(next);
+      if (done) await done(next);
+    } catch (e) { setErr(e.message); }
+    setBusy(false);
+  };
+
+  const copy = async (url) => {
+    try { await navigator.clipboard.writeText(url); setNote("Link copied."); } catch (e) { setNote("Copy the link above."); }
+  };
+
+  const reset = () => {
+    if (window.confirm("Make a new link? Calendars subscribed to the old one stop updating, so you’ll need to subscribe again.")) {
+      act("create", () => setNote("New link made. Subscribe again with it."));
+    }
+  };
+
+  const linkStyle = { display: "inline-flex", alignItems: "center", height: 32, padding: "0 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", color: "var(--ink)", fontSize: 13, textDecoration: "none" };
+
+  return (
+    <Panel title="Subscribe in your calendar">
+      <p style={{ margin: "0 0 14px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>
+        A private link that keeps Google or Apple Calendar up to date with every deadline, decision date and follow-up, including estimated decision dates. Application deadlines get a reminder 3 days before. Calendars check for changes every few hours. Anyone with the link can see these dates, so share it only with family.
+      </p>
+      {feed === undefined ? <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>Loading…</p> : null}
+      {feed === "failed" ? <Button size="sm" variant="secondary" onClick={load}>Try again</Button> : null}
+      {feed === null ? <Button size="sm" onClick={() => act("create")} disabled={busy}>{busy ? "Making link…" : "Make calendar link"}</Button> : null}
+      {feed && feed !== "failed" ? (
+        <div>
+          <div style={{ padding: 12, background: "var(--surface-soft)", borderRadius: "var(--radius-md)", wordBreak: "break-all", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink)" }}>{feed.https}</div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
+            <Button size="sm" onClick={() => copy(feed.https)} disabled={busy}>Copy link</Button>
+            <a href={"https://calendar.google.com/calendar/r?cid=" + encodeURIComponent(feed.webcal)} target="_blank" rel="noopener noreferrer" style={linkStyle}>Add to Google Calendar</a>
+            <a href={feed.webcal} style={linkStyle}>Open in Apple Calendar</a>
+            <Button size="sm" variant="secondary" onClick={reset} disabled={busy}>Reset link</Button>
+            <Button size="sm" variant="secondary" onClick={() => { if (window.confirm("Turn off this link? Subscribed calendars stop updating.")) act("revoke", () => setNote("Calendar link turned off.")); }} disabled={busy}>Turn off</Button>
+          </div>
+        </div>
+      ) : null}
+      {note ? <p role="status" style={{ margin: "10px 0 0", fontSize: 13, color: "var(--ink)" }}>{note}</p> : null}
+      {err ? <p role="alert" style={{ margin: "10px 0 0", fontSize: 13, color: "var(--error)" }}>{err}</p> : null}
+    </Panel>
+  );
+}
+
 function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
   const [busy, setBusy] = React.useState("");
   const [msg, setMsg] = React.useState("");
@@ -223,6 +297,8 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
           </ul>
         ) : null}
       </Panel>
+
+      <CalendarFeedPanel />
 
       <Panel title="Export for Common App & counselors">
         <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--body)", lineHeight: 1.55 }}>

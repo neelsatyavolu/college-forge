@@ -89,6 +89,16 @@ extension APIClient {
         try await send(.json("DELETE", "/api/devices", ["token": token]))
     }
 
+    /// GET /api/workspace/calendar: the private calendar subscription link, or nil when there is none.
+    func calendarFeed() async throws -> CalendarFeedLink? {
+        try await get("/api/workspace/calendar", as: DataEnvelope<CalendarFeedLink?>.self).data
+    }
+
+    /// POST /api/workspace/calendar {action}: "create" makes or replaces the link (the old one stops working), "revoke" ends it.
+    func calendarFeed(_ action: String) async throws -> CalendarFeedLink? {
+        try await post("/api/workspace/calendar", body: ["action": action], as: DataEnvelope<CalendarFeedLink?>.self).data
+    }
+
     /// Downloads an export with auth. Formats: "txt", "brief" (Markdown), "ics" (calendar), "json".
     /// Returns the body and the file name the server suggested.
     func export(format: String) async throws -> (data: Data, filename: String?) {

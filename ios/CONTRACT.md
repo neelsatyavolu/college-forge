@@ -158,6 +158,9 @@ func stream(_ request: APIRequest) async throws -> (URLSession.AsyncBytes, HTTPU
 me(), workspace(), patchWorkspace(_:), workspaceAction(_:fields:), applications(), applications(_ action:),
 catalog(), connections(), revokeConnection(id:), registerDevice(token:environment:), unregisterDevice(token:),
 export(format:) -> (data, filename?)   // "txt" | "brief" | "ics" | "json"
+calendarFeed() -> CalendarFeedLink?, calendarFeed("create" | "revoke") -> CalendarFeedLink?
+// GET/POST /api/workspace/calendar: {success, data: {https, webcal, createdAt} | null}. "create" replaces any
+// old link (it stops working). The feed itself, GET /api/calendar/<token>, needs no sign-in: the token is the credential.
 ```
 
 Prefer the store for anything it holds. Use `store.api` directly for data the store doesn't keep (catalog, college search, connections, AI chat, exports), from your own extension file.

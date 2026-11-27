@@ -279,6 +279,8 @@ export type Workspace = {
   schoolStats?: Record<string, SchoolStats>;
   /** Career-ranking majors, weights and adjustments (lib/career-settings.ts), shared by the website and the app. */
   careerSettings?: unknown;
+  /** Private calendar subscription (lib/calendar-feed.ts). The token is the feed's only credential. */
+  calendarFeed?: { token: string; createdAt: number };
 };
 
 export function emptyWorkspace(): Workspace {
@@ -711,11 +713,11 @@ export function redactWorkspaceBody<T>(body: T): T {
 }
 
 /** Public share payload — strips recovery codes and internal share tokens list details if needed. */
-export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" | "shares" | "uploads"> & {
+export function publicShareView(ws: Workspace): Omit<Workspace, "recoveryCode" | "shares" | "uploads" | "calendarFeed"> & {
   uploads: { name: string; chars: number }[];
 } {
   // applicationRead and admissionOdds hold AI assessments drawn from uploads (family context, concerns): the student's alone.
-  const { recoveryCode: _r, shares: _s, uploads, tracker, applicationRead: _a, admissionOdds: _o, ...rest } = ws;
+  const { recoveryCode: _r, shares: _s, calendarFeed: _c, uploads, tracker, applicationRead: _a, admissionOdds: _o, ...rest } = ws;
   return {
     ...rest,
     // Advisors see statuses and dates, never a decision the student hasn't revealed or anything about logins.
