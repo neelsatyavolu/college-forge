@@ -718,6 +718,8 @@ export async function copyWorkspace(anonymousId: string, newId: string): Promise
     if (text !== null) await writeText(`uploads/${safeId(newId)}/${key.slice(oldUploads.length)}`, text, "text/plain");
   }
   if ((await readText(workspaceKey(newId))) === null) await writeText(workspaceKey(newId), raw, "application/json");
+  const scatter = await readText(scattergramKey(anonymousId));
+  if (scatter !== null && (await readText(scattergramKey(newId))) === null) await writeText(scattergramKey(newId), scatter, "application/json");
   return true;
 }
 
@@ -752,8 +754,16 @@ export async function resetWorkspace(id: string): Promise<Workspace> {
   return updateWorkspace(id, () => emptyWorkspace());
 }
 
-/** Scattergram imports were removed; a reset still clears any a workspace saved before. */
-async function deleteScattergramText(id: string): Promise<void> {
+/** Maia scattergrams (lib/scattergrams.ts), kept apart from the workspace document. */
+export async function readScattergramText(id: string): Promise<string | null> {
+  return readText(scattergramKey(id));
+}
+
+export async function writeScattergramText(id: string, text: string): Promise<void> {
+  await writeText(scattergramKey(id), text, "application/json");
+}
+
+export async function deleteScattergramText(id: string): Promise<void> {
   await deleteText(scattergramKey(id));
 }
 

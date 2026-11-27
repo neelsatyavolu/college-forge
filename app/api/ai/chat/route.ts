@@ -3,6 +3,7 @@ import { runChat } from "@/lib/providers";
 import type { ChatEvent, ChatTurn, ProviderName } from "@/lib/chat-types";
 import { getWorkspace, updateWorkspace } from "@/lib/store";
 import { buildHubSystemPrompt } from "@/lib/hub-context";
+import { loadScattergrams, scattergramDigest } from "@/lib/scattergram-summary";
 import { makeHubTools } from "@/lib/hub-tools";
 import { COPILOT_WRAP_UP, ONBOARDING_WRAP_UP } from "@/lib/tool-budget";
 import { dedupeParagraphs, makeInterviewTools, recordTurn } from "@/lib/interview-tools";
@@ -121,11 +122,13 @@ export async function POST(req: NextRequest) {
         const turnStartedAt = Date.now();
         const interview = makeInterviewTools(mutate, () => getWorkspace(workspaceId), emit, () => Date.now() - turnStartedAt >= ONBOARDING_WRAP_UP.afterMs);
         const setup = mode !== "hub";
+        // The student's imported Maia scattergrams live outside the workspace document.
+        const scatter = mode === "decision" ? "" : scattergramDigest(await loadScattergrams(workspaceId), ws);
         const instructions = mode === "onboarding"
-          ? buildInterviewPrompt(ws)
-          : mode === "research" ? `${buildHubSystemPrompt(ws)}\n\n${RESEARCH_RULES}`
+          ? buildInterviewPrompt(ws, scatter)
+          : mode === "research" ? `${buildHubSystemPrompt(ws, scatter)}\n\n${RESEARCH_RULES}`
           // The picks request carries its own data; no workspace snapshot, so a note can't make the model copy it.
-          : mode === "decision" ? DECISION_SYSTEM : buildHubSystemPrompt(ws);
+          : mode === "decision" ? DECISION_SYSTEM : buildHubSystemPrompt(ws, scatter);
         const interviewNames = new Set(interview.tools.map((t) => t.name));
         const tools = (setup ? [...hub.tools.filter((t) => !interviewNames.has(t.name)), ...interview.tools] : hub.tools)
           .filter((t) => toolAllowed(mode, t.name));

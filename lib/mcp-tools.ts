@@ -14,6 +14,7 @@ import { isTestOptionalNote } from "./colleges";
 import { ROUNDS, STATUSES, STATUS_IDS, findApp, todayIso } from "./tracker";
 import { TEST_METHODS, TEST_PLANS, studentScores } from "./testing-plan";
 import { INTEREST_TOOLS } from "./interest-tools";
+import { loadScattergrams, scattergramToolResult } from "./scattergram-summary";
 import {
   TrackerError,
   addApp,
@@ -631,6 +632,15 @@ export const TOOLS: Tool[] = [
         colleges: saved.colleges.map((c) => ({ name: c.name, category: c.tier ?? null })),
       };
     },
+  }),
+  tool({
+    name: "get_scattergrams",
+    title: "Get high school scattergrams",
+    description:
+      "Where past applicants from the student's own high school landed at each college, by unweighted GPA and SAT (imported from MaiaLearning). Without `school`: a summary per imported school (applicants, results, admit rate, accepted medians, ED/EA results, and how applicants near the student's stats fared). With `school` (slug or name): that school's summary plus every point. Use it for chances, tiers and list balance; samples are small.",
+    input: z.object({ school: z.string().max(120).optional() }),
+    readOnly: true,
+    run: async (ws, { school }) => scattergramToolResult(await loadScattergrams(ws), await getWorkspace(ws), school),
   }),
   ...INTEREST_TOOLS.map((t) => t as unknown as Tool),
 ];

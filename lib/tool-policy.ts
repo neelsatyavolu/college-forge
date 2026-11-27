@@ -12,7 +12,7 @@ const INTERVIEW = ["ask_question", "interview_status", "save_section_note", "sav
 const ALLOWED: Record<Exclude<ChatMode, "hub">, ReadonlySet<string>> = {
   // The interview: profile answers, reading the upload, the formula picks and light fit lookups;
   // after the student confirms the strategy, saving ED and rounds.
-  onboarding: new Set([...PROFILE, ...INTERVIEW, "read_upload", "get_college_recommendations", "web_search", "web_fetch", "set_early_decision", "set_application_rounds"]),
+  onboarding: new Set([...PROFILE, ...INTERVIEW, "read_upload", "get_college_recommendations", "get_scattergrams", "web_search", "web_fetch", "set_early_decision", "set_application_rounds"]),
   // One school's research: reading the web and saving facts, deadlines and prompts. Nothing else.
   research: new Set(["web_search", "web_fetch", "set_school_research", "upsert_college", "set_essays", "get_essay"]),
   // The Decision board's picks: its request carries the student's notes as data, so saving picks is all it can do.

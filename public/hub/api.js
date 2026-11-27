@@ -35,6 +35,19 @@ window.cfApi = {
     return j;
   },
 
+  /** Imported Maia scattergrams (private to this workspace), or null when none. */
+  async getScattergrams() {
+    const res = await fetch("/api/workspace/scattergrams", { credentials: "same-origin", cache: "no-store" });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || j.success === false) throw new Error((j && j.error) || "Couldn't load scattergrams.");
+    return j.data;
+  },
+
+  async deleteScattergrams() {
+    const res = await fetch("/api/workspace/scattergrams", { method: "DELETE", credentials: "same-origin" });
+    if (!res.ok) throw new Error("Delete failed");
+  },
+
   async me() {
     const res = await fetch("/api/me", { credentials: "same-origin", cache: "no-store" });
     if (!res.ok) throw new Error("Couldn't reach Forge");
