@@ -323,3 +323,10 @@ Portal checks can capture the decision letter. Its body stays sealed on the serv
 - `profile.switchTo` and `profile.pathNote` (≤200 / ≤500 chars, `PATCH /api/workspace` profile) feed the board and its AI picks only; they never change the List tab ranking.
 - `workspace.decisionBoard` holds the saved picks. It, and every `aidOffer`, is left out of share links, progress links and the parent views.
 - Entry: a "Compare your offers" row at the top of Decisions when two or more schools admitted the student, pushing `ApplicationsDestination.decisionBoard`. No fifth segment.
+
+## Essay schools (feat/essay-schools)
+
+- Every school on the list is an "essay school" (its supplements show on Essays) until the student turns it off. `Workspace.essaySchools: [String: Bool]` holds only the turned-off schools, keyed by Essays group key (a college slug, or `"uc-application"` for every UC campus together), always `false`. Missing means writing.
+- PATCH /api/workspace `essaySchools: {key: false | null}`: false turns a school off, null turns it back on. `true` is refused (400), as are the key `"common"` (the Common App is always written), a bad key and more than 500 keys. `WorkspacePatch.essaySchools: [String: Bool?]` (nil is sent as null). Nothing else changes: the school stays on the list and keeps its prompts and drafts.
+- `EssayCatalog.groups(..., essaySchools:)` drops turned-off schools' groups (orphan groups stay), and `EssayCatalog.schools(colleges:essaySchools:)` gives one row per group for the "Pick essay schools" sheet (UC campuses share one row). Turned-off schools leave every count. `EssayCatalog.groupKey(for:)` maps a list school to its key.
+- Agents: `list_essays` and `get_essay` mark a turned-off school's essays `hidden: true, not_writing: true`; `set_essay_visibility` takes `not_writing_for` and `writing_for` (school keys). Parents and counselors never get a turned-off school's supplements or drafts.

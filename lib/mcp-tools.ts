@@ -561,7 +561,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "list_essays",
     title: "List essays",
-    description: "Every essay prompt on the student's Essays tab: Common App (school \"common\"), UC PIQs (\"uc-application\") and each school's supplements, with limit, word count and status. `hidden: true` marks essays the student hid or Common App prompts they did not choose; skip those. `chosen: true` marks their Common App prompt. Draft text is left out; use get_essay for one essay.",
+    description: "Every essay prompt on the student's Essays tab: Common App (school \"common\"), UC PIQs (\"uc-application\") and each school's supplements, with limit, word count and status. `hidden: true` marks essays the student hid, Common App prompts they did not choose, or (with `not_writing: true`) essays of a school they are not writing supplements for; skip those. `chosen: true` marks their Common App prompt. Draft text is left out; use get_essay for one essay.",
     input: z.object({}),
     readOnly: true,
     run: async (ws) => ({ essays: essayList(await getWorkspace(ws)) }),
@@ -594,16 +594,21 @@ export const TOOLS: Tool[] = [
   tool({
     name: "set_essay_visibility",
     title: "Hide, show or choose essays",
-    description: "Only when the student asks: hide essays they won't write (`hide`, ids from list_essays), show hidden ones again (`show`), or choose their Common App personal essay prompt (`common_app_prompt`, a ca-ps-* id; null clears the choice and shows all six). Hidden essays keep their drafts.",
+    description: "Only when the student asks: hide essays they won't write (`hide`, ids from list_essays), show hidden ones again (`show`), choose their Common App personal essay prompt (`common_app_prompt`, a ca-ps-* id; null clears the choice and shows all six), or stop or start writing a school's supplements (`not_writing_for` / `writing_for`, the `school` keys from list_essays; the school stays on the list). Hidden essays keep their drafts.",
     input: z.object({
       hide: z.array(z.string().min(1).max(200)).max(100).optional(),
       show: z.array(z.string().min(1).max(200)).max(100).optional(),
       common_app_prompt: z.string().max(200).nullable().optional(),
+      not_writing_for: z.array(z.string().min(1).max(200)).max(100).optional(),
+      writing_for: z.array(z.string().min(1).max(200)).max(100).optional(),
     }),
     readOnly: false,
-    run: async (ws, { hide, show, common_app_prompt }) => {
-      const saved = await editProfile(ws, (w) => withEssayVisibility(w, { hide, show, commonAppPrompt: common_app_prompt }));
-      return { essays: essayList(saved).filter((e) => e.hidden || e.chosen).map(({ id, label, hidden, chosen }) => ({ id, label, hidden, chosen: !!chosen })) };
+    run: async (ws, { hide, show, common_app_prompt, not_writing_for, writing_for }) => {
+      const saved = await editProfile(ws, (w) => withEssayVisibility(w, { hide, show, commonAppPrompt: common_app_prompt, skipSchools: not_writing_for, writeSchools: writing_for }));
+      return {
+        essays: essayList(saved).filter((e) => (e.hidden && !e.not_writing) || e.chosen).map(({ id, label, hidden, chosen }) => ({ id, label, hidden, chosen: !!chosen })),
+        not_writing_for: Object.keys(saved.essaySchools ?? {}),
+      };
     },
   }),
   tool({

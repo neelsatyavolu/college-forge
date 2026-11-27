@@ -81,18 +81,68 @@
     return (items || []).filter(function (it) { return !isHidden(it, opts); });
   }
 
+  var UC_APPLICATION_SLUG = "uc-application";
+
+  /** A University of California campus; they share one UC Application essay group. */
+  function isUcCampus(c) {
+    if (!c) return false;
+    var slug = (c.slug || "").toLowerCase();
+    var name = ((c.name || "") + " " + (c.short || "")).toLowerCase();
+    if (slug.indexOf("university-of-california-") === 0) return true;
+    if (slug === "ucla" || slug === "ucb" || slug === "ucsd" || slug === "uc-berkeley") return true;
+    if (/\buniversity of california\b/.test(name)) return true;
+    if (/\buc\s+(berkeley|los angeles|san diego|davis|irvine|santa barbara|santa cruz|riverside|merced)\b/.test(name)) return true;
+    return name.trim() === "ucla";
+  }
+
+  /** The Essays group a school writes in (essayGroupKey in lib/essay-supplements.ts): its slug, or the UC Application. */
+  function essayGroupKey(c) {
+    if (isUcCampus(c)) return UC_APPLICATION_SLUG;
+    return (c && c.slug) || null;
+  }
+
+  /** True when the student opted this group's school out of supplements (opts.essaySchools: key -> false). */
+  function isSchoolSkipped(key, opts) {
+    return !!(key && key !== "common" && opts && opts.essaySchools && opts.essaySchools[key] === false);
+  }
+
+  /**
+   * The schools the student can write supplements for, one row per Essays group: each non-UC list school,
+   * and one UC Application row for all UC campuses. `writing` is false for an opted-out school.
+   */
+  function essaySchools(colleges, opts) {
+    var rows = [];
+    var uc = null;
+    var seen = {};
+    (colleges || []).forEach(function (c) {
+      var key = essayGroupKey(c);
+      if (!key) return;
+      // Two list rows on one slug share one Essays group, so they share one row here.
+      if (seen[key] && key !== UC_APPLICATION_SLUG) return;
+      seen[key] = true;
+      if (key === UC_APPLICATION_SLUG) {
+        if (!uc) { uc = { key: key, title: "UC Application", campuses: [] }; rows.push(uc); }
+        uc.campuses.push(c.short || c.name || c.slug);
+        return;
+      }
+      rows.push({ key: key, title: c.short || c.name || key, campuses: [] });
+    });
+    return rows.map(function (r) { return { key: r.key, title: r.title, subtitle: r.campuses.join(" · "), writing: !isSchoolSkipped(r.key, opts) }; });
+  }
+
   function wordCount(s) { var t = String(s || "").trim(); return t ? t.split(/\s+/).length : 0; }
   function countOf(it, text) { return isCharacters(it) ? Array.from(String(text || "")).length : wordCount(text); }
 
   /**
    * The essays the student has to write: required prompts, plus the N picks of each
    * choose-N set. Final prompts are picked first, then started ones, then the longest.
-   * Hidden essays don't count, and a chosen Common App prompt is the set's one pick.
+   * Hidden essays and schools the student isn't writing for don't count, and a chosen Common App
+   * prompt is the set's one pick.
    */
   function requiredItems(groups, drafts, status, opts) {
     var out = [];
     (groups || []).forEach(function (group) {
-      if (group.kind === "orphan") return;
+      if (group.kind === "orphan" || isSchoolSkipped(group.key, opts)) return;
       var sets = {};
       visibleItems(group.items, opts).forEach(function (it) {
         var choice = choiceOf(it);
@@ -166,6 +216,10 @@
     isOptional: isOptional,
     isHidden: isHidden,
     visibleItems: visibleItems,
+    isUcCampus: isUcCampus,
+    essayGroupKey: essayGroupKey,
+    isSchoolSkipped: isSchoolSkipped,
+    essaySchools: essaySchools,
     writingTotals: writingTotals,
     nextDeadline: nextDeadline,
     byPromptType: byPromptType,

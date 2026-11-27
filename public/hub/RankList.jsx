@@ -24,11 +24,13 @@ function useRankingSchools() {
   return state;
 }
 
-function RankList({ tracker }) {
+function RankList({ tracker, data, onWorkspaceChange }) {
   const { SchoolMark } = window.cfApp;
   const { Button } = window.CollegeForgeDesignSystem_e95e63;
   const { schools, official, extra, career, error } = useRankingSchools();
   const [copied, setCopied] = React.useState("");
+  const [picking, setPicking] = React.useState(false);
+  const collegeOf = (app) => (app.slug && (data.colleges || []).find((c) => c.slug === app.slug)) || null;
   const rows = schools ? window.cfRankList.rankList(tracker.apps, schools, official, extra, career) : [];
   const copy = async () => {
     try {
@@ -46,8 +48,12 @@ function RankList({ tracker }) {
           <h1 className="cf-page-title">List</h1>
           <p className="cf-page-lede">Your schools, ordered by a weighted average of six rankings. U.S. News, Forbes and your own <a href="/rankings">career ranking</a> (My path, with the majors you picked there) count fully; Niche ¾, since part of it is student reviews; WSJ ½, since it swings year to year and only its top 100 is public; the Princeton Review ¼, since it rates cost and aid rather than overall strength. Liberal arts, Princeton Review and career ranks count at the national rank of the same standing, and a list a school isn’t on is left out.</p>
         </div>
-        {rows.length ? <div className="cf-row-actions"><Button size="sm" variant="secondary" onClick={copy}>{copied || "Copy colleges"}</Button></div> : null}
+        {rows.length ? <div className="cf-row-actions">
+          {(data.colleges || []).length ? <Button size="sm" variant="secondary" onClick={() => setPicking(true)}>Pick essay schools</Button> : null}
+          <Button size="sm" variant="secondary" onClick={copy}>{copied || "Copy colleges"}</Button>
+        </div> : null}
       </header>
+      {picking ? <window.EssaySchoolsSheet data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setPicking(false)} /> : null}
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>Couldn’t load the rankings. Reload the page to try again.</p> : null}
       {!tracker.apps.length ? <p className="cf-help">Add schools on <a href="#applications">Portals</a> or <a href="#progress">Progress</a> and they’ll show up here.</p> : null}
       {schools && rows.length ? (
@@ -61,6 +67,7 @@ function RankList({ tracker }) {
               <span className="cf-rank-row__name"><span className="cf-rank-row__label">{r.app.name}</span>{admitted ? <span className="cf-rank-row__tag">{r.app.status === "committed" ? "Committed" : "Admitted"}</span> : null}</span>
               <span className="cf-rank-row__src" title={window.cfRankList.rankSummary(r.ranks).title}>{r.avg == null ? "Not ranked" : window.cfRankList.rankSummary(r.ranks).text}</span>
               <span className="cf-rank-row__avg" title="Weighted average rank">{r.avg == null ? "—" : r.avg.toFixed(1)}</span>
+              <span className="cf-rank-row__essay">{collegeOf(r.app) ? <window.EssaySchoolToggle data={data} school={collegeOf(r.app)} onWorkspaceChange={onWorkspaceChange} /> : null}</span>
             </li>
             );
           })}

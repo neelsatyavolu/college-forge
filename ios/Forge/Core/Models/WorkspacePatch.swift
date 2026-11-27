@@ -35,6 +35,9 @@ struct WorkspacePatch: Encodable, Sendable {
     var essayHidden: [String: Bool?]?
     /// The chosen Common App prompt id; `.some(nil)` clears the choice.
     var commonAppPrompt: String??
+    /// Opt schools out of supplements by Essays group key (`false`); a `nil` value is sent as null and makes the
+    /// school an essay school again. Never send `true`.
+    var essaySchools: [String: Bool?]?
 
     init() {}
 
@@ -81,7 +84,7 @@ struct WorkspacePatch: Encodable, Sendable {
         case listPrefs, applicant, profile, ed, criticalDates, colleges, essays, essayDrafts, plannerDone
         case recommendations, scholarships, financialAid, essayDraft, plannerToggle, recommendation
         case removeRecommendationId, scholarship, removeScholarshipId, removeAdvisorNoteId, collegePatch
-        case essayHidden, commonAppPrompt
+        case essayHidden, commonAppPrompt, essaySchools
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -108,6 +111,7 @@ struct WorkspacePatch: Encodable, Sendable {
         try c.encodeIfPresent(collegePatch, forKey: .collegePatch)
         try c.encodeIfPresent(essayHidden, forKey: .essayHidden)
         if case .some(let value) = commonAppPrompt { try c.encode(value, forKey: .commonAppPrompt) }
+        try c.encodeIfPresent(essaySchools, forKey: .essaySchools)
     }
 }
 

@@ -293,6 +293,11 @@ export type Workspace = {
   essayStatus?: Record<string, EssayStatus>;
   /** Essays the student hid (essay id → true). Hidden essays keep their drafts and leave every count. */
   essayHidden?: Record<string, true>;
+  /**
+   * Schools the student is not writing supplements for, by Essays group key (a college slug or "uc-application")
+   * -> false. Every other school is an essay school. Opted-out schools' essays hide and leave every count; drafts are kept.
+   */
+  essaySchools?: Record<string, false>;
   /** The Common App personal essay prompt the student chose (a ca-ps-* id). The other five are then hidden. */
   commonAppPrompt?: string;
   /** Copilot suggestions by essay id (suggest_essay_edit). */

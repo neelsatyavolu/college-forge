@@ -23,8 +23,8 @@ export const EXTRA_TOOL_SPECS: ToolSpec[] = [
   },
   {
     name: "set_essay_visibility",
-    description: "Only when the student asks: hide essays they won't write (hide: ids), show hidden ones again (show: ids), or choose their Common App personal essay prompt (common_app_prompt: a ca-ps-* id, or 'clear' to show all six again). Hidden essays keep their drafts.",
-    parameters: { type: "object", properties: { hide: { type: "array", items: { type: "string" } }, show: { type: "array", items: { type: "string" } }, common_app_prompt: { type: "string" } }, additionalProperties: false },
+    description: "Only when the student asks: hide essays they won't write (hide: ids), show hidden ones again (show: ids), choose their Common App personal essay prompt (common_app_prompt: a ca-ps-* id, or 'clear' to show all six again), or stop or start writing a school's supplements (not_writing_for / writing_for: school keys from list_essays, such as a slug or 'uc-application'; the school stays on the list). Hidden essays keep their drafts.",
+    parameters: { type: "object", properties: { hide: { type: "array", items: { type: "string" } }, show: { type: "array", items: { type: "string" } }, common_app_prompt: { type: "string" }, not_writing_for: { type: "array", items: { type: "string" } }, writing_for: { type: "array", items: { type: "string" } } }, additionalProperties: false },
   },
   {
     name: "set_portal_settings",
@@ -73,10 +73,11 @@ export async function runExtraTool(
       const prompt = a.common_app_prompt === "clear" ? null : a.common_app_prompt;
       let reply = "";
       await mutate((ws) => {
-        const r = withEssayVisibility(ws, { hide: a.hide, show: a.show, commonAppPrompt: prompt });
+        const r = withEssayVisibility(ws, { hide: a.hide, show: a.show, commonAppPrompt: prompt, skipSchools: a.not_writing_for, writeSchools: a.writing_for });
         if (!r.ok) { reply = r.error; return ws; }
         const hidden = Object.keys(r.value.essayHidden ?? {}).length;
-        reply = `Saved. ${hidden} essay${hidden === 1 ? "" : "s"} hidden${r.value.commonAppPrompt ? `; Common App prompt: ${r.value.commonAppPrompt}` : ""}.`;
+        const skipped = Object.keys(r.value.essaySchools ?? {});
+        reply = `Saved. ${hidden} essay${hidden === 1 ? "" : "s"} hidden${r.value.commonAppPrompt ? `; Common App prompt: ${r.value.commonAppPrompt}` : ""}${skipped.length ? `; not writing for: ${skipped.join(", ")}` : ""}.`;
         return r.value;
       });
       return reply;

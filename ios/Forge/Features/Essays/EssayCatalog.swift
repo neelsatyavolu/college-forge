@@ -38,9 +38,49 @@ enum EssayCatalog {
 
     /// `hidden` and `commonAppPrompt` filter like the web's `visibleItems` (public/hub/essay-archetypes.js):
     /// hidden essays move to `hiddenEssays`, and a chosen Common App prompt drops the other prompts of its set.
+    /// `essaySchools` drops the groups of schools the student isn't writing for (`Workspace.essaySchools`).
     static func groups(colleges: [College], essays: EssaySet, today: String = ForgeDates.today(),
-                       hidden: [String: Bool] = [:], commonAppPrompt: String? = nil) -> [EssayGroup] {
-        visible(allGroups(colleges: colleges, essays: essays, today: today), hidden: hidden, commonAppPrompt: commonAppPrompt)
+                       hidden: [String: Bool] = [:], commonAppPrompt: String? = nil,
+                       essaySchools: [String: Bool] = [:]) -> [EssayGroup] {
+        let all = allGroups(colleges: colleges, essays: essays, today: today)
+            .filter { $0.kind == .orphan || !isSkipped($0.key, essaySchools: essaySchools) }
+        return visible(all, hidden: hidden, commonAppPrompt: commonAppPrompt)
+    }
+
+    /// The Essays group a list school writes in (essayGroupKey in lib/essay-supplements.ts).
+    static func groupKey(for college: College) -> String? {
+        if isUCCampus(college) { return ucKey }
+        return college.slug.isEmpty ? nil : college.slug
+    }
+
+    /// True when the student opted this group's school out of supplements. The Common App is always written.
+    static func isSkipped(_ key: String, essaySchools: [String: Bool]) -> Bool {
+        key != commonKey && essaySchools[key] == false
+    }
+
+    /// One row per Essays group a school writes in, in list order: each non-UC school and one UC Application
+    /// row for every UC campus. Mirrors `essaySchools` in public/hub/essay-archetypes.js.
+    static func schools(colleges: [College], essaySchools: [String: Bool]) -> [EssaySchool] {
+        var rows: [EssaySchool] = []
+        var campuses: [String] = []
+        var seen: Set<String> = []
+        for college in colleges {
+            guard let key = groupKey(for: college) else { continue }
+            // Two list rows on one slug share one Essays group, so they share one row here.
+            if key != ucKey && !seen.insert(key).inserted { continue }
+            if key == ucKey {
+                if campuses.isEmpty { rows.append(EssaySchool(key: ucKey, title: "UC Application", subtitle: "", writing: true)) }
+                campuses.append(displayName(college))
+            } else {
+                rows.append(EssaySchool(key: key, title: displayName(college), subtitle: "", writing: true))
+            }
+        }
+        return rows.map { row in
+            var out = row
+            out.writing = !isSkipped(row.key, essaySchools: essaySchools)
+            if row.key == ucKey { out.subtitle = campuses.joined(separator: " · ") }
+            return out
+        }
     }
 
     /// True when the student hid this essay, or it is a Common App prompt other than the chosen one.
@@ -134,6 +174,16 @@ enum EssayCatalog {
     private static func displayName(_ college: College) -> String {
         college.short.isEmpty ? (college.name.isEmpty ? college.slug : college.name) : college.short
     }
+}
+
+/// A school the student can write supplements for, in the "Pick essay schools" sheet.
+struct EssaySchool: Hashable, Sendable, Identifiable {
+    var key: String
+    var title: String
+    var subtitle: String
+    var writing: Bool
+
+    var id: String { key }
 }
 
 /// Length rules, matching the web editor exactly.

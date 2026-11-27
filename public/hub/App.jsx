@@ -243,11 +243,11 @@ function App() {
               <Button size="sm" onClick={() => setRunOnboarding(true)}>Finish setup</Button>
             </span>
           </div>}
-          {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTrackerAndList} />}
+          {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspace} />}
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspaceAndTracker} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={refresh} />}
           {view === "board" && <DecisionBoard tracker={tracker} onTrackerChange={setTracker} />}
-          {view === "list" && <RankList tracker={tracker} />}
+          {view === "list" && <RankList tracker={tracker} data={data} onWorkspaceChange={applyWorkspace} />}
           {view === "official" && <OfficialRankings />}
           {view === "profile" && <Profile data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "recommendations" && <Recommendations data={data} onAsk={openChat} onNavigate={navigate} onWorkspaceChange={applyWorkspaceAndTracker} onStartSetup={() => setRunOnboarding(true)} />}

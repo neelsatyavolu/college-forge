@@ -32,6 +32,9 @@ struct Workspace: Codable, Hashable, Sendable {
     var essayHidden: [String: Bool] = [:]
     /// The chosen Common App personal essay prompt (a ca-ps-* id); the other prompts of that set are then hidden.
     var commonAppPrompt: String? = nil
+    /// Schools the student is not writing supplements for, by Essays group key (a slug or "uc-application"),
+    /// always false. Every other school is an essay school.
+    var essaySchools: [String: Bool] = [:]
 
     /// True while the onboarding wizard should cover the app (mirrors `needsOnboarding` in lib/store.ts).
     var needsOnboarding: Bool {
@@ -76,6 +79,7 @@ extension Workspace {
         schoolStats = c.dictionary(.schoolStats)
         essayHidden = c.dictionary(.essayHidden)
         commonAppPrompt = c.optionalString(.commonAppPrompt)
+        essaySchools = c.dictionary(.essaySchools)
     }
 }
 

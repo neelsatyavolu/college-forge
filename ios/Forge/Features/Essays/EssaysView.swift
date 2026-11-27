@@ -54,7 +54,12 @@ private struct EssaysList: View {
     private var queue: EssayDraftQueue { EssayDraftQueues.queue(for: store) }
     private var groups: [EssayGroup] {
         EssayCatalog.groups(colleges: store.workspace.colleges, essays: store.workspace.essays,
-                            hidden: store.workspace.essayHidden, commonAppPrompt: store.workspace.commonAppPrompt)
+                            hidden: store.workspace.essayHidden, commonAppPrompt: store.workspace.commonAppPrompt,
+                            essaySchools: store.workspace.essaySchools)
+    }
+    @State private var pickingSchools = false
+    private var skippedSchools: [EssaySchool] {
+        EssayCatalog.schools(colleges: store.workspace.colleges, essaySchools: store.workspace.essaySchools).filter { !$0.writing }
     }
 
     var body: some View {
@@ -80,6 +85,7 @@ private struct EssaysList: View {
                 } else if metadata.error == nil {
                     Section("Writing progress") { ProgressView("Loading writing progress…") }
                 }
+                notWritingFor
                 Picker("Sort essays", selection: $byType) {
                     Text("By school").tag(false)
                     Text("By prompt type").tag(true)
@@ -119,7 +125,13 @@ private struct EssaysList: View {
                     Label("Add prompt", systemImage: "plus")
                 }
             }
+            if !store.workspace.colleges.isEmpty {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { pickingSchools = true } label: { Label("Pick essay schools", systemImage: "checklist") }
+                }
+            }
         }
+        .sheet(isPresented: $pickingSchools) { EssaySchoolsSheet() }
         .sheet(item: $promptForm) { draft in
             EssayPromptFormView(draft: draft, groups: groups) { id in
                 expanded?.insert(draft.groupKey)
@@ -194,6 +206,33 @@ private struct EssaysList: View {
                 ShareLink(item: text) { Label("Share draft", systemImage: "square.and.arrow.up") }
             }
         }
+    }
+
+    /// The schools the student isn't writing for, each with a one-tap "Add back", like the web's NotWritingFor.
+    @ViewBuilder private var notWritingFor: some View {
+        let skipped = skippedSchools
+        if !skipped.isEmpty {
+            Section {
+                ForEach(skipped) { school in
+                    LabeledContent(school.title) {
+                        Button("Add back") { Task { await addBack(school.key) } }
+                            .accessibilityLabel("Add \(school.title) back to Essays")
+                    }
+                }
+                Button("Pick essay schools") { pickingSchools = true }
+            } header: {
+                Text("Not writing for")
+            } footer: {
+                Text("Their drafts are kept. Add a school back to see its supplements again.")
+            }
+        }
+    }
+
+    private func addBack(_ key: String) async {
+        do {
+            try await store.setEssaySchools([key: true])
+            Haptics.selection()
+        } catch { report(error) }
     }
 
     private func hideButton(_ essay: Essay, isHidden: Bool) -> some View {

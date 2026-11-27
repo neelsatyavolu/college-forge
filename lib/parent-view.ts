@@ -110,10 +110,13 @@ export function followerView(ws: Workspace, access: { level: FollowerLevel; role
   return access.role === "counselor" ? { ...view, role: access.role, notes: counselorNotes(ws, level, access.linkId) } : { ...view, role: access.role };
 }
 
-/** The essays a parent may see: everything the student hasn't hidden, without the hidden ones' drafts and statuses. */
+/** The essays a parent may see: everything the student hasn't hidden (or whose school they opted out of), without the hidden ones' drafts and statuses. */
 function visibleEssays(ws: Workspace) {
-  const all = [...ws.essays.commonApp, ...Object.values(ws.essays.supplements || {}).flat()];
-  const hidden = new Set(all.filter((e) => isEssayHidden(ws, e)).map((e) => e.id));
+  const all = [
+    ...ws.essays.commonApp.map((e) => [e, "common"] as const),
+    ...Object.entries(ws.essays.supplements || {}).flatMap(([key, list]) => (list || []).map((e) => [e, key] as const)),
+  ];
+  const hidden = new Set(all.filter(([e, key]) => isEssayHidden(ws, e, key)).map(([e]) => e.id));
   const shown = (list: Essay[]) => (list || []).filter((e) => !hidden.has(e.id));
   const commonApp = shown(ws.essays.commonApp);
   const supplements = Object.fromEntries(Object.entries(ws.essays.supplements || {}).map(([k, v]) => [k, shown(v)] as const).filter(([, v]) => v.length));
