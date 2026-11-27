@@ -251,6 +251,26 @@
    "entry": "competitive",
    "note": "Freshmen declare pre-nursing and apply to the upper-division BSN in the fall of sophomore year through a holistic review; 'Admission to Auburn University does not guarantee admission to the College of Nursing.'",
    "sourceUrl": "https://nursing.auburn.edu/traditional"
+  },
+  "creighton-university": {
+   "entry": "direct",
+   "note": "Admitted freshmen get a seat in the College of Nursing with no later application; list Nursing on the admission application.",
+   "sourceUrl": "https://creighton.edu/nursing/future-students/admissions"
+  },
+  "saint-louis-university": {
+   "entry": "direct",
+   "note": "Direct-entry BSN; an older catalog lists a 3.20 GPA to stay in the nursing track. Confirm the current progression GPA.",
+   "sourceUrl": "https://www.slu.edu/nursing/degrees/undergraduate/nursing-bs.php"
+  },
+  "university-of-iowa": {
+   "entry": "direct",
+   "note": "From fall 2027, direct admission is the only first-year BSN route (about 168 seats); it requires an ACT/SAT score and a 3.0 GPA after year one.",
+   "sourceUrl": "https://nursing.uiowa.edu/admissions/bsn/direct-admission"
+  },
+  "st-olaf-college": {
+   "entry": "both",
+   "note": "12-15 students are admitted directly each year; others apply competitively in the fall of sophomore year (about a 3.0 GPA).",
+   "sourceUrl": "https://wp.stolaf.edu/nursing/nursing-admissions/"
   }
  }
 }
