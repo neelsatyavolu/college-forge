@@ -133,6 +133,14 @@ export const researchOf = (colleges: College[] | undefined, app: TrackedApp): Re
 /** `revision` is the workspace's; the hub ignores a response older than one it already has. */
 /** `colleges` lends each school's workspace research (when it has some) to the interest signal. */
 export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES, colleges?: College[]) {
+  // Where each app's chance estimate is saved: its shortlist school's slug, matched as oddsTargets does
+  // (lib/admission-odds.ts trackedFor), else "app:<id>". The hub can't redo the catalog match itself.
+  const keys = new Map<string, string>();
+  for (const c of colleges || []) {
+    if (!c.slug) continue;
+    const hit = findApp(tracker, c.slug) ?? findApp(tracker, c.name || "");
+    if (hit && !keys.has(hit.id)) keys.set(hit.id, c.slug);
+  }
   return {
     revision,
     autocheck: tracker.autocheck,
@@ -140,7 +148,7 @@ export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, 
     // When automatic checks run, in the student's time zone. Not in shareTracker: progress links don't get it.
     schedule: describeSchedule(normalizeSchedule(tracker.schedule)),
     flags: tracker.flags.filter((f) => !f.resolvedAt),
-    apps: tracker.apps.map((a) => viewApp(a, today, scores, researchOf(colleges, a))),
+    apps: tracker.apps.map((a) => ({ ...viewApp(a, today, scores, researchOf(colleges, a)), oddsKey: keys.get(a.id) ?? `app:${a.id}` })),
   };
 }
 
