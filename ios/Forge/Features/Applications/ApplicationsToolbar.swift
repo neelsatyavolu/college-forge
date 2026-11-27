@@ -21,13 +21,29 @@ struct ApplicationsToolbar: ToolbarContent {
                     .disabled(checks.isChecking)
                 }
                 Section("Automatic checks") {
-                    Toggle("Check every 12 hours", isOn: binding(\.autocheck, action: { .autocheck(on: $0) }))
+                    Toggle("Check portals automatically", isOn: binding(\.autocheck, action: { .autocheck(on: $0) }))
                     Toggle("Email me when a portal changes", isOn: binding(\.emails, action: { .emails(on: $0) }))
                         .disabled(!store.tracker.autocheck)
+                }
+                if let schedule = store.tracker.schedule {
+                    Section(CheckScheduleText.summary(schedule)) {
+                        Picker("How often", selection: scheduleBinding(schedule, \.everyHours)) {
+                            ForEach(CheckSchedule.frequencies, id: \.self) { h in
+                                Text(h == 24 ? "Once a day" : "Every \(h) hours").tag(h)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        Picker("First check", selection: scheduleBinding(schedule, \.startHour)) {
+                            ForEach(0..<24, id: \.self) { h in Text(CheckScheduleText.hour(h)).tag(h) }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                    .disabled(!store.tracker.autocheck)
                 }
                 Section {
                     Button { sheet = .importCollegeApps } label: { Label("Bring schools from College Apps", systemImage: "square.and.arrow.down") }
                     Button { sheet = .forwardEmails } label: { Label("Forward portal emails", systemImage: "envelope.arrow.triangle.branch") }
+                    Button { sheet = .masterLogin } label: { Label("Master login", systemImage: "key.horizontal") }
                     Button { router.applicationsPath.append(ApplicationsDestination.lettersAid) } label: {
                         Label("Letters & financial aid", systemImage: "envelope.open")
                     }
@@ -45,6 +61,27 @@ struct ApplicationsToolbar: ToolbarContent {
                 HStack(spacing: Theme.Spacing.xs) {
                     ProgressView().controlSize(.small)
                     Text(progress).font(.footnote).foregroundStyle(Theme.muted)
+                }
+            }
+        }
+    }
+
+    /// A schedule field that saves the whole schedule in this device's time zone.
+    private func scheduleBinding(_ schedule: CheckSchedule, _ key: WritableKeyPath<CheckSchedule, Int>) -> Binding<Int> {
+        Binding {
+            schedule[keyPath: key]
+        } set: { value in
+            var next = schedule
+            next[keyPath: key] = value
+            next.timeZone = TimeZone.current.identifier
+            Task {
+                do {
+                    try await store.perform(.schedule(everyHours: next.everyHours, startHour: next.startHour, timeZone: next.timeZone)) {
+                        $0.schedule?[keyPath: key] = value
+                    }
+                    Haptics.selection()
+                } catch {
+                    self.error = APIError.wrap(error)
                 }
             }
         }

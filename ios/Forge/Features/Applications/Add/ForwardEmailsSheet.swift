@@ -12,6 +12,7 @@ struct ForwardEmailsSheet: View {
     @State private var confirmOff = false
     @State private var birthdate = Calendar.current.date(byAdding: .year, value: -17, to: .now) ?? .now
     @State private var error: APIError?
+    @State private var master: MasterLoginStatus?
 
     var body: some View {
         NavigationStack {
@@ -28,7 +29,10 @@ struct ForwardEmailsSheet: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }
-            .task { await run(.inbox()) }
+            .task {
+                await run(.inbox())
+                master = try? await store.api.masterLogin()
+            }
             .confirmationDialog("Turn off forwarding?", isPresented: $confirmOff, titleVisibility: .visible) {
                 Button("Turn off", role: .destructive) { Task { await run(.inbox(on: false)) } }
             } message: {
@@ -61,6 +65,32 @@ struct ForwardEmailsSheet: View {
                 Text("For portals that ask")
             } footer: {
                 Text(inbox.birthdate ? "A birthdate is saved. Save again to replace it." : "Some portals ask for your birthdate during setup.")
+            }
+            if master?.on == true {
+                Section {
+                    Toggle("Set new portals to my master password", isOn: Binding {
+                        inbox.useMasterForNew
+                    } set: { on in
+                        Task { await run(.inbox(on: true, useMasterForNew: on)) }
+                    })
+                    .disabled(busy)
+                } footer: {
+                    Text("When a school's password rules allow it. Otherwise Forge makes a strong password, as it does now.")
+                }
+            }
+            if !inbox.recent.isEmpty {
+                Section("Recent forwarded emails") {
+                    ForEach(Array(inbox.recent.enumerated()), id: \.offset) { _, r in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(r.name).foregroundStyle(Theme.ink)
+                            Text("\(r.stateLabel) · \(r.receivedDate.formatted(.relative(presentation: .named)))")
+                                .font(.footnote).foregroundStyle(Theme.muted)
+                            if r.state != "verified", !r.reason.isEmpty {
+                                Text(r.reason).font(.footnote).foregroundStyle(Theme.body)
+                            }
+                        }
+                    }
+                }
             }
         } else if inbox != nil {
             Section {

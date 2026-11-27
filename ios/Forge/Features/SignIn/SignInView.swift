@@ -82,7 +82,7 @@ struct SignInView: View {
 
 private struct SignInFeatureList: View {
     private let items = [
-        ("clock.arrow.circlepath", "Portal checks every 12 hours, with logins kept encrypted"),
+        ("clock.arrow.circlepath", "Portal checks on your schedule, with logins kept encrypted"),
         ("bell.badge", "A notification the moment a decision or update is posted"),
         ("square.and.arrow.down", "Bring your schools over from College Apps in one step"),
     ]

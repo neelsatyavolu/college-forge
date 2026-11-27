@@ -2,11 +2,14 @@ import { emailHash } from "./service-auth";
 import { logoUrl } from "./catalog";
 import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
-import { readLogins, saveLogins, type PortalLogin } from "./portal-logins";
+import { clearMaster, readLogins, readMaster, saveLogins, saveMaster, setMasterFor, type PortalLogin } from "./portal-logins";
 import { loginHost } from "./portal-check";
 import { getWorkspace, updateWorkspace, type College, type Workspace } from "./store";
 import { curatedResearchFor, interestOf, interestSignal, upcomingInterviews, type ResearchLike } from "./interest-log";
 import { isUntouchedApp } from "./list-sync";
+import { deleteSetup, readSetup } from "./portal-setup";
+import { canonicalZone, describeSchedule, isEveryHours, isTimeZone, latestSlot, normalizeSchedule, type CheckSchedule } from "./check-schedule";
+import { recipientOf } from "./notify/send";
 import {
   decisionDateOf,
   decisionOf,
@@ -87,6 +90,7 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
     decisionNote: app.decisionNote ?? "",
     login: app.login ?? null,
     aidOffer: app.aidOffer ?? null,
+    setupWaiting: !!app.setupWaiting,
     lastChecked: app.lastChecked,
     updatedAt: app.updatedAt,
   };
@@ -104,6 +108,8 @@ export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, 
     revision,
     autocheck: tracker.autocheck,
     emails: tracker.emails,
+    // When automatic checks run, in the student's time zone. Not in shareTracker: progress links don't get it.
+    schedule: describeSchedule(normalizeSchedule(tracker.schedule)),
     flags: tracker.flags.filter((f) => !f.resolvedAt),
     apps: tracker.apps.map((a) => viewApp(a, today, scores, researchOf(colleges, a))),
   };
@@ -216,6 +222,7 @@ export async function updateApp(workspaceId: string, ref: string, edit: AppEdit 
   });
   if (dropLogin) {
     await saveLogins(workspaceId, { [id]: null });
+    await setMasterFor(workspaceId, { [id]: null });
     await syncAutocheckIndex(workspaceId, ws.tracker);
   }
   return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
@@ -227,7 +234,7 @@ export async function removeApp(workspaceId: string, ref: string): Promise<{ rem
     removed = mustFind(tracker, ref);
     return { ...tracker, apps: tracker.apps.filter((a) => a.id !== removed!.id) };
   });
-  await saveLogins(workspaceId, { [removed!.id]: null });
+  // The store's write (lib/app-cleanup.ts) already removed its login, master use and set-up details.
   await syncAutocheckIndex(workspaceId, ws.tracker);
   return { removed: removed!.name };
 }
@@ -249,15 +256,170 @@ export async function setLogin(workspaceId: string, ref: string, login: PortalLo
   const host = loginHost(current);
   if (login && !host) throw new TrackerError("Add the portal link before saving its login.");
   await saveLogins(workspaceId, { [current.id]: login ? { username: login.username.trim(), password: login.password, host: host! } : null });
+  // A school's own login overrides the master login; forgetting the login forgets both.
+  await setMasterFor(workspaceId, { [current.id]: null });
+  if (login) await deleteSetup(workspaceId, current.id);
   const ws = await mutate(workspaceId, (tracker) => {
     const app = tracker.apps.find((a) => a.id === current.id);
     if (!app) return tracker;
-    const { login: _old, ...rest } = app;
-    const next = login ? { ...rest, login: { username: login.username.trim(), hasPassword: true } } : rest;
+    const { login: _old, setupWaiting, ...rest } = app;
+    const next = login
+      ? { ...rest, login: { username: login.username.trim(), hasPassword: true } }
+      : { ...rest, ...(setupWaiting ? { setupWaiting } : {}) };
     return replaceApp(tracker, { ...next, updatedAt: Date.now() });
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
   return viewApp(ws.tracker.apps.find((a) => a.id === current.id)!, todayIso(), studentScores(ws));
+}
+
+/** Marks that a forwarded email left set-up details for this school (lib/portal-setup.ts holds them). */
+export async function markSetupWaiting(workspaceId: string, appId: string): Promise<void> {
+  await mutate(workspaceId, (tracker) => {
+    const app = tracker.apps.find((a) => a.id === appId);
+    return app ? replaceApp(tracker, { ...app, setupWaiting: true, updatedAt: Date.now() }) : tracker;
+  });
+}
+
+/** A forwarded email's PIN, link and password for one school, for the signed-in student only. */
+export async function setupDetails(workspaceId: string, ref: string) {
+  const app = mustFind((await getWorkspace(workspaceId)).tracker, ref);
+  const details = app.setupWaiting ? await readSetup(workspaceId, app.id) : null;
+  if (!details) {
+    if (app.setupWaiting) {
+      // Expired (30 days) or gone: stop offering it.
+      await deleteSetup(workspaceId, app.id);
+      await mutate(workspaceId, (tracker) => {
+        const current = tracker.apps.find((a) => a.id === app.id);
+        if (!current?.setupWaiting) return tracker;
+        const { setupWaiting: _s, ...rest } = current;
+        return replaceApp(tracker, { ...rest, updatedAt: Date.now() });
+      });
+    }
+    throw new TrackerError("There are no set-up details waiting for this school.");
+  }
+  return details;
+}
+
+// ── The master login ────────────────────────────────────────────────────────
+
+/** What clients see about the master login: never the password. */
+export async function masterStatus(workspaceId: string) {
+  const master = await readMaster(workspaceId);
+  return { on: !!master, username: master?.username ?? "", appCount: master ? Object.keys(master.appIds).length : 0 };
+}
+export type MasterStatus = Awaited<ReturnType<typeof masterStatus>>;
+
+/** Mirrors the master's use into the workspace, so the hub and the sweep's index see a login. */
+function mirrorMaster(tracker: Tracker, appIds: Set<string>, username: string | null): Tracker {
+  return {
+    ...tracker,
+    apps: tracker.apps.map((a) => {
+      if (appIds.has(a.id) && username !== null) return { ...a, login: { username, hasPassword: true, source: "master" as const }, updatedAt: Date.now() };
+      if (a.login?.source === "master" && (username === null || !appIds.has(a.id))) {
+        const { login: _l, ...rest } = a;
+        return { ...rest, updatedAt: Date.now() };
+      }
+      return a;
+    }),
+  };
+}
+
+/**
+ * Sets, replaces or (with null) forgets the master login. The username defaults to the account's email.
+ * Replacing it keeps every school's opt-in, so change it here only after changing it on those portals.
+ */
+export async function setMasterLogin(workspaceId: string, login: { username: string; password: string } | null) {
+  if (!login) {
+    await clearMaster(workspaceId);
+    const ws = await mutate(workspaceId, (tracker) => mirrorMaster(tracker, new Set(), null));
+    await syncAutocheckIndex(workspaceId, ws.tracker);
+    return masterStatus(workspaceId);
+  }
+  const username = login.username.trim() || (await recipientOf(workspaceId)) || "";
+  if (!username || !login.password) throw new TrackerError("Enter the master username and password.");
+  const saved = await saveMaster(workspaceId, { username, password: login.password });
+  const ws = await mutate(workspaceId, (tracker) => mirrorMaster(tracker, new Set(Object.keys(saved.appIds)), username));
+  await syncAutocheckIndex(workspaceId, ws.tracker);
+  return masterStatus(workspaceId);
+}
+
+/**
+ * Turns the master login on or off for one school. On pins the portal host as it is now and replaces the
+ * school's own saved login; it needs a master and a portal link.
+ */
+export async function useMasterFor(workspaceId: string, ref: string, on: boolean): Promise<AppView> {
+  const app = mustFind((await getWorkspace(workspaceId)).tracker, ref);
+  if (on) {
+    const master = await readMaster(workspaceId);
+    if (!master) throw new TrackerError("Save a master login first.");
+    const host = loginHost(app);
+    if (!host) throw new TrackerError("Add the portal link before using the master login here.");
+    // Opt in first and confirm it stuck (the master could be forgotten meanwhile) before dropping the own login.
+    await setMasterFor(workspaceId, { [app.id]: { host } });
+    if (!(await readMaster(workspaceId))?.appIds[app.id]) throw new TrackerError("Save a master login first.");
+    await saveLogins(workspaceId, { [app.id]: null });
+    const ws = await mutate(workspaceId, (tracker) => {
+      const current = tracker.apps.find((a) => a.id === app.id);
+      return current ? replaceApp(tracker, { ...current, login: { username: master.username, hasPassword: true, source: "master" }, updatedAt: Date.now() }) : tracker;
+    });
+    await syncAutocheckIndex(workspaceId, ws.tracker);
+    return viewApp(ws.tracker.apps.find((a) => a.id === app.id)!, todayIso(), studentScores(ws));
+  }
+  await setMasterFor(workspaceId, { [app.id]: null });
+  const ws = await mutate(workspaceId, (tracker) => {
+    const current = tracker.apps.find((a) => a.id === app.id);
+    if (!current || current.login?.source !== "master") return tracker;
+    const { login: _l, ...rest } = current;
+    return replaceApp(tracker, { ...rest, updatedAt: Date.now() });
+  });
+  await syncAutocheckIndex(workspaceId, ws.tracker);
+  return viewApp(ws.tracker.apps.find((a) => a.id === app.id)!, todayIso(), studentScores(ws));
+}
+
+/** "Use for all portals without a login": catalog schools only, since their hosts are known. */
+export async function applyMasterToAll(workspaceId: string): Promise<{ applied: number }> {
+  const master = await readMaster(workspaceId);
+  if (!master) throw new TrackerError("Save a master login first.");
+  const { tracker } = await getWorkspace(workspaceId);
+  const own = await readLogins(workspaceId);
+  const changes: Record<string, { host: string }> = {};
+  for (const a of tracker.apps) {
+    const host = loginHost(a);
+    if (!a.collegeId || !host || own[a.id] || a.login?.hasPassword) continue;
+    changes[a.id] = { host };
+  }
+  const ids = new Set(Object.keys(changes));
+  if (!ids.size) return { applied: 0 };
+  await setMasterFor(workspaceId, changes);
+  const ws = await mutate(workspaceId, (t) => ({
+    ...t,
+    // Re-checked inside the write: a school that got its own login meanwhile keeps it.
+    apps: t.apps.map((a) => (ids.has(a.id) && !a.login?.hasPassword ? { ...a, login: { username: master.username, hasPassword: true, source: "master" as const }, updatedAt: Date.now() } : a)),
+  }));
+  await syncAutocheckIndex(workspaceId, ws.tracker);
+  return { applied: ids.size };
+}
+
+// ── Check schedule ──────────────────────────────────────────────────────────
+
+/**
+ * Sets when automatic checks run. Marks the current slot done, so saving a schedule doesn't set off a check
+ * straight away; the next one runs at the next slot.
+ */
+export async function setSchedule(workspaceId: string, input: { everyHours: number; startHour: number; timeZone?: string }) {
+  if (!isEveryHours(input.everyHours)) throw new TrackerError("Choose every 8, 12 or 24 hours.");
+  if (!Number.isInteger(input.startHour) || input.startHour < 0 || input.startHour > 23) throw new TrackerError("Choose a start hour from 0 to 23.");
+  if (input.timeZone !== undefined && !isTimeZone(input.timeZone)) throw new TrackerError("Unknown time zone.");
+  const ws = await mutate(workspaceId, (tracker) => {
+    const schedule: CheckSchedule = {
+      everyHours: input.everyHours as CheckSchedule["everyHours"],
+      startHour: input.startHour,
+      timeZone: canonicalZone(input.timeZone) ?? normalizeSchedule(tracker.schedule).timeZone,
+    };
+    return { ...tracker, schedule, lastSlotAt: latestSlot(schedule, Date.now()) };
+  });
+  await syncAutocheckIndex(workspaceId, ws.tracker);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
 }
 
 export async function setEmails(workspaceId: string, on: boolean) {
@@ -286,7 +448,8 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
     if (!login) continue;
     const existing = before.tracker.apps.find((a) => same(a, app));
     if (!existing) logins[app.id] = login;
-    else if (!saved[existing.id]) logins[existing.id] = login;
+    // A school using the master login keeps it.
+    else if (!saved[existing.id] && existing.login?.source !== "master") logins[existing.id] = login;
   }
   if (Object.keys(logins).length) await saveLogins(workspaceId, logins);
   let added = 0;

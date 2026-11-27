@@ -25,7 +25,7 @@ struct PushPrimerSheet: View {
                 Text("Hear when a portal changes")
                     .font(.forgeDisplay(.title2))
                     .multilineTextAlignment(.center)
-                Text("Forge checks your portals every 12 hours. Get a notification when a decision is posted, a status changes or a document goes missing.")
+                Text("Forge checks your portals on your schedule. Get a notification when a decision is posted, a status changes or a document goes missing.")
                     .font(.body)
                     .foregroundStyle(Theme.muted)
                     .multilineTextAlignment(.center)

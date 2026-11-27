@@ -43,7 +43,7 @@ struct PortalStatusSection: View {
             Text("Portal")
         } footer: {
             if app.hasSavedPassword {
-                Text("Forge signs in to check this portal every 12 hours when automatic checks are on.")
+                Text("Forge signs in to check this portal on your check schedule when automatic checks are on.")
             }
         }
     }

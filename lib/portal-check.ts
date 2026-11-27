@@ -1,5 +1,7 @@
 import { collegeById } from "./catalog";
-import { readLogins, type PortalLogin } from "./portal-logins";
+import { latestSlot, normalizeSchedule } from "./check-schedule";
+import { readLogins, readMaster, resolveLogin, setMasterFor, type MasterLogin, type PortalLogin } from "./portal-logins";
+import { deleteSetup } from "./portal-setup";
 import { getWorkspace, updateWorkspace } from "./store";
 import { replaceApp, withResult, type PortalResult, type TrackedApp } from "./tracker";
 import type { CheckErrorCode, CheckOutcome } from "./notify/changes";
@@ -11,7 +13,6 @@ import { notifyChanges } from "./notify/send";
  */
 
 const COLLEGEAPPS_URL = "https://collegeapps.n3el.dev";
-export const CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000;
 
 const hostOf = (url: string): string | null => {
   try {
@@ -108,15 +109,35 @@ export async function checkApp(app: TrackedApp, login: PortalLogin | undefined, 
   }
 }
 
-/** Due 12 hours after the last attempt, good or failed, so a portal stuck on Duo isn't retried every hour. */
-export const isDue = (app: TrackedApp, now = Date.now()) => {
-  const last = Math.max(app.portal?.checkedAt ?? 0, app.lastFailure?.at ?? 0);
-  return !!app.login?.hasPassword && now - last >= CHECK_INTERVAL_MS;
-};
+/**
+ * Claims the schedule's current slot for an automatic sweep. True once per slot: a second sweep in the same
+ * slot (the Worker's hourly ping overlapping the Vercel fallback) gets false, and several missed slots
+ * catch up as one. Claimed before checking, so a crash part way skips that slot rather than repeating it.
+ */
+async function claimSlot(workspaceId: string, now: number): Promise<boolean> {
+  let claimed = false;
+  await updateWorkspace(workspaceId, (current) => {
+    claimed = false;
+    if (!current.tracker.autocheck) return current;
+    const slot = latestSlot(normalizeSchedule(current.tracker.schedule), now);
+    if ((current.tracker.lastSlotAt ?? 0) >= slot) return current;
+    claimed = true;
+    return { ...current, tracker: { ...current.tracker, lastSlotAt: slot } };
+  });
+  return claimed;
+}
+
+/** Whether an automatic sweep at `now` has a slot to run (without claiming it). */
+export function slotOpen(tracker: { schedule?: unknown; lastSlotAt?: number }, now = Date.now()): boolean {
+  return (tracker.lastSlotAt ?? 0) < latestSlot(normalizeSchedule(tracker.schedule), now);
+}
 
 /**
- * Checks the given applications (or every one with a saved login) a few at a time, then saves all
- * results in one workspace write. Returns the checked applications as saved.
+ * Checks the given applications (or every one with a saved login, its own or the master) a few at a time,
+ * then saves all results in one workspace write. Returns the checked applications as saved.
+ *
+ * `onlyDue` is the automatic sweep: it runs once per schedule slot (lib/check-schedule.ts). Manual checks
+ * never read or move the schedule, so checking by hand doesn't push the next automatic check back.
  */
 export async function runChecks(
   workspaceId: string,
@@ -125,26 +146,44 @@ export async function runChecks(
   const ws = await getWorkspace(workspaceId);
   // The workspace's own switch is the authority for automatic checks, whatever the sweep's index says.
   if (opts.onlyDue && !ws.tracker.autocheck) return [];
-  const logins = await readLogins(workspaceId);
   const now = Date.now();
-  const targets = ws.tracker.apps.filter(
-    (a) => (opts.appIds ? opts.appIds.includes(a.id) : !!logins[a.id]) && (!opts.onlyDue || isDue(a, now)),
-  );
+  if (opts.onlyDue && !slotOpen(ws.tracker, now)) return [];
+  const [logins, master] = await Promise.all([readLogins(workspaceId), readMaster(workspaceId)]);
+  // A sign-in the master failed on is retried only when the student asks for a check.
+  const resolved = new Map<string, { login: PortalLogin; source: "own" | "master" }>();
+  for (const a of ws.tracker.apps) {
+    const r = resolveLogin(a.id, loginHost(a), logins, master, { allowFailed: !opts.onlyDue });
+    if (r) resolved.set(a.id, r);
+  }
+  const targets = ws.tracker.apps.filter((a) => (opts.appIds ? opts.appIds.includes(a.id) : resolved.has(a.id)));
   if (!targets.length) return [];
+  if (opts.onlyDue && !(await claimSlot(workspaceId, now))) return [];
   const results = new Map<string, PortalResult>();
   const queue = [...targets];
   const worker = async () => {
-    for (let app = queue.shift(); app; app = queue.shift()) results.set(app.id, await checkApp(app, logins[app.id]));
+    for (let app = queue.shift(); app; app = queue.shift()) results.set(app.id, await checkApp(app, resolved.get(app.id)?.login));
   };
   await Promise.all(Array.from({ length: Math.min(opts.concurrency ?? 3, queue.length) }, worker));
+  const finished: string[] = [];
   const saved = await updateWorkspace(workspaceId, (current) => {
     let tracker = current.tracker;
+    finished.length = 0;
     for (const [id, result] of results) {
       const app = tracker.apps.find((a) => a.id === id);
-      if (app) tracker = replaceApp(tracker, withResult(app, result));
+      if (!app) continue;
+      let next = withResult(app, result);
+      // A login that works means a forwarded email's set-up details are no longer needed.
+      if (result.ok && next.setupWaiting) {
+        const { setupWaiting: _s, ...rest } = next;
+        next = rest;
+        finished.push(id);
+      }
+      tracker = replaceApp(tracker, next);
     }
     return { ...current, tracker };
   });
+  for (const id of finished) await deleteSetup(workspaceId, id).catch(() => undefined);
+  await noteMasterOutcomes(workspaceId, results, resolved, master);
   const outcomes = new Map<string, { app: TrackedApp; outcome: CheckOutcome; before?: PortalResult }>();
   for (const [id, result] of results) {
     const app = saved.tracker.apps.find((a) => a.id === id);
@@ -161,4 +200,26 @@ export async function runChecks(
     console.error("portal change emails failed", err instanceof Error ? err.name : "unknown");
   }
   return saved.tracker.apps.filter((a) => results.has(a.id));
+}
+
+/** A wrong master password stops being tried on that portal; a later success there clears the mark. */
+async function noteMasterOutcomes(
+  workspaceId: string,
+  results: Map<string, PortalResult>,
+  resolved: Map<string, { source: "own" | "master" }>,
+  master: MasterLogin | null,
+): Promise<void> {
+  if (!master) return;
+  const changes: Record<string, { failed: boolean }> = {};
+  for (const [id, result] of results) {
+    if (resolved.get(id)?.source !== "master") continue;
+    if (!result.ok && result.code === "signin") changes[id] = { failed: true };
+    else if (result.ok && master.appIds[id]?.failedAt) changes[id] = { failed: false };
+  }
+  try {
+    // Only for the password these checks used: a master replaced meanwhile starts with a clean slate.
+    await setMasterFor(workspaceId, changes, { onlyIfPassword: master.password });
+  } catch (err) {
+    console.error("master login outcome not saved", err instanceof Error ? err.name : "unknown");
+  }
 }

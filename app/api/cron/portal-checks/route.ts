@@ -1,7 +1,7 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, randomInt, timingSafeEqual } from "node:crypto";
 import { deleteDoc, listDocs, readDoc } from "@/lib/doc-store";
 import { getWorkspace } from "@/lib/store";
-import { runChecks } from "@/lib/portal-check";
+import { runChecks, slotOpen } from "@/lib/portal-check";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,13 +17,17 @@ function authorized(req: Request): boolean {
 }
 
 /**
- * Hourly (pinged by the College Apps Worker's cron, and by Vercel cron as a daily fallback): checks every
- * portal whose last check is over 12 hours old, for workspaces with automatic checks on.
+ * Hourly (pinged by the College Apps Worker's cron, and by Vercel cron as a daily fallback): for workspaces
+ * with automatic checks on, runs the current slot of each one's check schedule if it hasn't run yet
+ * (lib/check-schedule.ts). Starts at a random point in the list, so when the time budget runs out it isn't
+ * always the same workspaces that wait for the next hour.
  */
 async function sweep(req: Request) {
   if (!authorized(req)) return new Response("unauthorized", { status: 401 });
   const started = Date.now();
-  const keys = await listDocs("autocheck/");
+  const listed = await listDocs("autocheck/");
+  const from = listed.length ? randomInt(listed.length) : 0;
+  const keys = [...listed.slice(from), ...listed.slice(0, from)];
   let workspaces = 0;
   let checked = 0;
   for (const key of keys) {
@@ -36,6 +40,7 @@ async function sweep(req: Request) {
         await deleteDoc(key); // stale index entry: checks were turned off or every login was removed
         continue;
       }
+      if (!slotOpen(ws.tracker)) continue; // this slot already ran
       const done = await runChecks(entry.workspaceId, { onlyDue: true, concurrency: 4, notify: true });
       workspaces++;
       checked += done.length;

@@ -7,14 +7,20 @@ struct PortalLoginSection: View {
     @State private var editing = false
     @State private var confirmForget = false
     @State private var error: APIError?
+    @State private var master: MasterLoginStatus?
 
     var body: some View {
         Section {
+            if app.setupWaiting { FinishSetupRow(app: app) }
+            if master?.on == true {
+                Toggle("Use my master login", isOn: masterBinding)
+                    .disabled(!(app.login?.isMaster ?? false) && app.portalUrl.isEmpty)
+            }
             if let login = app.login {
                 LabeledContent {
                     Text(login.username).foregroundStyle(Theme.ink).textSelection(.enabled)
                 } label: {
-                    Label("Saved for", systemImage: "person.badge.key")
+                    Label(login.isMaster ? "From master login" : "Saved for", systemImage: "person.badge.key")
                 }
                 if !login.hasPassword {
                     Text("No password saved, so Forge can't check this portal.").font(.subheadline).foregroundStyle(Theme.amber)
@@ -27,8 +33,9 @@ struct PortalLoginSection: View {
         } header: {
             Text("Portal login")
         } footer: {
-            Text("Forge signs in to check your status every 12 hours. Passwords are encrypted and never shown again, not even to assistants you connect.")
+            Text("Forge signs in to check your status on your check schedule. Passwords are encrypted and never shown again, not even to assistants you connect.")
         }
+        .task { master = try? await store.api.masterLogin() }
         .sheet(isPresented: $editing) { PortalLoginSheet(app: app) }
         .confirmationDialog("Forget the login for \(app.name)?", isPresented: $confirmForget, titleVisibility: .visible) {
             Button("Forget login", role: .destructive, action: forget)
@@ -36,6 +43,23 @@ struct PortalLoginSection: View {
             Text("Forge will stop checking this portal.")
         }
         .errorAlert($error)
+    }
+
+    /// Turning it on replaces this school's own login; an own login saved later replaces the master here.
+    private var masterBinding: Binding<Bool> {
+        Binding {
+            app.login?.isMaster ?? false
+        } set: { on in
+            Task {
+                do {
+                    let response = try await store.perform(.useMaster(id: app.id, on: on))
+                    if let status = response.master { master = status }
+                    Haptics.selection()
+                } catch {
+                    self.error = APIError.wrap(error)
+                }
+            }
+        }
     }
 
     private func forget() {

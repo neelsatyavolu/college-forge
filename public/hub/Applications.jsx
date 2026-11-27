@@ -43,7 +43,7 @@ function PortalLine({ app }) {
   );
 }
 
-function AppDetails({ app, act, busy, checking, onCheck }) {
+function AppDetails({ app, act, busy, checking, onCheck, master }) {
   const { APP_ROUNDS, fmtDate } = window.cfApp;
   const [form, setForm] = React.useState({ round: app.roundFromPortal ? "" : app.round || "", deadline: app.deadline || "", decisionDate: app.decisionDate && !app.decisionDate.estimated ? app.decisionDate.date : "", submittedAt: app.submittedAt || "", notes: app.notes || "", portalUrl: app.portalUrl || "" });
   const [fu, setFu] = React.useState({ text: "", due: "" });
@@ -117,11 +117,14 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
 
       {window.InterestLog ? <window.InterestLog app={app} act={act} busy={busy} /> : null}
 
+      <window.FinishSetup app={app} />
+
       <form onSubmit={(e) => { e.preventDefault(); act({ action: "login", id, username: login.username, password: login.password }, "Login saved. Forge will check this portal for you.").then((ok) => ok && setLogin({ ...login, password: "" })); }}>
         <h3 className="cf-subhead">Portal login</h3>
         <p className="cf-help" style={{ marginBottom: 10 }}>
-          {app.login ? `Saved for ${app.login.username}. ` : ""}Forge signs in to check your status every 12 hours. Passwords are encrypted and never shown again, not even to assistants you connect.
+          {app.login ? (app.login.source === "master" ? `Using your master login (${app.login.username}). Saving a login below replaces it for this school. ` : `Saved for ${app.login.username}. `) : ""}Forge signs in to check your status on your check schedule. Passwords are encrypted and never shown again, not even to assistants you connect.
         </p>
+        <window.MasterToggle app={app} master={master} act={act} busy={busy} />
         <div className="cf-fields" style={{ alignItems: "end" }}>
           <label className="cf-field">Username or email
             <input value={login.username} onChange={(e) => setLogin({ ...login, username: e.target.value })} autoComplete="off" name={`portal-user-${id}`} />
@@ -155,7 +158,7 @@ function AppDetails({ app, act, busy, checking, onCheck }) {
 }
 
 /** One school. Compact rows fit on one line and keep the portal's full message for the expanded view. */
-function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact }) {
+function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, master }) {
   const { SchoolMark, StatusSelect, fmtDate, daysUntil, relDays, ago, Chevron } = window.cfApp;
   const next = app.nextDate;
   const soon = next && daysUntil(next.date) <= 7;
@@ -181,7 +184,7 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact }) 
         </button>
       </div>
       {!compact || open ? <PortalLine app={app} /> : null}
-      {open ? <div id={`app-${app.id}`} className="cf-app-row__more"><AppDetails app={app} act={act} busy={busy} checking={checking} onCheck={onCheck} /></div> : null}
+      {open ? <div id={`app-${app.id}`} className="cf-app-row__more"><AppDetails app={app} act={act} busy={busy} checking={checking} onCheck={onCheck} master={master} /></div> : null}
     </li>
   );
 }
@@ -252,6 +255,10 @@ function Applications({ data, tracker, onTrackerChange }) {
   const [progress, setProgress] = React.useState("");
   const [notice, setNotice] = React.useState("");
   const [error, setError] = React.useState("");
+  const [master, setMaster] = React.useState(null);
+  React.useEffect(() => {
+    window.cfApi.applications().then((j) => { if (j && j.master) setMaster(j.master); }).catch(() => undefined);
+  }, []);
 
   const act = async (body, message) => {
     setBusy(true);
@@ -260,6 +267,7 @@ function Applications({ data, tracker, onTrackerChange }) {
     try {
       const j = await window.cfApi.applications(body);
       if (j.data) onTrackerChange(j.data);
+      if (j.master) setMaster(j.master);
       if (message) setNotice(message);
       return j;
     } catch (e) {
@@ -319,7 +327,7 @@ function Applications({ data, tracker, onTrackerChange }) {
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">Portals</h1>
-          <p className="cf-page-lede">Every applicant portal you’ve added: what each school says, what it’s still missing, and when to expect a decision. Forge signs in every 12 hours to keep this current.{notYet ? <React.Fragment>{" "}<a href="#progress">{notYet} school{notYet === 1 ? "" : "s"} you haven’t submitted yet {notYet === 1 ? "is" : "are"} on Progress.</a></React.Fragment> : null}</p>
+          <p className="cf-page-lede">Every applicant portal you’ve added: what each school says, what it’s still missing, and when to expect a decision. Forge signs in on your check schedule to keep this current.{notYet ? <React.Fragment>{" "}<a href="#progress">{notYet} school{notYet === 1 ? "" : "s"} you haven’t submitted yet {notYet === 1 ? "is" : "are"} on Progress.</a></React.Fragment> : null}</p>
         </div>
         <div className="cf-row-actions">
           {withLogin.length ? <Button variant="secondary" size="sm" disabled={checkingAny} onClick={() => checkSome(withLogin)}>{checkingAny ? "Checking portals…" : "Check portals now"}</Button> : null}
@@ -337,7 +345,8 @@ function Applications({ data, tracker, onTrackerChange }) {
         setPanel(null);
         setNotice(j.added || j.linked ? `Brought over ${j.added} school${j.added === 1 ? "" : "s"}${j.linked ? ` and ${j.linked} login${j.linked === 1 ? "" : "s"} for schools already here` : ""}.` : "Everything from College Apps is already here.");
       }} /> : null}
-      {panel === "forward" ? <ForwardEmails onClose={() => setPanel(null)} /> : null}
+      {panel === "forward" ? <ForwardEmails onClose={() => setPanel(null)} master={master} /> : null}
+      {panel === "master" ? <window.MasterLoginPanel master={master} apps={tracker.apps} act={act} busy={busy} onClose={() => setPanel(null)} /> : null}
       {panel === "add" ? <AddSchool tracked={apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setPanel(null)} /> : null}
 
       {apps.length === 0 ? (
@@ -357,7 +366,7 @@ function Applications({ data, tracker, onTrackerChange }) {
             <div className="cf-apps-toolbar__auto">
             <label className="cf-apps-auto">
               <input type="checkbox" checked={tracker.autocheck} disabled={busy} onChange={(e) => act({ action: "autocheck", on: e.target.checked }, e.target.checked ? "Automatic checks are on." : "Automatic checks are off.")} />
-              Check portals every 12 hours
+              Check portals automatically
             </label>
             <label className="cf-apps-auto">
               <input type="checkbox" checked={tracker.emails !== false} disabled={busy || !tracker.autocheck} onChange={(e) => act({ action: "emails", on: e.target.checked }, e.target.checked ? "Forge will email you when a portal changes." : "Portal emails are off.")} />
@@ -365,6 +374,7 @@ function Applications({ data, tracker, onTrackerChange }) {
             </label>
             </div>
           </div>
+          <window.CheckSchedule schedule={tracker.schedule} act={act} busy={busy} disabled={!tracker.autocheck} />
           {view === "dates" ? <DatesView apps={apps} criticalDates={data.criticalDates} colleges={data.colleges} scholarships={data.scholarships} /> : [{ id: "attention", label: "Needs attention", list: attention }].concat(APP_STAGES.map((s) => ({ id: s.id, label: s.label, list: quiet.filter((a) => a.stage === s.id), compact: true }))).map((group) => {
             if (!group.list.length) return null;
             const list = group.list.slice().sort(group.compact ? bySoonest : byUrgency);
@@ -372,13 +382,14 @@ function Applications({ data, tracker, onTrackerChange }) {
               <section key={group.id} className="cf-apps-group" aria-labelledby={`stage-${group.id}`}>
                 <div className="cf-apps-group__head"><h2 id={`stage-${group.id}`}>{group.label}</h2><span>{list.length}</span></div>
                 <ul className="cf-apps-list">
-                  {list.map((a) => <AppRow key={a.id} app={a} compact={group.compact} open={!!open && open.id === a.id} onToggle={() => setOpen(open && open.id === a.id ? null : { id: a.id, attention: !group.compact })} act={act} busy={busy} checking={!!checking[a.id]} onCheck={() => checkSome([a])} />)}
+                  {list.map((a) => <AppRow key={a.id} app={a} compact={group.compact} open={!!open && open.id === a.id} onToggle={() => setOpen(open && open.id === a.id ? null : { id: a.id, attention: !group.compact })} act={act} busy={busy} checking={!!checking[a.id]} onCheck={() => checkSome([a])} master={master} />)}
                 </ul>
               </section>
             );
           })}
           {panel !== "import" ? <p className="cf-help">Coming from College Apps? <button type="button" className="cf-link-btn" onClick={() => setPanel("import")}>Bring your schools over</button>.</p> : null}
           {panel !== "forward" ? <p className="cf-help">Got an email from a school about setting up your portal? <button type="button" className="cf-link-btn" onClick={() => setPanel("forward")}>Forward it to Forge</button>.</p> : null}
+          {panel !== "master" ? <p className="cf-help">Use the same password on many portals? <button type="button" className="cf-link-btn" onClick={() => setPanel("master")}>{master && master.on ? "Manage your master login" : "Save a master login"}</button>.</p> : null}
         </React.Fragment>
       )}
     </div>

@@ -276,3 +276,12 @@ Validated on the server by `lib/aid-validate.ts`; derived by `lib/aid-plan.ts`. 
 - So after `perform(.add/.remove/.importCollegeApps)` the store reloads the workspace, and after a `colleges` PATCH it reloads the applications (`WorkspaceStore.refreshWorkspace` / `refreshApplications`).
 - New Workspace fields: `essayHidden: [String: Bool]` (essay id → true) and `commonAppPrompt: String?` (a ca-ps-* id). New WorkspacePatch fields: `essayHidden: [String: Bool?]` (true hides, nil is sent as null and shows) and `commonAppPrompt: String??` (`.some(nil)` clears). The server refuses a prompt id outside the Common App choose-one set.
 - `EssayCatalog.groups(colleges:essays:hidden:commonAppPrompt:)` filters like the web: hidden essays move to `EssayGroup.hiddenEssays`, and a chosen prompt drops the other ca-ps-* prompts. Hidden essays leave every count.
+
+## Portal ops: check schedule, master login, forwarded set-up details
+
+- `TrackerView.schedule: CheckSchedule? {everyHours (8|12|24), startHour (0-23), timeZone (IANA), times: ["HH:00"], nextAt (ms)?}` (lib/check-schedule.ts `describeSchedule`). Nil from an older server. `CheckScheduleText.hour(_:)` / `.summary(_:)` format it. Automatic checks run once per slot; manual checks never move the schedule.
+- `.schedule(everyHours:startHour:timeZone:)` saves it; send `TimeZone.current.identifier`. Saving marks the current slot done, so no check runs straight away.
+- `TrackedApplication.login.source`: `"master"` when the school uses the master login (`PortalLogin.isMaster`), nil for its own. `TrackedApplication.setupWaiting`: a forwarded set-up email left details to finish by hand.
+- Master login actions: `.masterLogin(username:password:)` (empty username = account email), `.forgetMaster`, `.useMaster(id:on:)` (on replaces the school's own login and pins the portal host; needs a portal link), `.applyMasterAll` (catalog schools without a login; reply `applied`). Their replies carry `master: MasterLoginStatus {on, username, appCount}`; GET /api/applications carries it too (`APIClient.masterLogin()`). The master password is never returned.
+- `.setupDetails(id:)` → `setup: SetupDetails {username, password, pin, link, state, reason}`; only for the signed-in student, rate limited. Show it only when the student taps to reveal it.
+- `InboxStatus` adds `useMasterForNew` (set with `.inbox(on: true, useMasterForNew:)`) and `recent: [RecentArrival {name, state, reason, receivedAt}]` (last 20, no secrets).

@@ -20,7 +20,8 @@ function compose(subject: string, title: string, lines: string[], appUrl: string
 }
 
 export function arrivalEmail(arrival: Arrival, appUrl: string): Email {
-  const where = "The login is saved in Forge, encrypted, and Forge will check this portal for you every 12 hours.";
+  const where = "The login is saved in Forge, encrypted, and Forge will check this portal for you on your check schedule.";
+  const waiting = "The PIN, link and password from the school's email are waiting on this school in Forge, under Finish setup.";
   if (arrival.state === "verified") {
     return compose(`${arrival.name}: your portal is set up`, `${arrival.name}: your portal is set up`, [
       `We set a new password on your ${arrival.name} portal and signed in with it to make sure it works. The username is ${arrival.username}.`,
@@ -31,11 +32,13 @@ export function arrivalEmail(arrival: Arrival, appUrl: string): Email {
     return compose(`${arrival.name}: check your new portal password`, `${arrival.name}: check your new portal password`, [
       `We set a new password on your ${arrival.name} portal, but signing in with it afterwards didn't work.`,
       "Forge saved that password and will try it on its next check. If the check can't sign in, reset the password from the portal's sign-in page and save the new one in Forge.",
+      waiting,
     ], appUrl, { title: "Signing in didn't work yet", body: arrival.reason, tone: "hold" });
   }
   return compose(`${arrival.name}: finish setting up your portal`, `${arrival.name}: finish setting up your portal`, [
     `We read the email from ${arrival.name} but couldn't set up the portal for you, so Forge didn't save a new password. The school is on your Portals page.`,
     `Use the link in the school's email${arrival.pin ? " and its PIN" : ""} to choose a password, then save that username and password on ${arrival.name} in Forge so it can check the portal for you.`,
+    ...(arrival.pin || arrival.link ? [waiting] : []),
   ], appUrl, { title: "Why it stopped", body: arrival.reason, tone: "hold" });
 }
 

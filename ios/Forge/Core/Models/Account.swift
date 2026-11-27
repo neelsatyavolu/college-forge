@@ -104,6 +104,10 @@ struct InboxStatus: Codable, Hashable, Sendable {
     var address: String?
     /// Whether a birthdate is saved for portals that ask for one.
     var birthdate: Bool
+    /// New portals set up from a forwarded email get the master password.
+    var useMasterForNew: Bool = false
+    /// The last forwarded emails and what happened, newest first.
+    var recent: [RecentArrival] = []
 }
 
 extension InboxStatus {
@@ -111,5 +115,7 @@ extension InboxStatus {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         address = c.optionalString(.address)
         birthdate = c.bool(.birthdate)
+        useMasterForNew = c.bool(.useMasterForNew)
+        recent = c.array(.recent)
     }
 }

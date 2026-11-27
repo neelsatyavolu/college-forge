@@ -5,7 +5,7 @@
  */
 import type { ToolSpec } from "./chat-types";
 import { getWorkspace, type EssayStatus, type Workspace } from "./store";
-import { setAutocheck, setEmails } from "./tracker-service";
+import { listApps, setAutocheck, setEmails, setSchedule } from "./tracker-service";
 import { INTERVIEW_TOOL_SPECS, mergeResearch } from "./interview-tools";
 import { draftRecRequest } from "./recommenders";
 import { withEssayVisibility } from "./essay-tools";
@@ -28,8 +28,18 @@ export const EXTRA_TOOL_SPECS: ToolSpec[] = [
   },
   {
     name: "set_portal_settings",
-    description: "Turn Forge's automatic portal checks on or off (autocheck), and whether Forge emails the student when a portal changes (emails). Pass only what the student asked to change.",
-    parameters: { type: "object", properties: { autocheck: { type: "string", enum: ["yes", "no"] }, emails: { type: "string", enum: ["yes", "no"] } }, additionalProperties: false },
+    description:
+      "Turn Forge's automatic portal checks on or off (autocheck), whether Forge emails the student when a portal changes (emails), and how often checks run: every_hours (8, 12 or 24) from start_hour (0-23, the student's local hour; pass both together). Pass only what the student asked to change.",
+    parameters: {
+      type: "object",
+      properties: {
+        autocheck: { type: "string", enum: ["yes", "no"] },
+        emails: { type: "string", enum: ["yes", "no"] },
+        every_hours: { type: "string", enum: ["8", "12", "24"] },
+        start_hour: { type: "integer", minimum: 0, maximum: 23 },
+      },
+      additionalProperties: false,
+    },
   },
   researchSpec,
   {
@@ -75,7 +85,16 @@ export async function runExtraTool(
       const done: string[] = [];
       if (a.autocheck === "yes" || a.autocheck === "no") { await setAutocheck(workspaceId, a.autocheck === "yes"); done.push(`automatic checks ${a.autocheck === "yes" ? "on" : "off"}`); }
       if (a.emails === "yes" || a.emails === "no") { await setEmails(workspaceId, a.emails === "yes"); done.push(`portal emails ${a.emails === "yes" ? "on" : "off"}`); }
-      return done.length ? `Saved: ${done.join(", ")}.` : "Nothing to change: pass autocheck and/or emails as yes or no.";
+      if (a.every_hours !== undefined || a.start_hour !== undefined) {
+        const current = (await listApps(workspaceId)).schedule;
+        const every = a.every_hours !== undefined ? Number(a.every_hours) : current.everyHours;
+        const start = a.start_hour !== undefined ? Number(a.start_hour) : current.startHour;
+        if (![8, 12, 24].includes(every) || !Number.isInteger(start) || start < 0 || start > 23) return "every_hours must be 8, 12 or 24 and start_hour a whole hour from 0 to 23.";
+        // The stored time zone is kept; the student sets it from the Portals page or the app.
+        const s = (await setSchedule(workspaceId, { everyHours: every, startHour: start })).schedule;
+        done.push(`checks every ${s.everyHours} hours at ${s.times.join(", ")} (${s.timeZone})`);
+      }
+      return done.length ? `Saved: ${done.join(", ")}.` : "Nothing to change: pass autocheck, emails, or every_hours and start_hour.";
     }
     case "set_school_research": {
       let reply = "";
