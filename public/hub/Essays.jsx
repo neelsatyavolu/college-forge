@@ -154,10 +154,11 @@ function buildGroups(data) {
     const slug = c.slug;
     if (!slug) return;
     const items = supplements[slug] || [];
+    const named = ESSAY_PLAN.schoolTitle(c);
     groups.push({
       key: slug,
-      title: c.short || c.name || slug,
-      subtitle: c.name && c.short && c.name !== c.short ? c.name : null,
+      title: named.title || slug,
+      subtitle: named.subtitle,
       kind: "school",
       college: c,
       colleges: [c],
