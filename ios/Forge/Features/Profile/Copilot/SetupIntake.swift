@@ -13,6 +13,10 @@ struct SetupIntakeForm: Hashable, Sendable {
     var gpaWeighted = ""
     var gpaRecent = ""
     var gpaTrend: String?
+    /// Unweighted GPA for 9th, 10th and 11th grade, saved as `applicant.gpaByYear`.
+    var gpa9 = ""
+    var gpa10 = ""
+    var gpa11 = ""
     var sat = ""
     var act = ""
     var testOptional = false
@@ -120,6 +124,10 @@ struct SetupIntakeForm: Hashable, Sendable {
         if !num(gpaWeighted, 6).isEmpty { applicant["gpaWeighted"] = .string(num(gpaWeighted, 6)) }
         if !num(gpaRecent, 4).isEmpty { applicant["gpaRecent"] = .string(num(gpaRecent, 4)) }
         if let gpaTrend, !gpaTrend.isEmpty { applicant["gpaTrend"] = .string(gpaTrend) }
+        let years = [("9", gpa9), ("10", gpa10), ("11", gpa11)].filter { !num($0.1, 4).isEmpty }
+        if !years.isEmpty {
+            applicant["gpaByYear"] = .object(Dictionary(uniqueKeysWithValues: years.map { ($0.0, JSONValue.string(num($0.1, 4))) }))
+        }
 
         var testing: [String: JSONValue] = [:]
         if testOptional {

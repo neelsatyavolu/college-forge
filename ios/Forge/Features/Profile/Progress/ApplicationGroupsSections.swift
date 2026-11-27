@@ -88,6 +88,8 @@ struct ProgressAppRow: View {
             let followUps = app.followUps.isEmpty ? [] : ["\(app.followUps.count) follow-up\(app.followUps.count == 1 ? "" : "s")"]
             parts.append((reasons + followUps).joined(separator: ", "))
         }
+        // The chance estimate shows beside any alert rather than being hidden by it.
+        parts.append(CollegesOdds.forApp(app, in: store.workspace).map(CollegesOdds.chanceText))
         return parts.compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · ")
     }
 

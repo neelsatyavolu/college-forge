@@ -74,9 +74,21 @@ struct IdentityEditorView: View {
         } header: {
             Text("GPA")
         } footer: {
-            Text(ProfileRules.weightedGPAError(draft.gpaWeighted) ?? ProfileRules.unweightedGPAError(draft.gpaUnweighted)
-                 ?? "Optional. Weighted is on a 0–6 scale, unweighted 0–4.")
-                .foregroundStyle(draft.error == nil ? Theme.muted : Theme.danger)
+            let gpaError = ProfileRules.weightedGPAError(draft.gpaWeighted) ?? ProfileRules.unweightedGPAError(draft.gpaUnweighted)
+            Text(gpaError ?? "Optional. Weighted is on a 0–6 scale, unweighted 0–4.")
+                .foregroundStyle(gpaError == nil ? Theme.muted : Theme.danger)
+        }
+        Section {
+            ForEach(GPAYears.all, id: \.key) { year in
+                ProfileLabeledField(label: year.label, text: yearBinding(year.key),
+                                    prompt: year.key == "12" ? "if you have it" : "3.70", keyboard: .decimalPad)
+            }
+        } header: {
+            Text("Unweighted GPA by year")
+        } footer: {
+            let error = GPAYears.firstError(draft.gpaByYear)
+            Text(error ?? "Optional. Two or more years set your grade trend.")
+                .foregroundStyle(error == nil ? Theme.muted : Theme.danger)
         }
         Section {
             ProfileLabeledField(label: "SAT", text: $draft.sat, prompt: "1400", keyboard: .numberPad)
@@ -87,6 +99,10 @@ struct IdentityEditorView: View {
             Text(ProfileRules.satError(draft.sat) ?? "Optional. A whole number from 400 to 1600. Add a note like \"Test optional\".")
                 .foregroundStyle(ProfileRules.satError(draft.sat) == nil ? Theme.muted : Theme.danger)
         }
+    }
+
+    private func yearBinding(_ key: String) -> Binding<String> {
+        Binding(get: { draft.gpaByYear[key] ?? "" }, set: { draft.gpaByYear[key] = $0.isEmpty ? nil : $0 })
     }
 
     private func save() {

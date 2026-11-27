@@ -93,6 +93,12 @@ struct Applicant: Codable, Hashable, Sendable {
     var sat = "—"
     var satNote = ""
     var awards = 0
+    /// Unweighted GPA by school year ("9".."12"), from the transcript. The server derives the two below from it.
+    var gpaByYear: [String: String] = [:]
+    /// "up", "steady" or "down"; set by the server from `gpaByYear` when two or more years are on file.
+    var gpaTrend: String?
+    /// The 10th-11th grade unweighted GPA (what the UCs use).
+    var gpaRecent: String?
 }
 
 extension Applicant {
@@ -106,6 +112,9 @@ extension Applicant {
         sat = c.string(.sat, "—")
         satNote = c.string(.satNote)
         awards = c.int(.awards)
+        gpaByYear = c.dictionary(.gpaByYear, of: String.self).filter { $0.value.isPresentStat }
+        gpaTrend = c.optionalString(.gpaTrend)
+        gpaRecent = c.optionalString(.gpaRecent)
     }
 }
 

@@ -33,7 +33,7 @@ struct ShortlistChancesSection: View {
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.forgePrimary)
-                .disabled(chances.isRunning)
+                .disabled(chances.isBusy)
                 if !chances.isRunning, let message = chances.metadata(for: store.workspace)?.staleNotice {
                     Text(message).font(.footnote).foregroundStyle(Theme.amber)
                 }
@@ -46,17 +46,41 @@ struct ShortlistChancesSection: View {
 
     @ViewBuilder private var status: some View {
         if chances.isRunning, !chances.progress.isEmpty {
-            Text(chances.progress)
-                .font(.footnote)
-                .foregroundStyle(Theme.muted)
-                .lineLimit(3)
-                .contentTransition(.opacity)
-                .animation(.easeOut, value: chances.progress)
+            ChancesProgress(fraction: chances.fraction, text: chances.progress)
         } else if let outcome = chances.outcome {
             Label(outcome.text, systemImage: outcome.isError ? "exclamationmark.circle" : "checkmark.circle")
                 .font(.footnote)
                 .foregroundStyle(outcome.isError ? Theme.danger : Theme.success)
         }
+    }
+}
+
+/// The estimate's progress: a thin bar with the percent, and what it's doing now.
+struct ChancesProgress: View {
+    let fraction: Double
+    let text: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.xxs) {
+            HStack(spacing: Theme.Spacing.xs) {
+                ProgressView(value: max(0.03, fraction))
+                    .tint(Theme.coral)
+                    .animation(.easeOut, value: fraction)
+                Text("\(Int((fraction * 100).rounded()))%")
+                    .font(.forgeNumber(.caption))
+                    .foregroundStyle(Theme.muted)
+                    .frame(minWidth: 36, alignment: .trailing)
+            }
+            Text(text)
+                .font(.footnote)
+                .foregroundStyle(Theme.muted)
+                .lineLimit(2)
+                .contentTransition(.opacity)
+                .animation(.easeOut, value: text)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Estimating your chances")
+        .accessibilityValue("\(Int((fraction * 100).rounded())) percent. \(text)")
     }
 }
 

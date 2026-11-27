@@ -49,6 +49,8 @@ struct WorkspacePatch: Encodable, Sendable {
         var gpaUnweighted: String?
         var sat: String?
         var satNote: String?
+        /// Merged per year on the server; "—" clears a year.
+        var gpaByYear: [String: String]?
     }
 
     struct ProfilePatch: Encodable, Sendable {

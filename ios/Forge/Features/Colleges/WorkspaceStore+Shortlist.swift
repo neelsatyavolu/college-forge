@@ -26,6 +26,16 @@ extension WorkspaceStore {
         try await updateCollege(changed)
     }
 
+    /// POST /api/workspace {action: "assess-tiers"}: gives every untiered school its data tier, or one from its
+    /// chance estimate (lib/college-recommendations.ts assessUntiered). Tiers already set stay.
+    func shortlistAssessTiers() async throws -> (assessed: [String], unknown: [String]) {
+        let response = try await postAction("assess-tiers")
+        guard response.data != nil else {
+            throw APIError.server(status: 200, message: "Could not assess your schools. Please try again.")
+        }
+        return (response.assessed, response.unknown)
+    }
+
     /// Starts tracking an application for a shortlist school (it then shows on the Applications tab).
     func shortlistTrack(_ college: College) async throws {
         try await perform(.add(name: college.name, slug: college.slug))
