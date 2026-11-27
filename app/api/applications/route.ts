@@ -7,6 +7,8 @@ import { ImportError } from "@/lib/collegeapps-import";
 import { allow } from "@/lib/rate-limit";
 import { STATUS_IDS, ROUNDS } from "@/lib/tracker";
 import { TEST_METHODS, TEST_PLANS } from "@/lib/testing-plan";
+import { INTEREST_KINDS } from "@/lib/interest-log";
+import { addInterestTo, updateInterest } from "@/lib/interest-service";
 import {
   TrackerError,
   addApp,
@@ -65,6 +67,17 @@ const edit = z.object({
   }).strict()]).optional(),
 });
 const ref = z.string().min(1).max(200);
+const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const interestFields = {
+  kind: z.enum(INTEREST_KINDS).optional(),
+  date: day.optional(),
+  time: z.union([z.literal(""), z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/)]).optional(),
+  who: z.string().max(120).optional(),
+  notes: z.string().max(1000).optional(),
+  prep: z.string().max(4000).optional(),
+  thankYouSent: z.boolean().optional(),
+  done: z.boolean().optional(),
+};
 
 const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("add"), name: z.string().max(120).optional(), collegeId: z.string().max(40).optional(), slug: z.string().max(120).optional(), portalUrl: z.string().max(500).optional() }).merge(edit.omit({ name: true, portalUrl: true })),
@@ -80,6 +93,8 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("import-collegeapps"), email: z.string().max(254), password: z.string().max(256) }),
   z.object({ action: z.literal("followup-add"), id: ref, text: z.string().min(1).max(300), due: date.optional() }),
   z.object({ action: z.literal("followup-set"), id: ref, followUpId: z.string().max(40), done: z.boolean().optional(), remove: z.boolean().optional() }),
+  z.object({ action: z.literal("interest-add"), id: ref, ...interestFields, kind: z.enum(INTEREST_KINDS), date: day }),
+  z.object({ action: z.literal("interest-set"), id: ref, interestId: z.string().max(40), ...interestFields, remove: z.boolean().optional() }),
   z.object({ action: z.literal("flag-add"), text: z.string().min(1).max(500), scope: z.string().max(80).optional() }),
   z.object({ action: z.literal("flag-resolve"), flagId: z.string().max(40) }),
 ]);
@@ -140,6 +155,14 @@ export async function POST(req: NextRequest) {
         return json({ success: true, app: await addFollowUpTo(ws, b.id, b.text, b.due ?? ""), data: await listApps(ws) });
       case "followup-set":
         return json({ success: true, app: await updateFollowUp(ws, b.id, b.followUpId, { done: b.done, remove: b.remove }), data: await listApps(ws) });
+      case "interest-add": {
+        const { action: _a, id, ...input } = b;
+        return json({ success: true, app: await addInterestTo(ws, id, input), data: await listApps(ws) });
+      }
+      case "interest-set": {
+        const { action: _a, id, interestId, ...edit } = b;
+        return json({ success: true, app: await updateInterest(ws, id, interestId, edit), data: await listApps(ws) });
+      }
       case "flag-add":
         return json({ success: true, data: await flag(ws, b.text, b.scope ?? "") });
       case "flag-resolve":

@@ -40,6 +40,10 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
     case followUpSet(id: String, followUpId: String, done: Bool? = nil, remove: Bool? = nil)
     case flagAdd(text: String, scope: String? = nil)
     case flagResolve(flagId: String)
+    /// Log a visit, session, interview or contact. `edit.kind` and `edit.date` are required.
+    case interestAdd(id: String, edit: InterestEdit)
+    /// Change or (`edit.remove`) delete one logged entry.
+    case interestSet(id: String, interestId: String, edit: InterestEdit)
 
     var name: String {
         switch self {
@@ -58,6 +62,8 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
         case .followUpSet: "followup-set"
         case .flagAdd: "flag-add"
         case .flagResolve: "flag-resolve"
+        case .interestAdd: "interest-add"
+        case .interestSet: "interest-set"
         }
     }
 
@@ -74,6 +80,10 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
         try c.encode(name, forKey: Key("action"))
         func put<T: Encodable>(_ key: String, _ value: T?) throws {
             if let value { try c.encode(value, forKey: Key(key)) }
+        }
+        func putInterest(_ e: InterestEdit) throws {
+            try put("kind", e.kind); try put("date", e.date); try put("time", e.time); try put("who", e.who)
+            try put("notes", e.notes); try put("thankYouSent", e.thankYouSent); try put("done", e.done); try put("remove", e.remove)
         }
         switch self {
         case let .add(name, collegeId, slug, portalUrl, edit):
@@ -103,6 +113,10 @@ enum ApplicationAction: Encodable, Hashable, Sendable {
             try put("text", text); try put("scope", scope)
         case let .flagResolve(flagId):
             try put("flagId", flagId)
+        case let .interestAdd(id, edit):
+            try put("id", id); try putInterest(edit)
+        case let .interestSet(id, interestId, edit):
+            try put("id", id); try put("interestId", interestId); try putInterest(edit)
         }
     }
 }

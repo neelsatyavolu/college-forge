@@ -95,6 +95,7 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
       {window.LetterTasks ? <window.LetterTasks data={data} tracker={tracker} /> : null}
       {tracker.apps.length ? (
         <React.Fragment>
+          {window.InterviewsAhead ? <window.InterviewsAhead apps={tracker.apps} /> : null}
           <ProgressView tracker={tracker} editable act={act} busy={busy} openId={open} oddsFor={oddsFor} onToggle={(id) => setOpen(open === id ? null : id)}
             renderDetails={(app) => <AppDetails key={app.id} app={app} act={act} busy={busy} checking={false} onCheck={() => act({ action: "check", ids: [app.id] }, "Checked.")} />} />
           <div className="cf-apps-footer">

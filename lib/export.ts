@@ -1,4 +1,5 @@
 import { decisionDateOf, statusInfo, todayIso } from "./tracker";
+import { INTEREST_LABELS, calendarInterest } from "./interest-log";
 import { createHash } from "node:crypto";
 import type { Workspace } from "./store";
 
@@ -215,7 +216,7 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
   const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//College Forge//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:College Forge deadlines", "REFRESH-INTERVAL;VALUE=DURATION:PT6H", "X-PUBLISHED-TTL:PT6H"];
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   // alarm: application deadlines get a reminder 3 days before.
-  const events: { date: string; title: string; detail?: string; alarm?: boolean }[] = [];
+  const events: { date: string; title: string; detail?: string; alarm?: boolean; time?: string }[] = [];
   for (const date of ws.criticalDates || []) events.push({ date: date.date, title: date.label, detail: date.detail });
   const tracked = ws.tracker?.apps || [];
   for (const app of tracked) {
@@ -236,6 +237,12 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
     for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name, alarm: true });
     if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name, alarm: true });
   }
+  // Interviews and visits ahead, at their time when one is set (an hour long), otherwise all day.
+  if (ws.tracker) {
+    for (const { school, event } of calendarInterest(ws.tracker, today)) {
+      events.push({ date: event.date, time: event.time, title: `${school} — ${INTEREST_LABELS[event.kind].toLowerCase()}${event.who ? ` with ${event.who}` : ""}`, detail: school });
+    }
+  }
   for (const scholarship of ws.scholarships || []) {
     if (scholarship.deadline) events.push({ date: scholarship.deadline, title: `Scholarship: ${scholarship.name}`, detail: options.notes === false ? undefined : scholarship.notes });
   }
@@ -248,11 +255,12 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
   for (const event of events) {
     const date = toIcsDate(event.date, Number(ws.profile.gradYear));
     if (!date) { skipped += 1; continue; }
-    const uid = createHash("sha256").update(JSON.stringify([ws.draftStorageKey, date, event.title, event.detail || ""])).digest("hex").slice(0, 32);
+    const time = event.time && /^([01]\d|2[0-3]):[0-5]\d$/.test(event.time) ? event.time.replace(":", "") : "";
+    const uid = createHash("sha256").update(JSON.stringify([ws.draftStorageKey, date, event.title, event.detail || "", ...(time ? [time] : [])])).digest("hex").slice(0, 32);
     if (seen.has(uid)) continue;
     seen.add(uid);
     included += 1;
-    lines.push("BEGIN:VEVENT", `UID:cf-${uid}@college-forge`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${date}`, `DTEND;VALUE=DATE:${nextIcsDay(date)}`, `SUMMARY:${icsEscape(event.title)}`);
+    lines.push("BEGIN:VEVENT", `UID:cf-${uid}@college-forge`, `DTSTAMP:${stamp}`, ...(time ? [`DTSTART:${date}T${time}00`, "DURATION:PT1H"] : [`DTSTART;VALUE=DATE:${date}`, `DTEND;VALUE=DATE:${nextIcsDay(date)}`]), `SUMMARY:${icsEscape(event.title)}`);
     if (event.detail) lines.push(`DESCRIPTION:${icsEscape(event.detail)}`);
     if (event.alarm) lines.push("BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsEscape(event.title)}`, "TRIGGER:-P3D", "END:VALARM");
     lines.push("END:VEVENT");

@@ -328,3 +328,20 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
   .cf-orank__details { padding: 4px 12px 14px; }
   .cf-orank__facts { grid-template-columns: 1fr 1fr; }
 }
+
+/* Interest and interviews (InterestLog.jsx) */
+.cf-interest__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.cf-interest__chip { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border: 1px solid var(--hairline); border-radius: 999px; font-size: 12px; color: var(--body); text-decoration: none; }
+.cf-interest__chip:hover { border-color: var(--muted-soft); color: var(--ink); }
+.cf-interest__chip:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.cf-interest__nudge { color: var(--coral); font-weight: 500; margin-bottom: 8px; }
+.cf-interest__list { list-style: none; margin: 0 0 12px; padding: 0; border-top: 1px solid var(--hairline-soft); }
+.cf-interest__row { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--hairline-soft); font-size: 14px; line-height: 1.5; color: var(--body); }
+.cf-interest__when { font-variant-numeric: tabular-nums; color: var(--ink); }
+.cf-interest__when small { display: block; font-size: 12px; color: var(--muted); }
+.cf-interest__what strong { font-weight: 500; color: var(--ink); }
+.cf-interest__what p { margin: 2px 0 0; color: var(--muted); overflow-wrap: anywhere; }
+.cf-interest__what .cf-row-actions { gap: 4px 14px; }
+.cf-interest__prep { white-space: pre-wrap; }
+.cf-interest__check { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--body); min-height: 36px; cursor: pointer; }
+.cf-interest__check input { accent-color: var(--coral); }

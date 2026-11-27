@@ -151,6 +151,8 @@ function App() {
     if (typeof prompt === "string") setChatPrompt({ text: prompt, id: Date.now() });
     setChatOpen(true);
   };
+  // Lets panels outside App's props (the interest log's interview prep) start a copilot chat.
+  window.cfAsk = openChat;
   const runPlanInBackground = () => {
     if (typeof window.cfRunPlanSteps !== "function") return;
     setPlanTask({ state: "running", message: "Looking up deadlines and essay prompts…" });

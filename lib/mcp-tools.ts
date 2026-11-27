@@ -13,6 +13,7 @@ import { essayList, essayPromptsSchema, essayView, withEssayPrompts } from "./es
 import { isTestOptionalNote } from "./colleges";
 import { ROUNDS, STATUSES, STATUS_IDS, findApp, todayIso } from "./tracker";
 import { TEST_METHODS, TEST_PLANS, studentScores } from "./testing-plan";
+import { INTEREST_TOOLS } from "./interest-tools";
 import {
   TrackerError,
   addApp,
@@ -69,6 +70,7 @@ function brief(a: AppView) {
       : null,
     submitted: a.submittedAt || null,
     follow_ups: a.followUps.map((f) => ({ id: f.id, text: f.text, due: f.due || null })),
+    interest: { counts: a.interestSignal.counts, interview: a.interestSignal.interview, logged: a.interestSignal.logged, nudge: a.interestSignal.nudge ?? null },
     portal_link: a.portalUrl || null,
     portal_login_saved: !!a.login?.hasPassword,
     notes: a.notes || null,
@@ -606,6 +608,7 @@ export const TOOLS: Tool[] = [
       };
     },
   }),
+  ...INTEREST_TOOLS.map((t) => t as unknown as Tool),
 ];
 
 /** JSON Schema for tools/list (zod 4 converts directly). */
