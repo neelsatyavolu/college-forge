@@ -10,6 +10,7 @@ const SUPP_STYLE = {
   "No supps": { bg: "color-mix(in srgb, var(--success) 14%, transparent)", color: "var(--success)" },
   "Supps optional": { bg: "color-mix(in srgb, var(--warning) 16%, transparent)", color: "var(--warning)" },
   "Supps required": { bg: "var(--surface-card)", color: "var(--muted)" },
+  "Shared UC essays": { bg: "color-mix(in srgb, var(--teal, var(--accent)) 12%, transparent)", color: "var(--ink)" },
 };
 
 function SuppPill({ load }) {
@@ -256,13 +257,14 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
             </h3>
             {s.priority ? <Badge variant="coral" uppercase>Priority</Badge> : null}
             {isUcCampus(s) ? <Badge variant="teal" uppercase>UC Application</Badge> : null}
+            {window.cfEssayArchetypes.isCsuCampus(s) ? <Badge variant="teal" uppercase>Cal State Apply</Badge> : null}
           </div>
           <div style={{ fontSize: 13, color: "var(--body)", marginBottom: 6 }}>
             {s.major || "—"}
             {s.location ? <span style={{ color: "var(--muted-soft)" }}> · {s.location}</span> : null}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <SuppPill load={s.supplementsNeeded === "no" ? "No supps" : s.supp} />
+            <SuppPill load={window.cfEssayArchetypes.isCsuCampus(s) || s.supplementsNeeded === "no" ? "No supps" : isUcCampus(s) ? "Shared UC essays" : s.supp} />
             {s.admit ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Overall admission rate: {s.admit}</span> : null}
             {s.netPriceForYou ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Your likely cost: {s.netPriceForYou}</span> : null}
           </div>
@@ -317,15 +319,9 @@ function isUcCampus(c) {
   return false;
 }
 
-/** Soft app count: all UC campuses share one UC Application slot. */
+/** Soft app count: all UC campuses share one UC Application slot, and all Cal States one Cal State Apply. */
 function applicationSlotCount(colleges) {
-  let nonUc = 0;
-  let hasUc = false;
-  for (const c of colleges || []) {
-    if (isUcCampus(c)) hasUc = true;
-    else nonUc++;
-  }
-  return nonUc + (hasUc ? 1 : 0);
+  return window.cfEssayArchetypes.applicationCount(colleges);
 }
 
 const AMBITION_STEPS = ["conservative", "balanced", "ambitious"];

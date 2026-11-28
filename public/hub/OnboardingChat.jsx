@@ -430,6 +430,13 @@ function OnboardingChat({ data, onComplete, onCancel }) {
                 onAnswer={send} onApprove={approve} onRevise={revise} onConfirm={confirmStrategy} />
         ))}
         {!turns.some((t) => t.board) && cards.length > 0 && <window.OcResearchBoard cards={cards} />}
+        {/* The AI answered a list question in words: keep the saved draft on screen so it can still be approved or changed. */}
+        {phase === "list" && !busy && !(turns[lastAssistant] && turns[lastAssistant].ui && (turns[lastAssistant].ui.list || turns[lastAssistant].ui.question)) && ws?.onboarding?.interview?.listDraft?.length > 0 && (
+          <div className="oc-msg oc-msg--assistant">
+            <p className="oc-status">Your draft list, as it stands:</p>
+            <window.OcListTiles schools={ws.onboarding.interview.listDraft} edIdea={ws.onboarding.interview.edIdea} transferPath={ws.onboarding.interview.transferPath} disabled={busy} onApprove={approve} onRevise={revise} />
+          </div>
+        )}
         {status && <p className="oc-status" role="status">{status}</p>}
         {error && (
           <div className="oc-error" role="alert">{error}{" "}

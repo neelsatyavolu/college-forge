@@ -9,9 +9,10 @@ import { BUDGET_CAP, studentFacts } from "./list-facts";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
 import { SECTIONS, firstIncomplete, missingFields, optionalFields, startInterview } from "./interview-checklist";
-import { isUcCampus } from "./seed-college-list";
+import { isCsuCampus, isUcCampus } from "./seed-college-list";
 import { isHttpUrl, slugify } from "./colleges";
 import { ACTIVITIES, INTERESTS, readAnswers, suggestMajors } from "./major-finder";
+import { fillToRequested } from "./list-fill";
 
 type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
@@ -104,7 +105,9 @@ export function parseSchools(raw: unknown): UiSchool[] {
     const tier = TIERS.find((t) => t === r.tier);
     if (!name || !tier) return [];
     const fits = ["yes", "no", "unknown"].find((f) => f === r.fitsBudget) as UiSchool["fitsBudget"];
-    const supp = isUcCampus({ name, slug: text(r.slug, 120) }) ? "yes" : (["yes", "no", "unknown"].find((f) => f === r.supplements) as UiSchool["supplements"]);
+    const who = { name, slug: text(r.slug, 120) };
+    // UC campuses share the PIQs (supplements); Cal State Apply has no essays.
+    const supp = isUcCampus(who) ? "yes" : isCsuCampus(who) ? "no" : (["yes", "no", "unknown"].find((f) => f === r.supplements) as UiSchool["supplements"]);
     return [{
       ...(supp ? { supplements: supp } : {}),
       name, tier, reason: text(r.reason, 280) ?? "",
@@ -117,10 +120,11 @@ export function parseSchools(raw: unknown): UiSchool[] {
   });
 }
 
-/** Counts applications: every UC campus together is one. */
+/** Counts applications: every UC campus together is one, and so is every Cal State campus (Cal State Apply). */
 export function applicationCount(schools: { name: string; slug?: string }[]): number {
   const uc = schools.some((s) => isUcCampus(s));
-  return schools.filter((s) => !isUcCampus(s)).length + (uc ? 1 : 0);
+  const csu = schools.some((s) => isCsuCampus(s));
+  return schools.filter((s) => !isUcCampus(s) && !isCsuCampus(s)).length + (uc ? 1 : 0) + (csu ? 1 : 0);
 }
 
 /**
@@ -174,11 +178,12 @@ export function farLikelySchools(ws: Workspace, schools: UiSchool[]): string | n
 }
 
 /** Why a list is too short to show at all: more than two applications short of what the student asked for (never under five). */
-/** When `hurried` (the turn is out of time), half the request is enough: a short list with a warning beats no list. */
+/** A list short of the request is refused; `hurried` no longer relaxes this, since Forge fills short lists itself. */
 export function tooShort(ws: Workspace, schools: UiSchool[], hurried = false): string | null {
   const prefs = ws.onboarding.listPrefs;
   const wanted = typeof prefs?.suppCount === "number" && typeof prefs?.noSuppCount === "number" ? prefs.suppCount + prefs.noSuppCount : null;
-  const floor = wanted ? Math.max(5, hurried ? Math.ceil(wanted / 2) : wanted - 2) : 5;
+  // Forge tops short lists up itself (lib/list-fill.ts), so a list still short is short of candidates, not time.
+  const floor = wanted ? Math.max(5, wanted - 2) : 5;
   const apps = applicationCount(schools);
   if (apps >= floor) return null;
   return `this list has ${apps} applications${wanted ? ` and the student asked for ${wanted}` : ""}; Forge won't show fewer than ${floor}. Add schools from get_college_recommendations (its "more" and "inState" candidates) or your research, then call propose_list again.`;
@@ -213,7 +218,7 @@ export function applyStudentFacts(ws: Workspace, schools: UiSchool[]): UiSchool[
       ...s,
       ...(f.netPrice ? { netPrice: f.netPrice.label } : f.outOfState ? { netPrice: "Out-of-state: check the nonresident cost", fitsBudget: "unknown" as const } : f.international ? { netPrice: "International: check this college's aid for international students", fitsBudget: "unknown" as const } : {}),
       ...(f.fitsBudget ? { fitsBudget: f.fitsBudget } : {}),
-      ...(f.supplements && !isUcCampus(s) ? { supplements: f.supplements } : {}),
+      ...(f.supplements && !isUcCampus(s) && !isCsuCampus(s) ? { supplements: f.supplements } : {}),
     };
   });
 }
@@ -253,14 +258,14 @@ export function checkListProposal(ws: Workspace, schools: UiSchool[]): string | 
   if (typeof prefs?.suppCount === "number" && typeof prefs?.noSuppCount === "number") {
     // Schools whose supplement need is unknown can count either way: the list passes when some split works.
     const yes = applicationCount(schools.filter((s) => s.supplements === "yes" || isUcCampus(s)));
-    const no = applicationCount(schools.filter((s) => s.supplements === "no" && !isUcCampus(s)));
-    const unknown = applicationCount(schools.filter((s) => s.supplements !== "yes" && s.supplements !== "no" && !isUcCampus(s)));
+    const no = applicationCount(schools.filter((s) => (s.supplements === "no" || isCsuCampus(s)) && !isUcCampus(s)));
+    const unknown = applicationCount(schools.filter((s) => s.supplements !== "yes" && s.supplements !== "no" && !isUcCampus(s) && !isCsuCampus(s)));
     const fits = (target: number, sure: number) => sure <= target + 1 && sure + unknown >= target - 1;
     const total = yes + no + unknown;
     if (!fits(prefs.suppCount, yes) || !fits(prefs.noSuppCount, no) || Math.abs(total - (prefs.suppCount + prefs.noSuppCount)) > 2) {
-      return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${yes} with, ${no} without and ${unknown} unknown (all UC campuses count as one supplement application). Check the unknown ones' requirements, then adjust.`;
+      return `The student asked for ${prefs.suppCount} applications with supplements and ${prefs.noSuppCount} without; this list has ${yes} with, ${no} without and ${unknown} unknown (all UC campuses count as one supplement application; all Cal State campuses count as one no-supplement application (Cal State Apply)). Check the unknown ones' requirements, then adjust.`;
     }
-  } else if (apps < 8 || apps > 15) return `The list has ${apps} applications; propose 8 to 15 (all UC campuses count as one).`;
+  } else if (apps < 5 || apps > 30) return `The list has ${apps} applications; propose 5 to 30 (all UC campuses count as one, and all Cal States as one).`;
   const nonresident = tooManyNonresidentPublics(ws, schools, apps);
   if (nonresident) return nonresident;
   const far = farLikelySchools(ws, schools);
@@ -385,7 +390,7 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   {
     name: "propose_list",
     description:
-      "Show the draft college list as school tiles and END YOUR TURN. Match the student's counts: suppCount applications with supplemental essays and noSuppCount without (all UC campuses = one supplement application). Mix tiers by their ambition, at least 2 likely schools whose net price fits the budget (fitsBudget 'yes' only when you know it does). Each school: name, tier, round (the round you'd plan, from deadlines still open today), supplements (yes/no), a one-line reason specific to this student, estChance and netPrice when known. Forge replaces your tier with its data-based tier where it has admissions numbers. Include every school already on their list, and an edIdea.",
+      "Show the draft college list as school tiles and END YOUR TURN. Match the student's counts: suppCount applications with supplemental essays and noSuppCount without (all UC campuses = one supplement application; all Cal States = one application without supplements). Mix tiers by their ambition, at least 2 likely schools whose net price fits the budget (fitsBudget 'yes' only when you know it does). Each school: name, tier, round (the round you'd plan, from deadlines still open today), supplements (yes/no), a one-line reason specific to this student, estChance and netPrice when known. Forge replaces your tier with its data-based tier where it has admissions numbers. Include every school already on their list, and an edIdea.",
     parameters: {
       type: "object",
       properties: {
@@ -539,7 +544,9 @@ export function makeInterviewTools(
         const ws = await read();
         const gap = firstIncomplete(ws);
         if (gap) return `Not shown: finish the interview first (${gap} still needs ${missingFields(ws, gap).join(", ")}).`;
-        const { schools: tiered, changed } = applyDataTiers(ws, markCurrent(ws, parseSchools(a.schools)));
+        // A list short of the student's counts is topped up from Forge's own recommendations.
+        const { schools: filled, added } = fillToRequested(ws, parseSchools(a.schools));
+        const { schools: tiered, changed } = applyDataTiers(ws, markCurrent(ws, filled));
         const schools = applyStudentFacts(ws, tiered);
         // A list far short of what the student asked for is never shown, however many tries it takes.
         const short = tooShort(ws, schools, hurry());
@@ -562,7 +569,7 @@ export function makeInterviewTools(
         await mutate((w) => withInterview(w, { ...interviewOf(w), phase: "list", listDraft: schools, listRefusals: 0, ...extras }));
         emit({ type: "list", schools, ...extras, ...(warning ? { warning } : {}) });
         stop({ list: schools, ...extras, ...(warning ? { warning } : {}) });
-        return `Shown to the student${changed.length ? `. Forge set these tiers from its admissions data: ${changed.join(", ")}` : ""}. Stop now; they will approve, drop or ask for changes.`;
+        return `Shown to the student${added.length ? `. Forge added ${added.length} schools from its recommendations to reach their count: ${added.join(", ")}` : ""}${changed.length ? `. Forge set these tiers from its admissions data: ${changed.join(", ")}` : ""}. Stop now; they will approve, drop or ask for changes.`;
       }
       case "recommend_strategy": {
         const reasons = text(a.reasons, 1500);

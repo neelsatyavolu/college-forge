@@ -261,7 +261,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
       ...next.onboarding.listPrefs,
     };
     if (["balanced", "ambitious", "conservative"].includes(p.ambition as string)) { listPrefs.ambition = p.ambition!; listPrefs.ambitionChosen = true; }
-    const count = (v: unknown) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? Math.min(15, Math.round(v)) : null);
+    const count = (v: unknown) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? Math.min(30, Math.round(v)) : null);
     const supp = count(p.suppCount), quick = count(p.noSuppCount);
     if (supp !== null) listPrefs.suppCount = supp;
     if (quick !== null) listPrefs.noSuppCount = quick;
@@ -281,7 +281,7 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     if (typeof p.countsRecommended === "boolean") listPrefs.countsRecommended = p.countsRecommended;
     if (supp !== null || quick !== null) { /* appCount follows the two counts */ }
     else if (p.appCount === null) listPrefs.appCount = null;
-    else if (typeof p.appCount === "number" && Number.isFinite(p.appCount)) listPrefs.appCount = Math.max(8, Math.min(15, Math.round(p.appCount)));
+    else if (typeof p.appCount === "number" && Number.isFinite(p.appCount)) listPrefs.appCount = Math.max(1, Math.min(30, Math.round(p.appCount)));
     next = { ...next, onboarding: { ...next.onboarding, listPrefs } };
   }
 

@@ -51,10 +51,11 @@ test('advance_section is refused while required fields are missing', () => {
   assert.match(T.applyAdvance(ws, 'nowhere').error, /Unknown section/);
 });
 
-test('propose_list enforces 8-15 applications and two affordable likely schools', () => {
+test('propose_list enforces 5-30 applications and two affordable likely schools', () => {
   const ws = wsWith({ budget: '30-50' });
-  assert.match(T.checkListProposal(ws, list(7)), /7 applications/);
-  assert.match(T.checkListProposal(ws, list(16)), /16 applications/);
+  assert.match(T.checkListProposal(ws, list(4)), /4 applications/);
+  assert.match(T.checkListProposal(ws, list(31)), /31 applications/);
+  assert.equal(T.checkListProposal(ws, list(20)), null, 'twenty is a fine list');
   assert.match(T.checkListProposal(ws, list(10, 2, 'no')), /Only 0 likely schools fit/);
   assert.equal(T.checkListProposal(ws, list(10, 2, 'unknown')), null, 'unknown costs are not held against the list');
   assert.equal(T.checkListProposal(ws, list(10)), null);
@@ -283,21 +284,23 @@ test('likely schools stay in the regions the student chose (at most one outside)
   assert.equal(T.farLikelySchools(wsWith({ regions: ['any'] }), maria), null, 'no region chosen, no rule');
 });
 
-test('a list far shorter than requested is never shown, even after refusals or when time is short', async () => {
-  const ws = complete(wsWith({ budget: 'lt15', needAid: true, suppCount: 8, noSuppCount: 3 }));
+test('a list short of the requested count is topped up by Forge to that count', async () => {
+  const ws = complete(wsWith());
+  ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, budget: '50plus', suppCount: 15, noSuppCount: 5 };
   const h = harness(ws, () => true);
-  const four = list(4, 2, 'yes');
-  for (let i = 0; i < 4; i++) assert.match(await h.tools.execute('propose_list', JSON.stringify({ schools: four })), /^Not shown: this list has 4 applications and the student asked for \d+; Forge won't show fewer than \d+/);
-  assert.equal(h.events.some((e) => e.type === 'list'), false);
-  assert.equal(T.tooShort(ws, list(8, 2, 'yes')), null, 'two short is allowed');
-  assert.match(T.tooShort(ws, list(5, 2, 'yes')), /fewer than 8/);
+  const out = await h.tools.execute('propose_list', JSON.stringify({ schools: list(6, 2, 'yes') }));
+  const shown = h.events.find((e) => e.type === 'list');
+  assert.ok(shown, out);
+  assert.equal(T.applicationCount(shown.schools), 20, out);
+  assert.match(out, /Forge added 14 schools/);
+  assert.ok(shown.schools.filter((s) => /Added by Forge to reach the 20/.test(s.reason)).length === 14);
 });
 
-test('out of time, half the requested list is enough to show', () => {
+test('out of time no longer halves the request; two short is still fine', () => {
   const ws = complete(wsWith({ budget: 'lt15', needAid: true, suppCount: 8, noSuppCount: 2 }));
   assert.match(T.tooShort(ws, list(6, 2, 'yes')), /fewer than 8/);
-  assert.equal(T.tooShort(ws, list(6, 2, 'yes'), true), null);
-  assert.match(T.tooShort(ws, list(4, 2, 'yes'), true), /fewer than 5/);
+  assert.match(T.tooShort(ws, list(6, 2, 'yes'), true), /fewer than 8/);
+  assert.equal(T.tooShort(ws, list(8, 2, 'yes'), true), null);
 });
 
 test('a one-line deeper answer is sent back for a follow-up first', async () => {

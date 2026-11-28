@@ -9,6 +9,7 @@ import { actToSat } from "./act-concordance";
 import { loadSchoolResearch } from "./school-research";
 import { aidsNoInternationals, internationalAid } from "./international-aid";
 import careerData from "../public/data/career-ranking.json";
+import exploreCatalog from "../public/data/explore-colleges.json";
 import { majorKeysOf, SWITCH_LABELS, type CareerData } from "./career-ranking";
 
 const CAREER = careerData as unknown as CareerData;
@@ -227,6 +228,30 @@ for (const row of US_NEWS_BY_SCORECARD_ID.values()) {
 }
 
 const CONTROL_BY_ID = new Map(rankings.schools.map((r) => [r.unitid, r.control] as const));
+
+type RankingRow = (typeof rankings.schools)[number];
+type ExploreRow = { id: number; name: string; city: string; state: string; control?: string; net?: number | null; coa?: number | null };
+const EXPLORE_BY_ID = new Map((((exploreCatalog as unknown as { colleges?: ExploreRow[] }).colleges) || []).map((e) => [e.id, e] as const));
+/**
+ * Colleges in the admissions catalog (US News + Scorecard) but not in the graduate-outcomes snapshot,
+ * such as Arizona State. They're candidates on admissions fit alone, with no outcomes score, so they
+ * come after every school that has outcomes evidence at the same fit and say so.
+ */
+const RANKED_IDS = new Set(rankings.schools.map((r) => r.unitid));
+const CATALOG_ONLY_ROWS: RankingRow[] = [...US_NEWS_BY_SCORECARD_ID.entries()]
+  .filter(([id]) => !RANKED_IDS.has(id) && EXPLORE_BY_ID.has(id))
+  .map(([id, u]) => {
+    const e = EXPLORE_BY_ID.get(id)!;
+    return {
+      ...(rankings.schools[0] as RankingRow),
+      unitid: id, institution: u.name || e.name, city: e.city, state: e.state,
+      control: e.control === "public" ? "public" : "private",
+      net_price: e.net ?? null, cost_of_attendance: e.coa ?? null,
+      score_partial: 0, rank_partial: null, rank_partial_low: null, rank_partial_high: null,
+      typical_earnings: null, rpp_grad: null, location_observed: false,
+    } as unknown as RankingRow;
+  });
+const CATALOG_ONLY_IDS = new Set(CATALOG_ONLY_ROWS.map((r) => r.unitid));
 const NET_PRICE_BY_ID = new Map(rankings.schools.map((r) => [r.unitid, r.net_price] as const));
 
 /** The federal average net price across all incomes (aid recipients), for colleges without a research file. */
@@ -331,7 +356,7 @@ const TIER_WORD: Record<Tier, string> = { reach: "reach", target: "target", safe
 
 function listQuotas(prefs: Workspace["onboarding"]["listPrefs"]) {
   const requested = prefs?.appCount;
-  const count = typeof requested === "number" && Number.isFinite(requested) ? Math.max(8, Math.min(15, Math.round(requested))) : 12;
+  const count = typeof requested === "number" && Number.isFinite(requested) ? Math.max(5, Math.min(30, Math.round(requested))) : 12;
   const [reachShare, targetShare] = SHARES[prefs?.ambition ?? "balanced"] ?? SHARES.balanced;
   const reach = Math.round(count * reachShare); const target = Math.round(count * targetShare);
   return { count, goals: { reach, target, safety: count - reach - target } as Record<Tier, number> };
@@ -357,7 +382,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
   if (prefs?.size && prefs.size !== "any") profileGaps.push("Enrollment size is not available in this ranking snapshot; confirm your size preference on the college website.");
   if (prefs?.notes?.trim()) profileGaps.push("Free-text preferences need an advisor review; the automatic list uses the structured region and setting choices.");
   const needsInternationalAid = prefs?.citizenship === "international" && prefs?.needAid !== false;
-  const candidates = rankings.schools.flatMap(row => {
+  const candidates = [...rankings.schools, ...CATALOG_ONLY_ROWS].flatMap(row => {
+    const outcomes = !CATALOG_ONLY_IDS.has(row.unitid);
     const admissions = US_NEWS_BY_SCORECARD_ID.get(row.unitid);
     const { fit: base, estimate } = fitWithEstimate(admissions, academics);
     // Too long a shot for this ambition level. Saved choices remain untouched.
@@ -391,7 +417,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
       ...base.cautions,
       ...(!major && codes.size ? ["No published earnings for a matching major at this college. This does not mean the program is absent or weak; verify its curriculum."] : []),
       ...(access?.hardSwitch ? [`Getting into ${access.hardSwitch.split(":")[0]} here is ${access.hardSwitch.split(": ")[1]} for students who don't start in it. Apply to the major directly if the college allows it.`] : []),
-      ...(!row.location_observed ? ["Where graduates work (used for cost of living) is modeled for this institution, not observed."] : []),
+      ...(!outcomes ? ["Not in Forge's graduate-outcomes snapshot, so there's no earnings comparison here; its fit comes from admissions data only."] : []),
+      ...(outcomes && !row.location_observed ? ["Where graduates work (used for cost of living) is modeled for this institution, not observed."] : []),
       ...(overBudget ? [`Average net price ${money(row.net_price!)} is above your budget of ${money(budget!)} a year. Run this college's net price calculator.`] : []),
     ];
     const fit: AcademicFit = { ...base, reasons, cautions };
@@ -403,10 +430,11 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
       admit: admissions?.admitRate != null ? `${Math.round(admissions.admitRate * 1000) / 10}%` : undefined,
       satRange: admissions?.sat25 != null && admissions.sat75 != null ? `${admissions.sat25}–${admissions.sat75}` : undefined,
       netPrice: row.net_price != null ? money(row.net_price) : undefined,
-      tags: [{label:"Fair-ranking evidence",tone:"teal"}, ...(inState ? [{label:"In-state",tone:"teal"}] : [])],
+      tags: [...(outcomes ? [{label:"Fair-ranking evidence",tone:"teal"}] : [{label:"Admissions data only",tone:"muted"}]), ...(inState ? [{label:"In-state",tone:"teal"}] : [])],
     };
     const adjustedEarnings = row.typical_earnings != null && row.rpp_grad != null ? Math.round(row.typical_earnings / (row.rpp_grad / 100)) : null;
-    const score = row.score_partial * 0.75 + (major ? 25 * (1 - (major.rank - 1) / major.of) : 0);
+    // No outcomes evidence: ranked after every school that has it, at the same fit.
+    const score = outcomes ? row.score_partial * 0.75 + (major ? 25 * (1 - (major.rank - 1) / major.of) : 0) : -1;
     // Targets and likely schools where the student sits in the upper half of the range come first.
     const band = base.tier === "reach" ? 0 : academicBand(admissions, academics);
     if (gate.passedBecauseOfTrend) reasons.push(`Suggested because you reported a clear upward grade trend: it relaxed Forge's GPA screen for this college by ${GATE.trendRelief.toFixed(2)}. Your cumulative GPA is still below its typical range.`);
@@ -418,7 +446,8 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
       major,
       scorecardUrl: `https://collegescorecard.ed.gov/school/?${row.unitid}`,
     }}];
-  }).sort((a,b) => a.band - b.band || b.score - a.score || a.college.scorecardId! - b.college.scorecardId!);
+  // Colleges with outcomes evidence always come first, so adding admissions-only ones never displaces them.
+  }).sort((a,b) => Number(a.score < 0) - Number(b.score < 0) || a.band - b.band || b.score - a.score || a.college.scorecardId! - b.college.scorecardId!);
   type Candidate = (typeof candidates)[number];
   const { count, goals } = listQuotas(prefs);
   const preferred = candidates.filter(c => c.matchesPrefs);
@@ -473,7 +502,7 @@ export function recommendColleges(ws: Workspace, options: { excludeOnList?: bool
         note: c.fit.reasons[0], caution: c.fit.cautions.find(x => !/^Planning category/.test(x) && /switch|budget|No published earnings/i.test(x)) }))) } : {}),
     // Every home-state public in realistic range: residents often get in at higher rates and pay less,
     // and a ranking-ordered pool can leave them out.
-    ...(options.morePerTier && residency ? { inState: candidates.filter(c => c.inStatePublic && c.fit.tier).slice(0, 10)
+    ...(options.morePerTier && residency ? { inState: candidates.filter(c => c.inStatePublic && c.fit.tier).slice(0, 15)
       .map(c => ({ name: c.college.name, slug: c.college.slug, tier: c.fit.tier === "safety" ? "likely" : c.fit.tier, admit: c.college.admit, note: c.fit.reasons.find(x => /UC uses|10th-11th|SAT|GPA/.test(x)) ?? c.fit.reasons[0] })) } : {}),
   };
 }

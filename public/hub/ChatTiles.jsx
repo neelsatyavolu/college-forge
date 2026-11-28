@@ -248,12 +248,10 @@ function OcQuestion({ q, lead, data, profile, revision, disabled, onAnswer }) {
 
 const OC_TIER_LABEL = { reach: "Reach", target: "Target", likely: "Likely" };
 const OC_TIER_ORDER = { reach: 0, target: 1, likely: 2 };
-const ocIsUc = (s) => /\buniversity of california\b|^uc[ -]/i.test(s.name);
 
 /** Counts applications the way schools are applied to: every UC campus together is one. */
 function ocAppCount(list) {
-  const uc = list.some(ocIsUc);
-  return list.filter((s) => !ocIsUc(s)).length + (uc ? 1 : 0);
+  return window.cfEssayArchetypes.applicationCount(list);
 }
 
 function OcSchoolTile({ s, off, disabled, onToggle }) {
@@ -267,6 +265,8 @@ function OcSchoolTile({ s, off, disabled, onToggle }) {
         <span className={"oc-tier oc-tier--" + s.tier}>{OC_TIER_LABEL[s.tier]}</span>
         {s.aiTier && s.aiTier !== s.tier && <span className="oc-tier-note" title="Forge sets tiers from published admissions data for your GPA and scores">Forge's data</span>}
         {s.round && <span className="oc-round" title="Planned round; confirmed after research">{s.round}</span>}
+        {window.cfEssayArchetypes.isUcCampus(s) && <span className="oc-tier-note" title="Every UC campus uses one application and one set of essays (the PIQs)">UC Application · shared essays</span>}
+        {window.cfEssayArchetypes.isCsuCampus(s) && <span className="oc-tier-note" title="Every Cal State campus uses one Cal State Apply application, with no essays">Cal State Apply · no essays</span>}
         {s.current && <span className="oc-tier-note">On your list</span>}
       </div>
       <p>{ocInline(s.reason, "r")}</p>
