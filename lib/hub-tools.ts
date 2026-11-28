@@ -28,6 +28,7 @@ import { AID_TOOL_SPECS, runAidTool } from "./aid-tools";
 
 class AidToolError extends Error {}
 import { DECISION_TOOL_SPECS, runDecisionTool } from "./decision-picks";
+import { RANKING_TOOL_SPECS, runRankingTool } from "./ranking-tools";
 
 type Args = Record<string, unknown>;
 
@@ -432,9 +433,9 @@ export function makeHubTools(
   ];
 
   // The MCP server's tracker, sharing and read tools, for everything the list above doesn't cover.
-  const bridged = bridgeToolSpecs(new Set([...tools.map((t) => t.name), ...PROFILE_TOOL_SPECS.map((t) => t.name), ...EXTRA_TOOL_SPECS.map((t) => t.name), ...DECISION_TOOL_SPECS.map((t) => t.name), ...AID_TOOL_SPECS.map((t) => t.name)]));
+  const bridged = bridgeToolSpecs(new Set([...tools.map((t) => t.name), ...PROFILE_TOOL_SPECS.map((t) => t.name), ...EXTRA_TOOL_SPECS.map((t) => t.name), ...DECISION_TOOL_SPECS.map((t) => t.name), ...AID_TOOL_SPECS.map((t) => t.name), ...RANKING_TOOL_SPECS.map((t) => t.name)]));
   const bridgedNames = new Set(bridged.map((t) => t.name));
-  const allTools = [...tools, ...EXTRA_TOOL_SPECS, ...DECISION_TOOL_SPECS, ...AID_TOOL_SPECS, ...bridged];
+  const allTools = [...tools, ...EXTRA_TOOL_SPECS, ...DECISION_TOOL_SPECS, ...AID_TOOL_SPECS, ...RANKING_TOOL_SPECS, ...bridged];
 
   const executeTool: ToolExecutor = async (name, argsJson) => {
     // Log the operation, not student details or URLs contained in arguments.
@@ -488,6 +489,8 @@ export function makeHubTools(
       if (decisionReply !== null) return decisionReply;
       const aidReply = await runAidTool(name, a, mutate, scopedWorkspace);
       if (aidReply !== null) return aidReply;
+      const rankingReply = await runRankingTool(name, a, scopedWorkspace);
+      if (rankingReply !== null) return rankingReply;
       switch (name) {
         case "get_college_recommendations": {
           const ws = await scopedWorkspace();

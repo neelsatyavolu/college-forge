@@ -81,7 +81,10 @@ function Decisions({ tracker, onTrackerChange, onWorkspaceChange }) {
   const apps = tracker.apps;
   const hidden = apps.filter((a) => a.decision.state === "hidden");
   const known = apps.filter((a) => a.decision.state === "revealed" || a.decision.state === "recorded");
-  const waiting = apps.filter((a) => a.decision.state === "none" && a.stage === "waiting");
+  // Soonest expected decision first; schools with no date yet go last.
+  const dateOf = (a) => (a.decisionDate && a.decisionDate.date) || "9999";
+  const waiting = apps.filter((a) => a.decision.state === "none" && a.stage === "waiting")
+    .sort((x, y) => dateOf(x).localeCompare(dateOf(y)) || x.name.localeCompare(y.name));
 
   const run = async (body) => {
     setBusy(true);
