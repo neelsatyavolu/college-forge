@@ -689,3 +689,14 @@ test('each tracked app carries the key its chance estimate is saved under', () =
   assert.equal(keys['University of Michigan'], 'university-of-michigan');
   assert.equal(keys['Nowhere Test College'], 'app:a3', 'not on the shortlist: its own key');
 });
+
+test('a "no need-based aid" answer is every school\'s default; a school turned back on stays on', () => {
+  const { viewTracker } = require('../lib/tracker-service.ts');
+  const { emptyTracker } = require('../lib/tracker.ts');
+  const app = (id, extra = {}) => ({ id, name: id, slug: '', status: 'in_progress', round: 'RD', deadline: '', notes: '', followUps: [], createdAt: 1, updatedAt: 1, ...extra });
+  const tracker = { ...emptyTracker(), apps: [app('a1'), app('a2', { ignoreAid: false })] };
+  const view = (needAid) => Object.fromEntries(viewTracker(tracker, '2026-11-27', 0, undefined, [], needAid).apps.map((a) => [a.name, a.ignoreAid]));
+  assert.deepEqual(view(false), { a1: true, a2: false });
+  assert.deepEqual(view(true), { a1: false, a2: false });
+  assert.deepEqual(view(undefined), { a1: false, a2: false });
+});

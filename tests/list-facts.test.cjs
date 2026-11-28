@@ -87,3 +87,9 @@ test('international students see full cost, never US income averages', () => {
   assert.match(f.netPrice.label, /full cost before any aid for international students/);
   assert.notEqual(f.fitsBudget, 'yes', 'a ~$98k cost does not fit a $30-50k budget');
 });
+
+test('a full state name in an older profile still counts as out of state', () => {
+  assert.equal(F.outOfStatePublic({ state: 'TX', isPublic: true }, 'California'), true);
+  assert.equal(F.outOfStatePublic({ state: 'CA', isPublic: true }, 'california'), false);
+  assert.equal(F.outOfStatePublic({ state: 'TX', isPublic: true }, 'Atlantis'), false);
+});

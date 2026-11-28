@@ -7,6 +7,7 @@ import type { IncomeBracket, OnboardingListPrefs, Workspace } from "./store";
 import { loadSchoolResearch, type SchoolResearch } from "./school-research";
 import { averageNetPrice, schoolPlace } from "./college-recommendations";
 import { internationalAid, internationalAidLabel } from "./international-aid";
+import { stateCode } from "./profile-fields";
 
 export const CURRENT_CYCLE = "2026-27";
 
@@ -33,7 +34,9 @@ export type NetPrice = { amount: number; basis: "income" | "sticker" | "average"
 
 /** Federal net price by income counts in-state students only, so it isn't a nonresident's price at a public. */
 export function outOfStatePublic(place: { state: string; isPublic: boolean } | null, residency: string | undefined): boolean {
-  return !!place && place.isPublic && !!residency && /^[A-Z]{2}$/.test(residency) && place.state !== residency;
+  // Older workspaces may hold a full state name ("California"); compare codes either way.
+  const home = residency ? stateCode(residency) : null;
+  return !!place && place.isPublic && !!home && place.state !== home;
 }
 
 /**
