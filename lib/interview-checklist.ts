@@ -5,6 +5,7 @@
  */
 import type { InterviewSection, InterviewState, Workspace } from "./store";
 import { isNotYetTestedNote, isTestOptionalNote } from "./colleges";
+import { missingAidDetails, wantsAidDetails } from "./aid-profile";
 
 export const SECTIONS: InterviewSection[] = ["basics", "school", "testing", "activities", "campus", "money", "early", "deep"];
 export const DEEP_MIN = 3;
@@ -110,6 +111,16 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
     }
   }
   return out;
+}
+
+/**
+ * Optional questions for a section: never required, never blocking. Only the money section has them: the aid
+ * details (lib/aid-profile.ts), for a student applying for need-based aid or not sure.
+ */
+export function optionalFields(ws: Workspace, section: InterviewSection): string[] {
+  if (section !== "money" || !wantsAidDetails(ws.onboarding.listPrefs?.needAid)) return [];
+  const left = missingAidDetails(ws.aidProfile);
+  return left.length ? [`aid details (optional, set_aid_details): ${left.join(", ")}`] : [];
 }
 
 /** The first section with required fields missing, or null when the interview can move to the list. */

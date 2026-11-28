@@ -25,7 +25,9 @@ ws.criticalDates=[{date:'2026-10-10',label:'Request teacher recommendation',deta
 ws.recommendations=[{id:'example-teacher',name:'Example science teacher',type:'teacher',subject:'Physics',status:'asked',deadline:'2026-11-01'}];
 ws.scholarships=[{id:'example-award',name:'Example community scholarship',amount:'Amount to verify',deadline:'2027-02-01',status:'researching'}];
 // A school page with everything filled in (#shortlist/<first slug>): synthetic facts, rounds, prompts and an estimate.
-ws.onboarding.listPrefs={...ws.onboarding.listPrefs,incomeBracket:'75-110',budget:'15-30'};
+ws.onboarding.listPrefs={...ws.onboarding.listPrefs,incomeBracket:'75-110',budget:'15-30',needAid:process.env.FIXTURE_NEED_AID!=='no'};
+// Synthetic aid details for the Recs & aid estimate (lib/aid-estimate.ts).
+ws.aidProfile={householdSize:4,parentStatus:'married',parentsFiledTaxes:'yes',parentAgi:92000,parentAssets:'10-50',studentIncome:'lt5'};
 const src='https://example.edu/fixture';
 const fx=(key,value,extra={})=>({key,value,sourceUrl:src,checkedAt:'2026-09-15',cycle:'2026-27',thirdParty:false,...extra});
 const first=ws.colleges[0];
@@ -48,6 +50,10 @@ const {newApp}=require('../lib/tracker.ts');
 const {viewTracker}=require('../lib/tracker-service.ts');
 const {studentScores}=require('../lib/testing-plan.ts');
 const {schoolInsights}=require('../lib/school-detail.ts');
+const {aidPlan}=require('../lib/aid-plan.ts');
+const {aidEstimate}=require('../lib/aid-estimate.ts');
+const {aidChecklist}=require('../lib/aid-checklist.ts');
+const {AID_FIELD_WHY}=require('../lib/aid-profile.ts');
 ws.tracker={...ws.tracker,apps:[{...newApp({name:first.name,slug:first.slug}),status:'in_progress',testing:{plan:'send',method:'self_report'}},{...newApp({name:ws.colleges[1].name,slug:ws.colleges[1].slug}),status:'submitted'}]};
 const pts=Array.from({length:40},(_,i)=>({sat:1300+((i*37)%300),gpa:Math.round((3.4+((i*13)%60)/100)*100)/100,result:i%3?'Denied':'Accepted',round:i%4?'RD':'EA'}));
 const scatter={version:1,importedAt:Date.now(),classOfYears:'2023-2026',student:null,colleges:{[first.slug]:{slug:first.slug,name:first.name,rank:null,maiaTitle:first.name,fetchedAt:Date.now(),n:pts.length,counts:{Accepted:pts.filter(p=>p.result==='Accepted').length,Denied:pts.filter(p=>p.result==='Denied').length},averages:{sat:1450,gpa:3.7},points:pts}}};
@@ -64,6 +70,7 @@ const server=createServer(async(req,res)=>{
   if(req.method==='GET' && url.pathname==='/api/me')return json({signedIn:true,user:{email:'student@example.com',name:'Alex Rivera'},needsOnboarding:false,parent:{students:0,home:false,counselor:false}});
   if(req.method==='GET' && url.pathname==='/api/applications')return json({success:true,data:viewTracker(ws.tracker,undefined,ws.revision,studentScores(ws),ws.colleges)});
   if(req.method==='GET' && url.pathname==='/api/workspace/school'){const d=schoolInsights(ws,url.searchParams.get('slug')||'');return d?json({success:true,data:d}):json({success:false,error:"That school isn't on your list."},404);}
+  if(req.method==='GET' && url.pathname==='/api/aid'){const plan=aidPlan(ws);return json({success:true,data:{...plan,estimate:aidEstimate(ws),checklist:aidChecklist(ws,plan),details:ws.aidProfile??{},why:AID_FIELD_WHY}});}
   if(req.method==='GET' && url.pathname==='/api/workspace/scattergrams')return json({success:true,data:scatter});
   if(req.method==='GET' && url.pathname==='/api/colleges/recommendations')return json({success:true,data:recommendColleges(ws)});
   if(req.method==='GET' && url.pathname==='/api/colleges/search')return json({success:true,data:ws.colleges});
@@ -73,4 +80,5 @@ const server=createServer(async(req,res)=>{
  }
  try{const file=path.resolve(publicDir,'.'+(url.pathname==='/'?'/hub/index.html':decodeURIComponent(url.pathname)));if(!file.startsWith(publicDir+path.sep)){res.writeHead(403);return res.end();}const content=await readFile(file);res.writeHead(200,{'content-type':types[path.extname(file)]||'application/octet-stream','cache-control':'no-store'});res.end(content);}catch{res.writeHead(404);res.end('Not found');}
 });
-server.listen(Number(process.env.PORT)||3211,'127.0.0.1',()=>console.log('Synthetic UI fixture: http://127.0.0.1:3211 (memory only; no live services)'));
+const port=Number(process.env.PORT)||3211;
+server.listen(port,'127.0.0.1',()=>console.log(`Synthetic UI fixture: http://127.0.0.1:${port} (memory only; no live services)`));

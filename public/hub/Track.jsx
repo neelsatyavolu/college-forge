@@ -3,6 +3,8 @@ const { Button, SectionLabel } = window.CollegeForgeDesignSystem_e95e63;
 const SCH_STATUSES = ["researching", "in_progress", "submitted", "won", "lost", "skipped"];
 const AID = ["not_started", "in_progress", "submitted", "processed"];
 const CSS = ["not_started", "in_progress", "submitted", "processed", "n_a"];
+const STATUS_LABEL = { not_started: "Not Started", in_progress: "In Progress", submitted: "Submitted", processed: "Processed", n_a: "Not Needed", researching: "Researching", won: "Won", lost: "Not Awarded", skipped: "Skipped" };
+const statusLabel = (s) => STATUS_LABEL[s] || s.replace(/_/g, " ");
 
 function Panel({ title, action, children }) {
   return (
@@ -33,6 +35,10 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
   const [notes, setNotes] = React.useState(fa.notes || "");
+  // Not applying for need-based aid: the aid forms fold to one line, so letters and scholarships lead.
+  const needAid = data.onboarding && data.onboarding.listPrefs ? data.onboarding.listPrefs.needAid : undefined;
+  const [showAid, setShowAid] = React.useState(false);
+  const aidShown = needAid !== false || showAid;
 
   const patch = async (p) => {
     if (busy) return false;
@@ -71,9 +77,9 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
-          <h1 className="cf-page-title">Recs, aid &amp; scholarships</h1>
+          <h1 className="cf-page-title">Recs &amp; aid</h1>
           <p className="cf-page-lede">
-            Keep recommendation letters, scholarships, and financial aid in one place. Check the official FAFSA and CSS Profile sites for your enrollment year, eligibility, and school-specific deadlines.
+            Recommendation letters, financial aid and scholarships in one place. Check the official FAFSA and CSS Profile sites for your enrollment year, eligibility, and school-specific deadlines.
           </p>
         </div>
         <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot ✱</Button>
@@ -81,6 +87,14 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
 
       {error && <div className="cf-notice" role="alert">{error}</div>}
       {busy && <p role="status" style={{fontSize:12,color:"var(--muted)"}}>Saving changes…</p>}
+      {needAid === false ? (
+        <div className="cf-aid-off" role="status">
+          <span>You said you're not applying for need-based aid.</span>
+          <button type="button" className="cf-link-btn" aria-expanded={showAid} onClick={() => setShowAid((v) => !v)}>{showAid ? "Hide aid checklist" : "Show aid checklist anyway"}</button>
+          <a className="cf-link-btn" href="#recommendations">Change</a>
+        </div>
+      ) : null}
+      {aidShown ? (<React.Fragment>
       <Panel title="Financial aid checklist">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16, marginBottom: 12 }}>
           <label>
@@ -88,7 +102,7 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
             <select value={fa.fafsaStatus || "not_started"} disabled={busy}
               onChange={(e) => patch({ financialAid: { fafsaStatus: e.target.value } })}
               style={{ ...fieldStyle, width: "100%" }}>
-              {AID.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
+              {AID.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
             </select>
           </label>
           <label>
@@ -96,7 +110,7 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
             <select value={fa.cssStatus || "not_started"} disabled={busy}
               onChange={(e) => patch({ financialAid: { cssStatus: e.target.value } })}
               style={{ ...fieldStyle, width: "100%" }}>
-              {CSS.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
+              {CSS.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
             </select>
           </label>
           <label>
@@ -104,7 +118,7 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
             <select value={fa.idocStatus || "n_a"} disabled={busy}
               onChange={(e) => patch({ financialAid: { idocStatus: e.target.value } })}
               style={{ ...fieldStyle, width: "100%" }}>
-              {CSS.map((s) => <option key={s} value={s}>{s === "n_a" ? "not needed" : s.replace(/_/g, " ")}</option>)}
+              {CSS.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
             </select>
           </label>
         </div>
@@ -112,8 +126,8 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
           <a href="https://studentaid.gov/h/apply-for-aid/fafsa" target="_blank" rel="noopener noreferrer" style={{ color: "var(--coral)" }}>Open FAFSA →</a>
           <a href="https://cssprofile.collegeboard.org/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--coral)" }}>Open CSS Profile →</a>
         </div>
-        <p style={{ margin: "12px 0 0", fontSize: 12, color: "var(--muted)" }}>
-          Tip: create FSA IDs early for student + parent. Net price calculators live on each school’s Explore detail page when available.
+        <p style={{ margin: "12px 0 0", fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>
+          The FAFSA is the federal form every school uses for grants, work-study and federal loans. The CSS Profile is the College Board's longer form that many private colleges use to give their own grants. IDOC is the College Board's secure upload where some of those schools collect tax returns.
         </p>
         <textarea
           placeholder="Notes (special circumstances, noncustodial parent, fee waivers…)"
@@ -126,9 +140,12 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
         <Button size="sm" variant="secondary" disabled={busy || notes === (fa.notes || "")} onClick={() => patch({ financialAid: { notes } })}>Save notes</Button>
       </Panel>
 
+      {needAid !== false ? <window.AidEstimate Panel={Panel} revision={data.revision} busy={busy} onAsk={onAsk} onSave={(details) => patch({ aidProfile: details })} /> : null}
+
       <Panel title="Aid by school">
         <window.AidBySchool revision={data.revision} />
       </Panel>
+      </React.Fragment>) : null}
 
       <LettersPanel Panel={Panel} recs={recs} tracker={tracker} busy={busy} patch={patch} fieldStyle={fieldStyle} onAsk={onAsk} />
 
@@ -153,7 +170,7 @@ function Track({ data, tracker, onAsk, onWorkspaceChange }) {
                   </div>
                 </div>
                 <select aria-label={`Status for ${s.name}`} disabled={busy} value={s.status} onChange={(e) => patch({ scholarship: { id: s.id, status: e.target.value } })} style={fieldStyle}>
-                  {SCH_STATUSES.map((st) => <option key={st} value={st}>{st.replace(/_/g, " ")}</option>)}
+                  {SCH_STATUSES.map((st) => <option key={st} value={st}>{statusLabel(st)}</option>)}
                 </select>
                 <button type="button" disabled={busy} onClick={() => patch({ removeScholarshipId: s.id })}
                   style={{ border: "none", background: "transparent", color: "var(--muted)", cursor: "pointer", fontSize: 12 }}>Remove</button>

@@ -3,6 +3,8 @@ import { recommendColleges } from "./college-recommendations";
 import { planReadiness } from "./plan-readiness";
 import { oddsTargets } from "./admission-odds";
 import { aidPlan } from "./aid-plan";
+import { aidEstimate } from "./aid-estimate";
+import { AID_SAFETY } from "./aid-tools";
 import { isEssayHidden, skippedEssayIds } from "./essay-tools";
 import { readSavedPicks } from "./decision-picks";
 import { GPA_SCALE_RULES } from "./gpa-scale";
@@ -68,6 +70,12 @@ export function snapshot(ws: Workspace): string {
   if (ws.tracker?.apps?.length) {
     const { totals } = aidPlan(ws);
     lines.push(`Aid forms by school (get_aid_plan): ${totals.cssSchools} need the CSS Profile, ${totals.idocSchools} use IDOC`);
+  }
+  if (ws.onboarding?.listPrefs?.needAid !== false) {
+    const est = aidEstimate(ws);
+    const given = Object.keys(ws.aidProfile ?? {}).length;
+    const sai = est.sai ? `SAI about $${est.sai.low.toLocaleString("en-US")} to $${est.sai.high.toLocaleString("en-US")}, Pell ${est.pell?.eligible ?? "—"}` : est.status;
+    lines.push(`Aid estimate (get_aid_estimate, ${est.awardYear} FAFSA): ${sai}; optional aid details given: ${given} of 12 (set_aid_details)`);
   }
   const tracked = ws.tracker?.apps || [];
   if (tracked.length) {
@@ -147,6 +155,7 @@ Your job is twofold:
 - **Essays and Applications follow one list.** Adding a school (upsert_college or add_application) puts it on both the college list and Applications, and auto-creates supplement slots (UC PIQs under slug \`uc-application\`). Removing a school with an untouched application removes both; otherwise the other side stays. After add/enrich, prefer real current-cycle prompts via web_search/web_fetch + set_essays (partial map by slug; merges safely).
 - Essays marked \`hidden\` (the student hid them, or Common App prompts they didn't choose) are out of scope: don't count, draft or suggest for them, and don't delete or re-add them. Essays marked \`not_writing\` belong to a school the student isn't writing supplements for (it stays on the list): skip them and don't load prompts for it. Use set_essay_visibility only when the student asks to hide, show or choose a prompt, or to stop or start writing for a school.
 - **A complete plan** means every school on the list has verified deadlines saved on the college (\`deadlines\`: [{plan, date: "YYYY-MM-DD"}]), a round chosen with set_application_rounds so essay-heavy deadlines are spread out, and its current-cycle supplement prompts loaded; critical dates hold the cross-school milestones (recommendation requests, essay drafts, submissions) without repeating school deadlines. The workspace snapshot below lists what is still missing.
+- FAFSA and CSS Profile help: when the student asks for help filling out the FAFSA or CSS Profile, or what they'd pay, call get_aid_estimate and walk them through its steps one at a time, using their own details (who their contributors are, which year's taxes, which schools need the CSS Profile). Every number is an estimate; name the assumptions. You explain; they submit on StudentAid.gov and cssprofile.collegeboard.org. ${AID_SAFETY}
 - Track recommenders, scholarships, FAFSA/CSS, and per-school application status when relevant. Recommenders carry assigned schools (application ids), an asked date and a thank-you mark (set_recommendations); draft_rec_request writes a request email and brag-sheet outline the student sends themselves.
 - You can see and change everything in Forge, so do it instead of telling the student where to click:
   - Applications tab: list_applications, get_application, add_application, update_application (status, round, deadline, notes), record_decision, remove_application; to-dos with add_follow_up / complete_follow_up; cross-school problems with add_flag / resolve_flag; upcoming_dates; check_portals (signs in with saved logins and reads the portal); set_portal_settings (automatic checks, emails).

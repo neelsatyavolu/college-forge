@@ -108,7 +108,8 @@ function rowFor(ws: Workspace, app: TrackedApp, today: string): AidRow {
   const cssFact = factOf(facts, "css_profile");
   const css = classifyCss(cssFact?.value ?? "");
   const idoc = mentionsIdoc(cssFact?.value ?? "");
-  const ignoreAid = !!app.ignoreAid;
+  // A student who said they won't apply for need-based aid sees every school's aid forms off, unless they turned one back on.
+  const ignoreAid = app.ignoreAid ?? ws.onboarding.listPrefs?.needAid === false;
   const deadlines = ignoreAid ? [] : aidDeadlines(college, research);
   const open = (app.followUps ?? []).filter((f) => !f.done && AID_FOLLOW_UP.test(f.text));
   const known = new Set((app.followUps ?? []).map((f) => f.text.trim().toLowerCase()));

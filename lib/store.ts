@@ -12,6 +12,7 @@ import { emptyTracker, migrateOldStatuses, normalizeTracker, shownPortal, type T
 import type { AdmissionOdds, ApplicationRead } from "./admission-odds";
 import type { SchoolStats } from "./school-stats";
 import type { SchoolResearch } from "./school-research";
+import type { AidProfile } from "./aid-profile";
 import { sharedScholarship } from "./aid-validate";
 
 // ── Workspace data model ──────────────────────────────────────────────────
@@ -343,6 +344,8 @@ export type Workspace = {
   recommendations: Recommendation[];
   scholarships: Scholarship[];
   financialAid: FinancialAid;
+  /** Optional family details for the aid estimate (lib/aid-profile.ts). Private: no share link or parent view includes it. */
+  aidProfile?: AidProfile;
   /** Read-only advisor comments (also writable via share page). */
   advisorNotes: AdvisorNote[];
   /** Active share link metadata (tokens themselves live in share-store). */

@@ -86,6 +86,10 @@ export function friendlyToolMessage(name: string, path?: string): string {
       return "Updating financial aid…";
     case "get_aid_plan":
       return "Checking which aid forms each school needs…";
+    case "get_aid_estimate":
+      return "Working out your aid estimate…";
+    case "set_aid_details":
+      return "Saving your aid details…";
     case "read_application":
       return "Reading your profile and essays…";
     case "set_application_read":

@@ -132,7 +132,8 @@ export const researchOf = (colleges: College[] | undefined, app: TrackedApp): Re
 
 /** `revision` is the workspace's; the hub ignores a response older than one it already has. */
 /** `colleges` lends each school's workspace research (when it has some) to the interest signal. */
-export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES, colleges?: College[]) {
+/** needAid: the student's workspace answer; "no" is every school's default until they turn one back on. */
+export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES, colleges?: College[], needAid?: boolean) {
   // Where each app's chance estimate is saved: its shortlist school's slug, matched as oddsTargets does
   // (lib/admission-odds.ts trackedFor), else "app:<id>". The hub can't redo the catalog match itself.
   const keys = new Map<string, string>();
@@ -148,7 +149,7 @@ export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, 
     // When automatic checks run, in the student's time zone. Not in shareTracker: progress links don't get it.
     schedule: describeSchedule(normalizeSchedule(tracker.schedule)),
     flags: tracker.flags.filter((f) => !f.resolvedAt),
-    apps: tracker.apps.map((a) => ({ ...viewApp(a, today, scores, researchOf(colleges, a)), oddsKey: keys.get(a.id) ?? `app:${a.id}` })),
+    apps: tracker.apps.map((a) => ({ ...viewApp(a.ignoreAid === undefined && needAid === false ? { ...a, ignoreAid: true } : a, today, scores, researchOf(colleges, a)), oddsKey: keys.get(a.id) ?? `app:${a.id}` })),
   };
 }
 
@@ -203,7 +204,7 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
 
 export async function listApps(workspaceId: string) {
   const ws = await getWorkspace(workspaceId);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
 }
 
 export async function addApp(
@@ -535,18 +536,18 @@ export async function setSchedule(workspaceId: string, input: { everyHours: numb
     return { ...tracker, schedule, lastSlotAt: latestSlot(schedule, Date.now()) };
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
 }
 
 export async function setEmails(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, emails: on }));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
 }
 
 export async function setAutocheck(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, autocheck: on }));
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
 }
 
 /**
@@ -608,7 +609,7 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
   await syncAutocheckIndex(workspaceId, ws.tracker);
   // Remembered so the one-time "College Apps is now Forge" email skips this account.
   await writeDoc(`collegeapps-moved/${emailHash(email)}.json`, { at: Date.now() });
-  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges) };
+  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid) };
 }
 
 /** Upcoming deadlines and decision dates, soonest first, plus the student's own dates from the timeline. */
@@ -654,10 +655,10 @@ export const updateFollowUp = (workspaceId: string, ref: string, id: string, cha
 
 export async function flag(workspaceId: string, text: string, scope = "") {
   const ws = await mutate(workspaceId, (tracker) => addFlag(tracker, text, scope));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
 }
 
 export async function unflag(workspaceId: string, id: string) {
   const ws = await mutate(workspaceId, (tracker) => resolveFlag(tracker, id));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
 }

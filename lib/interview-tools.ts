@@ -8,7 +8,7 @@ import { dataTier, REGIONS, schoolPlace, studentAcademics, testRequired } from "
 import { BUDGET_CAP, studentFacts } from "./list-facts";
 import type { College, InterviewSection, InterviewState, InterviewTurn, Workspace } from "./store";
 import { RESEARCH_KEYS, type ResearchFact, type ResearchKey } from "./school-research";
-import { SECTIONS, firstIncomplete, missingFields, startInterview } from "./interview-checklist";
+import { SECTIONS, firstIncomplete, missingFields, optionalFields, startInterview } from "./interview-checklist";
 import { isUcCampus } from "./seed-college-list";
 import { isHttpUrl, slugify } from "./colleges";
 import { ACTIVITIES, INTERESTS, readAnswers, suggestMajors } from "./major-finder";
@@ -446,7 +446,9 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
 function statusOf(ws: Workspace) {
   const iv = interviewOf(ws);
   const missing = Object.fromEntries(SECTIONS.map((s) => [s, missingFields(ws, s)]).filter(([, m]) => (m as string[]).length));
-  return { phase: iv.phase, section: iv.section, firstIncomplete: firstIncomplete(ws), missing, deepAnswers: iv.deep.length, notes: iv.notes };
+  // Optional and never blocking: aid details still blank, only for a student applying for aid or unsure.
+  const optional = optionalFields(ws, "money");
+  return { phase: iv.phase, section: iv.section, firstIncomplete: firstIncomplete(ws), missing, ...(optional.length ? { optional: { money: optional } } : {}), deepAnswers: iv.deep.length, notes: iv.notes };
 }
 
 /** `execute` returns null for tools it doesn't own, so the caller can fall through to the hub tools. */
