@@ -88,26 +88,37 @@ export function officialRanksOf(name: string): { school: string; ranks: Record<s
   return school ? { school, ranks } : null;
 }
 
+/** get_ranked_list's answer for this workspace (also the MCP server's). */
+export function rankedListResult(ws: Workspace): { empty: string } | { how: string; rows: unknown[] } {
+  const view = rankedList(ws);
+  if (!view.rows.length) return { empty: "The Ranked list is empty: it lists the student's applications (Portals/Progress), and they have none yet." };
+  return {
+    how: `Applications ordered by a weighted average rank (weights ${JSON.stringify(RL.WEIGHTS)}; usn = U.S. News national, a liberal arts rank converted to its national equivalent; pr = Princeton Review Best Value, converted; career = the student's My path career ranking, converted). Lower is better. It is not an admission-chance order: a school high on this list can still be a reach.`,
+    rows: view.rows.map((r) => ({ position: r.position, name: r.name, average: r.average, ranks: r.detail, outcome: r.outcome })),
+  };
+}
+
+/** get_official_rankings's answer: named schools' ranks on every list, or one list's top schools. */
+export function officialRankingsResult(a: { schools?: unknown; list?: unknown; top?: unknown }) {
+  const schools = Array.isArray(a.schools) ? a.schools.filter((s): s is string => typeof s === "string" && !!s.trim()).slice(0, 20) : [];
+  if (schools.length) {
+    return {
+      lists: LISTS, editions: OFFICIAL.editions,
+      schools: schools.map((s) => officialRanksOf(s) ?? { school: s, ranks: {}, note: "not on any official list Forge has" }),
+    };
+  }
+  const list = typeof a.list === "string" && LISTS[a.list] ? a.list : "forge";
+  const top = Math.min(100, Math.max(1, Number.isInteger(a.top) ? (a.top as number) : 25));
+  return { list: LISTS[list], top: (OFFICIAL.lists[list] ?? []).slice(0, top).map((e) => ({ rank: e.rank, name: e.name, state: e.state })) };
+}
+
+export const RANKING_LISTS = Object.keys(LISTS);
+
 export async function runRankingTool(name: string, a: Record<string, unknown>, read: () => Promise<Workspace>): Promise<string | null> {
   if (name === "get_ranked_list") {
-    const view = rankedList(await read());
-    if (!view.rows.length) return "The Ranked list is empty: it lists the student's applications (Portals/Progress), and they have none yet.";
-    return JSON.stringify({
-      how: `Applications ordered by a weighted average rank (weights ${JSON.stringify(RL.WEIGHTS)}; usn = U.S. News national, a liberal arts rank converted to its national equivalent; pr = Princeton Review Best Value, converted; career = the student's My path career ranking, converted). Lower is better. It is not an admission-chance order: a school high on this list can still be a reach.`,
-      rows: view.rows.map((r) => ({ position: r.position, name: r.name, average: r.average, ranks: r.detail, outcome: r.outcome })),
-    });
+    const r = rankedListResult(await read());
+    return "empty" in r ? r.empty : JSON.stringify(r);
   }
-  if (name === "get_official_rankings") {
-    const schools = Array.isArray(a.schools) ? a.schools.filter((s): s is string => typeof s === "string" && !!s.trim()).slice(0, 20) : [];
-    if (schools.length) {
-      return JSON.stringify({
-        lists: LISTS, editions: OFFICIAL.editions,
-        schools: schools.map((s) => officialRanksOf(s) ?? { school: s, ranks: {}, note: "not on any official list Forge has" }),
-      });
-    }
-    const list = typeof a.list === "string" && LISTS[a.list] ? a.list : "forge";
-    const top = Math.min(100, Math.max(1, Number.isInteger(a.top) ? (a.top as number) : 25));
-    return JSON.stringify({ list: LISTS[list], top: (OFFICIAL.lists[list] ?? []).slice(0, top).map((e) => ({ rank: e.rank, name: e.name, state: e.state })) });
-  }
+  if (name === "get_official_rankings") return JSON.stringify(officialRankingsResult(a));
   return null;
 }
