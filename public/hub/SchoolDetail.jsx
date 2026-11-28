@@ -201,7 +201,7 @@ function DeadlinesValue({ college }) {
         <ul className="cf-sd-deadlines">
           {deadlines.map((d) => {
             const on = chosen && d.plan.trim().toLowerCase() === chosen.plan.toLowerCase();
-            return <li key={d.plan + d.date} className={on ? "is-chosen" : ""}><span>{d.plan}</span><span className="cf-nums">{sdDate(d.date)}</span>{on ? <span className="cf-sd-chosen">your round</span> : null}</li>;
+            return <li key={d.plan + d.date} className={on ? "is-chosen" : ""}><span>{d.plan}</span><span className="cf-nums">{sdDate(d.date)}{d.projectedFrom ? " (est.)" : ""}</span>{on ? <span className="cf-sd-chosen">your round</span> : null}</li>;
           })}
         </ul>
       ) : <span className="cf-sd-muted">No deadlines saved yet.</span>}

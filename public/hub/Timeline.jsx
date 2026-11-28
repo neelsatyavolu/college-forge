@@ -82,7 +82,9 @@ function ThisWeek({ week, schedule, today, needsRound, nextAid }) {
             ))}
           </ol>
         ) : (
-          <p className="cf-help">Nothing to write this week. Every essay on your list is marked final, or has no prompts saved yet.</p>
+          schedule.startsOn
+            ? <p className="cf-help">Nothing to write yet. Supplement writing starts around <strong>{TL.shortDate(schedule.startsOn)}, {schedule.startsOn.slice(0, 4)}</strong>, when schools usually post their prompts. Until then, build your activities and start thinking about your personal statement.</p>
+            : <p className="cf-help">Nothing to write this week. Every essay on your list is marked final, or has no prompts saved yet.</p>
         )}
         {next ? <p className="cf-tl-week__next">Next deadline: <a href={next.slug ? schoolHref(next.slug) : "#progress"}>{next.title}</a> <span className="cf-nums">{next.deadline.plan} · {TL.shortDate(next.deadline.date)} ({daysLabel(TL.dayDiff(today, next.deadline.date))})</span></p> : null}
         {nextAid ? <p className="cf-tl-week__next">Next {nextAid.kind === "aid" ? "aid form" : "scholarship date"}: <a href="#timeline/aid">{nextAid.kind === "aid" ? nextAid.form.form : nextAid.sub} for {nextAid.title}</a> <span className="cf-nums">{TL.shortDate(nextAid.date)} ({daysLabel(TL.dayDiff(today, nextAid.date))})</span></p> : null}
@@ -142,7 +144,7 @@ function DateRow({ e }) {
   const kind = e.done ? "Submitted" : e.kind === "milestone" && e.mine ? "Your date" : e.kind === "task" ? e.label : KIND_LABELS[e.kind];
   return (
     <li className={cls}>
-      <span className="cf-tl-event__date cf-nums"><span>{weekday(e.date)}</span>{TL.shortDate(e.date)}</span>
+      <span className="cf-tl-event__date cf-nums"><span>{weekday(e.date)}</span>{TL.shortDate(e.date)}{e.est ? <em className="cf-tl-est" title="This year's date moved to your cycle; schools haven't published yours yet">est.</em> : null}</span>
       <span className="cf-tl-event__body">
         <strong>{title}</strong>
         {sub ? <span>{sub}</span> : null}
@@ -200,7 +202,7 @@ function AidRows({ rows }) {
     <ol className="cf-tl-aid__rows">
       {rows.map((e, i) => (
         <li key={e.slug + e.sub + i}>
-          <span className="cf-tl-event__date cf-nums"><span>{weekday(e.date)}</span>{TL.shortDate(e.date)}</span>
+          <span className="cf-tl-event__date cf-nums"><span>{weekday(e.date)}</span>{TL.shortDate(e.date)}{e.est ? <em className="cf-tl-est" title="This year's date moved to your cycle; schools haven't published yours yet">est.</em> : null}</span>
           <span className="cf-tl-aid__what"><a href={schoolHref(e.slug)}>{e.title}</a>{e.sub !== e.form.form ? <span>{e.sub}</span> : null}</span>
           <span className="cf-tl-aid__form">{e.form.form}</span>
         </li>
@@ -273,6 +275,7 @@ function WritingPlan({ schedule, today }) {
   return (
     <section aria-labelledby="tl-writing">
       <div className="cf-section-heading"><h2 id="tl-writing">Writing schedule</h2><span className="cf-nums">{plural(schedule.weeks.length, "week")} of writing</span></div>
+      {schedule.startsOn ? <p className="cf-help">Starts {TL.shortDate(schedule.startsOn)}, {schedule.startsOn.slice(0, 4)}, when schools usually post supplement prompts; the weeks below are planned from then.</p> : null}
       <p className="cf-help" style={{ marginBottom: 14 }}>Each essay gets an outline, a draft and a final pass, finished three days before its school's deadline; the personal statement comes a week before your first Common App deadline. Essays go earliest deadline first at the steadiest pace that still makes every deadline, so a crunch before an early deadline doesn't pull later schools forward. Marking an essay final on the Essays tab takes it off the plan.</p>
       {upcoming.length ? (
         <ol className="cf-tl-load" aria-label="Words per week">
@@ -333,9 +336,13 @@ function Timeline({ data, tracker, hash, onWorkspaceChange }) {
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">Timeline</h1>
-          <p className="cf-page-lede">Every date from now through spring, and a week-by-week plan that gets each school's essays done before its deadline.</p>
+          <p className="cf-page-lede">Every date through decision day, and a week-by-week plan that gets each school's essays done before its deadline.</p>
         </div>
       </header>
+      {/* A later-cycle student (class of 2028 in 2026-27) sees this year's dates moved to their cycle (lib/cycle-dates.ts). */}
+      {(data.colleges || []).some((c) => (c.deadlines || []).some((d) => d.projectedFrom)) ? (
+        <p className="cf-tl-banner" role="note"><strong>Estimated dates.</strong> Schools haven't published deadlines for your application year yet, so these are this year's dates moved a year ahead (marked "est."). Forge updates them when schools post new ones.</p>
+      ) : null}
       <TimelineTabs tabs={tabs} current={current} />
       <div role="tabpanel" id={`tl-panel-${current}`} aria-labelledby={`tl-tab-${current}`} tabIndex={0} className="cf-tl-panel">{panel}</div>
     </div>

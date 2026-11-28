@@ -164,6 +164,11 @@
       return x < y ? -1 : x > y ? 1 : (a.kind === "common" ? -1 : b.kind === "common" ? 1 : a.order - b.order);
     });
 
+    // Supplement prompts usually come out around Aug 1 of the application year, so a student whose deadlines
+    // are a year or more away (class of 2028 in 2026-27) starts writing then, not today.
+    var earliestDue = earliest(groups.map(function (g) { return g.deadline; }).concat(firstCommonApp ? [firstCommonApp] : []));
+    var start = earliestDue ? maxDate(today, seasonStart(earliestDue.date)) : today;
+
     var tasks = [];
     var shaped = groups.map(function (g) {
       var finished = [];
@@ -179,16 +184,16 @@
       return { key: g.key, kind: g.kind, title: g.title, slug: g.slug, deadline: g.deadline, finishBy: g.finishBy, essays: essays, finished: finished };
     });
 
-    var timing = paceTasks(tasks, today);
+    var timing = paceTasks(tasks, start);
     var weeks = {};
     tasks.forEach(function (t, i) {
       var span = timing[i];
       var endDay = dayOf(span.end);
-      var target = tl.addDays(today, endDay);
+      var target = tl.addDays(start, endDay);
       t.essay.targets[t.step] = target;
       if (t.finishBy && target > t.finishBy) t.essay.behind = true;
-      for (var w = weekIndex(dayOf(span.start + EPSILON), today); w <= weekIndex(endDay, today); w++) {
-        var b = weekBounds(w, today);
+      for (var w = weekIndex(dayOf(span.start + EPSILON), start); w <= weekIndex(endDay, start); w++) {
+        var b = weekBounds(w, start);
         var share = span.pace * (Math.min(span.end, b.lastDay + 1) - Math.max(span.start, b.firstDay));
         if (share <= EPSILON) continue;
         var week = weeks[w] || (weeks[w] = { start: b.start, end: b.end, words: 0, items: [] });
@@ -201,12 +206,18 @@
     var weekList = Object.keys(weeks).map(Number).sort(function (a, b) { return a - b; }).map(function (k) {
       return Object.assign({}, weeks[k], { index: k, words: Math.round(weeks[k].words) });
     });
-    var thisWeek = weekList[0] && weekList[0].index === 0 ? weekList[0] : Object.assign({ index: 0, words: 0, items: [] }, weekBounds(0, today));
+    var later = start > today;
+    var thisWeek = !later && weekList[0] && weekList[0].index === 0 ? weekList[0] : Object.assign({ index: 0, words: 0, items: [] }, weekBounds(0, today));
     var peak = timing.reduce(function (m, s) { return Math.max(m, s.pace); }, 0);
-    return { pace: Math.round(peak * 7), groups: shaped, weeks: weekList, thisWeek: thisWeek };
+    return { pace: Math.round(peak * 7), groups: shaped, weeks: weekList, thisWeek: thisWeek, startsOn: later ? start : null };
   }
 
   function maxDate(a, b) { return a > b ? a : b; }
+  /** Aug 1 of the application season a deadline belongs to (a Jan 5 deadline's season began the August before). */
+  function seasonStart(date) {
+    var y = Number(date.slice(0, 4)), m = Number(date.slice(5, 7));
+    return (m >= 8 ? y : y - 1) + "-08-01";
+  }
 
   var api = { writingSchedule: writingSchedule, BUFFER_DAYS: BUFFER_DAYS, COMMON_LEAD_DAYS: COMMON_LEAD_DAYS, MIN_DAILY_WORDS: MIN_DAILY_WORDS, MAX_DAILY_WORDS: MAX_DAILY_WORDS };
   root.cfWritingSchedule = api;

@@ -1,4 +1,5 @@
 import { emailHash } from "./service-auth";
+import { cycleShift } from "./cycle-dates";
 import { logoUrl } from "./catalog";
 import { deleteDoc, writeDoc } from "./doc-store";
 import { fetchCollegeAppsVault, toTracked } from "./collegeapps-import";
@@ -71,7 +72,7 @@ function lettersShown(app: TrackedApp, revealed: boolean) {
 }
 
 /** What clients see for one application: derived dates, the decision state, and never a password. */
-export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScores = NO_SCORES, research?: ResearchLike | null) {
+export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScores = NO_SCORES, research?: ResearchLike | null, cycleShift = 0) {
   const info = statusInfo(app.status);
   const testingPlan = testingPlanFor(app, scores);
   const base = decisionOf(app);
@@ -98,9 +99,9 @@ export function viewApp(app: TrackedApp, today = todayIso(), scores: StudentScor
     round: effectiveRound(app),
     roundFromPortal: !app.round && !!app.portal?.round,
     deadline: app.deadline,
-    decisionDate: decisionDateOf(app, today),
+    decisionDate: decisionDateOf(app, today, cycleShift),
     // Once a decision is posted, its expected date is no longer news.
-    nextDate: decision.state === "hidden" || decision.state === "revealed" ? null : nextDate(app, today),
+    nextDate: decision.state === "hidden" || decision.state === "revealed" ? null : nextDate(app, today, cycleShift),
     decision,
     portal: portal
       ? { checkedAt: portal.checkedAt, ok: portal.ok, error: portal.error, statusText: portal.statusText, update: portal.update, checklist: countedItems(app, portal.checklist) }
@@ -133,7 +134,7 @@ export const researchOf = (colleges: College[] | undefined, app: TrackedApp): Re
 /** `revision` is the workspace's; the hub ignores a response older than one it already has. */
 /** `colleges` lends each school's workspace research (when it has some) to the interest signal. */
 /** needAid: the student's workspace answer; "no" is every school's default until they turn one back on. */
-export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES, colleges?: College[], needAid?: boolean) {
+export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, scores: StudentScores = NO_SCORES, colleges?: College[], needAid?: boolean, cycleShift = 0) {
   // Where each app's chance estimate is saved: its shortlist school's slug, matched as oddsTargets does
   // (lib/admission-odds.ts trackedFor), else "app:<id>". The hub can't redo the catalog match itself.
   const keys = new Map<string, string>();
@@ -149,7 +150,7 @@ export function viewTracker(tracker: Tracker, today = todayIso(), revision = 0, 
     // When automatic checks run, in the student's time zone. Not in shareTracker: progress links don't get it.
     schedule: describeSchedule(normalizeSchedule(tracker.schedule)),
     flags: tracker.flags.filter((f) => !f.resolvedAt),
-    apps: tracker.apps.map((a) => ({ ...viewApp(a.ignoreAid === undefined && needAid === false ? { ...a, ignoreAid: true } : a, today, scores, researchOf(colleges, a)), oddsKey: keys.get(a.id) ?? `app:${a.id}` })),
+    apps: tracker.apps.map((a) => ({ ...viewApp(a.ignoreAid === undefined && needAid === false ? { ...a, ignoreAid: true } : a, today, scores, researchOf(colleges, a), cycleShift), oddsKey: keys.get(a.id) ?? `app:${a.id}` })),
   };
 }
 
@@ -204,7 +205,7 @@ async function mutate(workspaceId: string, change: (tracker: Tracker, ws: Worksp
 
 export async function listApps(workspaceId: string) {
   const ws = await getWorkspace(workspaceId);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid, cycleShift(ws));
 }
 
 export async function addApp(
@@ -245,7 +246,7 @@ export async function addApp(
     createdId = app.id;
     return { ...tracker, apps: [...tracker.apps, app] };
   });
-  return viewApp(ws.tracker.apps.find((a) => a.id === createdId)!, todayIso(), studentScores(ws));
+  return viewApp(ws.tracker.apps.find((a) => a.id === createdId)!, todayIso(), studentScores(ws), undefined, cycleShift(ws));
 }
 
 /**
@@ -279,7 +280,7 @@ export async function updateApp(workspaceId: string, ref: string, edit: AppEdit 
     await setMasterFor(workspaceId, { [id]: null });
     await syncAutocheckIndex(workspaceId, ws.tracker);
   }
-  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
+  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws), undefined, cycleShift(ws));
 }
 
 export async function removeApp(workspaceId: string, ref: string): Promise<{ removed: string }> {
@@ -309,7 +310,7 @@ export async function reveal(workspaceId: string, ref: string): Promise<AppView>
     const open = ADJUSTABLE.includes(app.status) || app.status === "deferred" || app.status === "waitlisted";
     return replaceApp(tracker, result && open ? editApp(opened, { status: result as StatusId }) : opened);
   });
-  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
+  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws), undefined, cycleShift(ws));
 }
 
 /** A letter's body, only for a decision the student revealed. `letterId` picks an earlier letter. */
@@ -383,7 +384,7 @@ export async function setLogin(workspaceId: string, ref: string, login: PortalLo
     return replaceApp(tracker, { ...next, updatedAt: Date.now() });
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewApp(ws.tracker.apps.find((a) => a.id === current.id)!, todayIso(), studentScores(ws));
+  return viewApp(ws.tracker.apps.find((a) => a.id === current.id)!, todayIso(), studentScores(ws), undefined, cycleShift(ws));
 }
 
 /** Marks that a forwarded email left set-up details for this school (lib/portal-setup.ts holds them). */
@@ -480,7 +481,7 @@ export async function useMasterFor(workspaceId: string, ref: string, on: boolean
       return current ? replaceApp(tracker, { ...current, login: { username: master.username, hasPassword: true, source: "master" }, updatedAt: Date.now() }) : tracker;
     });
     await syncAutocheckIndex(workspaceId, ws.tracker);
-    return viewApp(ws.tracker.apps.find((a) => a.id === app.id)!, todayIso(), studentScores(ws));
+    return viewApp(ws.tracker.apps.find((a) => a.id === app.id)!, todayIso(), studentScores(ws), undefined, cycleShift(ws));
   }
   await setMasterFor(workspaceId, { [app.id]: null });
   const ws = await mutate(workspaceId, (tracker) => {
@@ -490,7 +491,7 @@ export async function useMasterFor(workspaceId: string, ref: string, on: boolean
     return replaceApp(tracker, { ...rest, updatedAt: Date.now() });
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewApp(ws.tracker.apps.find((a) => a.id === app.id)!, todayIso(), studentScores(ws));
+  return viewApp(ws.tracker.apps.find((a) => a.id === app.id)!, todayIso(), studentScores(ws), undefined, cycleShift(ws));
 }
 
 /** "Use for all portals without a login": catalog schools only, since their hosts are known. */
@@ -536,18 +537,18 @@ export async function setSchedule(workspaceId: string, input: { everyHours: numb
     return { ...tracker, schedule, lastSlotAt: latestSlot(schedule, Date.now()) };
   });
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid, cycleShift(ws));
 }
 
 export async function setEmails(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, emails: on }));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid, cycleShift(ws));
 }
 
 export async function setAutocheck(workspaceId: string, on: boolean) {
   const ws = await mutate(workspaceId, (tracker) => ({ ...tracker, autocheck: on }));
   await syncAutocheckIndex(workspaceId, ws.tracker);
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid, cycleShift(ws));
 }
 
 /**
@@ -609,7 +610,7 @@ export async function importFromCollegeApps(workspaceId: string, email: string, 
   await syncAutocheckIndex(workspaceId, ws.tracker);
   // Remembered so the one-time "College Apps is now Forge" email skips this account.
   await writeDoc(`collegeapps-moved/${emailHash(email)}.json`, { at: Date.now() });
-  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid) };
+  return { added, linked, total: incoming.length, tracker: viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid, cycleShift(ws)) };
 }
 
 /** Upcoming deadlines and decision dates, soonest first, plus the student's own dates from the timeline. */
@@ -622,8 +623,8 @@ export function upcoming(ws: Workspace, today = todayIso(), days = 120) {
     const stage = statusInfo(app.status).stage;
     if (app.deadline && stage === "working") rows.push({ date: app.deadline, kind: "Deadline", school: app.name, label: `${app.name} application due`, estimated: false });
     if (stage === "working" || stage === "waiting") {
-      const d = decisionDateOf(app, today);
-      if (d) rows.push({ date: d.date, kind: "Decision", school: app.name, label: `${app.name} decision${d.estimated ? " (estimated from last year)" : ""}`, estimated: d.estimated });
+      const d = decisionDateOf(app, today, cycleShift(ws));
+      if (d) rows.push({ date: d.date, kind: "Decision", school: app.name, label: `${app.name} decision${d.estimated ? " (estimated from past years)" : ""}`, estimated: d.estimated });
     }
   }
   for (const { school, event } of upcomingInterviews(ws.tracker, today)) {
@@ -644,7 +645,7 @@ async function changeApp(workspaceId: string, ref: string, change: (app: Tracked
     id = app.id;
     return replaceApp(tracker, change(app));
   });
-  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws));
+  return viewApp(ws.tracker.apps.find((a) => a.id === id)!, todayIso(), studentScores(ws), undefined, cycleShift(ws));
 }
 
 export const addFollowUpTo = (workspaceId: string, ref: string, text: string, due = "") =>
@@ -655,10 +656,10 @@ export const updateFollowUp = (workspaceId: string, ref: string, id: string, cha
 
 export async function flag(workspaceId: string, text: string, scope = "") {
   const ws = await mutate(workspaceId, (tracker) => addFlag(tracker, text, scope));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid, cycleShift(ws));
 }
 
 export async function unflag(workspaceId: string, id: string) {
   const ws = await mutate(workspaceId, (tracker) => resolveFlag(tracker, id));
-  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid);
+  return viewTracker(ws.tracker, todayIso(), ws.revision, studentScores(ws), ws.colleges, ws.onboarding.listPrefs?.needAid, cycleShift(ws));
 }
