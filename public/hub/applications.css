@@ -271,7 +271,9 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
   .cf-app-row__side, .cf-decision > .cf-row-actions { grid-column: 2 / -1; }
   .cf-app-row.cf-app-row--compact { grid-template-columns: 26px minmax(0, 1fr) auto; padding: 8px 12px; }
   .cf-app-row--compact .cf-app-row__side { grid-column: 3; }
-  .cf-app-row--compact .cf-app-row__said { display: none; }
+  /* What the portal said wraps to its own line instead of disappearing. */
+  .cf-app-row--compact .cf-app-row__said { flex-basis: 100%; min-width: 0; overflow-wrap: anywhere; }
+  .cf-decision > .cf-link-btn { grid-column: 2 / -1; justify-self: start; }
   .cf-app-row--compact .cf-app-row__name { font-size: 15px; }
   .cf-app-row--compact .cf-status select { padding: 0 26px 0 22px; font-size: 12px; }
   .cf-school-mark { width: 30px; height: 30px; }
@@ -297,14 +299,52 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
   .cf-rank-row__essay { grid-column: 5; grid-row: 1 / span 2; }
 }
 @media (max-width: 600px) {
+  /* Sources and the Admitted badge wrap under the name rather than hiding. */
   .cf-rank-row { grid-template-columns: 2em 22px minmax(0, 1fr) 3.2em auto; padding: 6px 12px; }
-  .cf-rank-row__src { display: none; }
-  .cf-rank-row__tag { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .cf-rank-row__name { flex-wrap: wrap; row-gap: 4px; }
+  .cf-rank-row__label { white-space: normal; }
+  .cf-rank-row__src { line-height: 1.35; }
+}
+
+/* Shortlist: balance and chances in one row above the schools; warnings and a preview open under it. */
+.cf-workspace .cf-grid-short-stats.cf-short-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.cf-short-tools { margin-bottom: 24px; padding: 10px 14px; border: 1px solid var(--hairline); border-radius: var(--radius-md, 6px); }
+.cf-short-tools__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.cf-short-tools__label { font-size: 13px; color: var(--muted); }
+.cf-short-tools__label b { font-weight: 500; color: var(--ink); }
+.cf-short-tools__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cf-short-tools__chances { margin-left: auto; }
+.cf-short-tools__preview, .cf-short-tools__warnings, .cf-short-tools__error { margin: 10px 0 0; font-size: 13px; line-height: 1.45; }
+.cf-short-tools__preview { color: var(--body); }
+.cf-short-tools__warnings { padding: 0; list-style: none; display: grid; gap: 4px; color: var(--warning); }
+.cf-short-tools__error { color: var(--error); }
+.cf-short-research { display: inline-block; margin-top: 8px; font-size: 12px; color: var(--workspace-accent); }
+/* Estimate my chances: the button, with its status line under it in the page's flow. */
+.cf-odds-compact { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 6px; max-width: 320px; }
+.cf-odds-compact--start { align-items: flex-start; }
+.cf-odds-compact__line { font-size: 12px; line-height: 1.35; text-align: right; }
+.cf-odds-compact--start .cf-odds-compact__line { text-align: left; }
+@media (max-width: 850px) {
+  .cf-workspace .cf-grid-short-stats.cf-short-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .cf-short-tools__chances { margin-left: 0; }
 }
 
 /* Official rankings tab: one line per school, opening to its facts. */
 .cf-orank__source { margin: 0 0 12px; font: 400 12px/1.4 var(--font-mono); color: var(--muted); }
 .cf-orank__about { margin: -4px 0 14px; max-width: 68ch; }
+.cf-orank__lists { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 18px; }
+.cf-orank__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
+.cf-orank__bar .cf-orank__source { margin: 0; }
+.cf-orank__search input { width: min(280px, 100%); min-height: 36px; padding: 6px 12px; border: 1px solid var(--hairline); border-radius: var(--radius-sm, 6px); background: var(--canvas); color: var(--ink); font: inherit; font-size: 14px; }
+.cf-orank__line { display: flex; align-items: center; }
+.cf-orank__line .cf-orank__row { flex: 1 1 auto; min-width: 0; }
+.cf-orank__actions { display: flex; flex: none; align-items: center; gap: 14px; padding-right: 14px; font-size: 13px; white-space: nowrap; }
+@media (max-width: 760px) {
+  .cf-orank__line { flex-wrap: wrap; }
+  .cf-orank__actions { flex-basis: 100%; padding: 0 12px 8px calc(2.4em + 22px + 34px); }
+}
 .cf-ptabs--scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 .cf-ptabs--scroll::-webkit-scrollbar { display: none; }
 .cf-ptabs--scroll .cf-ptab { flex: none; white-space: nowrap; }
@@ -329,6 +369,8 @@ button.cf-prow__name:focus-visible { outline: 2px solid var(--focus-ring); outli
   .cf-orank__row { grid-template-columns: 2em 22px minmax(0, 1fr) 16px; padding: 6px 12px; }
   .cf-orank__place { display: none; }
   .cf-orank__details { padding: 4px 12px 14px; }
+  .cf-orank__actions { padding-left: calc(2em + 22px + 32px); }
+  .cf-orank__search, .cf-orank__search input { width: 100%; }
   .cf-orank__facts { grid-template-columns: 1fr 1fr; }
 }
 

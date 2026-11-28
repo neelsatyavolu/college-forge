@@ -1,19 +1,40 @@
 const { Button } = window.CollegeForgeDesignSystem_e95e63;
 
+// Labels match onboarding's campus settings; the values are the catalog's (saved filters keep working).
 const SETTINGS = [
   { id: "all", label: "All" },
-  { id: "urban", label: "Urban" },
+  { id: "urban", label: "City" },
   { id: "suburban", label: "Suburban" },
-  { id: "town", label: "Town" },
+  { id: "town", label: "College town" },
   { id: "rural", label: "Rural" },
 ];
 const PAGE_SIZE = 24;
 
-// "#explore/<slug>" is an open school; plain "#explore" is the grid.
-function slugFromHash() {
-  const [view, slug] = window.location.hash.slice(1).split("/");
-  return view === "explore" && slug ? decodeURIComponent(slug) : null;
+// "#explore/<slug>/<scorecard id>" is an open school (the id lets a school found by search open on reload);
+// plain "#explore" is the grid. Older links without the id still open catalog schools.
+function routeFromHash() {
+  const [view, slug, id] = window.location.hash.slice(1).split("/");
+  if (view !== "explore" || !slug) return { slug: null, id: null };
+  return { slug: decodeURIComponent(slug), id: /^\d{1,10}$/.test(id || "") ? id : null };
 }
+/** The Explore link for one school; Official rankings links here too. */
+function exploreHash(c) {
+  return `#explore/${encodeURIComponent(c.slug)}${c.scorecardId ? "/" + encodeURIComponent(c.scorecardId) : ""}`;
+}
+
+/** Saves an Explore row (or its loaded detail) to the shortlist, minus Explore-only and bulky fields. */
+async function addExploreCollege(rich) {
+  const { onList, programs, f, research, rankings, niche, switching, earningsRange, intlAid, nursing, credit, thumb, partial, kind, region, hbcu, women, lacRank, ...college } = rich;
+  const res = await fetch("/api/workspace/colleges", {
+    method: "POST", credentials: "same-origin",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ college }),
+  });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || !j.success) throw new Error(j.error || "Could not add this school.");
+  return j;
+}
+window.cfExplore = { exploreHash, addExploreCollege };
 
 const SearchIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -64,7 +85,7 @@ function rankLabel(c) {
   return null;
 }
 
-function CollegeCard({ c, favorite, busy, onOpen, onAdd, onToggleFavorite }) {
+function CollegeCard({ c, busy, onOpen, onAdd }) {
   const rank = rankLabel(c);
   const fit = (c.tags || [])[0];
   const f = c.f || {};
@@ -73,7 +94,7 @@ function CollegeCard({ c, favorite, busy, onOpen, onAdd, onToggleFavorite }) {
   const highlights = cardHighlights(c);
   return (
     <article className="cf-explore-card">
-      <a href={`#explore/${encodeURIComponent(c.slug)}`} className="cf-explore-card__open" onClick={(e) => { e.preventDefault(); onOpen(c); }}>
+      <a href={exploreHash(c)} className="cf-explore-card__open" onClick={(e) => { e.preventDefault(); onOpen(c); }}>
         <div className="cf-explore-card__media">
           <CollegePhoto name={c.name} photo={c.photo} thumb={c.thumb} className="cf-explore-card__photo" />
           {rank ? <span className="cf-explore-card__rank">{rank}</span> : null}
@@ -95,15 +116,12 @@ function CollegeCard({ c, favorite, busy, onOpen, onAdd, onToggleFavorite }) {
         {c.onList ? <span className="cf-tier-label">On your shortlist ✓</span>
           : <button type="button" className="cf-explore-card__add" disabled={busy} onClick={() => onAdd(c)}>{busy ? "Saving…" : "+ Add to shortlist"}</button>}
         {fit ? <span className="cf-explore-card__fit">{fit.label}</span> : null}
-        <button type="button" className="cf-explore-fav cf-press" aria-pressed={favorite} aria-label={`${favorite ? "Unfavorite" : "Favorite"} ${c.name}`} onClick={onToggleFavorite}>
-          {favorite ? "★" : "☆"}
-        </button>
       </div>
     </article>
   );
 }
 
-function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
+function Explore({ data, onWorkspaceChange }) {
   const [q, setQ] = React.useState("");
   const [filters, setFilters] = React.useState(window.loadExploreFilters);
   const [panelOpen, setPanelOpen] = React.useState(false);
@@ -117,7 +135,8 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   const [browseLoading, setBrowseLoading] = React.useState(true);
   const [error, setError] = React.useState("");
   const [busySlug, setBusySlug] = React.useState(null);
-  const [openSlug, setOpenSlug] = React.useState(slugFromHash);
+  const [route, setRoute] = React.useState(routeFromHash);
+  const openSlug = route.slug;
   const [openRow, setOpenRow] = React.useState(null); // the clicked row, so search results still resolve
   const [detail, setDetail] = React.useState(null);
   const [detailLoading, setDetailLoading] = React.useState(false);
@@ -169,7 +188,10 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   }, [q]);
 
   React.useEffect(() => {
-    const onHash = () => setOpenSlug(slugFromHash());
+    const onHash = () => setRoute((cur) => {
+      const next = routeFromHash();
+      return next.slug === cur.slug && next.id === cur.id ? cur : next;
+    });
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
@@ -183,11 +205,10 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
 
   const onListSlugs = new Set(myList.map((c) => c.slug));
   const source = searchMode ? (results || []) : (browse || []);
-  const favOnly = filters.on.includes("favorites");
   const list = React.useMemo(
-    () => window.applyExploreFilters(source, filters, { favorites, searchMode })
+    () => window.applyExploreFilters(source, filters, { searchMode })
       .map((c) => ({ ...c, onList: onListSlugs.has(c.slug) })),
-    [source, filters, favorites, searchMode, myList]
+    [source, filters, searchMode, myList]
   );
   const states = React.useMemo(
     () => [...new Set((browse || []).map((c) => c.f?.state).filter(Boolean))].sort(),
@@ -203,10 +224,12 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   };
   const clearFilters = () => updateFilters({ ...window.DEFAULT_FILTERS, sort: filters.sort });
 
-  const current = openSlug
+  const row = openSlug
     ? [openRow, ...source, ...(browse || [])].find((c) => c && c.slug === openSlug) || null
     : null;
-  const currentId = current ? current.scorecardId : null;
+  const currentId = row ? row.scorecardId : route.id;
+  // A school outside the catalog (found by search) opened from a link or a reload: its fetched record is the row.
+  const current = row || (detail && detail.slug === openSlug ? detail : null);
 
   // Full per-school record (programs, tuition, retention…), keyed by Scorecard id.
   React.useEffect(() => {
@@ -221,7 +244,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
         if (cancelled) return;
         if (!res.ok || !j.success) throw new Error(j.error || `Could not load this school (${res.status}).`);
         const d = j.data || {};
-        setDetail({ ...d, photo: d.photo || current.photo || null, rank: d.rank ?? current.rank });
+        setDetail({ ...d, photo: d.photo || (row && row.photo) || null, rank: d.rank ?? (row ? row.rank : undefined) });
       } catch (e) {
         if (!cancelled) setError(e.message);
       }
@@ -234,7 +257,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
     gridScroll.current = window.scrollY;
     setOpenRow(c);
     setError("");
-    window.location.hash = `explore/${encodeURIComponent(c.slug)}`;
+    window.location.hash = exploreHash(c).slice(1);
   };
 
   const addCollege = async (c) => {
@@ -242,15 +265,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
     try {
       // Save the full record when it is loaded, minus the bulky programs list
       // (re-fetched from Scorecard on demand).
-      const rich = detail && detail.slug === c.slug ? detail : c;
-      const { onList, programs, f, research, rankings, niche, switching, earningsRange, intlAid, nursing, credit, thumb, partial, kind, region, hbcu, women, lacRank, ...college } = rich;
-      const res = await fetch("/api/workspace/colleges", {
-        method: "POST", credentials: "same-origin",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ college }),
-      });
-      const j = await res.json();
-      if (!res.ok || !j.success) throw new Error(j.error || "Could not add this school.");
+      await addExploreCollege(detail && detail.slug === c.slug ? detail : c);
       if (onWorkspaceChange) await onWorkspaceChange();
     } catch (e) { setError(e.message); }
     setBusySlug(null);
@@ -279,10 +294,9 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
         {current ? (
           <ExploreDetail key={current.slug} c={current} detail={detail} loading={detailLoading} edition={edition}
             savedCollege={myList.find((school) => school.slug === current.slug)}
-            favorite={favorites.includes(current.slug)} onToggleFavorite={() => onToggleFavorite(current.slug)}
             onAdd={addCollege} onRemove={removeCollege} onList={onListSlugs.has(current.slug)}
             busy={busySlug === current.slug} />
-        ) : browseLoading ? (
+        ) : browseLoading || detailLoading ? (
           <div className="cf-notice" role="status">Loading this school…</div>
         ) : (
           <div className="cf-empty">We couldn’t find that school. <a href="#explore">Browse all colleges →</a></div>
@@ -292,7 +306,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
   }
 
   const moreCount = window.activeFilterCount(filters);
-  const filtered = moreCount > 0 || favOnly || filters.setting !== "all";
+  const filtered = moreCount > 0 || filters.setting !== "all";
   const chips = window.activeFilterChips(filters);
   const total = (browse || []).length;
   const heading = searching
@@ -302,7 +316,6 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
       : browseLoading
         ? "Loading colleges…"
         : `${list.length.toLocaleString()} ${filtered ? "matching " : ""}college${list.length === 1 ? "" : "s"}`;
-  const toggleFav = () => updateFilters({ on: favOnly ? filters.on.filter((k) => k !== "favorites") : [...filters.on, "favorites"] });
   const sortLabel = (window.EXPLORE_SORTS.find((x) => x.id === filters.sort) || {}).label;
 
   return (
@@ -339,9 +352,6 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
           <button key={x.id} type="button" aria-pressed={filters.setting === x.id} className={"cf-filter-pill cf-press" + (filters.setting === x.id ? " is-active" : "")}
             onClick={() => updateFilters({ setting: x.id })}>{x.label}</button>
         ))}
-        <span className="cf-explore-divider" aria-hidden="true" />
-        <button type="button" aria-pressed={favOnly} className={"cf-filter-pill cf-press" + (favOnly ? " is-active" : "")}
-          onClick={toggleFav}>★ Favorites{favorites.length ? ` (${favorites.length})` : ""}</button>
       </div>
 
       {panelOpen ? <window.ExploreFilterPanel filters={filters} states={states} onChange={updateFilters} onClear={clearFilters} /> : null}
@@ -368,7 +378,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
       {browseLoading && !searchMode ? null : list.length === 0 ? (
         searching ? null : (
           <div className="cf-empty">
-            No colleges match these filters.{favOnly ? " Tap ☆ on a college to save it to your favorites." : ""}{" "}
+            No colleges match these filters.{" "}
             {filtered ? <button type="button" className="cf-explore-link" onClick={clearFilters}>Clear filters</button> : null}
           </div>
         )
@@ -376,8 +386,7 @@ function Explore({ data, favorites, onToggleFavorite, onWorkspaceChange }) {
         <React.Fragment>
           <div className="cf-explore-grid">
             {list.slice(0, shown).map((c) => (
-              <CollegeCard key={c.slug} c={c} favorite={favorites.includes(c.slug)} busy={busySlug === c.slug}
-                onOpen={open} onAdd={addCollege} onToggleFavorite={() => onToggleFavorite(c.slug)} />
+              <CollegeCard key={c.slug} c={c} busy={busySlug === c.slug} onOpen={open} onAdd={addCollege} />
             ))}
           </div>
           {list.length > shown ? (

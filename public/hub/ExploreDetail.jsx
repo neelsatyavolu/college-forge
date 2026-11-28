@@ -155,7 +155,7 @@ const Glance = ({ label, children }) => (children ? <div><dt>{label}</dt><dd>{ch
 
 const hasDeadlinesSaved = (d) => Boolean(d.deadlines && d.deadlines.length);
 
-function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, onToggleFavorite, onAdd, onRemove, onList, busy }) {
+function ExploreDetail({ c, detail, savedCollege, loading, edition, onAdd, onRemove, onList, busy }) {
   // `c` is the light list row (instant); `detail` is the full record (async).
   const [confirmRemove, setConfirmRemove] = React.useState(false);
   const d = { ...c, ...detail };
@@ -195,11 +195,13 @@ function ExploreDetail({ c, detail, savedCollege, loading, edition, favorite, on
         </div>
         <div className="cf-explore-actions">
           {onList ? (
-            <Button variant="secondary" onClick={() => setConfirmRemove(true)} disabled={busy}>Remove from shortlist</Button>
+            <React.Fragment>
+              <a className="cf-link-btn" href={window.cfSchoolDetail.hashFor(d.slug)} style={{ display: "inline-flex", alignItems: "center" }}>Open on your shortlist →</a>
+              <Button variant="secondary" onClick={() => setConfirmRemove(true)} disabled={busy}>Remove from shortlist</Button>
+            </React.Fragment>
           ) : (
             <Button onClick={() => onAdd(d)} disabled={busy}>{busy ? "Saving…" : "Add to shortlist"}</Button>
           )}
-          <Button variant="secondary" onClick={onToggleFavorite} aria-pressed={favorite}>{favorite ? "★ Favorited" : "☆ Favorite"}</Button>
         </div>
       </header>
 

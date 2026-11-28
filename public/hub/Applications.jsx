@@ -206,7 +206,9 @@ function AppRow({ app, open, onToggle, act, busy, checking, onCheck, compact, ma
  */
 function Applications({ data, tracker, onTrackerChange, onWorkspaceChange }) {
   const { APP_STAGES } = window.cfApp;
-  const apps = tracker.apps.filter((a) => a.stage !== "working" || (a.login && a.login.hasPassword));
+  // A school still being written that was just added here stays shown, so its portal login can be saved.
+  const [pinned, setPinned] = React.useState(null);
+  const apps = tracker.apps.filter((a) => a.stage !== "working" || (a.login && a.login.hasPassword) || a.id === pinned);
   const notYet = tracker.apps.length - apps.length;
   const [panel, setPanel] = React.useState(() => (window.location.hash.indexOf("import") > -1 ? "import" : apps.length ? null : "add"));
   const [open, setOpen] = React.useState(null);
@@ -278,10 +280,16 @@ function Applications({ data, tracker, onTrackerChange, onWorkspaceChange }) {
     // A portal exists once you've applied, so a school added here starts as submitted.
     const j = await window.cfApi.applications({ action: "add", status: "submitted", ...input });
     onTrackerChange(j.data);
-    setNotice(j.app.portalFromEmail
-      ? `${j.app.name} was already added from a forwarded email. Its portal link came from that email: check it and save it yourself.`
-      : `${j.app.name} added. Set its round and deadline, and save the portal login so Forge can check it.`);
-    setOpen({ id: j.app.id, attention: window.cfApp.attentionOf(j.app).length > 0 });
+    // Already tracked on Progress and not submitted: the add keeps its status, so open its login form here.
+    const stillWriting = j.app.stage === "working" && !(j.app.login && j.app.login.hasPassword);
+    if (stillWriting) { setPinned(j.app.id); setPanel(null); }
+    setNotice(stillWriting
+      ? `${j.app.name} is on Progress as ${j.app.statusLabel || "not submitted"}. Save its portal login below so Forge can check it, and set its status to Submitted once you have.`
+      : j.app.portalFromEmail
+        ? `${j.app.name} was already added from a forwarded email. Its portal link came from that email: check it and save it yourself.`
+        : `${j.app.name} added. Set its round and deadline, and save the portal login so Forge can check it.`);
+    setOpen({ id: j.app.id, attention: !stillWriting && window.cfApp.attentionOf(j.app).length > 0 });
+    if (stillWriting) setTimeout(() => { const el = document.getElementById(`app-${j.app.id}`); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 60);
   };
 
   return (
@@ -293,7 +301,7 @@ function Applications({ data, tracker, onTrackerChange, onWorkspaceChange }) {
         </div>
         <div className="cf-row-actions">
           {withLogin.length ? <Button variant="secondary" size="sm" disabled={checkingAny} onClick={() => checkSome(withLogin)}>{checkingAny ? "Checking portals…" : "Check portals now"}</Button> : null}
-          <Button size="sm" onClick={() => setPanel(panel === "add" ? null : "add")}>Add a portal</Button>
+          <Button size="sm" onClick={() => setPanel(panel === "add" ? null : "add")}>I already applied — add its portal</Button>
         </div>
       </header>
 
@@ -309,7 +317,7 @@ function Applications({ data, tracker, onTrackerChange, onWorkspaceChange }) {
       }} /> : null}
       {panel === "forward" ? <ForwardEmails onClose={() => setPanel(null)} master={master} /> : null}
       {panel === "master" ? <window.MasterLoginPanel master={master} apps={tracker.apps} act={act} busy={busy} onClose={() => setPanel(null)} /> : null}
-      {panel === "add" ? <AddSchool tracked={apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setPanel(null)} /> : null}
+      {panel === "add" ? <AddSchool title="Add a portal" tracked={apps} shortlist={data.colleges} onAdd={onAdd} onClose={() => setPanel(null)} /> : null}
 
       {apps.length === 0 ? (
         panel !== "import" ? (
