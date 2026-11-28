@@ -188,3 +188,7 @@
 .ik-chip[aria-pressed="true"] { border-color: var(--coral); background: var(--surface-soft); box-shadow: inset 0 0 0 1px var(--coral); }
 .ik-note { margin: 0 0 8px; font-size: 12px; color: var(--muted); line-height: 1.5; }
 @media (max-width: 560px) { .ik-grid { grid-template-columns: 1fr; } }
+
+.oc-research-done { padding: 12px 16px; border: 1px solid var(--hairline); border-radius: 10px; }
+.oc-research-done p { margin: 0; }
+.oc-research-done .oc-research { margin-top: 12px; }

@@ -423,13 +423,21 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         // Keys typed into a field inside the thread (the intake form) aren't scrolling either.
         onKeyDown={(e) => { if (!e.target.closest("input, textarea, select, [contenteditable]") && ["PageUp", "PageDown", "ArrowUp", "ArrowDown", "Home", "End", " "].includes(e.key)) markUserScroll(); }}>
       <main className="oc-thread">
-        {turns.filter((t) => !(t.role === "user" && OC_HIDDEN.has(t.content))).map((m, i, shown) => (
-          m.board
-            ? (cards.length > 0 && <window.OcResearchBoard key={i} cards={cards} />)
-            : <OcMessage key={i} m={m} live={m === turns[lastAssistant] && i === shown.length - 1 && phase !== "research"} busy={busy} data={ws} profile={ws?.profile} revision={ws?.revision}
-                onAnswer={send} onApprove={approve} onRevise={revise} onConfirm={confirmStrategy} />
-        ))}
-        {!turns.some((t) => t.board) && cards.length > 0 && <window.OcResearchBoard cards={cards} />}
+        {(() => {
+          const shown = turns.filter((t) => !(t.role === "user" && OC_HIDDEN.has(t.content)));
+          // A resumed chat has no board marker: draw the board where research happened, just before the
+          // early-plan recommendation that follows it, never below newer messages.
+          const strategyAt = turns.some((t) => t.board) ? -1 : shown.findIndex((t) => t.ui && t.ui.strategy);
+          const researchDone = phase !== "research";
+          const board = (key) => cards.length > 0 && <window.OcResearchBoard key={key} cards={cards} done={researchDone} />;
+          return shown.map((m, i) => (
+            <React.Fragment key={i}>
+              {i === strategyAt && board("board")}
+              {m.board ? board(i) : <OcMessage m={m} live={m === turns[lastAssistant] && i === shown.length - 1 && phase !== "research"} busy={busy} data={ws} profile={ws?.profile} revision={ws?.revision}
+                onAnswer={send} onApprove={approve} onRevise={revise} onConfirm={confirmStrategy} />}
+            </React.Fragment>
+          )).concat(!turns.some((t) => t.board) && strategyAt < 0 ? [<React.Fragment key="board-end">{board("board-end")}</React.Fragment>] : []);
+        })()}
         {/* The AI answered a list question in words: keep the saved draft on screen so it can still be approved or changed. */}
         {phase === "list" && !busy && !(turns[lastAssistant] && turns[lastAssistant].ui && (turns[lastAssistant].ui.list || turns[lastAssistant].ui.question)) && ws?.onboarding?.interview?.listDraft?.length > 0 && (
           <div className="oc-msg oc-msg--assistant">
