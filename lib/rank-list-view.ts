@@ -1,5 +1,5 @@
-import rankListModule from "@/public/hub/rank-list.js";
-import { statusInfo, type TrackedApp } from "@/lib/tracker";
+import rankListModule from "../public/hub/rank-list.js";
+import { statusInfo, type TrackedApp } from "./tracker";
 
 // The web List tab's ranking code (public/hub/rank-list.js), shared so the app and the site order schools the same way.
 const rankListJs = rankListModule as unknown as RankListJs;

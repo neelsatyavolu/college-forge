@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DEFAULT_WEIGHTS, PILLARS, createRanker, type CareerData, type Pillar, type Student, type Weights } from "@/lib/career-ranking";
+import { DEFAULT_WEIGHTS, PILLARS, createRanker, type CareerData, type Pillar, type Student, type Weights } from "./career-ranking";
 
 /**
  * The student's career-ranking settings, saved on their workspace so the website, the iOS app and the

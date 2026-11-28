@@ -72,7 +72,7 @@ function appliedMajors(ws: Workspace, app: TrackedApp): string[] {
 }
 
 /** The List tab's ranking inputs (lib/rankings-me.ts): every shortlisted and tracked school's major, so the averages match. */
-function listInputs(ws: Workspace, schools: CareerSchool[]): { id: number; major: string[] }[] {
+export function listInputs(ws: Workspace, schools: CareerSchool[]): { id: number; major: string[] }[] {
   const out = new Map<number, string[]>();
   const add = (sid: number | null | undefined, major: string | undefined) => {
     if (sid == null || !schools.some((s) => s.id === sid)) return;

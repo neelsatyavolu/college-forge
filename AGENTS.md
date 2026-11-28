@@ -9,6 +9,14 @@ Every commit is world-readable at github.com/neelsatyavolu/college-forge and can
 - Server `fetch` calls must target fixed or validated hosts; never build URLs from user input without checking them.
 - Keep `.github/workflows` least-privilege: no `pull_request_target`, explicit `permissions`, and inputs passed through `env:`.
 
+## Keep the copilot informed
+
+The hub copilot (lib/hub-context.ts) has to know every part of Forge a student can see, because students ask about tabs by name. When you add or change a tab, page, or feature:
+
+- Update its entry in `lib/hub-guide.ts`: the sidebar label, what it shows and measures, and the tools that read or change it. `tests/hub-guide.test.cjs` fails when a `public/hub/nav.js` tab or page has no entry, or an entry names a tool the copilot doesn't have.
+- If the copilot can't read or change the new data, add a tool for it (next to the feature, registered in `lib/hub-tools.ts`) that reuses the same code the page uses, so its answer matches what the student sees.
+- If it adds workspace data the copilot should always see, add a line to `snapshot()` in `lib/hub-context.ts`.
+
 ## AI providers
 
 For Codex/Grok OAuth and model lists, use the public [shared-ai-auth](https://github.com/neelsatyavolu/shared-ai-auth) helper. `lib/codex-oauth.ts` and `lib/grok-oauth.ts` are thin app adapters; session cookies and web callback routes remain here. The live list comes from the helper's `models.json`, with the project blacklist in `lib/ai-models.ts`. Add a model to that blacklist only when Forge should hide it; new catalog models show by default. Never log tokens or pasted callback URLs.
