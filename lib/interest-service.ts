@@ -1,4 +1,5 @@
 import { getWorkspace, updateWorkspace, type Workspace } from "./store";
+import { cycleShift } from "./cycle-dates";
 import { isEssayHidden } from "./essay-tools";
 import { findApp, replaceApp, todayIso, type TrackedApp } from "./tracker";
 import { TrackerError, researchOf, viewApp, type AppView } from "./tracker-service";
@@ -28,7 +29,7 @@ function mustFind(ws: Workspace, ref: string): TrackedApp {
 
 const view = (ws: Workspace, id: string): AppView => {
   const app = ws.tracker.apps.find((a) => a.id === id)!;
-  return viewApp(app, todayIso(), studentScores(ws), researchOf(ws.colleges, app));
+  return viewApp(app, todayIso(), studentScores(ws), researchOf(ws.colleges, app), cycleShift(ws));
 };
 
 async function change(workspaceId: string, ref: string, fn: (app: TrackedApp) => TrackedApp): Promise<AppView> {
@@ -60,7 +61,7 @@ export async function listInterest(workspaceId: string, ref?: string) {
   return {
     today,
     schools: apps.map((a) => {
-      const v = viewApp(a, today, studentScores(ws), researchOf(ws.colleges, a));
+      const v = viewApp(a, today, studentScores(ws), researchOf(ws.colleges, a), cycleShift(ws));
       return { school: a.name, id: a.id, status: v.statusLabel, policy: v.interestSignal, events: v.interest };
     }),
     upcomingInterviews: upcomingInterviews(ws.tracker, today).map(row),

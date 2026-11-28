@@ -1,4 +1,5 @@
 import { promises as fs } from "node:fs";
+import { withStudentCycleDates } from "./cycle-dates";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { COMMON_APP_PERSONAL_PROMPTS } from "./common-app-prompts";
@@ -27,7 +28,8 @@ export type Activity = {
 };
 export type Honor = { title: string; level: string; year?: string; top?: boolean };
 export type Plan = { plan: string; rate: string };
-export type Deadline = { plan: string; date: string };
+/** projectedFrom: the published current-cycle date this was moved from, for a later-cycle student (lib/cycle-dates.ts). */
+export type Deadline = { plan: string; date: string; projectedFrom?: string };
 export type Tag = { label: string; tone: string };
 export type College = {
   slug: string; name: string; short: string; location?: string; setting?: string;
@@ -311,7 +313,7 @@ export type Workspace = {
   };
   ed: null | { school: string; deadline: string; daysLeft: number | string; reason: string };
   /** source "student": added or edited on the Timeline; AI rewrites keep these. */
-  criticalDates: { date: string; label: string; detail: string; source?: "student" }[];
+  criticalDates: { date: string; label: string; detail: string; source?: "student"; projectedFrom?: string }[];
   colleges: College[];
   /** List schools whose application the student removed while keeping the school on the list (lib/list-sync.ts). */
   noApplication?: string[];
@@ -547,7 +549,7 @@ export function newWorkspaceId(): string {
  * lib/supplements/prompts.json, and a valid Common App choice.
  */
 function withDerived(ws: Workspace): Workspace {
-  return withGpaFromYears(keepValidCommonAppPrompt(syncSuppStatus(syncEssaySupplements(refreshScrapedSupplements(ws)))));
+  return withStudentCycleDates(withGpaFromYears(keepValidCommonAppPrompt(syncSuppStatus(syncEssaySupplements(refreshScrapedSupplements(ws))))));
 }
 
 function normalizeWorkspace(parsed: Partial<Workspace>): { workspace: Workspace; linked: boolean } {

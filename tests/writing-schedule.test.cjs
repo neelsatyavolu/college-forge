@@ -197,3 +197,18 @@ test('the timeline carries open scholarships, letters and follow-ups, linking to
   const tasks = timeline(ws, apps, TODAY).months.flatMap((m) => m.events).filter((e) => e.kind === 'task');
   assert.deepEqual(tasks.map((e) => [e.title, e.href, e.label]), [['Letter: Ms. Teacher', '#track', 'Letter'], ['Alpha', '#progress', 'To-do'], ['Scholarship: Rotary', '#track', 'Scholarship']]);
 });
+
+test('deadlines a year out (class of 2028) start the writing plan on Aug 1 of the application year', () => {
+  const ws = workspace({
+    colleges: [college('alpha', 'EA · Nov 1', [{ plan: 'EA', date: '2027-11-01', projectedFrom: '2026-11-01' }])],
+    essays: { commonApp: [personal], supplements: { alpha: [supp('a1', 250)] } },
+  });
+  const plan = writingSchedule(ws, [], TODAY);
+  assert.equal(plan.startsOn, '2027-08-01');
+  assert.deepEqual(plan.thisWeek.items, [], 'nothing assigned this week');
+  assert.ok(plan.weeks[0].start >= '2027-07-26', plan.weeks[0].start);
+  const [a1] = plan.groups.find((g) => g.kind === 'school').essays;
+  assert.ok(a1.targets.outline >= '2027-08-01' && a1.targets.final <= '2027-10-29');
+  // This year's seniors are unaffected.
+  assert.equal(writingSchedule(workspace({ colleges: [college('alpha', 'EA · Dec 15', [{ plan: 'EA', date: '2026-12-15' }])], essays: { commonApp: [personal], supplements: { alpha: [supp('a1', 250)] } } }), [], TODAY).startsOn, null);
+});

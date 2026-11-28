@@ -1,4 +1,5 @@
 import { decisionDateOf, statusInfo, todayIso } from "./tracker";
+import { cycleShift } from "./cycle-dates";
 import { INTEREST_LABELS, calendarInterest } from "./interest-log";
 import { createHash } from "node:crypto";
 import type { Workspace } from "./store";
@@ -223,7 +224,7 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
   for (const app of tracked) {
     const stage = statusInfo(app.status).stage;
     if (app.deadline && stage === "working") events.push({ date: app.deadline, title: `${app.name} — application due${app.round ? ` (${app.round})` : ""}`, detail: app.name, alarm: true });
-    const decision = stage === "working" || stage === "waiting" ? decisionDateOf(app, today) : null;
+    const decision = stage === "working" || stage === "waiting" ? decisionDateOf(app, today, cycleShift(ws)) : null;
     if (decision && !decision.estimated) events.push({ date: decision.date, title: `${app.name} — decision`, detail: app.name });
     if (decision?.estimated) events.push({ date: decision.date, title: `${app.name}: decision (estimated from last year)`, detail: app.name });
     if (stage !== "closed") {

@@ -130,3 +130,6 @@
   .cf-tl-aid__rows li { grid-template-columns: 70px minmax(0, 1fr); padding: 10px 14px; }
   .cf-tl-aid__form { grid-column: 2; }
 }
+
+.cf-tl-est { margin-left: 4px; font-style: normal; font-size: 10px; letter-spacing: .04em; color: var(--muted); }
+.cf-tl-banner { margin: 0 0 16px; padding: 10px 14px; border: 1px solid var(--hairline); border-left: 3px solid var(--warning, var(--coral)); border-radius: 8px; font-size: 14px; line-height: 1.5; }

@@ -79,7 +79,7 @@
       var kind = aid && (inRound || !picked.length) ? aid : !inRound ? "other-round" : isApplicationRound(d.plan) ? "deadline" : "related";
       if (kind === aid && stopped) return;
       // Sending the application meets its deadline only; materials and aid forms in that round stay open.
-      var ev = { date: d.date, kind: kind, title: name, sub: d.plan, tone: deadlinePlan.deadlineTone(d.plan).label, slug: college.slug, done: done && kind === "deadline" };
+      var ev = { date: d.date, kind: kind, title: name, sub: d.plan, tone: deadlinePlan.deadlineTone(d.plan).label, slug: college.slug, done: done && kind === "deadline", est: !!d.projectedFrom };
       if (kind === aid) ev.form = deadlinePlan.aidForm(d.plan);
       events.push(ev);
     });

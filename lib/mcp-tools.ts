@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { cycleShift } from "./cycle-dates";
 import { runChecks } from "./portal-check";
 import { allow } from "./rate-limit";
 import { activeShareLinks, createShareLink, revokeShareLink, shareUrl } from "./sharing";
@@ -247,7 +248,7 @@ export const TOOLS: Tool[] = [
       const w = await getWorkspace(ws);
       const app = findApp(w.tracker, school);
       if (!app) throw new TrackerError(`No single application matches "${school}". Use list_applications to see the schools.`);
-      return brief(viewApp(app, todayIso(), studentScores(w)));
+      return brief(viewApp(app, todayIso(), studentScores(w), undefined, cycleShift(w)));
     },
   }),
   tool({

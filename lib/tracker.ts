@@ -90,6 +90,8 @@ export interface TrackedApp {
   round: RoundId;
   /** yyyy-mm-dd or "" */
   deadline: string;
+  /** The current-cycle date `deadline` was moved from for a later-cycle student (lib/cycle-dates.ts). */
+  deadlineProjectedFrom?: string;
   decisionDate: string;
   notes: string;
   /** A short note about the decision ("Honors college too"), shown with it on the Progress tab and progress links. */
@@ -254,20 +256,23 @@ export interface NextDate {
   estimated: boolean;
 }
 
-export function decisionDateOf(app: TrackedApp, today: string): NextDate | null {
+/** cycleShift: years the student's cycle is after the current one (lib/cycle-dates.ts); estimates move with it. */
+export function decisionDateOf(app: TrackedApp, today: string, cycleShift = 0): NextDate | null {
   const exact = app.decisionDate || app.portal?.decisionDate || "";
   if (exact) return { date: exact, kind: "Decision", estimated: false };
-  const estimate = expectedDecision(app.collegeId ? collegeById(app.collegeId) : undefined, effectiveRound(app), new Date(`${today}T12:00:00`));
+  const asOf = new Date(`${today}T12:00:00`);
+  asOf.setFullYear(asOf.getFullYear() + cycleShift);
+  const estimate = expectedDecision(app.collegeId ? collegeById(app.collegeId) : undefined, effectiveRound(app), asOf);
   return estimate ? { date: estimate, kind: "Decision", estimated: true } : null;
 }
 
 /** The next date worth knowing: the deadline while working on it, then the decision date. */
-export function nextDate(app: TrackedApp, today: string): NextDate | null {
+export function nextDate(app: TrackedApp, today: string, cycleShift = 0): NextDate | null {
   const stage = statusInfo(app.status).stage;
   const options: NextDate[] = [];
   if (app.deadline && stage === "working") options.push({ date: app.deadline, kind: "Deadline", estimated: false });
   if (stage === "working" || stage === "waiting") {
-    const d = decisionDateOf(app, today);
+    const d = decisionDateOf(app, today, cycleShift);
     if (d) options.push(d);
   }
   return options.filter((o) => o.date >= today).sort((x, y) => x.date.localeCompare(y.date))[0] ?? null;
