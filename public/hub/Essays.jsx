@@ -794,6 +794,26 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
       return next;
     });
   };
+  // A link to "#essays/<id>" while this tab is already open (from the Timeline or a school's page) opens that essay too.
+  React.useEffect(() => {
+    const onHash = () => {
+      const [view, id] = window.location.hash.slice(1).split("/");
+      if (view !== "essays" || !id) return;
+      let decoded = null;
+      try { decoded = decodeURIComponent(id); } catch (e) { return; }
+      const item = allItems.find((it) => it.id === decoded);
+      if (item) selectEssay(item, item._groupKey);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [allItems]);
+  const openPromptForm = (groupKey) => {
+    setPromptError("");
+    setPromptForm({ groupKey, label: "", prompt: "", limit: 250, unit: "words" });
+  };
+  const mobileGroup = active ? groups.find((g) => g.key === active._groupKey) : null;
+  const mobileAudience = mobileGroup ? Boolean(ESSAY_PLAN.audienceSet && ESSAY_PLAN.audienceSet(mobileGroup.items)) : false;
+  const mobilePickSets = mobileGroup ? ESSAY_PLAN.pickSets(mobileGroup.items) : [];
 
   const savePrompt = async (event) => {
     event.preventDefault();
@@ -844,8 +864,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
       ) : null}
       {allItems.length === 0 && schoolCount === 0 ? (
         <div className="cf-empty">
-          No essay prompts yet. Common App prompts load automatically. Add schools on the List or Applications tab
-          and each one gets its supplement group here; then ask the copilot to load the real prompts.
+          No essay prompts yet. Common App prompts load automatically. Add schools on Your shortlist. Their essay prompts show up here.
         </div>
       ) : (
         <React.Fragment>
@@ -860,7 +879,7 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <Button variant="secondary" size="sm" onClick={() => { setOverview(false); onAsk(active ? essayAsk(active, "help") : undefined); }}>Ask copilot ✱</Button>
               {(data.colleges || []).length ? <Button variant="secondary" size="sm" onClick={() => { setOverview(false); setPicking(true); }}>Pick essay schools</Button> : null}
-              <Button size="sm" onClick={() => { setOverview(false); setPromptError(""); setPromptForm({ groupKey: active ? active._groupKey : "common", label: "", prompt: "", limit: 250, unit: "words" }); }}>Add prompt</Button>
+              <Button size="sm" onClick={() => { setOverview(false); openPromptForm(active ? active._groupKey : "common"); }}>Add prompt</Button>
             </div>
           </window.EssaySheet>
         ) : null}
@@ -883,6 +902,15 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
             </optgroup> : null}
           </select>
         </label>
+        {/* The sidebar is hidden on narrow screens, so the chosen school's program and pick-N controls show here. */}
+        {mobileGroup && (mobileAudience || mobilePickSets.length) ? (
+          <div className="cf-mobile-essay-picker cf-mobile-essay-controls">
+            {mobileAudience ? <window.AudienceControl items={mobileGroup.items} hidden={hiddenMap} busy={statusBusy} onSave={(patch) => patchEssay({ essayHidden: patch })} /> : null}
+            {mobilePickSets.map((set) => (
+              <window.PickSetControl key={set.group} set={set} hidden={hiddenMap} busy={statusBusy} onSave={(patch) => patchEssay({ essayHidden: patch })} />
+            ))}
+          </div>
+        ) : null}
         <div
           className="cf-split cf-split--essays"
           style={{
@@ -988,7 +1016,8 @@ function Essays({ data, onAsk, onWorkspaceChange }) {
                             lineHeight: 1.4,
                           }}
                         >
-                          No prompts yet. Use Add prompt to paste one from this school’s application.
+                          No prompts yet. Paste one from this school’s application.
+                          <button type="button" className="cf-press cf-essay-add-prompt" onClick={() => openPromptForm(g.key)}>+ Add prompt</button>
                         </div>
                       ) : (
                         items.map((it) => (

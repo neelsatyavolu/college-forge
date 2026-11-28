@@ -113,7 +113,10 @@ function App() {
     return () => media.removeEventListener("change", change);
   }, []);
   React.useEffect(() => {
-    if (menuOpen && sidebarRef.current) sidebarRef.current.querySelector('[aria-current="page"]').focus();
+    if (!menuOpen || !sidebarRef.current) return;
+    // Some views (a school's page) have no current link; fall back to the first one.
+    const target = sidebarRef.current.querySelector('[aria-current="page"]') || sidebarRef.current.querySelector("a, button");
+    if (target) target.focus();
   }, [menuOpen]);
   React.useEffect(() => {
     const onHash = () => {

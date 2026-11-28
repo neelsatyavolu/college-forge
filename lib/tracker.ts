@@ -16,7 +16,7 @@ export const STATUSES = [
   { id: "in_progress", label: "Writing", stage: "working" },
   { id: "final_checks", label: "Final checks", stage: "working" },
   { id: "submitted", label: "Submitted", stage: "waiting" },
-  { id: "submitted_npy", label: "Submitted - NPY", stage: "waiting" },
+  { id: "submitted_npy", label: "Submitted (no portal yet)", stage: "waiting" },
   { id: "complete", label: "Under review", stage: "waiting" },
   { id: "deferred", label: "Deferred", stage: "waiting" },
   { id: "waitlisted", label: "Waitlisted", stage: "waiting" },

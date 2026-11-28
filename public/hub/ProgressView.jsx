@@ -176,6 +176,7 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
   ].filter((t) => t.id === "overview" || t.count > 0);
   const [tab, setTab] = React.useState(initialTab && tabs.some((t) => t.id === initialTab) ? initialTab : "overview");
   const current = tabs.some((t) => t.id === tab) ? tab : "overview";
+  const tabIdBase = "cf-ptab" + React.useId().replace(/:/g, "");
   // Share links don't pass open state, so rows open here: parents can still read what a school is missing.
   const [ownOpen, setOwnOpen] = React.useState(null);
   const [showWaiting, setShowWaiting] = React.useState(false);
@@ -195,18 +196,32 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
     ? { editable, act, busy, openId, onToggle, renderDetails, checking, oddsFor }
     : { editable, act, busy, openId: ownOpen, onToggle: (id) => setOwnOpen(ownOpen === id ? null : id), renderDetails, checking, oddsFor };
 
+  // Tabs follow the ARIA pattern: one tab stop, arrow keys (and Home/End) move between tabs and open them.
+  const onTabKey = (e) => {
+    const i = tabs.findIndex((t) => t.id === current);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    const t = tabs[(next + tabs.length) % tabs.length];
+    setTab(t.id);
+    const el = document.getElementById(`${tabIdBase}-${t.id}`);
+    if (el) { el.focus(); el.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+  };
+  const panelProps = { role: "tabpanel", id: `${tabIdBase}-panel`, "aria-labelledby": `${tabIdBase}-${current}` };
+
   return (
     <div className="cf-progress">
-      <div className="cf-ptabs" role="tablist" aria-label="Applications">
+      <div className="cf-ptabs cf-ptabs--scroll" role="tablist" aria-label="Applications" onKeyDown={onTabKey}>
         {tabs.map((t) => (
-          <button key={t.id} type="button" role="tab" aria-selected={current === t.id} className={"cf-ptab" + (current === t.id ? " is-active" : "")} onClick={() => setTab(t.id)}>
+          <button key={t.id} type="button" role="tab" id={`${tabIdBase}-${t.id}`} aria-controls={`${tabIdBase}-panel`} aria-selected={current === t.id} tabIndex={current === t.id ? 0 : -1}
+            className={"cf-ptab" + (current === t.id ? " is-active" : "")} onClick={() => setTab(t.id)}>
             {t.label}<span className="cf-ptab__n">{t.count}</span>
           </button>
         ))}
       </div>
 
       {current === "overview" ? (
-        <div role="tabpanel">
+        <div {...panelProps}>
           <p className="cf-psummary">
             <strong>{submitted}/{apps.length}</strong> submitted
             {nextDue ? <React.Fragment><span aria-hidden="true"> · </span><strong>{dueThatDay}</strong> due {fmtDate(nextDue.deadline)}</React.Fragment> : null}
@@ -266,7 +281,7 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
       ) : null}
 
       {current === "decisions" ? (
-        <div role="tabpanel">
+        <div {...panelProps}>
           <ul className="cf-plist">
             {decided.map((a) => {
               const meta = statusMeta(a.status);
@@ -294,11 +309,11 @@ function ProgressView({ tracker, editable, act, busy, openId, onToggle, renderDe
       ) : null}
 
       {["early", "rd", "rolling", "uc", "other"].includes(current) ? (
-        <div role="tabpanel"><Rows apps={groups[current].slice().sort(byProgress)} {...rowProps} /></div>
+        <div {...panelProps}><Rows apps={groups[current].slice().sort(byProgress)} {...rowProps} /></div>
       ) : null}
 
       {current === "followups" ? (
-        <div role="tabpanel">
+        <div {...panelProps}>
           <ul className="cf-plist">
             {followUps.map((f) => (
               <li key={f.id} className="cf-prow">

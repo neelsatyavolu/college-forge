@@ -415,7 +415,7 @@ function Profile({ data, onAsk, onWorkspaceChange }) {
           : <StatCard label="Unweighted GPA" value={data.applicant.gpaUnweighted} hint="no weighted GPA on file" />}
         <StatCard label="SAT" value={p.testing.sat || "—"} hint={[blankStat(p.testing.act) ? `ACT ${p.testing.act}` : "", p.testing.satNote || (blankStat(p.testing.act) ? "" : "from testing")].filter(Boolean).join(" · ")} variant="cream" />
         <StatCard label="AP exams" value={String(p.testing.aps.length)} hint={p.testing.aps.length ? p.testing.aps.map((x) => x.score).join(" · ") : "none yet"} />
-        <StatCard label="Honors" value={String(p.honors.length)} hint={`${topHonors} top · max ${MAX_HON} on CA`} />
+        <StatCard label="Honors" value={String(p.honors.length)} hint={`${topHonors} top · max ${MAX_HON} on the Common App`} />
       </section>
       {GPA_YEARS.some(([y]) => (data.applicant.gpaByYear || {})[y]) ? (
         <p className="cf-help cf-nums" style={{ margin: "-12px 0 24px", color: "var(--body)" }}>
