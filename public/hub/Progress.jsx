@@ -54,7 +54,8 @@ function Progress({ data, tracker, onTrackerChange, onWorkspaceChange }) {
   const [error, setError] = React.useState("");
   const [sharing, setSharing] = React.useState(false);
   const [flagText, setFlagText] = React.useState("");
-  const [open, setOpen] = React.useState(null);
+  // "#progress/app-<id>" (from a school page) opens that school's row.
+  const [open, setOpen] = React.useState(() => { const m = /^#progress\/app-(.+)$/.exec(window.location.hash); return m ? decodeURIComponent(m[1]) : null; });
   const [addOpen, setAddOpen] = React.useState(false);
   const onAdd = async (input) => {
     const j = await window.cfApi.applications({ action: "add", ...input });

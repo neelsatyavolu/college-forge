@@ -70,7 +70,54 @@
     return deadlines.filter(function (d) { return belongsToRound(d.plan, chosen); });
   }
 
-  var api = { deadlineTone: deadlineTone, planDeadlines: planDeadlines };
+  /**
+   * "aid" (FAFSA, CSS Profile, a school's aid form), "scholarship" (merit, fellows) or null for anything else.
+   * Same words as lib/aid-plan.ts deadlineKind (tests/aid.test.cjs keeps them in step).
+   */
+  function aidKind(plan) {
+    var k = kindOf(String(plan || ""));
+    return k === "aid" || k === "scholarship" ? k : null;
+  }
+
+  /**
+   * Whether to show this deadline, from what the student told Forge: need-based aid dates go when
+   * listPrefs.needAid is false, scholarship dates when interview.meritInterest is "no". Unknown keeps both.
+   * Mirrors lib/aid-plan.ts showsDeadline.
+   */
+  function showsDeadline(plan, data) {
+    var kind = aidKind(plan);
+    var ob = (data && data.onboarding) || {};
+    if (kind === "aid") return !(ob.listPrefs && ob.listPrefs.needAid === false);
+    if (kind === "scholarship") return !(ob.interview && ob.interview.meritInterest === "no");
+    return true;
+  }
+
+  /** The deadlines left after the student's aid choices (showsDeadline). */
+  function visibleDeadlines(deadlines, data) {
+    return (deadlines || []).filter(function (d) { return d && showsDeadline(d.plan, data); });
+  }
+
+  // Which aid form an aid deadline is for, with a line on what it is. Checked in order.
+  var AID_FORMS = [
+    { id: "fafsa", test: /fafsa/i, form: "FAFSA", note: "The federal form for grants, loans and work-study. Free at studentaid.gov." },
+    { id: "css", test: /css/i, form: "CSS Profile", note: "The College Board form many private colleges use for their own grants. Fee waivers for many families." },
+    { id: "school", test: /./, form: "School aid form", note: "The school's own date for need-based aid. Filing by it keeps you in line for its grant money." },
+  ];
+  var SCHOLARSHIP_FORM = { id: "scholarship", form: "Scholarship", note: "Merit money. Some schools need a separate application, or an early round, to be considered." };
+
+  /** { id, form, note } for an aid or scholarship deadline, or null for an admission round. */
+  function aidForm(plan) {
+    var kind = aidKind(plan);
+    if (!kind) return null;
+    var hit = kind === "scholarship" ? SCHOLARSHIP_FORM : AID_FORMS.find(function (f) { return f.test.test(plan); });
+    return { id: hit.id, form: hit.form, note: hit.note };
+  }
+
+  var api = {
+    deadlineTone: deadlineTone, planDeadlines: planDeadlines,
+    aidKind: aidKind, aidForm: aidForm, showsDeadline: showsDeadline, visibleDeadlines: visibleDeadlines,
+    AID_FORMS: AID_FORMS, SCHOLARSHIP_FORM: SCHOLARSHIP_FORM,
+  };
   root.cfDeadlinePlan = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

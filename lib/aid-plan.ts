@@ -1,4 +1,5 @@
 import type { College, Workspace } from "./store";
+import { deadlineKind } from "./aid-deadlines";
 import { loadSchoolResearch, type ResearchFact } from "./school-research";
 import { effectiveRound, statusInfo, todayIso, type TrackedApp } from "./tracker";
 
@@ -36,14 +37,7 @@ export type AidPlan = {
   totals: { cssSchools: number; idocSchools: number; scholarshipsWon: number; wonAmount: number };
 };
 
-// Same order and words as public/hub/deadline-plan.js (tests/aid-plan.test.cjs keeps them in step).
-const AID_KIND = /financial aid|fafsa|css profile|\bcss\b|\baid\b/i;
-const SCHOLARSHIP_KIND = /scholarship|merit|fellow/i;
-export function deadlineKind(plan: string): "aid" | "scholarship" | null {
-  if (AID_KIND.test(plan)) return "aid";
-  if (SCHOLARSHIP_KIND.test(plan)) return "scholarship";
-  return null;
-}
+export { deadlineKind, showsDeadline } from "./aid-deadlines";
 
 const NOT_REQUIRED = /^(not required|not used|not applicable|n\/a)\b|css profile (is )?not (used|required|accepted)|css profile[^.;]*\(not required\)/i;
 const UNSURE = /^not (listed|mentioned)\b/i;

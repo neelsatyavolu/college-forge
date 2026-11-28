@@ -135,10 +135,10 @@ function App() {
     if (mainRef.current) mainRef.current.focus({ preventScroll: true });
   }, [view]);
   // "#settings/gptzero" scrolls to the element with that id once the view has rendered it.
-  // "#shortlist/<slug>" is a school's page, not an anchor.
+  // "#shortlist/<slug>" is a school's page and "#timeline/<tab>" a tab, not anchors.
   React.useEffect(() => {
     const anchor = hash.slice(1).split("/")[1];
-    if (!anchor || view === "shortlist") return undefined;
+    if (!anchor || view === "shortlist" || view === "timeline") return undefined;
     let tries = 0;
     let timer = 0;
     const seek = () => {
@@ -265,7 +265,7 @@ function App() {
           </div>}
           {view === "applications" && <Applications data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspace} />}
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspaceAndTracker} />}
-          {view === "timeline" && <Timeline data={data} tracker={tracker} onWorkspaceChange={applyWorkspace} />}
+          {view === "timeline" && <Timeline data={data} tracker={tracker} hash={hash} onWorkspaceChange={applyWorkspace} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={refresh} />}
           {view === "board" && <DecisionBoard tracker={tracker} onTrackerChange={setTracker} />}
           {view === "list" && <RankList tracker={tracker} data={data} onWorkspaceChange={applyWorkspace} />}

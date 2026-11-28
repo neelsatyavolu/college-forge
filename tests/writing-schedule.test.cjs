@@ -169,3 +169,31 @@ test('today gets its own month when nothing else falls in it', () => {
   const { months } = timeline(workspace({ criticalDates: [{ date: '2027-02-01', label: 'FAFSA', detail: '' }] }), [], TODAY);
   assert.deepEqual(months.map((m) => [m.key, m.todayAt]), [['2026-11', 0], ['2027-02', -1]]);
 });
+
+test('the personal statement stays on the plan when Common App schools have no supplements', () => {
+  const ws = workspace({
+    colleges: [college('early', 'EA · Dec 10', [{ plan: 'EA', date: '2026-12-10' }]), college('late', 'RD · Jan 5', [{ plan: 'RD', date: '2027-01-05' }])],
+    essays: { commonApp: [personal], supplements: { late: [supp('l1', 250)] } },
+  });
+  const common = writingSchedule(ws, [], TODAY).groups.find((g) => g.kind === 'common');
+  // The early school has no essays of its own but still sets the personal statement's date.
+  assert.equal(common.finishBy, '2026-12-03');
+  const none = writingSchedule(workspace({ colleges: [college('solo', 'EA · Jan 1', [{ plan: 'EA', date: '2027-01-01' }])] }), [], TODAY);
+  assert.deepEqual(none.groups.map((g) => [g.kind, g.finishBy]), [['common', '2026-12-25']]);
+});
+
+test('sending an application meets its deadline only; other dates in that round stay open', () => {
+  const ws = workspace({ colleges: [college('alpha', 'EA · Dec 1', [{ plan: 'EA', date: '2026-12-01' }, { plan: 'EA supplement materials', date: '2026-12-05' }])] });
+  const events = timeline(ws, [{ slug: 'alpha', name: 'alpha', stage: 'waiting' }], TODAY).months.flatMap((m) => m.events);
+  assert.deepEqual(events.map((e) => [e.sub, e.kind, e.done]), [['EA', 'deadline', true], ['EA supplement materials', 'related', false]]);
+});
+
+test('the timeline carries open scholarships, letters and follow-ups, linking to where they live', () => {
+  const ws = workspace({
+    scholarships: [{ name: 'Rotary', deadline: '2026-12-20', status: 'researching' }, { name: 'Won one', deadline: '2026-12-21', status: 'won' }],
+    recommendations: [{ name: 'Ms. Teacher', type: 'teacher', deadline: '2026-12-10', status: 'asked' }, { name: 'Done', deadline: '2026-12-11', status: 'submitted' }],
+  });
+  const apps = [{ slug: 'alpha', name: 'Alpha', stage: 'working', followUps: [{ text: 'Send scores', due: '2026-12-12', done: false }, { text: 'Old', due: '2026-12-13', done: true }] }];
+  const tasks = timeline(ws, apps, TODAY).months.flatMap((m) => m.events).filter((e) => e.kind === 'task');
+  assert.deepEqual(tasks.map((e) => [e.title, e.href, e.label]), [['Letter: Ms. Teacher', '#track', 'Letter'], ['Alpha', '#progress', 'To-do'], ['Scholarship: Rotary', '#track', 'Scholarship']]);
+});

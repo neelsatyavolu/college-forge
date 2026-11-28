@@ -43,9 +43,27 @@
     return cycle === prev ? "last cycle" : cycle + " cycle";
   }
 
+  // Facts the page already shows under "For you" or "Application", so Research facts doesn't repeat them.
+  var SHOWN_ABOVE = { admit_rate: 1, test_policy: 1, ed_ea_options: 1, interview: 1, demonstrated_interest: 1 };
+  var NET_PRICE_KEYS = {};
+  Object.keys(NET_PRICE_KEY).forEach(function (k) { NET_PRICE_KEYS[NET_PRICE_KEY[k]] = 1; });
+
+  /**
+   * Whether Research facts lists a fact: not one shown above it, and of the net prices by income only the
+   * family's own band (all five when the band is unknown, none when they aren't applying for aid).
+   */
+  function keepResearchFact(key, prefs) {
+    if (!prefs) return true;
+    if (SHOWN_ABOVE[key]) return false;
+    if (!NET_PRICE_KEYS[key]) return true;
+    if (prefs.needAid === false) return false;
+    var own = NET_PRICE_KEY[prefs.incomeBracket];
+    return !own || own === key;
+  }
+
   /** Every fact, grouped: known keys under their group, anything else under "Other". Empty groups are left out. */
-  function researchGroups(facts) {
-    var list = Array.isArray(facts) ? facts.filter(function (f) { return f && f.value; }) : [];
+  function researchGroups(facts, prefs) {
+    var list = Array.isArray(facts) ? facts.filter(function (f) { return f && f.value && keepResearchFact(f.key, prefs); }) : [];
     var known = {};
     var groups = RESEARCH_GROUPS.map(function (g) {
       var rows = [];
@@ -83,18 +101,62 @@
    * What a year would likely cost this family: the researched net price for their income bracket, else the
    * list's own estimate. With a budget cap, whether it fits. Null when there's no price to show.
    */
-  function costForYou(college, prefs) {
+  /** place: { residency, state } (student's home state, school's state), for schools that price residents apart. */
+  function costForYou(college, prefs, place) {
     var p = prefs || {};
     var facts = college && college.research && college.research.facts;
+    var cap = BUDGET_CAP[p.budget] || null;
+    if (p.needAid === false) return fullCost(college, place || {}, cap, p);
     var fact = NET_PRICE_KEY[p.incomeBracket] ? factFor(facts, NET_PRICE_KEY[p.incomeBracket]) : null;
     var text = fact ? fact.value : (college && college.netPriceForYou) || "";
     if (!text) return null;
     var price = dollars(text);
-    var cap = BUDGET_CAP[p.budget] || null;
     return {
       text: text,
       fact: fact,
+      basis: "net",
       income: INCOME_LABEL[p.incomeBracket] || null,
+      budget: BUDGET_LABEL[p.budget] || null,
+      fits: price !== null && cap !== null ? price <= cap : null,
+    };
+  }
+
+  var SPLIT_PRICE = /non-?resident|out-of-state|non-[A-Z][a-z]+ns?\b/;
+  /** The two-letter state at the end of "Ann Arbor, MI", or null. */
+  function schoolState(college) {
+    var m = /,\s*([A-Z]{2})\s*$/.exec(String((college && college.location) || ""));
+    return m ? m[1] : null;
+  }
+
+  /**
+   * Not applying for need-based aid: a year costs the full cost of attendance. When the school prices
+   * residents and nonresidents apart, the student's residency picks the price (first amount for residents,
+   * the highest for everyone else); unknown residency gives the text with no budget verdict.
+   */
+  function fullCost(college, place, cap, p) {
+    var fact = factFor(college && college.research && college.research.facts, "sticker_cost");
+    var text = fact ? fact.value : (college && college.coa) || "";
+    if (!text) return null;
+    var price = dollars(text);
+    var where = null;
+    var split = SPLIT_PRICE.test(text);
+    if (split) {
+      var state = place.state || schoolState(college);
+      var home = String(place.residency || "").trim().toUpperCase();
+      if (!/^[A-Z]{2}$/.test(home)) home = null;
+      if (!state || !home) price = null;
+      else {
+        where = state === home ? "in-state" : "out-of-state";
+        var first = /\$\s?(\d[\d,]*)/.exec(text);
+        price = where === "in-state" ? (first ? Number(first[1].replace(/,/g, "")) : null) : dollars(text);
+      }
+    }
+    return {
+      text: price !== null ? "$" + price.toLocaleString("en-US") : split ? "Depends on your residency" : text,
+      fact: fact,
+      basis: "full",
+      residency: where,
+      income: null,
       budget: BUDGET_LABEL[p.budget] || null,
       fits: price !== null && cap !== null ? price <= cap : null,
     };

@@ -28,7 +28,9 @@ function cfChatAdaptiveSuggestions(ws, view) {
   const scholarships = ((ws && ws.scholarships) || []).length;
   const dates = ((ws && ws.criticalDates) || []).length;
   const fa = (ws && ws.financialAid) || {};
-  const faIdle =
+  // No FAFSA/CSS nudges for a student who said they aren't applying for need-based aid.
+  const noAid = Boolean(ws && ws.onboarding && ws.onboarding.listPrefs && ws.onboarding.listPrefs.needAid === false);
+  const faIdle = !noAid &&
     (!fa.fafsaStatus || fa.fafsaStatus === "not_started") &&
     (!fa.cssStatus || fa.cssStatus === "not_started" || fa.cssStatus === "n_a");
   const hasEd = Boolean(ws && ws.ed && cfChatHasValue(ws.ed.school));
