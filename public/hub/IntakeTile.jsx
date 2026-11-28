@@ -52,7 +52,7 @@ const IK_RECOMMENDED = { ambitious: [9, 3], balanced: [8, 3], conservative: [6, 
 
 function IkChips({ name, value, onChange, disabled }) {
   return (
-    <div className="ik-chips" role="radiogroup" aria-label={name}>
+    <div className="ik-chips" role="group" aria-label={name}>
       {IK_CHOICES[name].map(([v, label]) => (
         <button key={v + label} type="button" className="ik-chip" aria-pressed={value === v} disabled={disabled} onClick={() => onChange(value === v ? undefined : v)}>{label}</button>
       ))}
@@ -204,19 +204,47 @@ function IkAgentPaste({ disabled, onAnswer }) {
   );
 }
 
+/**
+ * A half-filled form survives "Save and exit", a reload or a closed tab: it is kept in this browser's
+ * localStorage under the workspace's key (sessionStorage would lose it when the tab closes, which is
+ * exactly when a student comes back later) and removed once the form is sent.
+ */
+const ikDraftKey = (data) => "cf.intake-draft." + ((data && data.draftStorageKey) || "local");
+function ikLoadDraft(data) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ikDraftKey(data)) || "null");
+    return saved && typeof saved === "object" && saved.f && typeof saved.f === "object" ? saved : null;
+  } catch (e) { return null; }
+}
+function ikSaveDraft(data, draft) {
+  try { localStorage.setItem(ikDraftKey(data), JSON.stringify(draft)); } catch (e) { /* private mode: the form still works */ }
+}
+function ikClearDraft(data) {
+  try { localStorage.removeItem(ikDraftKey(data)); } catch (e) { /* nothing stored */ }
+}
+
 function OcIntakeTile({ data, disabled, onAnswer }) {
-  const [f, setF] = React.useState(() => ikInitial(data));
+  const restored = React.useMemo(() => ikLoadDraft(data), []);
+  const [f, setF] = React.useState(() => {
+    const base = ikInitial(data);
+    // Only keys the form knows, with the same type as the fresh form, so an old or edited draft can't break it.
+    const saved = restored ? Object.fromEntries(Object.entries(restored.f).filter(([k, v]) => k in base && (base[k] === undefined || typeof v === typeof base[k]))) : {};
+    return { ...base, ...saved };
+  });
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
   /** Files uploaded from this form: sent with the rest when the student saves, never on their own. */
-  const [files, setFiles] = React.useState([]);
+  const [files, setFiles] = React.useState(() => (restored && Array.isArray(restored.files) ? restored.files.filter((x) => x && typeof x.name === "string" && typeof x.slot === "string") : []));
+  const touched = React.useRef(Boolean(restored));
+  React.useEffect(() => { if (touched.current) ikSaveDraft(data, { f, files }); }, [f, files]);
+  const [showYears, setShowYears] = React.useState(() => Boolean(f.gpa9 || f.gpa10 || f.gpa11 || f.gpaRecent));
   /** Each upload box lists only its own files: [{ name, slot }]. */
   const attachedTitle = (slot, fallback) => {
     const mine = files.filter((x) => x.slot === slot).map((x) => x.name);
     return mine.length ? `Attached ${mine.join(", ")}. Add more?` : fallback;
   };
-  const addFiles = (slot) => (names) => setFiles((x) => [...x.filter((y) => !names.includes(y.name)), ...names.map((name) => ({ name, slot }))]);
-  const set = (k) => (v) => setF((x) => ({ ...x, [k]: v && v.target ? (v.target.type === "checkbox" ? v.target.checked : v.target.value) : v }));
+  const addFiles = (slot) => (names) => { touched.current = true; setFiles((x) => [...x.filter((y) => !names.includes(y.name)), ...names.map((name) => ({ name, slot }))]); };
+  const set = (k) => (v) => { touched.current = true; setF((x) => ({ ...x, [k]: v && v.target ? (v.target.type === "checkbox" ? v.target.checked : v.target.value) : v })); };
   const off = disabled || busy;
 
   const save = async () => {
@@ -228,7 +256,9 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
       if (Object.keys(clean).length) await window.cfApi.patch({ ...clean, ...(Number.isInteger(data && data.revision) ? { baseRevision: data.revision } : {}) });
       const upload = files.length ? [`I uploaded ${files.map((x) => x.name).join(", ")}. They have my grades, activities or other details; please read them and fill in what you can.`] : [];
       const form = said.length ? [`I filled in the quick start:`, ...said.map((s) => `- ${s}`), ...(blanks.length ? [`Not sure / left blank: ${blanks.join(", ")}.`] : [])] : [];
-      onAnswer([...upload, ...(upload.length && form.length ? [""] : []), ...form].join("\n"));
+      // The draft goes only once the AI has the answer; if that turn fails, the form comes back filled in.
+      const sent = await onAnswer([...upload, ...(upload.length && form.length ? [""] : []), ...form].join("\n"));
+      if (sent) { touched.current = false; ikClearDraft(data); }
     } catch (e) {
       setError(e.status === 409 ? "Your profile changed in another tab. Reload and try again." : e.message || "That didn't save. Try again.");
     }
@@ -259,10 +289,19 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
           <IkField label="Your school's grading scale" hint="your transcript's grade key shows it" wide group><IkChips name="gpaScale" value={f.gpaScale} disabled={off} onChange={set("gpaScale")} /></IkField>
           <IkField label="Unweighted GPA" hint="as on your transcript"><input className="oc-input" inputMode="decimal" value={f.gpaUnweighted} disabled={off} onChange={set("gpaUnweighted")} maxLength={4} /></IkField>
           <IkField label="Weighted GPA"><input className="oc-input" inputMode="decimal" value={f.gpaWeighted} disabled={off} onChange={set("gpaWeighted")} maxLength={4} /></IkField>
-          <IkField label="9th grade GPA" hint="unweighted, if you know it"><input className="oc-input" inputMode="decimal" value={f.gpa9} disabled={off} onChange={set("gpa9")} maxLength={4} /></IkField>
-          <IkField label="10th grade GPA" hint="unweighted"><input className="oc-input" inputMode="decimal" value={f.gpa10} disabled={off} onChange={set("gpa10")} maxLength={4} /></IkField>
-          <IkField label="11th grade GPA" hint="unweighted"><input className="oc-input" inputMode="decimal" value={f.gpa11} disabled={off} onChange={set("gpa11")} maxLength={4} /></IkField>
-          <IkField label="10th–11th GPA" hint="unweighted, if you know it"><input className="oc-input" inputMode="decimal" value={f.gpaRecent} disabled={off} onChange={set("gpaRecent")} maxLength={4} /></IkField>
+          <div className="ik-field ik-field--wide">
+            <button type="button" className="oc-link ik-disclose" aria-expanded={showYears} aria-controls="ik-gpa-years" onClick={() => setShowYears((s) => !s)}>
+              {showYears ? "Hide grades by year" : "Grades by year (optional)"}
+            </button>
+          </div>
+          {showYears && (
+            <div className="ik-grid ik-field--wide ik-subgrid" id="ik-gpa-years">
+              <IkField label="9th grade GPA" hint="unweighted, if you know it"><input className="oc-input" inputMode="decimal" value={f.gpa9} disabled={off} onChange={set("gpa9")} maxLength={4} /></IkField>
+              <IkField label="10th grade GPA" hint="unweighted"><input className="oc-input" inputMode="decimal" value={f.gpa10} disabled={off} onChange={set("gpa10")} maxLength={4} /></IkField>
+              <IkField label="11th grade GPA" hint="unweighted"><input className="oc-input" inputMode="decimal" value={f.gpa11} disabled={off} onChange={set("gpa11")} maxLength={4} /></IkField>
+              <IkField label="10th–11th GPA" hint="unweighted, if you know it"><input className="oc-input" inputMode="decimal" value={f.gpaRecent} disabled={off} onChange={set("gpaRecent")} maxLength={4} /></IkField>
+            </div>
+          )}
           <IkField label="SAT"><input className="oc-input" inputMode="numeric" value={f.sat} disabled={off || f.testOptional} onChange={set("sat")} maxLength={4} /></IkField>
           <IkField label="ACT"><input className="oc-input" inputMode="numeric" value={f.act} disabled={off || f.testOptional} onChange={set("act")} maxLength={2} /></IkField>
           <label className="ik-check"><input type="checkbox" checked={f.testOptional} disabled={off} onChange={set("testOptional")} /> Not sending scores</label>
@@ -293,7 +332,7 @@ function OcIntakeTile({ data, disabled, onAnswer }) {
       </fieldset>
 
       <fieldset className="ik-group"><legend>Money</legend>
-        <p className="ik-note">Colleges price by family income, so this is how Forge estimates what each school would really cost you. It stays in your workspace.</p>
+        <p className="ik-note">Colleges price by family income, so this is how Forge estimates what each school would really cost you. It's saved in your Forge workspace and shared with the AI you connected (ChatGPT or Grok) so it can build your list.</p>
         <div className="ik-grid">
           <IkField label="Family income per year" wide group><IkChips name="incomeBracket" value={f.incomeBracket} disabled={off} onChange={set("incomeBracket")} /></IkField>
           <IkField label="What your family can pay per year" wide group><IkChips name="budget" value={f.budget} disabled={off} onChange={set("budget")} /></IkField>

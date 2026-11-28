@@ -209,7 +209,7 @@ function ShareApp() {
         <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
           {(d.colleges || []).map((c) => {
             const app = ((d.tracker && d.tracker.apps) || []).find((x) => x.slug === c.slug);
-            const st = app ? ({ planning: "Not started", in_progress: "Writing", final_checks: "Final checks", submitted: "Submitted", submitted_npy: "Submitted - NPY", complete: "Under review", deferred: "Deferred", waitlisted: "Waitlisted", admitted: "Admitted", committed: "Committed", denied: "Denied", withdrawn: "Withdrawn" })[app.status] || app.status : "Considering";
+            const st = app ? ({ planning: "Not started", in_progress: "Writing", final_checks: "Final checks", submitted: "Submitted", submitted_npy: "Submitted (no portal yet)", complete: "Under review", deferred: "Deferred", waitlisted: "Waitlisted", admitted: "Admitted", committed: "Committed", denied: "Denied", withdrawn: "Withdrawn" })[app.status] || app.status : "Considering";
             return (
               <li key={c.slug} style={{ padding: "10px 0", borderBottom: "1px solid var(--hairline-soft)", display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                 <span style={{ color: "var(--ink)" }}><strong>{c.name || c.short}</strong> · {c.tier === "safety" ? "Likely" : c.tier || "Not assessed"} · {c.deadline || "TBD"}</span>

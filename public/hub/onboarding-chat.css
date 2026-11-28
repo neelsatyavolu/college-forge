@@ -34,6 +34,7 @@
 .oc-tile-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .oc-input { flex: 1; min-width: 180px; padding: 10px 12px; font: inherit; font-size: 15px; color: var(--ink); background: var(--canvas); border: 1px solid var(--hairline); border-radius: 8px; }
 .oc-input:focus { outline: none; border-color: var(--coral); }
+.oc-input:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: 2px; border-color: var(--coral); }
 .oc-input--number { flex: 0 1 160px; min-width: 120px; font-variant-numeric: tabular-nums; }
 .oc-link { padding: 0; font: inherit; font-size: 14px; color: var(--muted); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .oc-link:hover:not(:disabled) { color: var(--ink); }
@@ -43,6 +44,9 @@
 .oc-upload-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--canvas); border: 1px solid var(--hairline); font-size: 16px; color: var(--coral); }
 .oc-upload-title { font-size: 15px; font-weight: 500; }
 .oc-upload-hint { font-size: 13px; color: var(--muted); }
+.oc-upload-choose { min-height: 36px; padding: 6px 14px; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--canvas); border: 1px solid var(--hairline); border-radius: 8px; }
+.oc-upload-choose:hover:not(:disabled) { border-color: var(--coral); }
+.oc-upload-choose:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: 2px; }
 .oc-upload + .oc-error, .oc-upload ~ .oc-link { margin-top: 8px; display: inline-block; }
 
 .oc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -103,8 +107,10 @@
 @media (max-width: 560px) {
   .oc-tile-grid { grid-template-columns: 1fr 1fr; }
   .oc-strategy dl, .oc-tile-grid--two { grid-template-columns: 1fr; }
-  .oc-dot { width: 14px; }
-  .oc-progress-label { display: none; }
+  .oc-progress { gap: 4px; min-width: 0; }
+  .oc-dot { width: 10px; flex: none; }
+  /* A compact label keeps the dashes named: "Grades", "Your list". */
+  .oc-progress-label { margin-left: 6px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 
 .oc-question { display: flex; flex-direction: column; gap: 10px; }
@@ -116,6 +122,8 @@
 .oc-shell--chat .oc-head { position: static; flex: none; }
 .oc-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .oc-shell--chat .oc-composer { position: static; flex: none; }
+/* While the quick-start form is the question, the answer box gives way to a note and a way to chat instead. */
+.oc-composer--form { align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; }
 
 /* Activities and honors list tile. */
 .oc-acts { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border: 1px solid var(--hairline); border-radius: 10px; }
@@ -128,7 +136,7 @@
 .oc-acts-add { align-self: flex-start; font-size: 13px; }
 .oc-acts-actions { margin-top: 6px; }
 .oc-acts-or { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
-.oc-upload--compact { flex-direction: row; justify-content: center; padding: 14px 16px; gap: 10px; }
+.oc-upload--compact { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 14px 16px; gap: 10px; }
 .oc-upload--compact .oc-upload-hint { display: none; }
 @media (max-width: 560px) {
   .oc-acts-head { display: none; }
@@ -167,6 +175,8 @@
 .ik-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; align-items: end; }
 .ik-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .ik-field--wide { grid-column: 1 / -1; }
+.ik-subgrid { padding-left: 12px; border-left: 2px solid var(--hairline-soft); }
+.ik-disclose { align-self: flex-start; font-size: 13px; }
 .ik-group .oc-upload { margin-top: 14px; }
 .ik-label { font-size: 12px; color: var(--muted); }
 .ik-label em { margin-left: 6px; font-style: normal; color: var(--muted-soft, var(--muted)); }

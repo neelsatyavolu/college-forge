@@ -225,6 +225,22 @@ function TypingDots() {
 }
 
 // ── Provider connect (Grok / ChatGPT-Codex OAuth) ────────────────────────
+/** The sign-in steps after the provider's tab opens. ChatGPT lands on a localhost page; Grok shows a code. Shared by Settings, the copilot and onboarding. */
+function CfConnectSteps({ provider }) {
+  const grok = provider === "grok";
+  return (
+    <ol className="cf-connect-steps" style={{ margin: "6px 0 0", paddingLeft: 18, display: "flex", flexDirection: "column", gap: 3 }}>
+      <li>Approve the request.</li>
+      <li>{grok ? "Copy the authorization code it shows, or the full callback URL." : <>You’ll land on a <strong style={{ color: "var(--ink)" }}>page that fails to load</strong> (localhost). That’s expected.</>}</li>
+      <li>{grok ? "Paste the code or URL below." : "Copy that page’s full URL from the address bar and paste it below."}</li>
+    </ol>
+  );
+}
+
+function cfConnectPlaceholder(provider) {
+  return provider === "grok" ? "Paste the authorization code or callback URL…" : "Paste the localhost URL from the address bar…";
+}
+
 function ConnectPanel({ status, onConnected }) {
   const [flow, setFlow] = React.useState(null); // "grok" | "codex"
   const [authUrl, setAuthUrl] = React.useState("");
@@ -279,16 +295,10 @@ function ConnectPanel({ status, onConnected }) {
           <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.55 }}>
             Authorizing <strong style={{ color: "var(--ink)" }}>{flow === "grok" ? "Grok" : "ChatGPT"}</strong> in a new tab
             {authUrl ? <> (<a href={authUrl} target="_blank" rel="noopener noreferrer">reopen</a>)</> : null}:
-            <ol style={{ margin: "6px 0 0", paddingLeft: 18, display: "flex", flexDirection: "column", gap: 3 }}>
-              <li>Approve the request.</li>
-              <li>
-                {flow === "grok" ? "Copy the displayed authorization code or full callback URL." : <>You’ll land on a <strong style={{ color: "var(--ink)" }}>page that fails to load</strong> (localhost). That’s expected.</>}
-              </li>
-              <li>{flow === "grok" ? "Paste the code or URL below." : "Copy that page’s full URL from the address bar and paste it below."}</li>
-            </ol>
+            <CfConnectSteps provider={flow} />
           </div>
-          <input aria-label="AI sign-in response" autoComplete="off" spellCheck={false} value={callback} onChange={(e) => setCallback(e.target.value)} placeholder={flow === "grok" ? "Paste the authorization code or callback URL…" : "Paste the localhost URL from the address bar…"}
-            style={{ width: "100%", boxSizing: "border-box", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 10px", fontSize: 12.5, color: "var(--ink)", outline: "none", fontFamily: "var(--font-body)" }} />
+          <input aria-label="AI sign-in response" autoComplete="off" spellCheck={false} value={callback} onChange={(e) => setCallback(e.target.value)} placeholder={cfConnectPlaceholder(flow)}
+            style={{ width: "100%", boxSizing: "border-box", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 10px", fontSize: 12.5, color: "var(--ink)", fontFamily: "var(--font-body)" }} />
           <div style={{ display: "flex", gap: 8 }}>
             <Button size="sm" onClick={complete} disabled={busy || !callback.trim()}>Finish sign-in</Button>
             <Button size="sm" variant="secondary" onClick={() => { setFlow(null); setErr(""); }} disabled={busy}>Cancel</Button>
@@ -539,7 +549,7 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view, i
             )}
           </button>
           <input ref={inputRef} aria-label="Message to college advisor" value={input} onChange={(e) => setInput(e.target.value)} placeholder={connected ? "Ask, or upload files to populate your hub…" : "Connect an AI above to begin…"}
-            style={{ flex: 1, borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 12px", fontSize: 13.5, color: "var(--ink)", outline: "none", fontFamily: "var(--font-body)" }} />
+            style={{ flex: 1, borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 12px", fontSize: 13.5, color: "var(--ink)", fontFamily: "var(--font-body)" }} />
           <Button type="submit" size="md" disabled={busy || uploading || !connected || (!input.trim() && attachments.length === 0)}>{busy ? "…" : "Send"}</Button>
         </div>
       </form>
@@ -547,3 +557,4 @@ function AiChat({ open, onClose, onWorkspaceChange, onUserMessage, data, view, i
   );
 }
 window.AiChat = AiChat;
+Object.assign(window, { CfConnectSteps, cfConnectPlaceholder });

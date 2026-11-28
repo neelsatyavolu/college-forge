@@ -110,15 +110,11 @@ function ConnectFlow({ provider, label, onDone }) {
       <div style={{ fontSize: 12.5, color: "var(--muted)", lineHeight: 1.55 }}>
         Authorizing <strong style={{ color: "var(--ink)" }}>{label}</strong> in a new tab
         {" "}(<a href={authUrl} target="_blank" rel="noopener noreferrer">reopen</a>):
-        <ol style={{ margin: "6px 0 0", paddingLeft: 18 }}>
-          <li>Approve the request.</li>
-          <li>{provider === "grok" ? "Copy the displayed authorization code or full callback URL." : "You’ll land on a page that fails to load (localhost). That’s expected."}</li>
-          <li>{provider === "grok" ? "Paste the code or URL below." : "Copy that page’s full URL and paste it below."}</li>
-        </ol>
+        <window.CfConnectSteps provider={provider} />
       </div>
       <input aria-label={label + " sign-in response"} autoComplete="off" spellCheck={false} onKeyDown={(e) => { if (e.key === "Enter" && !busy) { e.preventDefault(); complete(); } }} value={callback} onChange={(e) => setCallback(e.target.value)}
-        placeholder={provider === "grok" ? "Paste the authorization code or callback URL…" : "Paste the localhost URL from the address bar…"}
-        style={{ width: "100%", boxSizing: "border-box", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 10px", fontSize: 12.5, color: "var(--ink)", outline: "none", fontFamily: "var(--font-body)" }} />
+        placeholder={window.cfConnectPlaceholder(provider)}
+        style={{ width: "100%", boxSizing: "border-box", borderRadius: "var(--radius-sm)", border: "1px solid var(--hairline)", background: "var(--canvas)", padding: "8px 10px", fontSize: 12.5, color: "var(--ink)", fontFamily: "var(--font-body)" }} />
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <Button size="sm" onClick={complete} disabled={busy || !callback.trim()}>Finish sign-in</Button>
         <Button size="sm" variant="secondary" onClick={() => { setAuthUrl(""); setErr(""); }} disabled={busy}>Cancel</Button>
@@ -206,8 +202,13 @@ function AssistantPanel() {
     try { await window.cfApi.connections(id); await load(); } catch (e) { setError(e.message); }
   };
   return (
-    <Panel title="Connect an assistant">
-      <div style={{ display: "grid", gap: 16 }}>
+    // Most students only need the AI providers above; this is for wiring Forge into another AI app.
+    <details className="cf-advanced" style={{ background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 20 }}>
+      <summary className="cf-advanced__summary">
+        <span className="cf-display" style={{ fontSize: 20, color: "var(--ink)" }}>Advanced: connect other AI apps</span>
+        <span className="cf-help" style={{ display: "block", marginTop: 2 }}>Let Grok, ChatGPT or Claude update your applications page through Forge’s MCP server.</span>
+      </summary>
+      <div style={{ display: "grid", gap: 16, padding: 20, borderTop: "1px solid var(--hairline)" }}>
         <p className="cf-help" style={{ color: "var(--body)" }}>Let Grok, ChatGPT, Claude or another assistant keep your applications page current: add schools, update statuses and dates, record decisions, add follow-ups and flags, and manage share links for parents and counselors. It can’t see your portal passwords or essays, and you approve it once with your Xanom sign-in.</p>
         <CopyField value={url} label="Forge MCP server address" />
         <div className="cf-fields" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18 }}>
@@ -239,7 +240,7 @@ function AssistantPanel() {
           )}
         </div>
       </div>
-    </Panel>
+    </details>
   );
 }
 
@@ -362,7 +363,7 @@ function Settings({ theme, account, onToggleTheme, onStartOnboarding, onWorkspac
         <div>
           <h1 className="cf-page-title">Settings</h1>
           <p className="cf-page-lede">
-            Your account, assistants that can use your applications, the copilot’s AI provider, and appearance.
+            Your account, the AI that powers Forge, appearance, and other AI apps that can use your applications.
           </p>
         </div>
       </header>
@@ -372,7 +373,6 @@ function Settings({ theme, account, onToggleTheme, onStartOnboarding, onWorkspac
       {msg ? <div role="status" style={{ marginBottom: 16, padding: 12, borderRadius: "var(--radius-md)", background: "color-mix(in srgb, var(--accent-teal, #2a9d8f) 12%, transparent)", color: "var(--ink)", fontSize: 13 }}>{msg}</div> : null}
 
       <AccountPanel account={account} />
-      <AssistantPanel />
       {window.GptzeroPanel ? <div id="gptzero" className="cf-anchor"><window.GptzeroPanel Panel={Panel} /></div> : null}
 
       <Panel title="AI providers" action={
@@ -529,6 +529,7 @@ function Settings({ theme, account, onToggleTheme, onStartOnboarding, onWorkspac
           Use <strong style={{ color: "var(--ink)" }}>Share & export</strong> for advisor links and to download drafts and an application pack.
         </p>
       </Panel>
+      <AssistantPanel />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-const { Badge, Button } = window.CollegeForgeDesignSystem_e95e63;
+const { Button } = window.CollegeForgeDesignSystem_e95e63;
 
 const REC_STATUS_LIST = ["not_asked", "asked", "in_progress", "submitted", "waived"];
 const RECEIPT_TONE = { received: "var(--success)", missing: "var(--warning)", unclear: "var(--accent-amber)", "no portal data": "var(--muted-soft)" };
@@ -11,6 +11,12 @@ const recHelpers = () => window.cfRecommenders || { receiptFor: () => [], letter
 const todayIso = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+/** "2026-11-01" as "Nov 1"; anything else (an old free-text deadline) as typed. */
+const shortDate = (iso) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!m) return iso || "";
+  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 const receiptTitle = (r) => {
   const count = r.matched === "type" && r.total ? ` (${r.done} of ${r.total} letters of this type in, not matched by name)` : "";
@@ -107,6 +113,7 @@ function LettersPanel({ Panel, recs, tracker, busy, patch, fieldStyle, onAsk }) 
   const apps = (tracker && tracker.apps) || [];
   const [form, setForm] = React.useState({ name: "", type: "teacher", subject: "", deadline: "" });
   const [open, setOpen] = React.useState(null);
+  const [confirming, setConfirming] = React.useState(null);
   const add = async () => {
     if (!form.name.trim()) return;
     const saved = await patch({
@@ -115,17 +122,17 @@ function LettersPanel({ Panel, recs, tracker, busy, patch, fieldStyle, onAsk }) 
     if (saved) setForm({ name: "", type: "teacher", subject: "", deadline: "" });
   };
   return (
-    <Panel title={`Recommendation letters (${recs.length})`} action={<Badge variant="cream" uppercase>LOR tracker</Badge>}>
+    <Panel title={`Recommendation letters (${recs.length})`}>
       {recs.length === 0 ? (
         <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--muted)" }}>No recommenders yet. Add your counselor and teachers here, then pick the schools each letter goes to.</p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
           {recs.map((r) => {
             const receipts = recHelpers().receiptFor(r, tracker, recs);
-            const meta = [r.type, r.subject, r.deadline ? `due ${r.deadline}` : "", r.askedAt ? `asked ${r.askedAt}` : "", r.thankYouSent ? "thanked" : ""].filter(Boolean).join(" · ");
+            const meta = [r.type, r.subject, r.deadline ? `due ${shortDate(r.deadline)}` : "", r.askedAt ? `asked ${shortDate(r.askedAt)}` : "", r.thankYouSent ? "thanked" : ""].filter(Boolean).join(" · ");
             return (
               <div key={r.id} className="cf-tracker-row" style={{ padding: "10px 12px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-md)" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: 10, alignItems: "center" }}>
+                <div className="cf-letter-row">
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)" }}>{r.name}</div>
                     <div style={{ fontSize: 12, color: "var(--muted)" }}>{meta}</div>
@@ -133,10 +140,21 @@ function LettersPanel({ Panel, recs, tracker, busy, patch, fieldStyle, onAsk }) 
                   <select aria-label={`Status for ${r.name}`} disabled={busy} value={r.status} onChange={(e) => patch({ recommendation: { id: r.id, status: e.target.value } })} style={fieldStyle}>
                     {REC_STATUS_LIST.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
                   </select>
-                  <button type="button" aria-expanded={open === r.id} onClick={() => setOpen(open === r.id ? null : r.id)}
-                    style={{ border: "none", background: "transparent", color: "var(--ink)", cursor: "pointer", fontSize: 12 }}>{open === r.id ? "Close" : "Details"}</button>
-                  <button type="button" disabled={busy} onClick={() => patch({ removeRecommendationId: r.id })}
-                    style={{ border: "none", background: "transparent", color: "var(--muted)", cursor: "pointer", fontSize: 12 }}>Remove</button>
+                  <div className="cf-letter-actions">
+                    {confirming === r.id ? (
+                      <>
+                        <span className="cf-letter-confirm">Remove {r.name}?</span>
+                        <button type="button" className="cf-letter-btn cf-letter-btn--danger" disabled={busy}
+                          onClick={async () => { await patch({ removeRecommendationId: r.id }); setConfirming(null); }}>Remove</button>
+                        <button type="button" className="cf-letter-btn" onClick={() => setConfirming(null)}>Keep</button>
+                      </>
+                    ) : (
+                      <>
+                        <button type="button" className="cf-letter-btn" aria-expanded={open === r.id} onClick={() => setOpen(open === r.id ? null : r.id)}>{open === r.id ? "Close" : "Details"}</button>
+                        <button type="button" className="cf-letter-btn cf-letter-btn--muted" disabled={busy} onClick={() => setConfirming(r.id)}>Remove</button>
+                      </>
+                    )}
+                  </div>
                 </div>
                 {receipts.length ? (
                   <ul aria-label={`Where ${r.name}'s letter stands`} style={{ listStyle: "none", margin: "8px 0 0", padding: 0, display: "flex", flexWrap: "wrap", gap: "4px 12px" }}>
@@ -153,7 +171,7 @@ function LettersPanel({ Panel, recs, tracker, busy, patch, fieldStyle, onAsk }) 
           })}
         </div>
       )}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8, alignItems: "end" }}>
         <input aria-label="Recommender name" placeholder="Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} style={fieldStyle} />
         <select aria-label="Recommender type" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))} style={fieldStyle}>
           <option value="counselor">counselor</option>
@@ -161,7 +179,10 @@ function LettersPanel({ Panel, recs, tracker, busy, patch, fieldStyle, onAsk }) 
           <option value="other">other</option>
         </select>
         <input aria-label="Recommender subject" placeholder="Subject" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} style={fieldStyle} />
-        <input aria-label="Recommender deadline" placeholder="Deadline" value={form.deadline} onChange={(e) => setForm((f) => ({ ...f, deadline: e.target.value }))} style={fieldStyle} />
+        <label className="cf-letter-date">
+          <span>Deadline</span>
+          <input type="date" aria-label="Recommender deadline" value={form.deadline} onChange={(e) => setForm((f) => ({ ...f, deadline: e.target.value }))} style={fieldStyle} />
+        </label>
         <Button size="sm" onClick={add} disabled={busy || !form.name.trim()}>Add</Button>
       </div>
     </Panel>

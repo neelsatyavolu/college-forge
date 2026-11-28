@@ -9,6 +9,17 @@ function Panel({ title, children }) {
   );
 }
 
+/** A note's essay as the student knows it ("Why Brown?"), not its id; the id only when the prompt is gone. */
+function essayNoteLabel(data, id) {
+  const essays = (data && data.essays) || {};
+  const lists = [essays.commonApp || [], ...Object.values(essays.supplements || {})];
+  for (const list of lists) {
+    const hit = Array.isArray(list) ? list.find((e) => e && e.id === id) : null;
+    if (hit) return [hit.group, hit.label].filter(Boolean).join(": ") || "an essay";
+  }
+  return "an essay";
+}
+
 const PARENT_LEVELS = [
   ["basic", "Basic", "Applications, statuses, deadlines and decisions you’ve opened."],
   ["standard", "Standard", "Basic, plus to-dos, your college list, letters, scholarships and financial aid."],
@@ -345,7 +356,7 @@ function ShareExport({ data, onWorkspaceChange, onWorkspaceSwitch }) {
                   {" · "}
                   {new Date(n.createdAt).toLocaleString()}
                   {n.via === "counselor" ? " · Counselor" : n.via === "coach" ? " · Writing coach" : ""}
-                  {n.essayId ? ` · essay ${n.essayId}` : ""}
+                  {n.essayId ? ` · on ${essayNoteLabel(data, n.essayId)}` : ""}
                 </div>
                 <p style={{ margin: 0, fontSize: 14, color: "var(--body)", lineHeight: 1.5 }}>{n.body}</p>
               </div>

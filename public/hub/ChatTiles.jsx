@@ -37,7 +37,7 @@ function OcChoiceTiles({ q, disabled, onAnswer }) {
     if (picked.length) onAnswer(picked.join(", "));
   };
   return (
-    <div className="oc-tiles" role={multi ? "group" : "radiogroup"} aria-label={q.prompt}>
+    <div className="oc-tiles" role="group" aria-label={q.prompt}>
       <div className="oc-tile-grid">
         {(q.options || []).map((opt) => (
           <button key={opt.value} type="button" className="oc-tile" aria-pressed={picked.includes(opt.label)} disabled={disabled} onClick={() => toggle(opt)}>
@@ -105,14 +105,18 @@ function OcUploadTile({ disabled, onAnswer, onUploaded, compact, title }) {
   };
   return (
     <div>
-      <label className={"oc-upload" + (compact ? " oc-upload--compact" : "") + (over ? " is-over" : "")}
+      {/* The whole box takes a drop or a click; the Choose file button is the keyboard and screen-reader way in. */}
+      <div className={"oc-upload" + (compact ? " oc-upload--compact" : "") + (over ? " is-over" : "")}
+        onClick={() => { if (!disabled && !busy && inputRef.current) inputRef.current.click(); }}
         onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); if (!disabled && !busy) upload(e.dataTransfer.files); }}>
-        <input ref={inputRef} type="file" accept=".pdf,.docx,.txt,.md,.markdown,.csv" multiple hidden disabled={disabled || busy} onChange={(e) => upload(e.target.files)} />
+        <input ref={inputRef} type="file" accept=".pdf,.docx,.txt,.md,.markdown,.csv" multiple hidden tabIndex={-1} disabled={disabled || busy}
+          onClick={(e) => e.stopPropagation()} onChange={(e) => { upload(e.target.files); e.target.value = ""; }} />
         <span className="oc-upload-icon" aria-hidden="true">↑</span>
-        <span className="oc-upload-title">{busy ? "Reading your file…" : title || (compact ? "Drop a resume or activities list, or choose a file" : "Drop your transcript here, or choose a file")}</span>
+        <span className="oc-upload-title">{busy ? "Reading your file…" : title || (compact ? "Drop a resume or activities list here" : "Drop your transcript here")}</span>
         <span className="oc-upload-hint">PDF, Word, Markdown or text · up to 15 MB</span>
-      </label>
+        <button type="button" className="oc-upload-choose" disabled={disabled || busy} onClick={(e) => { e.stopPropagation(); inputRef.current && inputRef.current.click(); }}>Choose file</button>
+      </div>
       {error && <p className="oc-error" role="alert">{error}</p>}
       {!compact && <button type="button" className="oc-link" disabled={disabled || busy} onClick={() => onAnswer("I don't have my transcript handy. Let's do it by hand.")}>I'll type my grades instead</button>}
     </div>

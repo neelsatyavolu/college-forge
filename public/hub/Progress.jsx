@@ -5,7 +5,8 @@ function SharePanel({ data, onWorkspaceChange, onClose }) {
   const [error, setError] = React.useState("");
   const [label, setLabel] = React.useState("");
   const [copied, setCopied] = React.useState("");
-  const links = (data.shares || []).filter((s) => !s.revokedAt);
+  // Only progress links here: this panel promises essays stay private. Full advisor links live in Share & export.
+  const links = (data.shares || []).filter((s) => !s.revokedAt && s.scope === "progress");
   const url = (t) => `${window.location.origin}/hub/share.html?t=${encodeURIComponent(t)}`;
   const run = async (fn) => {
     setBusy(true); setError("");
@@ -26,11 +27,14 @@ function SharePanel({ data, onWorkspaceChange, onClose }) {
         <div><Button type="submit" size="sm" disabled={busy}>Create link</Button></div>
       </form>
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>{error}</p> : null}
+      {(data.shares || []).some((s) => !s.revokedAt && s.scope !== "progress") ? (
+        <p className="cf-help">You also have full advisor links, which include essays. Manage them in <a href="#share">Share &amp; export</a>.</p>
+      ) : null}
       {links.length ? (
         <ul className="cf-apps-list">
           {links.map((l) => (
             <li key={l.token} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "12px 16px", flexWrap: "wrap" }}>
-              <span><strong style={{ fontWeight: 500, color: "var(--ink)" }}>{l.label}</strong><span className="cf-help" style={{ display: "block" }}>{l.scope === "progress" ? "Progress only" : "Full hub, for advisors"} · made {new Date(l.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></span>
+              <span><strong style={{ fontWeight: 500, color: "var(--ink)" }}>{l.label}</strong><span className="cf-help" style={{ display: "block" }}>Progress only · made {new Date(l.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></span>
               <span className="cf-row-actions">
                 <Button size="sm" variant="secondary" onClick={() => copy(l.token)}>{copied === l.token ? "Copied" : "Copy link"}</Button>
                 <button type="button" className="cf-link-btn cf-link-btn--danger" disabled={busy} onClick={() => run(() => window.cfApi.postAction("revoke-share", { token: l.token }))}>Turn off</button>
