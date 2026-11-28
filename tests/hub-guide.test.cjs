@@ -69,3 +69,16 @@ test('get_ranked_list and get_official_rankings answer from the same data as the
   assert.equal(top.top.length, 3);
   assert.equal(top.top[0].rank, 1);
 }));
+
+test('the MCP server exposes the Ranked list and official rankings', () => withStore(async (id) => {
+  const { callTool, toolList } = require('../lib/mcp-tools.ts');
+  const names = toolList().map((t) => t.name);
+  assert.ok(names.includes('get_ranked_list') && names.includes('get_official_rankings'));
+  await updateWorkspace(id, () => emptyWorkspace());
+  const { executeTool } = makeHubTools(id);
+  await executeTool('add_application', JSON.stringify({ school: 'Northeastern University' }));
+  await executeTool('add_application', JSON.stringify({ school: 'Northwestern University' }));
+  const text = JSON.stringify(await callTool(id, 'get_ranked_list', {}));
+  assert.ok(text.indexOf('Northwestern University') < text.indexOf('Northeastern University'));
+  assert.match(JSON.stringify(await callTool(id, 'get_official_rankings', { schools: ['Cornell University'] })), /Cornell/);
+}));

@@ -14,7 +14,7 @@ Every commit is world-readable at github.com/neelsatyavolu/college-forge and can
 The hub copilot (lib/hub-context.ts) has to know every part of Forge a student can see, because students ask about tabs by name. When you add or change a tab, page, or feature:
 
 - Update its entry in `lib/hub-guide.ts`: the sidebar label, what it shows and measures, and the tools that read or change it. `tests/hub-guide.test.cjs` fails when a `public/hub/nav.js` tab or page has no entry, or an entry names a tool the copilot doesn't have.
-- If the copilot can't read or change the new data, add a tool for it (next to the feature, registered in `lib/hub-tools.ts`) that reuses the same code the page uses, so its answer matches what the student sees.
+- If the copilot can't read or change the new data, add a tool for it (next to the feature, registered in `lib/hub-tools.ts`) that reuses the same code the page uses, so its answer matches what the student sees. Add the same tool to the MCP server (`lib/mcp-tools.ts`, the Claude connector) so outside assistants see it too, and mention it in `app/mcp/route.ts` INSTRUCTIONS when students will ask about it by name.
 - If it adds workspace data the copilot should always see, add a line to `snapshot()` in `lib/hub-context.ts`.
 
 ## AI providers

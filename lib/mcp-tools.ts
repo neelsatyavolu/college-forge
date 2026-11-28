@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RANKING_LISTS, officialRankingsResult, rankedListResult } from "./ranking-tools";
 import { cycleShift } from "./cycle-dates";
 import { runChecks } from "./portal-check";
 import { allow } from "./rate-limit";
@@ -422,6 +423,26 @@ export const TOOLS: Tool[] = [
         })),
       };
     },
+  }),
+  tool({
+    name: "get_ranked_list",
+    title: "Get the Ranked list",
+    description: "The Ranked list tab: the student's applications (not the shortlist) ordered best first by a weighted average of their U.S. News, Forbes, Niche, WSJ and Princeton Review ranks and the student's own career ranking (My path). It measures reputation and outcomes, not admission chances. Use it whenever the student mentions their ranked list or asks how their schools rank.",
+    input: z.object({}),
+    readOnly: true,
+    run: async (ws) => rankedListResult(await getWorkspace(ws)),
+  }),
+  tool({
+    name: "get_official_rankings",
+    title: "Get official college rankings",
+    description: "The Official rankings tab. Pass schools (names) for each one's rank on every list, or list (forge, usn, lac, forbes, niche, wsj, prPublic, prPrivate) and top (1-100, default 25) for that list's top schools as published.",
+    input: z.object({
+      schools: z.array(z.string().max(200)).max(20).optional(),
+      list: z.enum(RANKING_LISTS as [string, ...string[]]).optional(),
+      top: z.number().int().min(1).max(100).optional(),
+    }),
+    readOnly: true,
+    run: async (_ws, args) => officialRankingsResult(args),
   }),
   tool({
     name: "get_profile",
