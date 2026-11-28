@@ -300,7 +300,9 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
           </div> : null}
           {error ? <p role="alert" style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
         </div>
-        {s.verdict ? <div><VerdictBadge tone={s.verdict.tone}>{s.verdict.label}</VerdictBadge></div> : null}
+        {/* A verdict that only names a tier was copied from the tier when the school was added and goes
+            stale when the student changes the Tier menu above; only other labels are worth showing. */}
+        {s.verdict && !/^(reach|target|safety|likely)$/i.test(String(s.verdict.label || "").trim()) ? <div><VerdictBadge tone={s.verdict.tone}>{s.verdict.label}</VerdictBadge></div> : null}
       </div>
     </div>
   );

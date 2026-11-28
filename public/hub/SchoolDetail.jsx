@@ -371,7 +371,7 @@ function SchoolDetail({ college, data, tracked, odds, oddsStale, onTrack, busy, 
             {tier ? <span className="cf-badge" style={{ "--tone": tier.tone }}>{tier.label}</span> : <span className="cf-badge">Not assessed</span>}
             {college.priority ? <Badge variant="coral" uppercase>Priority</Badge> : null}
             {SD.isUc(college) ? <Badge variant="teal" uppercase>UC Application</Badge> : null}
-            {college.verdict && (!tier || String(college.verdict.label).toLowerCase() !== tier.label.toLowerCase()) ? <VerdictBadge tone={college.verdict.tone}>{college.verdict.label}</VerdictBadge> : null}
+            {college.verdict && !/^(reach|target|safety|likely)$/i.test(String(college.verdict.label || "").trim()) ? <VerdictBadge tone={college.verdict.tone}>{college.verdict.label}</VerdictBadge> : null}
             {isLink(college.url) ? <a className="cf-sd-source" href={college.url} target="_blank" rel="noopener noreferrer">School website ↗</a> : null}
             {info && info.explore ? <a className="cf-sd-source" href={`#explore/${encodeURIComponent(info.explore.slug)}`}>Campus, programs &amp; net price calculator →</a> : null}
           </div>
