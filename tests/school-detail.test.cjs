@@ -129,3 +129,23 @@ test('school insights are only for schools on the list', () => {
   assert.equal(out.major.intended, 'Computer Science');
   assert.equal(schoolInsights(ws, 'not-on-list'), null);
 });
+
+test('not applying for aid prices the school at its full cost, by residency when it prices residents apart', () => {
+  const split = { location: 'Auburn, AL', research: { facts: [fact('sticker_cost', '$39,516 Alabama resident (tuition/fees $13,572), $63,540 non-resident'), fact('net_price_48_75k', '$14,200')] } };
+  const home = detail.costForYou(split, { needAid: false, incomeBracket: '48-75', budget: '30-50' }, { residency: 'AL' });
+  assert.deepEqual([home.text, home.basis, home.residency, home.fits], ['$39,516', 'full', 'in-state', true]);
+  const away = detail.costForYou(split, { needAid: false, budget: '30-50' }, { residency: 'GA' });
+  assert.deepEqual([away.text, away.residency, away.fits], ['$63,540', 'out-of-state', false]);
+  const unknown = detail.costForYou(split, { needAid: false, budget: '30-50' }, {});
+  assert.deepEqual([unknown.text, unknown.fits], ['Depends on your residency', null]);
+  const priv = detail.costForYou({ research: { facts: [fact('sticker_cost', '$92,000 total')] } }, { needAid: false, budget: '50plus' }, {});
+  assert.deepEqual([priv.text, priv.fits], ['$92,000', null]);
+});
+
+test('research facts skip what the page shows above and other income bands', () => {
+  const facts = [fact('admit_rate', '9%'), fact('interview', 'Optional'), fact('housing', 'Guaranteed'), fact('net_price_lt30k', '$2,000'), fact('net_price_48_75k', '$9,000'), fact('merit_aid', 'Some')];
+  const keys = (prefs) => detail.researchGroups(facts, prefs).flatMap((g) => g.rows.map((r) => r.fact.key));
+  assert.deepEqual(keys({ incomeBracket: '48-75' }), ['merit_aid', 'net_price_48_75k', 'housing']);
+  assert.deepEqual(keys({ needAid: false, incomeBracket: '48-75' }), ['merit_aid', 'housing']);
+  assert.deepEqual(keys({}), ['merit_aid', 'net_price_lt30k', 'net_price_48_75k', 'housing']);
+});

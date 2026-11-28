@@ -79,13 +79,6 @@ button:disabled { cursor: not-allowed; }
 .cf-text-action { font-size: 12px; font-weight: 500; color: var(--workspace-accent); margin-top: auto; }
 .cf-home-columns { display: grid; grid-template-columns: 1.15fr 1fr; gap: 26px; }
 .cf-agenda { border: 1px solid var(--hairline); border-radius: 9px; }
-.cf-agenda-row { display: flex; padding: 18px; gap: 16px; align-items: center; color: var(--ink); border-bottom: 1px solid var(--hairline); }
-.cf-agenda-row:last-child { border: none; }
-.cf-agenda-row h3 { font-size: 13px; font-weight: 500; margin: 0 0 5px; }
-.cf-agenda-row p { font-size: 11px; margin: 0; color: var(--muted); }
-.cf-date-block { text-align: center; padding: 6px 10px; border-radius: 6px; background: var(--surface-soft); min-width: 48px; }
-.cf-date-block span { display: block; font-size: 9px; text-transform: uppercase; color: var(--muted); }
-.cf-date-block strong { font: 500 26px/1.2 var(--font-display); }
 .cf-friendly-empty { padding: 26px; }
 .cf-friendly-empty > span { color: var(--coral); font-size: 23px; }
 .cf-friendly-empty h3 { margin: 12px 0 8px; font: 500 23px/1.2 var(--font-display); }
@@ -395,6 +388,12 @@ button:disabled { cursor: not-allowed; }
 .cf-sd-deadlines li.is-chosen { border-color: var(--workspace-accent); background: var(--workspace-accent-soft); color: var(--ink); }
 .cf-sd-deadlines li > :first-child { font-weight: 600; }
 .cf-sd-chosen { font-size: 11px; color: var(--workspace-accent); }
+.cf-sd-aid { gap: 12px; justify-items: stretch; }
+.cf-sd-aid__title { margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+.cf-sd-aidlist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.cf-sd-aidlist li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--hairline); font-size: 13px; }
+.cf-sd-aidlist li > .cf-nums { color: var(--ink); white-space: nowrap; }
+.cf-sd-aid__note { display: block; margin-top: 2px; font-size: 12px; line-height: 1.45; color: var(--muted); }
 .cf-sd-subhead { margin: 22px 0 10px; font-size: 12px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
 .cf-sd-scatter { min-width: 0; width: 100%; }
 .cf-sd-scatter > section { padding: 12px !important; }

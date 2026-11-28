@@ -132,11 +132,16 @@
     var status = data.essayStatus || {};
     var opts = { hidden: data.essayHidden || {}, commonAppPrompt: data.commonAppPrompt || "", essaySchools: data.essaySchools };
     var groups = [];
+    // Every active non-UC school uses the personal statement, with or without supplements of its own, so
+    // these are gathered before schools without essays (or opted out of supplements) drop out.
+    var commonSchools = 0;
+    var commonDeadlines = [];
     essayGroups(data).forEach(function (g, order) {
-      if (plan.isSchoolSkipped(g.key, opts)) return;
       var active = g.kind === "common" ? [] : activeColleges(g, apps);
       if (g.kind !== "common" && !active.length) return;
       var deadline = g.kind === "common" ? null : earliest(active.map(function (c) { return tl.schoolDeadline(c, tl.appFor(c, apps), today); }));
+      if (g.kind === "school") { commonSchools++; commonDeadlines.push(deadline); }
+      if (plan.isSchoolSkipped(g.key, opts)) return;
       var items = plan.requiredItems([g], drafts, status, opts);
       if (!items.length) return;
       groups.push({
@@ -149,9 +154,9 @@
     });
     // The personal statement is shared by every Common App school, so it's due before the first of them.
     var common = groups.find(function (g) { return g.kind === "common"; });
-    var firstCommonApp = earliest(groups.filter(function (g) { return g.kind === "school" && g.deadline; }).map(function (g) { return g.deadline; }));
+    var firstCommonApp = earliest(commonDeadlines);
     if (common) {
-      if (!groups.some(function (g) { return g.kind === "school"; })) groups = groups.filter(function (g) { return g !== common; });
+      if (!commonSchools) groups = groups.filter(function (g) { return g !== common; });
       else if (firstCommonApp) common.finishBy = maxDate(today, tl.addDays(firstCommonApp.date, -COMMON_LEAD_DAYS));
     }
     groups.sort(function (a, b) {

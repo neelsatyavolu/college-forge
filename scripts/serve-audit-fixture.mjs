@@ -38,6 +38,12 @@ ws.essayDrafts={...ws.essayDrafts,'fx-why':'The robotics lab and the first-year 
 ws.essayStatus={'fx-community':'final'};
 ws.essayDrafts['fx-community']='At the library on Saturdays I am the person who helps younger readers find the next book.';
 ws.admissionOdds={[first.slug]:{percent:14,low:9,high:21,baselineSource:'EA admit rate',summary:'A strong CS profile against a very selective pool.',factors:[{label:'SAT',effect:'down',detail:'Below the middle 50%'},{label:'Activities',effect:'up',detail:'Sustained robotics leadership'}],sources:[src],estimatedAt:'2026-10-01T00:00:00.000Z'}};
+// FIXTURE_NEED_AID=yes|no: the student's need-based aid answer, with synthetic aid-form dates on two schools.
+if(process.env.FIXTURE_NEED_AID){
+ ws.onboarding.listPrefs={...ws.onboarding.listPrefs,needAid:process.env.FIXTURE_NEED_AID==='yes'};
+ ws.colleges[0]={...ws.colleges[0],deadlines:[...ws.colleges[0].deadlines,{plan:'CSS Profile',date:'2026-12-15'},{plan:'FAFSA',date:'2027-02-01'}]};
+ ws.colleges[1]={...ws.colleges[1],deadlines:[...ws.colleges[1].deadlines,{plan:'Financial aid priority',date:'2027-01-15'},{plan:'FAFSA',date:'2027-03-01'}]};
+}
 const {newApp}=require('../lib/tracker.ts');
 const {viewTracker}=require('../lib/tracker-service.ts');
 const {studentScores}=require('../lib/testing-plan.ts');
@@ -67,4 +73,4 @@ const server=createServer(async(req,res)=>{
  }
  try{const file=path.resolve(publicDir,'.'+(url.pathname==='/'?'/hub/index.html':decodeURIComponent(url.pathname)));if(!file.startsWith(publicDir+path.sep)){res.writeHead(403);return res.end();}const content=await readFile(file);res.writeHead(200,{'content-type':types[path.extname(file)]||'application/octet-stream','cache-control':'no-store'});res.end(content);}catch{res.writeHead(404);res.end('Not found');}
 });
-server.listen(3211,'127.0.0.1',()=>console.log('Synthetic UI fixture: http://127.0.0.1:3211 (memory only; no live services)'));
+server.listen(Number(process.env.PORT)||3211,'127.0.0.1',()=>console.log('Synthetic UI fixture: http://127.0.0.1:3211 (memory only; no live services)'));

@@ -8,6 +8,7 @@ const SD = window.cfSchoolDetail;
 const SD_TIER = { reach: { label: "Reach", tone: "var(--error)" }, target: { label: "Target", tone: "var(--accent-amber)" }, safety: { label: "Likely", tone: "var(--accent-teal)" } };
 const SD_POSITION = { below: "below", within: "inside", above: "above" };
 const SD_ESSAY_TONE = { final: "var(--success)", draft: "var(--accent-amber)", "not started": "var(--muted-soft)" };
+const SD_ESSAY_LABEL = { final: "Final", draft: "Draft", "not started": "Not started" };
 const SD_PLAN = { send: "Send scores", withhold: "Apply without scores", undecided: "Not decided" };
 const SD_TP_TONE = { send: "var(--success)", your_call: "var(--accent-amber)", consider_withholding: "var(--coral)" };
 
@@ -137,15 +138,24 @@ function ScoresValue({ college, insights }) {
   );
 }
 
-function CostValue({ college, prefs }) {
-  const cost = SD.costForYou(college, prefs);
+function costLabel(cost) {
+  if (cost.basis === "full") {
+    const where = cost.residency ? `${cost.residency} ` : "";
+    return cost.text.charAt(0) === "$" ? ` a year, the full ${where}cost: you aren't applying for need-based aid` : ": you aren't applying for need-based aid, so you'd pay the full cost";
+  }
+  const perYear = /a year/i.test(cost.text) ? "" : " a year";
+  return cost.fact && cost.income ? `${perYear} for family incomes ${cost.income}` : `${perYear}, estimated`;
+}
+
+function CostValue({ college, prefs, place }) {
+  const cost = SD.costForYou(college, prefs, place);
   const sticker = SD.factFor(college.research && college.research.facts, "sticker_cost");
   if (!cost && !sticker && !college.coa) return null;
   return (
     <div className="cf-sd-stack">
       {cost ? (
         <span className="cf-nums">
-          <strong>{cost.text}</strong>{cost.fact && cost.income ? <span className="cf-sd-muted"> a year for family incomes {cost.income}</span> : <span className="cf-sd-muted"> a year, estimated</span>}
+          <strong>{cost.text}</strong><span className="cf-sd-muted">{costLabel(cost)}</span>
           {cost.fact ? <React.Fragment>{" "}<SourceLink url={cost.fact.sourceUrl} />{SD.cycleTag(cost.fact.cycle) ? <span className="cf-research-tag">{SD.cycleTag(cost.fact.cycle)}</span> : null}</React.Fragment> : null}
         </span>
       ) : null}
@@ -171,7 +181,7 @@ function TestingValue({ college, tracked }) {
     return (
       <div className="cf-sd-stack">
         <span className="cf-sd-inline"><span className="cf-badge" style={{ "--tone": SD_TP_TONE[tp.recommendation.advice] || "var(--muted-soft)" }}>{tp.recommendation.label}</span> {tp.recommendation.reason}</span>
-        <span>Your plan: <strong>{SD_PLAN[tp.choice.plan] || SD_PLAN.undecided}</strong> · <a href="#applications">change it on Portals</a></span>
+        <span>Your plan: <strong>{SD_PLAN[tp.choice.plan] || SD_PLAN.undecided}</strong> · <a href={`#progress/app-${encodeURIComponent(tracked.id)}`}>change it on Progress</a></span>
         {policy ? <span className="cf-sd-muted">Policy: <FactValue fact={policy} /></span> : null}
       </div>
     );
@@ -180,9 +190,10 @@ function TestingValue({ college, tracked }) {
   return college.testPolicy || null;
 }
 
+/** Admission rounds and their materials; aid and scholarship dates have their own row (AidDeadlinesValue). */
 function DeadlinesValue({ college }) {
   const chosen = SD.chosenRound(college);
-  const deadlines = (college.deadlines || []).filter((d) => d && d.plan);
+  const deadlines = (college.deadlines || []).filter((d) => d && d.plan && !window.cfDeadlinePlan.aidKind(d.plan));
   return (
     <div className="cf-sd-stack">
       <span>{chosen ? <strong>{chosen.label}</strong> : <span>Round not chosen yet. <span className="cf-sd-muted">Ask the copilot to pick rounds, or choose one on Progress.</span></span>}</span>
@@ -194,6 +205,40 @@ function DeadlinesValue({ college }) {
           })}
         </ul>
       ) : <span className="cf-sd-muted">No deadlines saved yet.</span>}
+    </div>
+  );
+}
+
+/**
+ * The school's aid-form and scholarship dates, grouped, each with its form and a line on what it is. Dates the
+ * student opted out of (not applying for aid, no to merit money) are left out; null when none are left.
+ */
+function AidDeadlinesValue({ college, data }) {
+  const DP = window.cfDeadlinePlan;
+  const rows = DP.visibleDeadlines(college.deadlines, data).filter((d) => d.plan && DP.aidKind(d.plan))
+    .slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  if (!rows.length) return null;
+  const groups = [["aid", "Financial aid"], ["scholarship", "Scholarships"]]
+    .map(([kind, title]) => ({ kind, title, rows: rows.filter((d) => DP.aidKind(d.plan) === kind) }))
+    .filter((g) => g.rows.length);
+  return (
+    <div className="cf-sd-stack cf-sd-aid">
+      {groups.map((g) => (
+        <div key={g.kind}>
+          <p className="cf-sd-aid__title">{g.title}</p>
+          <ul className="cf-sd-aidlist">
+            {g.rows.map((d) => {
+              const form = DP.aidForm(d.plan);
+              return (
+                <li key={d.plan + d.date}>
+                  <span><strong>{form.id === "scholarship" ? d.plan : form.form}</strong>{form.id !== "scholarship" && d.plan.toLowerCase().indexOf(form.form.toLowerCase()) < 0 ? <span className="cf-sd-muted"> · {d.plan}</span> : null}<span className="cf-sd-aid__note">{form.note}</span></span>
+                  <span className="cf-nums">{sdDate(d.date)}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }
@@ -247,7 +292,7 @@ function Supplements({ data, college }) {
           <li key={e.id}>
             <div className="cf-sd-essay__top">
               <strong>{e.label}</strong>
-              <span className="cf-badge" style={{ "--tone": SD_ESSAY_TONE[e.status] }}>{e.status}</span>
+              <span className="cf-badge" style={{ "--tone": SD_ESSAY_TONE[e.status] }}>{SD_ESSAY_LABEL[e.status]}</span>
               {!e.required ? <span className="cf-research-tag">optional</span> : null}
             </div>
             {e.prompt ? <p className="cf-sd-essay__prompt">{e.prompt}</p> : null}
@@ -262,8 +307,8 @@ function Supplements({ data, college }) {
   );
 }
 
-function ResearchSection({ research }) {
-  const groups = SD.researchGroups(research && research.facts);
+function ResearchSection({ research, prefs }) {
+  const groups = SD.researchGroups(research && research.facts, prefs);
   if (!groups.length) {
     return <Section id="sd-research" title="Research facts"><p className="cf-sd-empty">No research saved for this school yet. Setup research or the copilot adds sourced facts here.</p></Section>;
   }
@@ -300,7 +345,8 @@ function SchoolDetail({ college, data, tracked, odds, oddsStale, onTrack, busy, 
   const prefs = (data.onboarding && data.onboarding.listPrefs) || {};
   const tier = SD_TIER[college.tier];
   const setting = college.setting || (info && info.setting);
-  const cost = SD.costForYou(college, prefs);
+  const place = { residency: (data.profile && data.profile.residency) || "", state: (info && info.explore && info.explore.state) || null };
+  const cost = SD.costForYou(college, prefs, place);
   const SchoolMark = window.cfApp.SchoolMark;
   const CollegeScatter = window.cfScatter && window.cfScatter.CollegeScatter;
   const student = scatter && window.cfScatter ? window.cfScatter.studentMarker(scatter.doc, data.applicant || {}) : null;
@@ -327,6 +373,7 @@ function SchoolDetail({ college, data, tracked, odds, oddsStale, onTrack, busy, 
             {SD.isUc(college) ? <Badge variant="teal" uppercase>UC Application</Badge> : null}
             {college.verdict && (!tier || String(college.verdict.label).toLowerCase() !== tier.label.toLowerCase()) ? <VerdictBadge tone={college.verdict.tone}>{college.verdict.label}</VerdictBadge> : null}
             {isLink(college.url) ? <a className="cf-sd-source" href={college.url} target="_blank" rel="noopener noreferrer">School website ↗</a> : null}
+            {info && info.explore ? <a className="cf-sd-source" href={`#explore/${encodeURIComponent(info.explore.slug)}`}>Campus, programs &amp; net price calculator →</a> : null}
           </div>
         </div>
       </header>
@@ -342,7 +389,7 @@ function SchoolDetail({ college, data, tracked, odds, oddsStale, onTrack, busy, 
           ["Your major", <MajorValue data={data} college={college} insights={info} />],
           ["Your chances", <ChanceValue odds={odds} oddsStale={oddsStale} insights={info} />],
           ["Your scores", ScoresValue({ college, insights: info })],
-          ["Your likely cost", CostValue({ college, prefs })],
+          ["Your likely cost", CostValue({ college, prefs, place })],
           ["Aid", AidValue({ college })],
           ["Testing", TestingValue({ college, tracked })],
           ["Past applicants from your school", scatter && scatter.row && CollegeScatter
@@ -353,16 +400,17 @@ function SchoolDetail({ college, data, tracked, odds, oddsStale, onTrack, busy, 
       <Section id="sd-application" title="Application">
         <Rows rows={[
           ["Round and deadlines", <DeadlinesValue college={college} />],
+          ["Aid and scholarship dates", AidDeadlinesValue({ college, data })],
           ["Status", <StatusValue college={college} tracked={tracked} onTrack={onTrack} busy={busy} />],
           ["Early rounds", EarlyValue({ college })],
           ["Interview", InterestValue({ college, tracked, factKey: "interview" })],
-          ["Demonstrated interest", InterestValue({ college, tracked, factKey: "demonstrated_interest" })],
+          ["Does a visit or email matter here?", InterestValue({ college, tracked, factKey: "demonstrated_interest" })],
           ["Application fee", college.fee || null],
         ]} />
         <Supplements data={data} college={college} />
       </Section>
 
-      <ResearchSection research={college.research} />
+      <ResearchSection research={college.research} prefs={prefs} />
     </div>
   );
 }

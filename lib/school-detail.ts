@@ -11,6 +11,7 @@ import careerData from "../public/data/career-ranking.json";
 import { majorKeysOf, SWITCH_LABELS, type CareerData } from "./career-ranking";
 import { logoUrl } from "./catalog";
 import { matchCatalog } from "./tracker";
+import { catalogRow } from "./explore-catalog";
 
 const CAREER = careerData as unknown as CareerData;
 const CAREER_BY_ID = new Map(CAREER.schools.map((s) => [s.id, s]));
@@ -46,6 +47,8 @@ export type SchoolInsights = {
   fit: AcademicFit | null;
   comparisons: Comparison[];
   major: MajorFit | null;
+  /** The school in Explore ("#explore/<slug>") and its state, or null when Explore doesn't have it. */
+  explore: { slug: string; state: string | null } | null;
 };
 
 function usNewsRow(c: College): UsNewsCollege | undefined {
@@ -98,6 +101,7 @@ export function schoolInsights(ws: Workspace, slug: string): SchoolInsights | nu
   const school = usNewsRow(college);
   const catalog = matchCatalog(college.name);
   const unitid = typeof college.scorecardId === "number" ? college.scorecardId : school?.scorecardId;
+  const row = catalogRow(college.slug) ?? (typeof unitid === "number" ? catalogRow(unitid) : undefined);
   return {
     slug,
     logo: (catalog && logoUrl(catalog.id)) || null,
@@ -105,5 +109,6 @@ export function schoolInsights(ws: Workspace, slug: string): SchoolInsights | nu
     fit: school ? assessAcademicFit(school, ws) : null,
     comparisons: compareAcademics(ws, school),
     major: majorFitFor(unitid, ws.profile.intended),
+    explore: row ? { slug: row.slug, state: row.state || null } : null,
   };
 }

@@ -81,10 +81,6 @@
 .cf-picker__results small { display: block; color: var(--muted); font-size: 12px; }
 .cf-picker__results .cf-school-mark { width: 30px; height: 30px; }
 
-.cf-dates { display: grid; gap: 0; border: 1px solid var(--hairline); border-radius: var(--radius-lg); }
-.cf-dates .cf-agenda-row h3 { font-size: 15px; }
-.cf-dates .cf-agenda-row p { font-size: 12px; }
-.cf-dates__month { padding: 18px 18px 6px; font: 500 20px/1.2 var(--font-display); color: var(--ink); border-bottom: 1px solid var(--hairline); }
 
 /* Progress page (Progress tab and progress share links) */
 .cf-ptabs { display: flex; gap: 0 22px; flex-wrap: wrap; border-bottom: 1px solid var(--hairline); margin: 4px 0 22px; }

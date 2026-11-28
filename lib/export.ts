@@ -2,6 +2,7 @@ import { decisionDateOf, statusInfo, todayIso } from "./tracker";
 import { INTEREST_LABELS, calendarInterest } from "./interest-log";
 import { createHash } from "node:crypto";
 import type { Workspace } from "./store";
+import { showsDeadline } from "./aid-deadlines";
 
 function line(s: string): string {
   return s.replace(/\r?\n/g, " ").trim();
@@ -234,7 +235,7 @@ export function exportCalendar(ws: Workspace, today = todayIso(), options: { not
   // Shortlist dates only where the Applications tab doesn't already give one (or the application is done).
   const covered = (slug: string) => tracked.some((a) => a.slug === slug && (a.deadline || statusInfo(a.status).stage !== "working"));
   for (const college of (ws.colleges || []).filter((c) => !covered(c.slug))) {
-    for (const date of college.deadlines || []) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name, alarm: true });
+    for (const date of (college.deadlines || []).filter((d) => showsDeadline(d.plan, ws))) events.push({ date: date.date, title: `${college.short || college.name} — ${date.plan}`, detail: college.name, alarm: true });
     if (college.deadline && !college.deadlines?.length) events.push({ date: college.deadline, title: `${college.short || college.name} — application`, detail: college.name, alarm: true });
   }
   // Interviews and visits ahead, at their time when one is set (an hour long), otherwise all day.

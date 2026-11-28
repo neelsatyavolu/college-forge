@@ -16,6 +16,7 @@ import { collegeByWebsite } from "./catalog";
 import { slugify, usNewsToCollege } from "./colleges";
 import { US_NEWS_BY_SLUG, US_NEWS_TOP_250, type UsNewsCollege } from "./us-news-rankings";
 import { isSeededRow } from "./seed-rows";
+import { syncRounds } from "./round-sync";
 
 /** An application nobody has worked on yet, so removing it loses nothing. */
 export function isUntouchedApp(app: TrackedApp): boolean {
@@ -196,7 +197,8 @@ export function cascadeRemovals(before: Workspace, after: Workspace): Workspace 
   };
 }
 
-/** Both halves, for a write: what `mutated` removed relative to `before`, then the links and backfill. */
+/** Both halves, for a write: what `mutated` removed relative to `before`, then the links and backfill, then one round per school (lib/round-sync.ts). */
 export function syncListAndApplications(before: Workspace | null, mutated: Workspace): Workspace {
-  return linkListAndApplications(before ? cascadeRemovals(before, mutated) : mutated);
+  const linked = linkListAndApplications(before ? cascadeRemovals(before, mutated) : mutated);
+  return before ? syncRounds(before, linked) : linked;
 }
