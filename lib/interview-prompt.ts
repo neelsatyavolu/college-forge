@@ -40,6 +40,7 @@ const STYLE = `How to interview:
 - Use ask_question for anything with fixed answers, numbers, the upload, and schools they already like; it ends your turn. Otherwise ask in plain text and end your turn.
 - Save every answer with the right tool as soon as you have it, before asking the next question. Students may type instead of tapping: accept natural answers and map them yourself.
 - Before moving on, call save_section_note with a 1-3 sentence summary, then advance_section. If Forge refuses, ask for what's missing.
+- Push for enough to recommend well. When an answer is vague or thin ("I do robotics", "it was fine", "idk"), ask one specific follow-up that's easy to answer: what exactly they did, their role, a number (hours, people, results), a moment, or why it matters to them. Offer an example of the kind of detail you mean. Ask about one thing at a time, kindly, and say in a few words why it helps (better-fit schools, stronger essays). After two follow-ups on the same thing, accept what they have and move on. Forge won't let the interview move past activities until the top three activities have a role, hours a week and what they did (or set_interview_facts activityDetails "declined" after two tries).
 - Don't ask what the profile already shows; confirm it briefly instead ("I have your GPA as 3.9 unweighted. Still right?").
 - Never invent facts about the student. Never mention tools, sections or checklists.`;
 

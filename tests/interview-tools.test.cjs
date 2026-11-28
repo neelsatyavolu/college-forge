@@ -74,7 +74,7 @@ test('propose_list waits for the interview to be complete', async () => {
 
 function complete(ws) {
   ws.applicant = { ...ws.applicant, name: 'Sam', gpaUnweighted: '3.8', gpaScale: '4.0', sat: '1400' };
-  ws.profile = { ...ws.profile, hs: 'HS', gradYear: 2027, intended: 'Biology', residency: 'OH', activities: [{ rank: 1, name: 'Robotics', type: 'Academic' }] };
+  ws.profile = { ...ws.profile, hs: 'HS', gradYear: 2027, intended: 'Biology', residency: 'OH', activities: [{ rank: 1, name: 'Robotics', type: 'Academic', role: 'Build lead', hpw: '10', desc: 'Led the build team of 12 and designed the drivetrain for our regional entry' }] };
   ws.onboarding.listPrefs = { ...ws.onboarding.listPrefs, settings: ['any'], regions: ['any'], budget: 'unsure', needAid: false, ed: 'no', ambitionChosen: true, suppCount: 10, noSuppCount: 0, citizenship: 'us', incomeBracket: 'unsure' };
   ws.onboarding.interview = { phase: 'interview', section: 'deep', transcript: [], notes: {}, deep: [1, 2, 3].map((i) => ({ prompt: 'q', answer: 'a' })), startedAt: 1 };
   return ws;
@@ -134,7 +134,7 @@ test('typed answers are stored in the transcript like tile answers, capped', () 
 
 test('deep answers also feed story notes', async () => {
   const h = harness(wsWith());
-  await h.tools.execute('save_deep_answer', JSON.stringify({ prompt: 'What drives you?', answer: 'Fixing old radios with my grandfather' }));
+  await h.tools.execute('save_deep_answer', JSON.stringify({ prompt: 'What drives you?', answer: 'Fixing old radios with my grandfather' , followedUp: true}));
   assert.equal(h.ws.onboarding.interview.deep.length, 1);
   assert.match(h.ws.onboarding.storyNotes.other, /old radios/);
 });
@@ -298,4 +298,19 @@ test('out of time, half the requested list is enough to show', () => {
   assert.match(T.tooShort(ws, list(6, 2, 'yes')), /fewer than 8/);
   assert.equal(T.tooShort(ws, list(6, 2, 'yes'), true), null);
   assert.match(T.tooShort(ws, list(4, 2, 'yes'), true), /fewer than 5/);
+});
+
+test('a one-line deeper answer is sent back for a follow-up first', async () => {
+  const h = harness(wsWith());
+  const thin = await h.tools.execute('save_deep_answer', JSON.stringify({ prompt: 'What drives you?', answer: 'idk, stuff' }));
+  assert.match(thin, /Not saved: .*follow-up/);
+  assert.equal((h.ws.onboarding.interview?.deep ?? []).length, 0);
+  const after = await h.tools.execute('save_deep_answer', JSON.stringify({ prompt: 'What drives you?', answer: 'idk, stuff', followedUp: true }));
+  assert.match(after, /Saved/);
+});
+
+test('activity details can be declined after two tries', async () => {
+  const h = harness(wsWith());
+  await h.tools.execute('set_interview_facts', JSON.stringify({ activityDetails: 'declined' }));
+  assert.equal(h.ws.onboarding.interview.activityDetailsDeclined, true);
 });

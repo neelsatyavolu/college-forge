@@ -11,7 +11,7 @@ function filled() {
   ws.applicant = { ...ws.applicant, name: 'Sam Rivera', gpaUnweighted: '3.8', gpaScale: '4.0' };
   ws.profile = { ...ws.profile, hs: 'Lincoln High', gradYear: 2027, intended: 'Biology', residency: 'OH' };
   ws.profile.testing = { ...ws.profile.testing, sat: '1400' };
-  ws.profile.activities = [{ rank: 1, name: 'Robotics', type: 'Academic' }];
+  ws.profile.activities = [{ rank: 1, name: 'Robotics', type: 'Academic', role: 'Build lead', hpw: '10', desc: 'Led the build team of 12 and designed the drivetrain for our regional entry' }];
   ws.onboarding = {
     completed: false,
     listPrefs: { ambition: 'balanced', settings: ['suburban'], size: 'any', regions: ['any'], notes: '', budget: '30-50', needAid: true, ed: 'maybe', ambitionChosen: true, suppCount: 6, noSuppCount: 2, citizenship: 'us', incomeBracket: '48-75' },
@@ -114,4 +114,19 @@ test('a GPA needs the high school grading scale it came from', () => {
   delete ws.applicant.gpaScale;
   assert.equal(firstIncomplete(ws), 'school');
   assert.match(missingFields(ws, 'school').join(), /grading scale/);
+});
+
+test('the top three activities need a role, hours and what the student did', () => {
+  const { thinActivities } = require('../lib/interview-checklist.ts');
+  const ws = filled();
+  ws.profile.activities = [
+    { rank: 1, name: 'Robotics', type: 'Academic', role: 'Build lead', hpw: '10', desc: 'Led the build team of 12 and designed the drivetrain' },
+    { rank: 2, name: 'Debate', type: 'Club', role: 'Member', hpw: '', desc: 'Debate' },
+    { rank: 3, name: 'Piano', type: 'Music', desc: 'Played piano' },
+    { rank: 4, name: 'Chess', type: 'Club' },
+  ];
+  assert.deepEqual(thinActivities(ws.profile.activities), ['Debate', 'Piano']);
+  assert.match(missingFields(ws, 'activities').join(), /details \(role, hours a week, what they did\) for Debate, Piano/);
+  ws.onboarding.interview = { ...ws.onboarding.interview, activityDetailsDeclined: true };
+  assert.deepEqual(missingFields(ws, 'activities'), []);
 });

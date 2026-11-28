@@ -79,3 +79,18 @@ test('application counts are saved only when the student gave them, or accepted 
   prefs = (await getWorkspace('copilot-counts')).onboarding.listPrefs;
   assert.deepEqual([prefs.suppCount, prefs.noSuppCount, prefs.countsRecommended], [8, 3, true]);
 });
+
+test('resending an already saved count, or Codex empty strings, is not an invented number', async () => {
+  const { getWorkspace } = require('../lib/store.ts');
+  const first = makeHubTools('copilot-counts', { userText: '8' });
+  assert.doesNotMatch(await first.executeTool('set_list_preferences', JSON.stringify({ suppCount: '8' })), /Not saved/);
+  // Next turn the student says "2"; the model passes the earlier 8 along, and "" for unused fields.
+  const second = makeHubTools('copilot-counts', { userText: '2' });
+  const out = await second.executeTool('set_list_preferences', JSON.stringify({ suppCount: '8', noSuppCount: '2', ambition: '', notes: '' }));
+  assert.doesNotMatch(out, /Not saved/);
+  const prefs = (await getWorkspace('copilot-counts')).onboarding.listPrefs;
+  assert.equal(prefs.suppCount, 8);
+  assert.equal(prefs.noSuppCount, 2);
+  // A count the student never gave is still dropped.
+  assert.match(await second.executeTool('set_list_preferences', JSON.stringify({ suppCount: '12' })), /Not saved: suppCount/);
+});

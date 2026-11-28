@@ -27,6 +27,20 @@ const has = (v: unknown): boolean => {
   return t !== "" && t !== "—" && t !== "-" && t !== "0";
 };
 
+/** Activities kept to this many, in rank order, must have enough detail to recommend from. */
+export const TOP_ACTIVITIES = 3;
+/** A description shorter than this says what the activity is, not what the student did. */
+export const MIN_ACTIVITY_DESC = 40;
+
+/** Names of the top activities missing a role, weekly hours or a real description. */
+export function thinActivities(activities: { rank?: number; name: string; role?: string; hpw?: string; desc?: string }[]): string[] {
+  return [...activities]
+    .sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99))
+    .slice(0, TOP_ACTIVITIES)
+    .filter((a) => !has(a.role) || !has(a.hpw) || (a.desc ?? "").trim().length < MIN_ACTIVITY_DESC)
+    .map((a) => a.name);
+}
+
 /** "Undecided", "not sure", "no clue"… (and an empty major). */
 export function isUndecided(intended: string | undefined): boolean {
   const t = (intended ?? "").trim().toLowerCase();
@@ -67,6 +81,9 @@ export function missingFields(ws: Workspace, section: InterviewSection): string[
     }
     case "activities":
       if (p.activities.length === 0 && !iv?.noActivities) out.push('at least one activity (or "none yet")');
+      // A list is only as good as what Forge knows: the top activities need a role, hours and what they did.
+      const thin = thinActivities(p.activities);
+      if (thin.length && !iv?.activityDetailsDeclined) out.push(`details (role, hours a week, what they did) for ${thin.join(", ")}`);
       // An undecided student is offered the find-your-major quiz here, once activities show what they do.
       if (isUndecided(p.intended) && !iv?.majorFinder) out.push("offer the find-your-major quiz (suggest_majors), or record that they declined it");
       break;

@@ -17,6 +17,8 @@ type Args = Record<string, unknown>;
 type Mutate = (fn: (ws: Workspace) => Workspace) => Promise<Workspace>;
 
 export const TRANSCRIPT_CAP = 120;
+/** A deeper answer shorter than this is asked about once more before it's saved. */
+export const DEEP_MIN_WORDS = 20;
 const KINDS: UiQuestion["kind"][] = ["single", "multi", "upload", "number", "school_search", "confirm", "activities", "intake"];
 const TIERS: UiSchool["tier"][] = ["reach", "target", "likely"];
 const NO_PRICE_CAP = new Set(["50plus", "unsure"]);
@@ -367,13 +369,13 @@ export const INTERVIEW_TOOL_SPECS: ToolSpec[] = [
   },
   {
     name: "save_deep_answer",
-    description: "Save the student's answer to one deeper question (what drives them, what they'd study and why, what they want from college, a story). Paraphrase faithfully; keep their specifics. Also feeds essay brainstorming.",
-    parameters: { type: "object", properties: { prompt: str, answer: str }, required: ["prompt", "answer"], additionalProperties: false },
+    description: `Save the student's answer to one deeper question (what drives them, what they'd study and why, what they want from college, a story). Paraphrase faithfully; keep their specifics. Also feeds essay brainstorming. Answers under ${DEEP_MIN_WORDS} words are refused: ask one specific follow-up first and save both parts together; pass followedUp true only if they still couldn't say more after that follow-up.`,
+    parameters: { type: "object", properties: { prompt: str, answer: str, followedUp: { type: "boolean" } }, required: ["prompt", "answer"], additionalProperties: false },
   },
   {
     name: "set_interview_facts",
-    description: "Record answers the profile tools don't hold: noActivities ('yes' when they truly have none yet), meritInterest ('yes' | 'no' | 'unsure'), majorFinder ('declined' when an undecided student doesn't want help finding a major).",
-    parameters: { type: "object", properties: { noActivities: { type: "string", enum: ["yes", "no"] }, meritInterest: { type: "string", enum: ["yes", "no", "unsure"] }, majorFinder: { type: "string", enum: ["declined"] } }, additionalProperties: false },
+    description: "Record answers the profile tools don't hold: noActivities ('yes' when they truly have none yet), meritInterest ('yes' | 'no' | 'unsure'), majorFinder ('declined' when an undecided student doesn't want help finding a major), activityDetails ('declined' only after you asked twice for an activity's role, hours and what they did and they couldn't say more).",
+    parameters: { type: "object", properties: { noActivities: { type: "string", enum: ["yes", "no"] }, meritInterest: { type: "string", enum: ["yes", "no", "unsure"] }, majorFinder: { type: "string", enum: ["declined"] }, activityDetails: { type: "string", enum: ["declined"] } }, additionalProperties: false },
   },
   {
     name: "advance_section",
@@ -500,6 +502,9 @@ export function makeInterviewTools(
         const prompt = text(a.prompt, 300);
         const answer = text(a.answer, 2000);
         if (!prompt || !answer) return "save_deep_answer needs a prompt and an answer.";
+        if (a.followedUp !== true && answer.split(/\s+/).length < DEEP_MIN_WORDS) {
+          return `Not saved: that answer is too thin to build a list or an essay from. Ask one specific follow-up (a moment, a detail, a "why"), then save their full answer. If they still can't say more after that, save it with followedUp true.`;
+        }
         const ws = await mutate((w) => {
           const iv = interviewOf(w);
           const story = w.onboarding.storyNotes ?? { activities: "", awards: "", other: "" };
@@ -514,7 +519,7 @@ export function makeInterviewTools(
         const merit = ["yes", "no", "unsure"].find((m) => m === a.meritInterest) as InterviewState["meritInterest"];
         await mutate((ws) => {
           const iv = interviewOf(ws);
-          return withInterview(ws, { ...iv, ...(noActivities !== undefined ? { noActivities } : {}), ...(merit ? { meritInterest: merit } : {}), ...(a.majorFinder === "declined" ? { majorFinder: "declined" as const } : {}) });
+          return withInterview(ws, { ...iv, ...(noActivities !== undefined ? { noActivities } : {}), ...(merit ? { meritInterest: merit } : {}), ...(a.majorFinder === "declined" ? { majorFinder: "declined" as const } : {}), ...(a.activityDetails === "declined" ? { activityDetailsDeclined: true } : {}) });
         });
         return "Saved.";
       }
