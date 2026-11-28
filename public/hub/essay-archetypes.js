@@ -240,6 +240,26 @@
     return name.trim() === "ucla";
   }
 
+  /** A Cal State campus: one Cal State Apply application, no essays (isCsuCampus in lib/seed-college-list.ts). */
+  var CSU_CAMPUSES = "bakersfield|channel islands|chico|dominguez hills|east bay|fresno|fullerton|humboldt|long beach|los angeles|maritime academy|monterey bay|northridge|pomona|sacramento|san bernardino|san marcos|stanislaus|san diego|san francisco|san jose|san jos\u00e9|sonoma|san luis obispo";
+  var CSU_NAME = new RegExp(
+    "\\b(california state university|cal state|csu)[\\s,-]+(" + CSU_CAMPUSES + ")\\b" +
+    "|\\b(california state polytechnic university|cal poly)\\b" +
+    "|\\b(california polytechnic state university)\\b" +
+    "|\\b(san diego|san francisco|san jose|san jos\u00e9|sonoma|fresno|sacramento|chico|humboldt) state( university)?\\b" +
+    "|\\bcalifornia maritime academy\\b", "i");
+  function isCsuCampus(c) {
+    if (!c) return false;
+    return CSU_NAME.test((c.name || "") + " " + (c.short || "") + " " + String(c.slug || "").replace(/-/g, " "));
+  }
+
+  /** Applications a list is: all UC campuses together are one, and so are all Cal State campuses. */
+  function applicationCount(list) {
+    var n = 0, uc = false, csu = false;
+    (list || []).forEach(function (c) { if (isUcCampus(c)) uc = true; else if (isCsuCampus(c)) csu = true; else n++; });
+    return n + (uc ? 1 : 0) + (csu ? 1 : 0);
+  }
+
   /** The Essays group a school writes in (essayGroupKey in lib/essay-supplements.ts): its slug, or the UC Application. */
   function essayGroupKey(c) {
     if (isUcCampus(c)) return UC_APPLICATION_SLUG;
@@ -371,6 +391,8 @@
     audiencePatch: audiencePatch,
     chosenAudience: chosenAudience,
     isUcCampus: isUcCampus,
+    isCsuCampus: isCsuCampus,
+    applicationCount: applicationCount,
     essayGroupKey: essayGroupKey,
     isSchoolSkipped: isSchoolSkipped,
     essaySchools: essaySchools,

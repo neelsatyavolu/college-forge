@@ -13,6 +13,25 @@ import type { College, OnboardingListPrefs, ListAmbition, Tag } from "./store";
 import { US_NEWS_TOP_250, type UsNewsCollege } from "./us-news-rankings";
 
 /** True for University of California campuses (one UC Application covers all). */
+/**
+ * A California State University campus. All 23 apply through one Cal State Apply application with no
+ * essays, so together they count as one application with no supplements. Names are matched explicitly:
+ * "CSU" alone would also catch Colorado State, Cleveland State and others.
+ */
+const CSU_CAMPUSES = "bakersfield|channel islands|chico|dominguez hills|east bay|fresno|fullerton|humboldt|long beach|los angeles|maritime academy|monterey bay|northridge|pomona|sacramento|san bernardino|san marcos|stanislaus|san diego|san francisco|san jose|san jos\u00e9|sonoma|san luis obispo";
+const CSU_NAME = new RegExp(
+  `\\b(california state university|cal state|csu)[\\s,-]+(${CSU_CAMPUSES})\\b` +
+  `|\\b(california state polytechnic university|cal poly)\\b` +
+  `|\\b(california polytechnic state university)\\b` +
+  `|\\b(san diego|san francisco|san jose|san jos\u00e9|sonoma|fresno|sacramento|chico|humboldt) state( university)?\\b` +
+  `|\\bcalifornia maritime academy\\b`,
+  "i",
+);
+export function isCsuCampus(c: { slug?: string; name?: string; short?: string }): boolean {
+  const text = `${c.name || ""} ${c.short || ""} ${(c.slug || "").replace(/-/g, " ")}`;
+  return CSU_NAME.test(text);
+}
+
 export function isUcCampus(c: { slug?: string; name?: string; short?: string }): boolean {
   const slug = (c.slug || "").toLowerCase();
   const name = `${c.name || ""} ${c.short || ""}`.toLowerCase();

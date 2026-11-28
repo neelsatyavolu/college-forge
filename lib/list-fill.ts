@@ -7,7 +7,7 @@
 import type { UiSchool } from "./chat-types";
 import type { Workspace } from "./store";
 import { recommendColleges } from "./college-recommendations";
-import { isUcCampus } from "./seed-college-list";
+import { isCsuCampus, isUcCampus } from "./seed-college-list";
 
 type Tier = UiSchool["tier"];
 type Candidate = { name: string; slug: string; tier: Tier; note: string };
@@ -24,9 +24,10 @@ export function requestedCount(ws: Workspace): number | null {
   return typeof p?.suppCount === "number" && typeof p?.noSuppCount === "number" ? p.suppCount + p.noSuppCount : null;
 }
 
-/** Counts applications: every UC campus together is one. */
+/** Counts applications: every UC campus together is one, and so is every Cal State campus. */
 function apps(schools: { name: string; slug?: string }[]): number {
-  return schools.filter((s) => !isUcCampus(s)).length + (schools.some((s) => isUcCampus(s)) ? 1 : 0);
+  const one = (f: (s: { name: string; slug?: string }) => boolean) => (schools.some(f) ? 1 : 0);
+  return schools.filter((s) => !isUcCampus(s) && !isCsuCampus(s)).length + one(isUcCampus) + one(isCsuCampus);
 }
 
 function candidates(ws: Workspace): Candidate[] {
@@ -69,7 +70,7 @@ export function fillToRequested(ws: Workspace, schools: UiSchool[], pool: Candid
     const i = fresh.findIndex((c) => c.tier === tier);
     const [c] = fresh.splice(i, 1);
     // A second UC campus doesn't add an application, so it can't close the gap.
-    if (isUcCampus(c) && out.some((s) => isUcCampus(s))) continue;
+    if ((isUcCampus(c) && out.some((s) => isUcCampus(s))) || (isCsuCampus(c) && out.some((s) => isCsuCampus(s)))) continue;
     out.push({ name: c.name, slug: c.slug, tier: c.tier, reason: `Added by Forge to reach the ${wanted} applications you asked for.${c.note ? ` ${c.note}` : ""}`.slice(0, 280) });
     added.push(c.name);
   }

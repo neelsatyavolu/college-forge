@@ -29,7 +29,7 @@ test('regional preferences are never silently relaxed', () => {
   if(outside.length) assert.ok(result.limitations.some(x=>/outside your region or campus setting choices/.test(x)));
  }
  const ws=profile();ws.onboarding.listPrefs={regions:['northeast'],settings:[],ambition:'balanced',size:'any',notes:''};
- for(const r of recommendColleges(ws).recommendations.filter(r=>!/^Outside/.test(r.fit.reasons[0]))) assert.ok(['ME','NH','VT','MA','RI','CT'].includes(data.schools.find(x=>x.unitid===r.college.scorecardId).state));
+ for(const r of recommendColleges(ws).recommendations.filter(r=>!/^Outside/.test(r.fit.reasons[0]))) assert.ok(['ME','NH','VT','MA','RI','CT'].includes(r.college.location.split(', ').pop()));
 });
 test('missing academic profile does not create personal admission tiers', () => {
  const result=recommendColleges(emptyWorkspace());
@@ -235,7 +235,7 @@ test('a resident gets an in-state public college among likely or target schools'
  for (const state of ['TX','MI','NJ']) {
   const ws=profile();ws.profile.residency=state.toLowerCase();
   const rows=recommendColleges(ws).recommendations;
-  const local=rows.filter(r=>{const row=data.schools.find(x=>x.unitid===r.college.scorecardId);return row.state===state&&row.control==='public'&&(r.fit.tier==='target'||r.fit.tier==='safety');});
+  const local=rows.filter(r=>{const row=data.schools.find(x=>x.unitid===r.college.scorecardId);return row&&row.state===state&&row.control==='public'&&(r.fit.tier==='target'||r.fit.tier==='safety');});
   assert.ok(local.length,state);
   assert.ok(local.every(r=>r.college.tags.some(t=>t.label==='In-state')));
  }
@@ -338,10 +338,10 @@ test('residents get every home-state public in realistic range as candidates, UC
  ws.onboarding.listPrefs={ambition:'balanced',settings:[],size:'any',regions:[],notes:'',budget:'50plus'};
  const r=recommendColleges(ws,{morePerTier:8});
  const names=(r.inState||[]).map(x=>x.name);
- assert.ok(names.some(n=>/Los Angeles/.test(n))&&names.some(n=>/San Diego/.test(n)),names.join('; '));
+ assert.ok(names.some(n=>/University of California-Los Angeles/.test(n))&&names.some(n=>/University of California-San Diego/.test(n)),names.join('; '));
  assert.ok((r.inState||[]).every(x=>x.tier));
  ws.applicant.gpaRecent=undefined;
- assert.ok(!(recommendColleges(ws,{morePerTier:8}).inState||[]).some(x=>/Los Angeles/.test(x.name)),'cumulative 3.49 alone is out of range for UCLA');
+ assert.ok(!(recommendColleges(ws,{morePerTier:8}).inState||[]).some(x=>/University of California-Los Angeles/.test(x.name)),'cumulative 3.49 alone is out of range for UCLA');
 });
 test('a strong test-optional student can reach colleges that publish no GPA; a weaker one still cannot', () => {
  const noGpa={slug:'x',admitRate:0.07,sat25:1500,sat75:1560,gpa:null,gpaWeighted:false};
@@ -405,4 +405,13 @@ test('assessUntiered falls back to the AI chance estimate when there is no data 
  assert.deepEqual(workspace.colleges.map((c) => c.tier), ['reach', 'target', 'safety', undefined]);
  assert.deepEqual(assessed, ['Reach Test U', 'Target Test U', 'Likely Test U']);
  assert.deepEqual(unknown, ['Unknown Test U']);
+});
+
+test('colleges outside the outcomes snapshot (Arizona State) are candidates on admissions fit, after scored ones', () => {
+ const ws=profile();ws.applicant.gpaUnweighted='3.49';ws.applicant.sat='1510';ws.profile.intended='Journalism';ws.profile.residency='CA';
+ ws.onboarding.listPrefs={ambition:'balanced',settings:[],size:'any',regions:['west'],notes:'',budget:'50plus',needAid:false};
+ const r=recommendColleges(ws,{morePerTier:15});
+ const asu=[...(r.more||[])].find(x=>/Arizona State/.test(x.name));
+ assert.ok(asu,'Arizona State is offered');
+ assert.equal(asu.tier,'likely');
 });
