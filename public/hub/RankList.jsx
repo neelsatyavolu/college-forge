@@ -29,7 +29,6 @@ function RankList({ tracker, data, onWorkspaceChange }) {
   const { Button } = window.CollegeForgeDesignSystem_e95e63;
   const { schools, official, extra, career, error } = useRankingSchools();
   const [copied, setCopied] = React.useState("");
-  const [picking, setPicking] = React.useState(false);
   const collegeOf = (app) => (app.slug && (data.colleges || []).find((c) => c.slug === app.slug)) || null;
   const rows = schools ? window.cfRankList.rankList(tracker.apps, schools, official, extra, career) : [];
   const copy = async () => {
@@ -53,13 +52,11 @@ function RankList({ tracker, data, onWorkspaceChange }) {
           </details>
         </div>
         {rows.length ? <div className="cf-row-actions">
-          {(data.colleges || []).length ? <Button size="sm" variant="secondary" onClick={() => setPicking(true)}>Pick essay schools</Button> : null}
           <Button size="sm" variant="secondary" onClick={copy}>{copied || "Copy colleges"}</Button>
         </div> : null}
       </header>
-      {picking ? <window.EssaySchoolsSheet data={data} onWorkspaceChange={onWorkspaceChange} onClose={() => setPicking(false)} /> : null}
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>Couldn’t load the rankings. Reload the page to try again.</p> : null}
-      {!tracker.apps.length ? <p className="cf-help">Add schools on <a href="#applications">Portals</a> or <a href="#progress">Progress</a> and they’ll show up here.</p> : null}
+      {!tracker.apps.length ? <div className="cf-empty">Add schools on <a href="#shortlist">Your shortlist</a> and they’ll show up here, ranked.</div> : null}
       {schools && rows.length ? (
         <ol className="cf-apps-list cf-rank-list">
           {rows.map((r, i) => {

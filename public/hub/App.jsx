@@ -11,14 +11,19 @@ function NavIcon({ name }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={NAV_ICONS[name] || NAV_ICONS.home} /></svg>;
 }
 
-function loadFavorites() {
-  try { const values = JSON.parse(localStorage.getItem("cf.favorites") || "[]"); return Array.isArray(values) ? values : []; } catch (e) { return []; }
-}
+// The hash's view, or null for none (the hub then opens defaultView).
 function readView() {
   // "#explore/<slug>" opens a school inside Explore; the view is the part before "/".
   const raw = window.location.hash.slice(1).split("/")[0];
   const h = VIEW_ALIASES[raw] || raw;
-  return NAV.some(n => n.id === h) ? h : "applications";
+  return NAV.some(n => n.id === h) ? h : null;
+}
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+// With no hash: the Timeline once any school has a dated deadline, else the shortlist.
+function defaultView(data, tracker) {
+  const dated = (data.colleges || []).some(c => (c.deadlines || []).some(d => d && ISO_DATE.test(d.date || "")))
+    || tracker.apps.some(a => ISO_DATE.test(a.deadline || ""));
+  return dated ? "timeline" : "shortlist";
 }
 
 function App() {
@@ -31,7 +36,7 @@ function App() {
   const [data, setData] = React.useState(window.CF_DATA);
   const [loading, setLoading] = React.useState(true);
   const [loadError, setLoadError] = React.useState("");
-  const [view, setView] = React.useState(readView);
+  const [hashView, setView] = React.useState(readView);
   const [hash, setHash] = React.useState(() => window.location.hash);
   const [chatOpen, setChatOpen] = React.useState(false);
   const [chatPrompt, setChatPrompt] = React.useState(null);
@@ -40,7 +45,10 @@ function App() {
   const sidebarRef = React.useRef(null);
   const menuButtonRef = React.useRef(null);
   const chatReturnFocusRef = React.useRef(null);
-  const [favorites, setFavorites] = React.useState(loadFavorites);
+  const home = defaultView(data, tracker);
+  const view = hashView || home;
+  // Scattergrams is a Maia Learning import, so its tab shows only once something was imported.
+  const [hasScattergrams, setHasScattergrams] = React.useState(false);
   const [theme, setTheme] = React.useState(() => document.documentElement.getAttribute("data-theme") || "light");
   const [runOnboarding, setRunOnboarding] = React.useState(false);
   // Opens the wizard by itself once per page load, so "Return to workspace" is not undone by the next refresh.
@@ -105,6 +113,15 @@ function App() {
     setLoading(false);
   }, [applyWorkspace]);
   React.useEffect(() => { refresh(); }, [refresh]);
+  const onScattergrams = view === "scattergrams";
+  React.useEffect(() => {
+    if (loading || !account || !account.signedIn || parentMode) return undefined;
+    let live = true;
+    window.cfApi.getScattergrams()
+      .then(doc => { if (live) setHasScattergrams(!!(doc && doc.colleges && Object.keys(doc.colleges).length)); })
+      .catch(() => undefined);
+    return () => { live = false; };
+  }, [loading, account, parentMode, data?.draftStorageKey, onScattergrams]);
   React.useEffect(() => { setChatOpen(false); setChatPrompt(null); }, [data?.draftStorageKey]);
   React.useEffect(() => {
     const media = window.matchMedia("(max-width: 850px)");
@@ -135,10 +152,10 @@ function App() {
     if (mainRef.current) mainRef.current.focus({ preventScroll: true });
   }, [view]);
   // "#settings/gptzero" scrolls to the element with that id once the view has rendered it.
-  // "#shortlist/<slug>" is a school's page and "#timeline/<tab>" a tab, not anchors.
+  // "#shortlist/<slug>" is a school's page, "#timeline/<tab>" a tab and "#explore/<id>" a school, not anchors.
   React.useEffect(() => {
     const anchor = hash.slice(1).split("/")[1];
-    if (!anchor || view === "shortlist" || view === "timeline") return undefined;
+    if (!anchor || view === "shortlist" || view === "timeline" || view === "explore") return undefined;
     let tries = 0;
     let timer = 0;
     const seek = () => {
@@ -171,11 +188,6 @@ function App() {
     setMenuOpen(false);
     if (window.location.hash !== "#" + id) window.location.hash = id;
   };
-  const toggleFav = slug => setFavorites(f => {
-    const next = f.includes(slug) ? f.filter(s => s !== slug) : [...f, slug];
-    try { localStorage.setItem("cf.favorites", JSON.stringify(next)); } catch (e) {}
-    return next;
-  });
   const openChat = prompt => {
     const launcher = document.activeElement;
     chatReturnFocusRef.current = mobile && sidebarRef.current?.contains(launcher) ? menuButtonRef.current : launcher;
@@ -201,7 +213,7 @@ function App() {
     if (ws) applyWorkspace(ws); else await refresh();
     reloadTracker();
     setRunOnboarding(false);
-    navigate("recommendations");
+    navigate("shortlist");
     if (options && options.buildPlan) runPlanInBackground();
   };
   // "Dismiss" on the setup banner is remembered per workspace in this browser; Settings can still start setup.
@@ -232,17 +244,17 @@ function App() {
     }}>
       <a className="cf-skip-link" href="#workspace-main">Skip to content</a>
       <header className="cf-mobile-bar">
-        <a href="#applications" className="cf-brand"><span>✱</span>College Forge</a>
+        <a href={"#" + home} className="cf-brand"><span>✱</span>College Forge</a>
         <button ref={menuButtonRef} className="cf-icon-btn" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="workspace-sidebar" onClick={() => setMenuOpen(v => !v)}>{menuOpen ? "×" : "☰"}</button>
       </header>
       {menuOpen && <button className="cf-sidebar-scrim" aria-label="Close navigation" onClick={() => setMenuOpen(false)} />}
       <aside ref={sidebarRef} aria-hidden={mobile && !menuOpen ? true : undefined} {...(mobile && !menuOpen ? { inert: "" } : {})} id="workspace-sidebar" className={"cf-sidebar" + (menuOpen ? " is-open" : "")}>
-        <a href="#applications" className="cf-brand"><span aria-hidden="true">✱</span>College Forge</a>
+        <a href={"#" + home} className="cf-brand"><span aria-hidden="true">✱</span>College Forge</a>
         <div className="cf-workspace-label">A little clarity for what’s next.</div>
         <nav aria-label="Workspace">
           {NAV_GROUPS.map(group => <div className="cf-nav-group" key={group}>
             <div className="cf-nav-group-label">{group}</div>
-            {NAV.filter(n => n.group === group && (!n.needsAdmit || admits > 0 || view === n.id)).map(n => <a key={n.id} href={"#" + n.id} className="cf-nav-link" aria-current={view === n.id ? "page" : undefined}>
+            {NAV.filter(n => n.group === group && (view === n.id || ((!n.needsAdmit || admits > 0) && (!n.needsScattergrams || hasScattergrams)))).map(n => <a key={n.id} href={"#" + n.id} className="cf-nav-link" aria-current={view === n.id ? "page" : undefined}>
               <NavIcon name={n.icon} /><span>{n.label}</span>{n.id === "shortlist" && data.colleges.length > 0 && <span className="cf-nav-count">{data.colleges.length}</span>}{n.id === "applications" && portalCount > 0 && <span className="cf-nav-count">{portalCount}</span>}{n.id === "progress" && tracker.apps.length > 0 && <span className="cf-nav-count">{tracker.apps.length}</span>}{n.id === "decisions" && hiddenDecisions > 0 && <span className="cf-nav-count" style={{ background: "var(--coral)", color: "var(--on-primary)" }} aria-label={`${hiddenDecisions} new`}>{hiddenDecisions}</span>}
             </a>)}
             {PAGE_LINKS.filter(n => n.group === group).map(n => <a key={n.href} href={n.href} className="cf-nav-link"><NavIcon name={n.icon} /><span>{n.label}</span></a>)}
@@ -269,10 +281,10 @@ function App() {
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={refresh} />}
           {view === "board" && <DecisionBoard tracker={tracker} onTrackerChange={setTracker} />}
           {view === "list" && <RankList tracker={tracker} data={data} onWorkspaceChange={applyWorkspace} />}
-          {view === "official" && <OfficialRankings />}
+          {view === "official" && <OfficialRankings data={data} onWorkspaceChange={refresh} />}
           {view === "profile" && <Profile data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}
           {view === "recommendations" && <Recommendations data={data} onAsk={openChat} onNavigate={navigate} onWorkspaceChange={applyWorkspaceAndTracker} onStartSetup={() => setRunOnboarding(true)} />}
-          {view === "explore" && <Explore data={data} favorites={favorites} onToggleFavorite={toggleFav} onWorkspaceChange={refresh} />}
+          {view === "explore" && <Explore data={data} onWorkspaceChange={refresh} />}
           {view === "scattergrams" && <Scattergrams data={data} />}
           {view === "shortlist" && <Shortlist data={data} tracker={tracker} detailSlug={window.cfSchoolDetail.slugFromHash(hash)} onTrackerChange={setTrackerAndList} onAsk={openChat} onWorkspaceChange={applyWorkspaceAndTracker} />}
           {view === "essays" && <Essays data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}

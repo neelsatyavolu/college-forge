@@ -16,7 +16,8 @@ const EXPLORE_SORTS = [
 const SELECTS = [
   { key: "type", label: "Type", options: [["all", "Any type"], ["national", "Research universities"], ["liberal-arts", "Liberal arts colleges"], ["other", "Other four-year colleges"]] },
   { key: "control", label: "Public or private", options: [["all", "Public or private"], ["public", "Public"], ["private", "Private"]] },
-  { key: "region", label: "Region", options: [["all", "Any region"], ["northeast", "Northeast"], ["midwest", "Midwest"], ["south", "South"], ["west", "West"]] },
+  // The same regions and names as onboarding's list preferences (lib/college-recommendations.ts REGIONS).
+  { key: "region", label: "Region", options: [["all", "Any region"], ["west", "West"], ["midwest", "Midwest"], ["south", "South"], ["mid-atlantic", "Mid-Atlantic"], ["northeast", "New England"]] },
   { key: "size", label: "Size", options: [["all", "Any size"], ["small", "Under 5,000 students"], ["medium", "5,000–15,000"], ["large", "Over 15,000"]] },
   { key: "admit", label: "Admit rate", options: [["all", "Any admit rate"], ["lt15", "Under 15%"], ["15-40", "15–40%"], ["40-70", "40–70%"], ["gt70", "Over 70%"]] },
   { key: "net", label: "Net price", options: [["all", "Any net price"], ["lt15", "Under $15,000"], ["lt25", "Under $25,000"], ["lt35", "Under $35,000"]] },
@@ -35,6 +36,15 @@ const TOGGLES = [
   { key: "notes", label: "Has Forge notes" },
 ];
 
+// States per region, as in lib/college-recommendations.ts REGIONS; change both together.
+const REGION_STATES = {
+  northeast: ["ME", "NH", "VT", "MA", "RI", "CT"],
+  "mid-atlantic": ["NY", "NJ", "PA", "DE", "MD", "DC"],
+  south: ["VA", "WV", "KY", "TN", "NC", "SC", "GA", "FL", "AL", "MS", "LA", "AR", "OK", "TX"],
+  midwest: ["OH", "IN", "IL", "MI", "WI", "MN", "IA", "MO", "ND", "SD", "NE", "KS"],
+  west: ["MT", "WY", "CO", "NM", "ID", "UT", "AZ", "NV", "WA", "OR", "CA", "AK", "HI"],
+};
+
 const DEFAULT_FILTERS = { sort: "rank", setting: "all", type: "all", control: "all", region: "all", state: "", size: "all", admit: "all", net: "all", on: [] };
 const FILTER_STORE = "cf-explore-filters";
 
@@ -42,8 +52,10 @@ function loadExploreFilters() {
   try {
     const saved = JSON.parse(localStorage.getItem(FILTER_STORE) || "null");
     if (!saved || typeof saved !== "object") return DEFAULT_FILTERS;
-    const on = Array.isArray(saved.on) ? saved.on.filter((k) => TOGGLES.some((t) => t.key === k) || k === "favorites") : [];
-    return { ...DEFAULT_FILTERS, ...saved, on };
+    // A saved "favorites" toggle (Explore no longer has favorites) is dropped; so is an unknown region.
+    const on = Array.isArray(saved.on) ? saved.on.filter((k) => TOGGLES.some((t) => t.key === k)) : [];
+    const region = REGION_STATES[saved.region] ? saved.region : "all";
+    return { ...DEFAULT_FILTERS, ...saved, on, region };
   } catch { return DEFAULT_FILTERS; }
 }
 function saveExploreFilters(f) {
@@ -76,13 +88,12 @@ function matchesExplore(c, filters, ctx) {
   if (filters.setting !== "all" && c.setting !== filters.setting) return false;
   if (filters.type !== "all" && kindOf(c) !== filters.type) return false;
   if (filters.control !== "all" && f.control !== filters.control) return false;
-  if (filters.region !== "all" && f.region !== filters.region) return false;
+  if (filters.region !== "all" && !(REGION_STATES[filters.region] || []).includes(f.state)) return false;
   if (filters.state && f.state !== filters.state) return false;
   for (const key of ["size", "admit", "net"]) {
     if (filters[key] !== "all" && !inBand(f[key], BANDS[key][filters[key]])) return false;
   }
   for (const key of filters.on) {
-    if (key === "favorites") { if (!ctx.favorites.includes(c.slug)) return false; continue; }
     if (key === "inRange") { if (!(c.tags || []).some((t) => t.tone === "close" || t.tone === "strong")) return false; continue; }
     if (TOGGLE_TEST[key] && !TOGGLE_TEST[key](f)) return false;
   }
@@ -123,7 +134,7 @@ function applyExploreFilters(list, filters, ctx) {
 
 function activeFilterCount(filters) {
   return ["type", "control", "region", "size", "admit", "net"].filter((k) => filters[k] !== "all").length
-    + (filters.state ? 1 : 0) + filters.on.filter((k) => k !== "favorites").length;
+    + (filters.state ? 1 : 0) + filters.on.length;
 }
 
 /** Chips for the active filters, each removable. */

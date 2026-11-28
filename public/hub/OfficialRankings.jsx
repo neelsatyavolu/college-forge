@@ -33,7 +33,32 @@ function useOfficialRankings() {
   return state;
 }
 
-const fmtMoney = (n) => (n == null ? null : "$" + Math.round(n).toLocaleString("en-US"));
+// Explore's catalog, to link a ranked school to its Explore page and add it to the shortlist.
+// Names match loosely: "University of Michigan--Ann Arbor" and "University of Michigan Ann Arbor" are one key.
+const nameKey = (n) => String(n || "").toLowerCase().replace(/&/g, "and").replace(/\bthe\b/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+function useExploreCatalog() {
+  const [byName, setByName] = React.useState(null);
+  React.useEffect(() => {
+    let live = true;
+    fetch("/api/colleges/search?browse=1", { credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!live || !j || !Array.isArray(j.data)) return;
+        const map = new Map();
+        for (const c of j.data) {
+          map.set(nameKey(c.name) + "|" + ((c.f && c.f.state) || ""), c);
+          if (!map.has(nameKey(c.name))) map.set(nameKey(c.name), c);
+        }
+        setByName(map);
+      })
+      .catch(() => undefined);
+    return () => { live = false; };
+  }, []);
+  return byName;
+}
+const catalogFor = (byName, r) => (byName ? byName.get(nameKey(r.name) + "|" + (r.state || "")) || byName.get(nameKey(r.name)) || null : null);
+
+const fmtMoney =(n) => (n == null ? null : "$" + Math.round(n).toLocaleString("en-US"));
 const fmtCount = (n) => (n == null ? null : Math.round(n).toLocaleString("en-US"));
 
 function OfficialFacts({ row, listId }) {
@@ -67,9 +92,34 @@ function OfficialFacts({ row, listId }) {
   );
 }
 
-function OfficialRankings() {
+/** Open in Explore and + Add to shortlist, for a school Explore's catalog knows. */
+function OfficialActions({ school, onList, busy, onAdd }) {
+  if (!school) return null;
+  return (
+    <span className="cf-orank__actions">
+      <a className="cf-link-btn" href={window.cfExplore.exploreHash(school)}>Open in Explore</a>
+      {onList ? <span className="cf-tier-label">On your shortlist ✓</span>
+        : <button type="button" className="cf-link-btn" disabled={busy} onClick={() => onAdd(school)}>{busy ? "Saving…" : "+ Add to shortlist"}</button>}
+    </span>
+  );
+}
+
+function OfficialRankings({ data: workspace, onWorkspaceChange }) {
   const { SchoolMark } = window.cfApp;
   const { data, error } = useOfficialRankings();
+  const catalog = useExploreCatalog();
+  const [query, setQuery] = React.useState("");
+  const [busySlug, setBusySlug] = React.useState(null);
+  const [addError, setAddError] = React.useState("");
+  const listed = new Set(((workspace && workspace.colleges) || []).map((c) => c.slug));
+  const add = async (school) => {
+    setBusySlug(school.slug); setAddError("");
+    try {
+      await window.cfExplore.addExploreCollege(school);
+      if (onWorkspaceChange) await onWorkspaceChange();
+    } catch (e) { setAddError(e.message || "Could not add this school."); }
+    setBusySlug(null);
+  };
   const [listId, setListId] = React.useState(() => {
     try { const v = localStorage.getItem(OFFICIAL_TAB_KEY); return OFFICIAL_LISTS.some((l) => l.id === v) ? v : "forge"; } catch (e) { return "forge"; }
   });
@@ -78,45 +128,61 @@ function OfficialRankings() {
   const list = OFFICIAL_LISTS.find((l) => l.id === listId);
   const rows = data ? data.lists[listId] || [] : [];
   const edition = data && data.editions ? data.editions[EDITION_KEY[listId] || listId] : "";
+  const q = nameKey(query);
+  const shownRows = q ? rows.filter((r) => nameKey([r.name, r.city, r.state].join(" ")).includes(q)) : rows;
 
   return (
     <div className="cf-page">
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">Official rankings</h1>
-          <p className="cf-page-lede">The published lists, in the publishers’ own order, and the Forge ranking: a weighted average of them, the same one your List tab uses. Open a school for its admit rate, test scores, cost and where it lands on the other lists.</p>
+          <p className="cf-page-lede">The published lists, in the publishers’ own order, and the Forge ranking: a weighted average of them, the same one your Ranked list uses. Open a school for its admit rate, test scores, cost and where it lands on the other lists.</p>
         </div>
       </header>
       {error ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>Couldn’t load the rankings. Reload the page to try again.</p> : null}
-      <div className="cf-ptabs cf-ptabs--scroll" role="tablist" aria-label="Ranking lists">
+      {/* Filter pills, not tabs: picking a list replaces the one list below. */}
+      <div className="cf-orank__lists" role="group" aria-label="Ranking list">
         {OFFICIAL_LISTS.map((l) => (
-          <button key={l.id} type="button" role="tab" id={`orank-tab-${l.id}`} aria-selected={listId === l.id} aria-controls="orank-panel" className={"cf-ptab" + (listId === l.id ? " is-active" : "")} onClick={() => pick(l.id)}>
-            {l.label}<span className="cf-ptab__n">{l.top}</span>
+          <button key={l.id} type="button" aria-pressed={listId === l.id} className={"cf-filter-pill cf-press" + (listId === l.id ? " is-active" : "")} onClick={() => pick(l.id)}>
+            {l.label} <span className="cf-nums" style={{ opacity: 0.7 }}>{l.top}</span>
           </button>
         ))}
       </div>
       {data ? (
-        <section id="orank-panel" role="tabpanel" aria-labelledby={`orank-tab-${listId}`}>
-          <p className="cf-orank__source">{list.title}{edition && listId !== "forge" ? `, ${edition}` : ""} · top {list.top}{rows.length > list.top ? ` (${rows.length} with ties)` : ""}</p>
+        <section aria-label={list.title}>
+          <div className="cf-orank__bar">
+            <p className="cf-orank__source">{list.title}{edition && listId !== "forge" ? `, ${edition}` : ""} · top {list.top}{rows.length > list.top ? ` (${rows.length} with ties)` : ""}</p>
+            <label className="cf-orank__search">
+              <span className="cf-sr-only">Search this list</span>
+              <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search this list" />
+            </label>
+          </div>
           {listId === "forge" ? <p className="cf-help cf-orank__about">Each school’s ranks averaged with fixed weights: U.S. News and Forbes count fully, Niche ¾, WSJ ½ and the Princeton Review ¼. Liberal arts and Princeton Review ranks count at the national rank of the same standing. A school needs U.S. News plus Niche’s worth of weight or more to be ranked, so one list alone can’t place it.</p> : null}
+          {addError ? <p role="alert" className="cf-help" style={{ color: "var(--error)" }}>{addError}</p> : null}
+          {shownRows.length ? (
           <ol className="cf-apps-list cf-orank">
-            {rows.map((r) => {
+            {shownRows.map((r) => {
               const key = `${listId}-${r.rank}-${r.name}`;
               const isOpen = open === key;
+              const school = catalogFor(catalog, r);
               return (
                 <li key={key} className={"cf-orank__item" + (isOpen ? " is-open" : "")}>
-                  <button type="button" className="cf-orank__row" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : key)}>
-                    <span className="cf-orank__pos">{r.rank}</span>
-                    <SchoolMark name={r.name} logo={r.logo} />
-                    <span className="cf-orank__name">{r.name}</span>
-                    <span className="cf-orank__place">{[r.city, r.state].filter(Boolean).join(", ")}</span>
-                    <svg className="cf-orank__chev" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </button>
+                  <div className="cf-orank__line">
+                    <button type="button" className="cf-orank__row" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : key)}>
+                      <span className="cf-orank__pos">{r.rank}</span>
+                      <SchoolMark name={r.name} logo={r.logo} />
+                      <span className="cf-orank__name">{r.name}</span>
+                      <span className="cf-orank__place">{[r.city, r.state].filter(Boolean).join(", ")}</span>
+                      <svg className="cf-orank__chev" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                    <OfficialActions school={school} onList={!!school && listed.has(school.slug)} busy={!!school && busySlug === school.slug} onAdd={add} />
+                  </div>
                   {isOpen ? <OfficialFacts row={r} listId={listId} /> : null}
                 </li>
               );
             })}
           </ol>
+          ) : <div className="cf-empty">No school on this list matches “{query.trim()}”.</div>}
           <p className="cf-help cf-orank__foot">Ranks are copied from each publisher. Admit rate and SAT come from U.S. News and the College Scorecard where we have them, otherwise Forbes; setting from U.S. News; cost, salary and size from Forbes.</p>
         </section>
       ) : null}

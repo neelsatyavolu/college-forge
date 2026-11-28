@@ -222,77 +222,15 @@ function ChancesPanel({ data, onWorkspaceChange, compact }) {
     } finally { setRunning(false); setProgress(""); setFrac(0); }
   };
   const label = running ? "Estimating…" : staleCount ? "Re-estimate chances" : estimated.length ? "Estimate chances again" : "Estimate my chances";
-  if (compact) {
-    // A header button (Progress); progress, results and a stale warning show in one short line under it.
-    const line = running ? "" : result ? result.text : staleCount ? `${staleCount} of ${estimated.length} estimates predate profile changes.` : "";
-    return (
-      <span style={{ position: "relative", display: "inline-flex" }}>
-        {running ? <OddsPill frac={frac} text={progress} /> : <Button size="sm" variant="secondary" onClick={run}
-          title="The AI reads your profile, essays, each school's supplements and your uploads, starts from each school's published rate for your round, and can move at most threefold from it. A rough guide.">{label}</Button>}
-        {line ? <span role="status" aria-live="polite" style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, width: "max-content", maxWidth: 320, zIndex: 2, fontSize: 12, lineHeight: 1.35, textAlign: "right", color: result && result.tone === "error" ? "var(--error)" : staleCount && !running && !result ? "var(--warning)" : "var(--muted)" }}>{line}</span> : null}
-      </span>
-    );
-  }
+  // One button (Progress's header, the shortlist's toolbar); progress, results and a stale warning show in a
+  // short line under it, in the page's flow so it never covers what sits below.
+  const line = running ? "" : result ? result.text : staleCount ? `${staleCount} of ${estimated.length} estimates predate profile changes.` : "";
   return (
-    <section style={{ marginBottom: 28, padding: "16px 20px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ minWidth: 0, flex: "1 1 320px" }}>
-          <h2 className="cf-display" style={{ margin: "0 0 4px", fontSize: 20, color: "var(--ink)" }}>Your chances</h2>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--body)" }}>
-            The AI reads your profile, essays and uploads, looks at each school's published admission rates and what it weighs, and counts any decisions you already have. Each estimate starts from the school's published rate for your round and can move at most threefold from it. Treat it as a rough guide.
-          </p>
-        </div>
-        <Button size="sm" disabled={running} onClick={run}>{running ? "Estimating…" : staleCount ? "Re-estimate" : estimated.length ? "Estimate again" : "Estimate my chances"}</Button>
-      </div>
-      {staleCount && !running ? (
-        <p style={{ margin: "10px 0 0", fontSize: 13, color: "var(--warning)" }}>
-          {staleCount === estimated.length ? "Estimated before your profile changed." : `${staleCount} of ${estimated.length} estimates were made before your profile changed.`} Re-estimate to use your current scores.
-        </p>
-      ) : null}
-      {running ? <div style={{ marginTop: 12, maxWidth: 520 }}><OddsProgress frac={frac} text={progress} /></div> : (
-        <div role="status" aria-live="polite" style={{ fontSize: 13, marginTop: result ? 10 : 0, color: result && result.tone === "error" ? "var(--error)" : "var(--muted)" }}>
-          {result ? result.text : ""}
-        </div>
-      )}
-    </section>
-  );
-}
-
-const RESEARCH_GROUPS = window.cfSchoolDetail.RESEARCH_GROUPS;
-
-/** Sourced facts from setup research, grouped, each linked to the page it came from. */
-function ResearchFacts({ research }) {
-  if (!research || !(research.facts || []).length) return null;
-  const facts = research.facts;
-  return (
-    <details className="cf-research">
-      <summary>
-        Research · <span className="cf-nums">{facts.length} facts · checked {research.checkedAt}</span>
-        {research.needsReview ? <span className="cf-research-flag"> · some facts still need checking</span> : null}
-      </summary>
-      {RESEARCH_GROUPS.map(([group, keys]) => {
-        const rows = keys.flatMap(([key, label]) => facts.filter((f) => f.key === key).map((f, i) => ({ f, label, id: key + i })));
-        if (!rows.length) return null;
-        return (
-          <div key={group} className="cf-research-group">
-            <h4>{group}</h4>
-            <dl>
-              {rows.map(({ f, label, id }) => (
-                <div key={id}>
-                  <dt>{label}</dt>
-                  <dd>
-                    {f.value}{" "}
-                    {/^https?:\/\//.test(f.sourceUrl) ? <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">source</a> : null}
-                    {f.cycle !== "2026-27" ? <span className="cf-research-tag">{f.cycle} cycle</span> : null}
-                    {f.thirdParty ? <span className="cf-research-tag">third-party</span> : null}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        );
-      })}
-    </details>
+    <span className={"cf-odds-compact" + (compact ? "" : " cf-odds-compact--start")}>
+      {running ? <OddsPill frac={frac} text={progress} /> : <Button size="sm" variant="secondary" onClick={run}
+        title="The AI reads your profile, essays, each school's supplements and your uploads, starts from each school's published rate for your round, and can move at most threefold from it. A rough guide.">{label}</Button>}
+      {line ? <span role="status" aria-live="polite" className="cf-odds-compact__line" style={{ color: result && result.tone === "error" ? "var(--error)" : staleCount && !running && !result ? "var(--warning)" : "var(--muted)" }}>{line}</span> : null}
+    </span>
   );
 }
 
@@ -329,7 +267,7 @@ function SchoolRow({ s, odds, oddsStale, last, tracked, onTier, onTrack, onRemov
             {s.netPriceForYou ? <span className="cf-nums" style={{ fontSize: 12, color: "var(--muted)" }}>Your likely cost: {s.netPriceForYou}</span> : null}
           </div>
           <OddsLine odds={odds} stale={oddsStale} />
-          <ResearchFacts research={s.research} />
+          {s.research && (s.research.facts || []).length ? <a className="cf-short-research cf-nums" href={window.cfSchoolDetail.hashFor(s.slug)}>Research: {s.research.facts.length} sourced facts on its page →</a> : null}
           <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
             <label style={{ fontSize: 11, color: "var(--muted)", display: "flex", alignItems: "center", gap: 6 }}>
               Tier
@@ -417,28 +355,42 @@ function balanceWarnings(likelySlots, reachSlots, appSlots) {
   return out;
 }
 
-function ListBalance({ ambition, warnings, gaps, busy, error, onShift, onRebalance }) {
-  const step = AMBITION_STEPS.indexOf(ambition);
+/** What a previewed balance would do to the list, by name. */
+function previewSummary(preview) {
+  if (!preview.added.length && !preview.removed.length) return "Your list wouldn’t change: every school on it is one you or the copilot added, or it already fits.";
+  return [preview.added.length ? `Adds ${preview.added.join(", ")}.` : "", preview.removed.length ? `Removes ${preview.removed.join(", ")}.` : ""].filter(Boolean).join(" ");
+}
+
+/**
+ * List balance and chances in one row above the schools. "More ambitious" and "Safer" only preview the mix
+ * (what would be added and removed, by name); "Rebalance list" saves it. Warnings open a second line.
+ */
+function ListTools({ ambition, preview, warnings, gaps, busy, error, onShift, onCancel, onRebalance, data, onWorkspaceChange }) {
+  const shown = preview ? preview.ambition : ambition;
+  const step = AMBITION_STEPS.indexOf(shown);
   return (
-    <section aria-label="List balance" style={{ marginBottom: 28, padding: "16px 20px", border: "1px solid var(--hairline)", borderRadius: "var(--radius-lg)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ minWidth: 0, flex: "1 1 320px" }}>
-          <h2 className="cf-display" style={{ margin: "0 0 4px", fontSize: 20, color: "var(--ink)" }}>List balance: {AMBITION_LABEL[ambition]}</h2>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--body)" }}>Rebalancing swaps only the schools Forge picked for you. Schools you added and priority schools stay.</p>
-        </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <Button variant="secondary" size="sm" disabled={busy || step >= AMBITION_STEPS.length - 1} onClick={() => onShift(1)}>More ambitious</Button>
-          <Button variant="secondary" size="sm" disabled={busy || step <= 0} onClick={() => onShift(-1)}>Safer</Button>
-          <Button size="sm" disabled={busy} onClick={onRebalance}>Rebalance list</Button>
-        </div>
+    <section aria-label="List balance and chances" className="cf-short-tools">
+      <div className="cf-short-tools__row">
+        <span className="cf-short-tools__label">Balance: <b>{AMBITION_LABEL[shown]}</b>{preview ? " (preview)" : ""}</span>
+        <span className="cf-short-tools__actions">
+          <Button variant="secondary" size="sm" disabled={busy || step >= AMBITION_STEPS.length - 1} onClick={() => onShift(1)}
+            title="Preview a mix with more reaches. Nothing changes until you press Rebalance list.">More ambitious</Button>
+          <Button variant="secondary" size="sm" disabled={busy || step <= 0} onClick={() => onShift(-1)}
+            title="Preview a mix with more likely schools. Nothing changes until you press Rebalance list.">Safer</Button>
+          <Button size="sm" disabled={busy} onClick={onRebalance}
+            title="Swaps only the schools Forge picked for you. Schools you added and priority schools stay.">Rebalance list</Button>
+          {preview ? <button type="button" className="cf-link-btn" disabled={busy} onClick={onCancel}>Cancel</button> : null}
+        </span>
+        <span className="cf-short-tools__chances"><ChancesPanel data={data} onWorkspaceChange={onWorkspaceChange} /></span>
       </div>
+      {preview ? <p className="cf-short-tools__preview" role="status">{AMBITION_LABEL[preview.ambition]}: {previewSummary(preview)} Press Rebalance list to save it.</p> : null}
       {warnings.length || gaps.length ? (
-        <ul style={{ margin: "12px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 4, fontSize: 13, color: "var(--warning)" }}>
+        <ul className="cf-short-tools__warnings">
           {warnings.map((w) => <li key={w}>{w}</li>)}
           {gaps.map((g) => <li key={g.tier}>Rebalancing could not find {g.missing} more {GAP_WORD[g.tier] || g.tier} {g.missing === 1 ? "school" : "schools"} that fit your preferences. Add your own from Explore.</li>)}
         </ul>
       ) : null}
-      {error ? <p role="alert" style={{ margin: "10px 0 0", color: "var(--error)", fontSize: 13 }}>{error}</p> : null}
+      {error ? <p role="alert" className="cf-short-tools__error">{error}</p> : null}
     </section>
   );
 }
@@ -448,6 +400,8 @@ function Shortlist({ data, tracker, detailSlug, onTrackerChange, onAsk, onWorksp
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [notice, setNotice] = React.useState("");
+  // A previewed balance: { ambition, added, removed }, saved only by "Rebalance list".
+  const [preview, setPreview] = React.useState(null);
   // Back from a school's page returns to where the list was scrolled.
   const listScroll = React.useRef(0);
   const lastOpened = React.useRef(null);
@@ -518,9 +472,21 @@ function Shortlist({ data, tracker, detailSlug, onTrackerChange, onAsk, onWorksp
       summary = rebalanceSummary(j.added, j.removed);
       return j.data;
     }, "");
-    if (summary) setNotice((nextAmbition ? `List balance set to ${AMBITION_LABEL[nextAmbition].toLowerCase()}. ` : "") + summary);
+    if (summary) { setPreview(null); setNotice((nextAmbition ? `List balance set to ${AMBITION_LABEL[nextAmbition].toLowerCase()}. ` : "") + summary); }
   };
-  const onShift = (dir) => rebalance(AMBITION_STEPS[Math.max(0, Math.min(AMBITION_STEPS.length - 1, AMBITION_STEPS.indexOf(ambition) + dir))]);
+  // Shows what a rebalance at the next balance would add and remove; nothing is saved until "Rebalance list".
+  const onShift = async (dir) => {
+    const from = preview ? preview.ambition : ambition;
+    const next = AMBITION_STEPS[Math.max(0, Math.min(AMBITION_STEPS.length - 1, AMBITION_STEPS.indexOf(from) + dir))];
+    if (next === ambition) { setPreview(null); return; }
+    setBusy(true); setError(null); setNotice("");
+    try {
+      const j = await window.cfApi.postAction("rebalance-preview", { ambition: next });
+      setPreview({ ambition: next, added: j.added || [], removed: j.removed || [] });
+    } catch (e) {
+      setError({ slug: "__balance", message: e.message || "Couldn’t preview that balance. Try again." });
+    } finally { setBusy(false); }
+  };
   // Data tiers first (grades and scores vs each school's numbers); for the rest, the AI chance estimate, then
   // its tier (70%+ likely, 30-69% target, under 30% reach). Schools added from Applications arrive untiered.
   const onAssessAll = async () => {
@@ -577,28 +543,26 @@ function Shortlist({ data, tracker, detailSlug, onTrackerChange, onAsk, onWorksp
       <header className="cf-page-header">
         <div>
           <h1 className="cf-page-title">Your shortlist</h1>
-          <p className="cf-page-lede">
-            Schools you’re considering. Schools you add here also show on Applications and Progress as Not started; a suggested school joins them once you track or star it. Reach, target, and likely are planning categories, not admission or financial-aid guarantees. Overall admission rates are not your personal odds; Your chances below estimates those for you.
-            {ucCount > 0
-              ? " UC campuses share one UC Application — they count as a single app slot even if you list several campuses."
-              : ""}
-          </p>
-          {data.colleges.length > 0 ? <a className="cf-link-btn" href="#list" style={{ display: "inline-flex", alignItems: "center" }}>See them ranked →</a> : null}
+          <p className="cf-page-lede">Schools here also show on Progress as Not started.</p>
         </div>
-        <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to adjust ✱</Button>
+        <div className="cf-row-actions">
+          {data.colleges.length > 0 ? <a className="cf-link-btn" href="#list" style={{ display: "inline-flex", alignItems: "center" }}>See them ranked →</a> : null}
+          <Button variant="secondary" size="sm" onClick={onAsk}>Ask copilot to adjust ✱</Button>
+        </div>
       </header>
 
       <div role="status" aria-live="polite" style={{ fontSize: 13, color: "var(--muted)", marginBottom: notice || busy ? 16 : 0 }}>{busy ? notice || "Saving change…" : notice}</div>
 
       {data.colleges.length > 0 ? (
-        <div className="cf-grid-short-stats" style={{ marginBottom: 28 }}>
+        <div className="cf-grid-short-stats cf-short-stats" style={{ marginBottom: 20 }}>
           {[
             ["Campuses", data.colleges.length],
-            ["App slots", appSlots],
+            ["App slots", appSlots, ucCount > 1 ? "UC campuses share one UC Application, so they count as one app slot." : ""],
             ["Reaches", byTier.reach.length],
+            ["Targets", byTier.target.length],
             ["Likely", byTier.safety.length],
-          ].map(([l, v]) => (
-            <div key={l}>
+          ].map(([l, v, title]) => (
+            <div key={l} title={title || undefined}>
               <div className="cf-display cf-nums" style={{ fontSize: 32, lineHeight: 1, letterSpacing: "-0.5px", color: "var(--ink)" }}>{v}</div>
               <div style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--muted)", marginTop: 4 }}>{l}</div>
             </div>
@@ -607,11 +571,10 @@ function Shortlist({ data, tracker, detailSlug, onTrackerChange, onAsk, onWorksp
       ) : null}
 
       {data.colleges.length > 0 ? (
-        <ListBalance ambition={ambition} warnings={warnings} gaps={shownGaps} busy={busy}
-          error={error && error.slug === "__balance" ? error.message : ""} onShift={onShift} onRebalance={() => rebalance(null)} />
+        <ListTools ambition={ambition} preview={preview} warnings={warnings} gaps={shownGaps} busy={busy}
+          error={error && error.slug === "__balance" ? error.message : ""} onShift={onShift} onCancel={() => setPreview(null)}
+          onRebalance={() => rebalance(preview ? preview.ambition : null)} data={data} onWorkspaceChange={onWorkspaceChange} />
       ) : null}
-
-      {data.colleges.length > 0 ? <ChancesPanel data={data} onWorkspaceChange={onWorkspaceChange} /> : null}
 
       {data.colleges.length === 0 ? (
         <div className="cf-empty">No schools on your list yet. Tell the copilot which colleges to add, or search from Explore.</div>
@@ -674,6 +637,7 @@ function Shortlist({ data, tracker, detailSlug, onTrackerChange, onAsk, onWorksp
           ) : null}
         </React.Fragment>
       )}
+      <p className="cf-help"><a href="#scattergrams">Import past results from Maia Learning (if your school uses it) →</a></p>
     </div>
   );
 }

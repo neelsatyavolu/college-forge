@@ -77,6 +77,7 @@ function Decisions({ tracker, onTrackerChange, onWorkspaceChange }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState("");
   const [justRevealed, setJustRevealed] = React.useState(null);
+  const [recording, setRecording] = React.useState(null);
   const apps = tracker.apps;
   const hidden = apps.filter((a) => a.decision.state === "hidden");
   const known = apps.filter((a) => a.decision.state === "revealed" || a.decision.state === "recorded");
@@ -147,7 +148,9 @@ function Decisions({ tracker, onTrackerChange, onWorkspaceChange }) {
                   <h3 className="cf-decision__school">{a.name}</h3>
                   <div className="cf-decision__note">{a.decisionDate ? `Expected ${fmtDate(a.decisionDate.date)}${a.decisionDate.estimated ? ", going by last year" : ""}` : "No decision date yet"}</div>
                 </div>
-                <span />
+                {/* A decision that came by email or mail, which the portal check can't see. */}
+                <button type="button" className="cf-link-btn" aria-expanded={recording === a.id} onClick={() => setRecording(recording === a.id ? null : a.id)}>{recording === a.id ? "Cancel" : "Record a decision"}</button>
+                {recording === a.id ? <div className="cf-decision__reveal"><RecordButtons app={a} suggested="" act={async (app, status) => { await record(app, status); setRecording(null); }} busy={busy} /></div> : null}
               </li>
             ))}
           </ul>

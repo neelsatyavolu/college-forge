@@ -96,6 +96,16 @@ test('complete-onboarding saves residency, ACT and list fit, and rejects a bad G
  const rebalanced=await workspace.POST(req({action:'rebalance'},'POST'));assert.equal(rebalanced.status,200);
  const out=await rebalanced.json();assert.ok(Array.isArray(out.gaps));assert.ok(out.data.colleges.length>0);
  assert.ok(Array.isArray(out.added));assert.ok(Array.isArray(out.removed));assert.deepEqual(out.data.onboarding.listGaps,out.gaps);
+ // A preview names what a rebalance at another balance would change, saves nothing, and matches the real rebalance.
+ assert.equal((await workspace.POST(req({action:'rebalance-preview',ambition:'reckless'},'POST'))).status,400);
+ const before=await store.getWorkspace('route-test-workspace');
+ const preview=await (await workspace.POST(req({action:'rebalance-preview',ambition:'ambitious'},'POST'))).json();
+ assert.equal(preview.success,true);assert.equal(preview.data,undefined);
+ const unchanged=await store.getWorkspace('route-test-workspace');
+ assert.equal(unchanged.revision,before.revision);assert.equal(unchanged.onboarding.listPrefs.ambition,'balanced');
+ assert.equal((await workspace.PATCH(req({listPrefs:{ambition:'ambitious'}}))).status,200);
+ const real=await (await workspace.POST(req({action:'rebalance'},'POST'))).json();
+ assert.deepEqual([preview.added,preview.removed],[real.added,real.removed]);
 }));
 test('MCP tools ignore Codex-style filled arguments for yes/no flags',()=>isolated(async()=>{
  const {callTool}=require('../lib/mcp-tools.ts');

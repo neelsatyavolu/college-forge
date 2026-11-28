@@ -62,6 +62,8 @@ export async function GET(req: NextRequest) {
 
 type Body = {
   action?: string;
+  /** rebalance-preview: the balance to preview. */
+  ambition?: unknown;
   /** apply-list: draft schools the student kept, and current schools they dropped. */
   keep?: unknown;
   drop?: unknown;
@@ -171,6 +173,21 @@ export async function POST(req: NextRequest) {
       return syncEssaySupplements(workspace);
     });
     return withCookie({ success: true, data: next, ...result }, setCookie);
+  }
+
+  if (action === "rebalance-preview") {
+    // What a rebalance at this ambition would add and remove, without saving anything.
+    if (!AMBITIONS.has(body.ambition as ListAmbition)) {
+      return withCookie({ success: false, error: "Pick ambitious, balanced or conservative." }, setCookie, 400);
+    }
+    const ws = await getWorkspace(id);
+    const listPrefs: OnboardingListPrefs = {
+      settings: [], size: "any", regions: [], notes: "",
+      ...ws.onboarding.listPrefs,
+      ambition: body.ambition as ListAmbition,
+    };
+    const { added, removed, gaps } = rebalanceWorkspace({ ...ws, onboarding: { ...ws.onboarding, listPrefs } });
+    return withCookie({ success: true, added, removed, gaps }, setCookie);
   }
 
   if (action === "assess-tiers") {

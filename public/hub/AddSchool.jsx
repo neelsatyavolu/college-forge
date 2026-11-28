@@ -3,7 +3,7 @@ const { Button } = window.CollegeForgeDesignSystem_e95e63;
 const norm = (s) => String(s || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 
 /** Search Forge's 330-school catalog, pick from the shortlist, or add any school by name. */
-function AddSchool({ tracked, shortlist, onAdd, onClose }) {
+function AddSchool({ title = "Add a school", tracked, shortlist, onAdd, onClose }) {
   const { SchoolMark } = window.cfApp;
   const [query, setQuery] = React.useState("");
   const [catalog, setCatalog] = React.useState(null);
@@ -39,7 +39,7 @@ function AddSchool({ tracked, shortlist, onAdd, onClose }) {
   return (
     <section className="cf-panel" aria-labelledby="add-school-title">
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
-        <h2 id="add-school-title">Add a portal</h2>
+        <h2 id="add-school-title">{title}</h2>
         <button type="button" className="cf-link-btn" onClick={onClose}>Done</button>
       </div>
       <div className="cf-picker">
