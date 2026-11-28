@@ -14,7 +14,7 @@ const ws = (courses = [], aps = [], activities = []) => {
   w.profile.intended = 'Undecided';
   w.profile.coursework = { aps: courses, honors: [], senior: [] };
   w.profile.testing.aps = aps;
-  w.profile.activities = activities.map((name, i) => ({ rank: i + 1, name, type: 'Club' }));
+  w.profile.activities = activities.map((name, i) => ({ rank: i + 1, name, type: 'Club', role: 'Writer', hpw: '4', desc: 'Wrote and edited stories for the school paper every week' }));
   return w;
 };
 

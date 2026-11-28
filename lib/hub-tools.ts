@@ -458,6 +458,16 @@ export function makeHubTools(
       // recommendation they accepted. A count the model inferred (say, 0 quick apps) is dropped.
       const droppedCounts: string[] = [];
       if (name === "set_list_preferences" && a.countsRecommended !== true) {
+        // Codex fills unused fields with "": that's no answer. A count resent unchanged (the model passing
+        // the 8 saved last turn along with this turn's 2) is no change, not an invented number.
+        const saved = (await getWorkspace(workspaceId)).onboarding.listPrefs;
+        for (const key of ["suppCount", "noSuppCount"] as const) {
+          const v = a[key];
+          if (v === "" || v === null || (v !== undefined && saved?.[key] !== undefined && String(saved[key]) === String(v).trim())) {
+            const { [key]: _same, ...rest } = a;
+            a = rest;
+          }
+        }
         for (const key of ["suppCount", "noSuppCount"] as const) {
           if (a[key] !== undefined && !saidCount(userText, a[key])) {
             droppedCounts.push(key);

@@ -153,6 +153,8 @@ export type InterviewState = {
   meritInterest?: "yes" | "no" | "unsure";
   /** The find-your-major quiz for an undecided student: "done" once suggest_majors ran, "declined" when they said no. */
   majorFinder?: "done" | "declined";
+  /** The student was asked twice for their top activities' details and couldn't give more; the interview moves on. */
+  activityDetailsDeclined?: boolean;
   /** Background research (lib/research-runner.ts): workers claim one school at a time; live is each card's stage. */
   researchRun?: ResearchRun;
   /** The AI's ED/EA recommendation once the student confirmed it. */
