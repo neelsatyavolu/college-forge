@@ -1,6 +1,14 @@
 const { Badge, Button } = window.CollegeForgeDesignSystem_e95e63;
 
 const CSS_LABEL = { required: "CSS Profile required", not_required: "CSS Profile not required", unknown: "CSS Profile: check the school's aid page" };
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+/** "2026-11-01" -> "Nov 1" (with the year when it isn't this year's). */
+function shortDate(iso, today) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!m) return iso;
+  const day = `${MONTHS[Number(m[2]) - 1]} ${Number(m[3])}`;
+  return m[1] === String(today || "").slice(0, 4) ? day : `${day}, ${m[1]}`;
+}
 
 /** One row per school on the Applications tab: which aid forms it asks for, its aid dates, and its aid to-dos. */
 function AidBySchool({ revision }) {
@@ -34,7 +42,7 @@ function AidBySchool({ revision }) {
 
   if (error && !plan) return <p className="cf-notice" role="alert">{error}</p>;
   if (!plan) return <p role="status" style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>Loading the aid checklist…</p>;
-  if (!plan.schools.length) return <p style={{ fontSize: 14, color: "var(--muted)", margin: 0 }}>Add schools on the Applications tab to see which aid forms each one asks for.</p>;
+  if (!plan.schools.length) return <p style={{ fontSize: 14, color: "var(--muted)", margin: 0 }}>Add schools to <a href="#shortlist">Your shortlist</a> to see which aid forms each one asks for.</p>;
   const { totals } = plan;
   const today = window.cfApp && window.cfApp.todayIso ? window.cfApp.todayIso() : new Date().toISOString().slice(0, 10);
   return (
@@ -61,7 +69,7 @@ function AidBySchool({ revision }) {
                 </div>
                 {!row.ignoreAid && dates.length ? (
                   <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>
-                    {dates.map((d) => <span key={d.plan + d.date} style={{ marginRight: 12, display: "inline-block", whiteSpace: "nowrap" }}>{d.plan} <span className="cf-nums">{d.date}</span></span>)}
+                    {dates.map((d) => <span key={d.plan + d.date} style={{ marginRight: 12, display: "inline-block", whiteSpace: "nowrap" }}>{d.plan} <span className="cf-nums">{shortDate(d.date, today)}</span></span>)}
                   </div>
                 ) : null}
                 {row.followUps.length ? (

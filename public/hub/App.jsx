@@ -279,7 +279,7 @@ function App() {
           {view === "progress" && <Progress data={data} tracker={tracker} onTrackerChange={setTrackerAndList} onWorkspaceChange={applyWorkspaceAndTracker} />}
           {view === "timeline" && <Timeline data={data} tracker={tracker} hash={hash} onWorkspaceChange={applyWorkspace} />}
           {view === "decisions" && <Decisions tracker={tracker} onTrackerChange={setTracker} onWorkspaceChange={refresh} />}
-          {view === "board" && <DecisionBoard tracker={tracker} onTrackerChange={setTracker} />}
+          {view === "board" && <DecisionBoard tracker={tracker} onTrackerChange={setTracker} needAid={data && data.onboarding && data.onboarding.listPrefs ? data.onboarding.listPrefs.needAid : undefined} />}
           {view === "list" && <RankList tracker={tracker} data={data} onWorkspaceChange={applyWorkspace} />}
           {view === "official" && <OfficialRankings data={data} onWorkspaceChange={refresh} />}
           {view === "profile" && <Profile data={data} onAsk={openChat} onWorkspaceChange={applyWorkspace} />}

@@ -56,7 +56,7 @@ function BoardNotes({ items, tone }) {
   return <ul className={"cf-board-notes is-" + tone}>{items.map((t) => <li key={t}>{t}</li>)}</ul>;
 }
 
-function BoardSchoolRow({ school, editing, onEdit, onSaved }) {
+function BoardSchoolRow({ school, editing, onEdit, onSaved, hideAidOffer }) {
   const { SchoolMark } = window.cfApp;
   return (
     <li className={"cf-board-row" + (school.pickable ? "" : " is-pending")}>
@@ -76,7 +76,7 @@ function BoardSchoolRow({ school, editing, onEdit, onSaved }) {
         {school.switch.length ? <p className="cf-help">Switching: {school.switch.map((s) => `${s.major} ${s.label}`).join(" · ")}</p> : null}
         {school.notes ? <p className="cf-board-said">Your notes: {school.notes}</p> : null}
         {school.decisionNote ? <p className="cf-board-said">{school.decisionNote}</p> : null}
-        {editing ? <AidOfferEditor school={school} onSaved={onSaved} onCancel={() => onEdit(null)} /> : school.pickable ? (
+        {editing ? <AidOfferEditor school={school} onSaved={onSaved} onCancel={() => onEdit(null)} /> : school.pickable && !(hideAidOffer && !school.aidOffer) ? (
           <button type="button" className="cf-link-btn" onClick={() => onEdit(school.id)}>{school.aidOffer ? "Edit aid offer" : "Add aid offer"}</button>
         ) : null}
       </div>
@@ -108,7 +108,8 @@ function PickCompare({ picks, schools }) {
   );
 }
 
-function DecisionBoard({ tracker, onTrackerChange }) {
+/** needAid false (not applying for need-based aid): no "Add aid offer" link; an offer already saved stays editable. */
+function DecisionBoard({ tracker, onTrackerChange, needAid }) {
   const { Button } = window.CollegeForgeDesignSystem_e95e63;
   const [board, setBoard] = React.useState(null);
   const [error, setError] = React.useState("");
@@ -186,7 +187,7 @@ function DecisionBoard({ tracker, onTrackerChange }) {
         <section className="cf-apps-group" aria-labelledby="board-all">
           <div className="cf-apps-group__head"><h2 id="board-all">Every offer</h2><span>{schools.length}</span></div>
           <ul className="cf-apps-list cf-board-list">
-            {schools.map((s) => <BoardSchoolRow key={s.id} school={s} editing={editing === s.id} onEdit={setEditing} onSaved={(t) => { setEditing(null); onTrackerChange(t); }} />)}
+            {schools.map((s) => <BoardSchoolRow key={s.id} school={s} hideAidOffer={needAid === false} editing={editing === s.id} onEdit={setEditing} onSaved={(t) => { setEditing(null); onTrackerChange(t); }} />)}
           </ul>
         </section>
       ) : null}

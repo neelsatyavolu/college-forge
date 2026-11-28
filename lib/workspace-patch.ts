@@ -30,6 +30,7 @@ import {
 } from "./essay-tools";
 import { checkAidPatch, linkKind, mergeScholarshipList } from "./aid-validate";
 import { recExtras, recExtrasError, trackedAppIds, withoutExtras } from "./recommenders";
+import { applyAidProfile, parseAidProfile, type AidProfilePatch } from "./aid-profile";
 import { parseApplicantFields, parseProfileFields, rankActivities, toAps, toHonors, type Parsed, type WriteMode } from "./profile-fields";
 
 function assignDefined<T extends object>(base: T, patch: Record<string, unknown>): T {
@@ -72,6 +73,8 @@ export type WorkspacePatch = {
   recommendations?: Recommendation[];
   scholarships?: Scholarship[];
   financialAid?: Partial<FinancialAid>;
+  /** Optional family details for the aid estimate; null clears a field (lib/aid-profile.ts). */
+  aidProfile?: AidProfilePatch;
   /** Merge a single essay draft */
   essayDraft?: { id: string; text: string };
   /** Mark essays draft or final by id; null clears the mark. */
@@ -174,6 +177,11 @@ export function checkWorkspacePatch(patch: WorkspacePatch, mode: WriteMode = "fo
       next = { ...next, listPrefs: Object.fromEntries(kept) as Partial<OnboardingListPrefs> };
     }
   }
+  if (patch.aidProfile !== undefined) {
+    const parsed = parseAidProfile(patch.aidProfile, mode);
+    if (!parsed.ok) return parsed;
+    next = { ...next, aidProfile: parsed.value };
+  }
   if (patch.recommendations !== undefined && patch.recommendations !== null) {
     const rows = patch.recommendations as unknown;
     if (!Array.isArray(rows) || rows.some((r) => !r || typeof r !== "object" || Array.isArray(r))) {
@@ -265,6 +273,8 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
     if ((LIST_BUDGETS as readonly unknown[]).includes(p.budget)) listPrefs.budget = p.budget;
     if ((ED_CHOICES as readonly unknown[]).includes(p.ed)) listPrefs.ed = p.ed;
     if (typeof p.needAid === "boolean") listPrefs.needAid = p.needAid;
+    // null is "not sure": the question goes back to unanswered.
+    else if ((p as { needAid?: unknown }).needAid === null) delete listPrefs.needAid;
     if ((INCOME_BRACKETS as readonly unknown[]).includes(p.incomeBracket)) listPrefs.incomeBracket = p.incomeBracket;
     if ((CITIZENSHIP as readonly unknown[]).includes(p.citizenship)) listPrefs.citizenship = p.citizenship;
     if ((YES_NO_UNSURE as readonly unknown[]).includes(p.firstGen)) listPrefs.firstGen = p.firstGen;
@@ -453,6 +463,9 @@ export function applyWorkspacePatch(ws: Workspace, patch: WorkspacePatch): Works
 
   if (patch.financialAid) {
     next = { ...next, financialAid: { ...next.financialAid, ...patch.financialAid } };
+  }
+  if (patch.aidProfile && typeof patch.aidProfile === "object") {
+    next = { ...next, aidProfile: applyAidProfile(next.aidProfile, patch.aidProfile) };
   }
 
   if (patch.advisorNote?.body?.trim()) {

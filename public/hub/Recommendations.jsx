@@ -13,7 +13,7 @@ function preferenceDraft(data) {
   return {
     intended: data.profile.intended || "", ambition: prefs.ambition || "balanced", regions: prefs.regions || [], settings: prefs.settings || [],
     appCount: typeof prefs.appCount === "number" ? String(prefs.appCount) : "", notes: prefs.notes || "",
-    budget: prefs.budget || "", needAid: prefs.needAid === true, ed: prefs.ed || "",
+    budget: prefs.budget || "", needAid: prefs.needAid === true ? "yes" : prefs.needAid === false ? "no" : "", ed: prefs.ed || "",
   };
 }
 
@@ -42,8 +42,8 @@ function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate, onStartSe
       const listPrefs = {
         ambition: draft.ambition, regions: draft.regions, settings: draft.settings,
         appCount: draft.appCount ? Number(draft.appCount) : null, notes: draft.notes.slice(0, NOTES_LIMIT),
-        // An untouched, never-answered aid box stays unanswered rather than saved as "no".
-        ...(draft.needAid || typeof data.onboarding?.listPrefs?.needAid === "boolean" ? { needAid: draft.needAid } : {}),
+        // Same answer as onboarding and Recs & aid: yes, no, or not sure (left unanswered).
+        needAid: draft.needAid === "yes" ? true : draft.needAid === "no" ? false : null,
         ...(draft.budget ? { budget: draft.budget } : {}), ...(draft.ed ? { ed: draft.ed } : {}),
       };
       const ws = await window.cfApi.patch({ profile: { intended: draft.intended.trim() }, listPrefs });
@@ -70,7 +70,7 @@ function Recommendations({ data, onWorkspaceChange, onAsk, onNavigate, onStartSe
           <label>Yearly amount your family can pay<select value={draft.budget} onChange={e => setDraft(d => ({ ...d, budget: e.target.value }))}>{draft.budget ? null : <option value="" disabled>Choose one</option>}{BUDGETS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
           <label>Early Decision<select value={draft.ed} onChange={e => setDraft(d => ({ ...d, ed: e.target.value }))}>{draft.ed ? null : <option value="" disabled>Choose one</option>}<option value="yes">I would apply ED</option><option value="maybe">Maybe</option><option value="no">No ED</option></select></label>
           <label style={{ gridColumn: "1 / -1" }}>Anything else the list should follow<textarea value={draft.notes} maxLength={NOTES_LIMIT} rows={3} onChange={e => setDraft(d => ({ ...d, notes: e.target.value }))} placeholder="e.g. strong marine biology, in-state publics, no schools in big cities" style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", color: "var(--ink)", background: "var(--canvas)", border: "1px solid var(--hairline)", borderRadius: 6, font: "inherit", fontSize: 13, resize: "vertical" }} /></label></div>
-        <fieldset><legend>Financial aid</legend><div><label><input type="checkbox" checked={draft.needAid} onChange={e => setDraft(d => ({ ...d, needAid: e.target.checked }))} />We will apply for need-based aid</label></div></fieldset>
+        <fieldset><legend>Applying for need-based aid?</legend><div>{[["yes", "Yes"], ["no", "No"], ["", "Not sure"]].map(([value, label]) => <label key={label}><input type="radio" name="cf-need-aid" checked={draft.needAid === value} onChange={() => setDraft(d => ({ ...d, needAid: value }))} />{label}</label>)}</div></fieldset>
         <fieldset><legend>Regions <span>Leave all unchecked for anywhere</span></legend><div>{[["northeast", "New England"], ["mid-atlantic", "Mid-Atlantic"], ["south", "South"], ["midwest", "Midwest"], ["west", "West"]].map(([value, label]) => <label key={value}><input type="checkbox" checked={draft.regions.includes(value)} onChange={() => toggle("regions", value)} />{label}</label>)}</div></fieldset>
         <fieldset><legend>Campus setting <span>Leave all unchecked for any setting</span></legend><div>{[["urban", "City"], ["suburban", "Suburban"], ["college-town", "College town"], ["rural", "Rural"]].map(([value, label]) => <label key={value}><input type="checkbox" checked={draft.settings.includes(value)} onChange={() => toggle("settings", value)} />{label}</label>)}</div></fieldset>
         <div className="cf-inline-actions"><Button disabled={!!busy} type="submit">{busy === "preferences" ? "Saving…" : "Update recommendations"}</Button><Button variant="secondary" type="button" onClick={() => setFiltersOpen(false)}>Cancel</Button></div>

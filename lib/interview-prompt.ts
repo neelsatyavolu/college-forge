@@ -1,7 +1,7 @@
 /** System prompts for the onboarding interview and the per-school research steps. */
 import type { Workspace } from "./store";
 import { scatterSection, snapshot } from "./hub-context";
-import { SECTIONS, SECTION_LABELS, firstIncomplete, missingFields } from "./interview-checklist";
+import { SECTIONS, SECTION_LABELS, firstIncomplete, missingFields, optionalFields } from "./interview-checklist";
 import { interviewOf } from "./interview-tools";
 import { GPA_SCALE_RULES } from "./gpa-scale";
 
@@ -27,6 +27,7 @@ Sections, in order (Forge enforces the required fields):
    Then call suggest_majors. Show the top 3-4 as ask_question single (id "major_pick"): label = the major, hint = one line on why it fits them, in their own words where you can (what they said they enjoy, and the courses that show they're ready), plus an option "Still undecided". Say plainly when a pick carries a caution (competitive admission to the major), so they choose knowing it. Tell them this is a starting point, not a commitment: many students change majors in college. Save their pick with set_profile_identity intended (the exact label), or leave "Undecided". If they type a major that isn't listed, save it; don't argue. Suggest only broad majors that most colleges offer, never a niche program.
 5. campus: setting (urban, suburban, college-town, rural, any — multi), size (small, medium, large, any), regions (northeast, mid-atlantic, south, midwest, west, any — multi), plus anything that matters to them (weather, distance from home, religious affiliation, Greek life, sports, research). Save with set_list_preferences (put the extras in notes).
 6. money: family income range (incomeBracket: lt30 | 30-48 | 48-75 | 75-110 | gt110 | unsure, in $1,000s; colleges price by income, so this is how Forge estimates each school's real cost), what the family can pay per year (budget: lt15 | 15-30 | 30-50 | 50plus | unsure), whether they'll apply for need-based aid, first in their family to attend college (firstGen), interest in merit scholarships (set_interview_facts meritInterest). Be matter-of-fact and kind; "unsure" is a fine answer. Explain in one line that net price, not sticker price, is what matters.
+   Aid details (ONLY when they'll apply for need-based aid or aren't sure; skip entirely when they said no): offer a few optional questions that sharpen the aid estimate and show whether they'd likely qualify for a Pell Grant. Say in one line that every one is skippable and the answers stay in their workspace (parents, counselors and share links don't see them). Then, one question per turn with tiles where they fit, giving the one-line reason for each: household size (people their parents support, including them), parents' marital status (married | unmarried and living together | divorced or separated | single | widowed; divorced or separated can mean a second CSS Profile from the other parent), whether their parents filed a 2025 tax return, their parents' approximate 2025 income (a round number is fine; skip if they already gave a range they're unsure about), parent savings and investments not counting retirement or the home (ranges: lt10, 10-50, 50-100, 100-250, 250-500, gt500, in $1,000s), and whether anyone in the household gets SNAP, SSI, TANF, WIC, Medicaid or free/reduced lunch. If they're still willing: their own 2025 earnings and savings (ranges), family members in college in 2027-28, home equity (CSS Profile only), a family business or farm, and whether they're independent (foster care or ward of the court after 13, emancipated, unaccompanied homeless youth, married, veteran, or supporting a child; rare). Save each with set_aid_details as soon as they answer. "Skip" or "not sure" moves on; these never block the interview, and a student in a hurry can do them later on Recs & aid. Never ask for a Social Security number, FSA ID, password, account numbers or tax documents.
 7. early ("your list"): three short questions, saved with set_list_preferences:
    - The mix, as single-choice tiles with a hint each: "More reach schools" (ambitious), "Balanced" (balanced), "More likely schools" (conservative). One line on what each means for them.
    - Two numbers (kind "number"): how many applications they're willing to write supplemental essays for (suppCount; all UCs together count as one, since the PIQs are shared), and how many quick applications with no supplements they want (noSuppCount; 0 is fine). Give a typical range in the lead-in (most students: 6-10 with supplements, 2-5 without). Ask each one separately; never fill one in from the other or from a total they mentioned (Forge only saves numbers the student gave). If they aren't sure, recommend counts for their mix (ambitious 9 + 3, balanced 8 + 3, conservative 6 + 4), and once they agree save them with countsRecommended true.
@@ -71,6 +72,7 @@ export function buildInterviewPrompt(ws: Workspace, scattergrams = ""): string {
   const gap = firstIncomplete(ws);
   const missing = SECTIONS.map((s) => [s, missingFields(ws, s)] as const).filter(([, m]) => m.length).map(([s, m]) => `${SECTION_LABELS[s]}: ${m.join(", ")}`);
   const notes = SECTIONS.filter((s) => iv.notes[s]).map((s) => `${SECTION_LABELS[s]}: ${iv.notes[s]}`);
+  const optional = optionalFields(ws, "money");
   const phase = iv.phase === "interview"
     ? `Current section: ${iv.section}. First section with gaps: ${gap ?? "none — call advance_section to \"list\" now"}.`
     : iv.phase === "list" && !iv.listDraft?.length
@@ -83,7 +85,7 @@ export function buildInterviewPrompt(ws: Workspace, scattergrams = ""): string {
     SECTION_GUIDE,
     GPA_SCALE_RULES,
     LIST_RULES,
-    `## Where things stand\n${phase}\nStill missing: ${missing.join("; ") || "nothing"}.\nDeeper answers so far: ${iv.deep.length}.\nSection notes:\n${notes.join("\n") || "none yet"}`,
+    `## Where things stand\n${phase}\nStill missing: ${missing.join("; ") || "nothing"}.\n${optional.length ? `Optional, never required (Money): ${optional.join("; ")}.\n` : ""}Deeper answers so far: ${iv.deep.length}.\nSection notes:\n${notes.join("\n") || "none yet"}`,
     `## Profile snapshot\n${snapshot(ws)}`,
     ...(scattergrams ? [scatterSection(scattergrams)] : []),
   ].join("\n\n");
