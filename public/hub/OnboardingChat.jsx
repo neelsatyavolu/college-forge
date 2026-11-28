@@ -95,9 +95,10 @@ function OcConnectGate({ onConnected, onCancel }) {
         </div>
       ) : (
         <div className="oc-connect-step">
-          <p>Sign in on the tab that opened. When it lands on a page that won't load, copy that page's whole address and paste it here.</p>
+          <p>Sign in to {flow === "grok" ? "Grok" : "ChatGPT"} on the tab that opened:</p>
+          <window.CfConnectSteps provider={flow} />
           <div className="oc-tile-row">
-            <input className="oc-input" placeholder="http://localhost:1455/auth/callback?code=…" value={callback} onChange={(e) => setCallback(e.target.value)} />
+            <input className="oc-input" aria-label={(flow === "grok" ? "Grok" : "ChatGPT") + " sign-in response"} autoComplete="off" spellCheck={false} placeholder={window.cfConnectPlaceholder(flow)} value={callback} onChange={(e) => setCallback(e.target.value)} />
             <OcBtn size="sm" disabled={busy || !callback.trim()} onClick={complete}>Connect</OcBtn>
           </div>
           <button type="button" className="oc-link" onClick={() => { setFlow(null); setCallback(""); }}>Use a different AI</button>
@@ -148,6 +149,9 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   const [error, setError] = React.useState("");
   const [cards, setCards] = React.useState([]);
   const [draft, setDraft] = React.useState("");
+  /** The answer whose turn failed: { text, run? }. "Try again" resends it; "Edit answer" moves it into the answer box. */
+  const [retry, setRetry] = React.useState(null);
+  const [chatOpen, setChatOpen] = React.useState(false);
   // The answer box grows with what the student types (2 lines up to about 8), then scrolls.
   const boxRef = React.useRef(null);
   React.useLayoutEffect(() => {
@@ -201,8 +205,9 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   /** Sends one student message to the interviewer and streams the reply. Resolves true when the reply arrived. */
   const send = async (text) => {
     if (busyRef.current || !text.trim()) return false;
-    setError(""); setBusy(true); setStatus("Thinking…");
-    const history = [...turnsRef.current, { role: "user", content: text }];
+    setError(""); setRetry(null); setBusy(true); setStatus("Thinking…");
+    const before = turnsRef.current;
+    const history = [...before, { role: "user", content: text }];
     setTurns([...history, { role: "assistant", content: "" }]);
     let reply = "", ui = null;
     try {
@@ -223,8 +228,13 @@ function OnboardingChat({ data, onComplete, onCancel }) {
       if (nextIv?.phase === "list" && !(nextIv.listDraft || []).length && !(ui && ui.list) && text !== OC_SHOW_LIST) return send(OC_SHOW_LIST);
       return true;
     } catch (e) {
+      // Put the thread back as it was before this answer, so the last question keeps its tiles,
+      // and keep the answer itself so "Try again" resends exactly it (or the student edits it first).
       setError(e.message || "Something went wrong. Try again.");
-      setTurns(history);
+      setTurns(before);
+      setRetry({ text });
+      // A tile may have saved to the profile before the AI failed; fresh data keeps its next save from conflicting.
+      reload().catch(() => {});
     }
     setBusy(false); setStatus("");
     return false;
@@ -352,11 +362,12 @@ function OnboardingChat({ data, onComplete, onCancel }) {
 
   /** After the student confirms the strategy: save it, then build rounds and the timeline. */
   const confirmStrategy = async () => {
-    if (!(await send(OC_CONFIRM))) return;
+    if (!(await send(OC_CONFIRM))) { setRetry({ text: OC_CONFIRM, run: confirmStrategy }); return; }
     try {
       await window.cfApi.postAction("set-interview-phase", { phase: "plan", strategyConfirmed: true });
     } catch (e) {
       setError(e.message || "Couldn't save that. Try again.");
+      setRetry({ text: OC_CONFIRM, run: confirmStrategy });
       return;
     }
     await runPlan();
@@ -381,6 +392,19 @@ function OnboardingChat({ data, onComplete, onCancel }) {
   const sectionIndex = Math.max(0, OC_SECTIONS.findIndex(([id]) => id === iv?.section));
   const lastAssistant = turns.map((t, i) => (t.role === "assistant" ? i : -1)).filter((i) => i >= 0).pop();
   const lastLive = !!(turns[lastAssistant] && turns[lastAssistant].ui && phase !== "research");
+  // While the quick-start form is the live question, the answer box steps aside: a message typed
+  // there would end the form's turn and take the form away. The student can still choose to chat.
+  const formLive = lastLive && turns[lastAssistant].ui.question?.kind === "intake";
+  const tryAgain = () => {
+    if (phase === "research") return runResearch();
+    if (phase === "plan") return runPlan();
+    if (retry) return retry.run ? retry.run() : send(retry.text);
+    setError("");
+  };
+  const editRetry = () => {
+    setDraft(retry.text); setRetry(null); setError(""); setChatOpen(true);
+    requestAnimationFrame(() => boxRef.current && boxRef.current.focus());
+  };
   const stepLabel = phase === "interview" ? OC_SECTIONS[sectionIndex][1] : { list: "Your list", research: "Research", strategy: "Early plan", plan: "Timeline", done: "Done" }[phase];
   return (
     <div className="oc-shell oc-shell--chat">
@@ -407,15 +431,27 @@ function OnboardingChat({ data, onComplete, onCancel }) {
         ))}
         {!turns.some((t) => t.board) && cards.length > 0 && <window.OcResearchBoard cards={cards} />}
         {status && <p className="oc-status" role="status">{status}</p>}
-        {error && <div className="oc-error" role="alert">{error} <button type="button" className="oc-link" onClick={() => (phase === "research" ? runResearch() : phase === "plan" ? runPlan() : setError(""))}>Try again</button></div>}
+        {error && (
+          <div className="oc-error" role="alert">{error}{" "}
+            <button type="button" className="oc-link" disabled={busy} onClick={tryAgain}>Try again</button>
+            {retry && !retry.run && !OC_HIDDEN.has(retry.text) && <>{" "}<button type="button" className="oc-link" disabled={busy} onClick={editRetry}>Edit answer first</button></>}
+          </div>
+        )}
         <div ref={endRef} />
       </main>
       </div>
+      {formLive && !chatOpen && !draft ? (
+        <div className="oc-composer oc-composer--form">
+          <span className="oc-tile-note">Fill in the form above and press Save and continue.</span>
+          <button type="button" className="oc-link" disabled={busy} onClick={() => { setChatOpen(true); requestAnimationFrame(() => boxRef.current && boxRef.current.focus()); }}>Skip the form and just chat</button>
+        </div>
+      ) : (
       <form className="oc-composer" onSubmit={(e) => { e.preventDefault(); const t = draft; setDraft(""); send(t); }}>
         <textarea ref={boxRef} className="oc-input oc-composer-box" rows={2} aria-label="Your answer" placeholder={lastLive ? "Or type your answer…" : "Type your answer…"} value={draft} disabled={busy || phase === "research" || phase === "plan"}
           onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); const t = draft; setDraft(""); send(t); } }} />
         <OcBtn size="sm" type="submit" disabled={busy || !draft.trim()}>Send</OcBtn>
       </form>
+      )}
     </div>
   );
 }
