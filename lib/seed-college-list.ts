@@ -115,7 +115,7 @@ function quotaForSlots(ambition: ListAmbition, n: number): Record<Tier, number> 
   return { reach: Math.max(0, reach), target: Math.max(0, target), safety: Math.max(0, safety) };
 }
 
-/** Default application count when the student leaves it unset (8–15). */
+/** Default application count when the student leaves it unset (5–30 when set). */
 export const DEFAULT_APP_COUNT = 12;
 
 /**
@@ -721,7 +721,7 @@ export function seedCollegeList(params: SeedCollegeListParams): College[] {
       : typeof params.targetCount === "number"
         ? params.targetCount
         : DEFAULT_APP_COUNT;
-  const appSlots = Math.max(8, Math.min(15, Math.round(rawApp)));
+  const appSlots = Math.max(5, Math.min(30, Math.round(rawApp)));
 
   // Dedup existing must-includes first
   const kept: College[] = dedupeColleges(params.existing.map((c) => ({ ...c }))).map(withUcTag);

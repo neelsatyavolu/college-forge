@@ -331,7 +331,7 @@ const TIER_WORD: Record<Tier, string> = { reach: "reach", target: "target", safe
 
 function listQuotas(prefs: Workspace["onboarding"]["listPrefs"]) {
   const requested = prefs?.appCount;
-  const count = typeof requested === "number" && Number.isFinite(requested) ? Math.max(8, Math.min(15, Math.round(requested))) : 12;
+  const count = typeof requested === "number" && Number.isFinite(requested) ? Math.max(5, Math.min(30, Math.round(requested))) : 12;
   const [reachShare, targetShare] = SHARES[prefs?.ambition ?? "balanced"] ?? SHARES.balanced;
   const reach = Math.round(count * reachShare); const target = Math.round(count * targetShare);
   return { count, goals: { reach, target, safety: count - reach - target } as Record<Tier, number> };

@@ -84,7 +84,7 @@ export type OnboardingListPrefs = {
   /**
    * Target number of *applications* (not campuses).
    * All UC campuses count as 1. Null/omitted → seeder default (~12).
-   * Typical range 8–15.
+   * Typical range 8–15; up to 30.
    */
   appCount?: number | null;
   /** Campus settings the student prefers (urban, suburban, rural, college-town). */

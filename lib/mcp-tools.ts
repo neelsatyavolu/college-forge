@@ -478,7 +478,7 @@ export const TOOLS: Tool[] = [
   tool({
     name: "update_list_preferences",
     title: "Update college-list preferences",
-    description: "Changes the preferences Forge uses to build the college list. Only the fields you pass change. ambition: ambitious, balanced or conservative. app_count: 8-15 applications. regions: northeast, mid-atlantic, south, midwest, west, any. settings: urban, suburban, rural, college-town. budget: lt15, 15-30, 30-50, 50plus or unsure (thousands of dollars a year). need_aid: yes or no. The saved list itself does not change.",
+    description: "Changes the preferences Forge uses to build the college list. Only the fields you pass change. ambition: ambitious, balanced or conservative. app_count: 1-30 applications. regions: northeast, mid-atlantic, south, midwest, west, any. settings: urban, suburban, rural, college-town. budget: lt15, 15-30, 30-50, 50plus or unsure (thousands of dollars a year). need_aid: yes or no. The saved list itself does not change.",
     input: z.object({
       ambition: z.enum(["ambitious", "balanced", "conservative"]).or(z.literal("")).optional(),
       app_count: z.number().optional(),
