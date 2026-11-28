@@ -5,12 +5,18 @@ const { Button: OcButton } = window.CollegeForgeDesignSystem_e95e63;
 
 /** **bold** and [text](https://…) inside one line. Only http(s) links; everything else stays text. */
 function ocInline(text, key) {
-  const parts = String(text).split(/(\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^)\s]+\))/g);
+  const parts = String(text).split(/(\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)<>"]+[^\s)<>".,;:!?])/g);
   return parts.map((seg, i) => {
     const k = `${key}-${i}`;
     if (/^\*\*[^*]+\*\*$/.test(seg)) return <strong key={k}>{seg.slice(2, -2)}</strong>;
     const link = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(seg);
     if (link) return <a key={k} href={link[2]} target="_blank" rel="noopener noreferrer">{link[1]}</a>;
+    // A bare address shows as its site name ("apply.emory.edu"), not the whole URL.
+    if (/^https?:\/\//.test(seg)) {
+      let host = seg;
+      try { host = new URL(seg).hostname.replace(/^www\./, ""); } catch (e) { return seg; }
+      return <a key={k} href={seg} target="_blank" rel="noopener noreferrer">{host}</a>;
+    }
     return seg;
   });
 }
@@ -367,15 +373,27 @@ function OcStrategyTiles({ strategy, disabled, onConfirm, onAnswer }) {
 
 const OC_STAGE = { queued: "Waiting", searching: "Searching", reading: "Reading sources", saved: "Saving facts", done: "Verified", needs_review: "Needs a second look" };
 
-function OcResearchBoard({ cards }) {
-  return (
+/** Live per-school research cards; once research is done, a one-line summary that opens to the cards. */
+function OcResearchBoard({ cards, done }) {
+  const [open, setOpen] = React.useState(false);
+  const verified = cards.filter((c) => c.stage === "done").length;
+  const review = cards.filter((c) => c.stage === "needs_review").length;
+  const grid = (
     <div className="oc-research" aria-live="polite">
       {cards.map((c) => (
         <article key={c.slug} className={"oc-research-card is-" + c.stage}>
           <div className="oc-research-top"><h5>{c.name}</h5><span>{OC_STAGE[c.stage] || c.stage}</span></div>
-          <p>{[c.facts ? `${c.facts} facts saved` : c.note, c.round].filter(Boolean).join(" · ") || " "}</p>
+          <p>{[c.facts ? `${c.facts} facts saved` : c.note, c.round].filter(Boolean).join(" · ") || "\u00a0"}</p>
         </article>
       ))}
+    </div>
+  );
+  if (!done) return grid;
+  return (
+    <div className="oc-research-done">
+      <p><strong>Research done:</strong> {verified} {verified === 1 ? "school" : "schools"} verified{review ? `, ${review} to double-check later` : ""}.{" "}
+        <button type="button" className="oc-link" aria-expanded={open} onClick={() => setOpen((v) => !v)}>{open ? "Hide schools" : "Show schools"}</button></p>
+      {open && grid}
     </div>
   );
 }
