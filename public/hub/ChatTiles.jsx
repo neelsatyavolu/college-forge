@@ -3,13 +3,13 @@
 // because hub scripts share one global scope.
 const { Button: OcButton } = window.CollegeForgeDesignSystem_e95e63;
 
-/** **bold** and [text](https://…) inside one line. Only http(s) links; everything else stays text. */
+/** **bold** and [text](https://… or /path) inside one line. Only http(s) and same-site links; everything else stays text. */
 function ocInline(text, key) {
-  const parts = String(text).split(/(\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)<>"]+[^\s)<>".,;:!?])/g);
+  const parts = String(text).split(/(\*\*[^*\n]+\*\*|\[[^\]\n]+\]\((?:https?:\/\/|\/(?!\/))[^)\s]+\)|https?:\/\/[^\s)<>"]+[^\s)<>".,;:!?])/g);
   return parts.map((seg, i) => {
     const k = `${key}-${i}`;
     if (/^\*\*[^*]+\*\*$/.test(seg)) return <strong key={k}>{seg.slice(2, -2)}</strong>;
-    const link = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(seg);
+    const link = /^\[([^\]]+)\]\(((?:https?:\/\/|\/(?!\/))[^)\s]+)\)$/.exec(seg);
     if (link) return <a key={k} href={link[2]} target="_blank" rel="noopener noreferrer">{link[1]}</a>;
     // A bare address shows as its site name ("apply.emory.edu"), not the whole URL.
     if (/^https?:\/\//.test(seg)) {
@@ -21,15 +21,56 @@ function ocInline(text, key) {
   });
 }
 
-/** The AI's Markdown as React elements (no HTML): paragraphs, line breaks, "- " lists, bold, links. */
+const OC_ROW = /^\s*\|.*\|\s*$/;
+const OC_RULE = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+const ocCells = (l) => l.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+
+/** A Markdown table (header row, rule row, body rows) as a scrollable table. */
+function OcTable({ lines, k }) {
+  const head = ocCells(lines[0]);
+  const right = ocCells(lines[1]).map((c) => /^-+:$/.test(c));
+  const rows = lines.slice(2).map(ocCells);
+  return (
+    <div className="oc-rich-table-wrap" key={k}>
+      <table className="oc-rich-table">
+        <thead><tr>{head.map((c, j) => <th key={j} style={right[j] ? { textAlign: "right" } : undefined}>{ocInline(c, `${k}-h${j}`)}</th>)}</tr></thead>
+        <tbody>{rows.map((r, ri) => <tr key={ri}>{head.map((_, j) => <td key={j} style={right[j] ? { textAlign: "right" } : undefined}>{ocInline(r[j] || "", `${k}-${ri}-${j}`)}</td>)}</tr>)}</tbody>
+      </table>
+    </div>
+  );
+}
+
+/** One block of lines (no blank lines inside): a list, a numbered list or a paragraph. */
+function ocBlock(lines, k) {
+  if (lines.every((l) => /^\s*[-*•]\s+/.test(l))) {
+    return <ul key={k} className="oc-rich-list">{lines.map((l, j) => <li key={j}>{ocInline(l.replace(/^\s*[-*•]\s+/, ""), `${k}-${j}`)}</li>)}</ul>;
+  }
+  if (lines.every((l) => /^\s*\d+[.)]\s+/.test(l))) {
+    return <ol key={k} className="oc-rich-list">{lines.map((l, j) => <li key={j}>{ocInline(l.replace(/^\s*\d+[.)]\s+/, ""), `${k}-${j}`)}</li>)}</ol>;
+  }
+  return <p key={k} className="oc-rich-p">{lines.map((l, j) => <React.Fragment key={j}>{j > 0 && <br />}{ocInline(l, `${k}-${j}`)}</React.Fragment>)}</p>;
+}
+
+/** The AI's Markdown as React elements (no HTML): paragraphs, line breaks, lists, tables, bold, links. */
 function ocRich(md) {
-  return String(md || "").split(/\n{2,}/).filter((b) => b.trim()).map((block, i) => {
+  const out = [];
+  String(md || "").split(/\n{2,}/).filter((b) => b.trim()).forEach((block, i) => {
+    // A table can sit right under a line of text with no blank line between them.
     const lines = block.split("\n");
-    if (lines.every((l) => /^\s*[-*•]\s+/.test(l))) {
-      return <ul key={i} className="oc-rich-list">{lines.map((l, j) => <li key={j}>{ocInline(l.replace(/^\s*[-*•]\s+/, ""), `${i}-${j}`)}</li>)}</ul>;
+    let text = [];
+    for (let j = 0; j < lines.length; j++) {
+      if (OC_ROW.test(lines[j]) && j + 1 < lines.length && OC_RULE.test(lines[j + 1])) {
+        if (text.length) out.push(ocBlock(text, `${i}-${j}t`));
+        text = [];
+        let end = j + 2;
+        while (end < lines.length && OC_ROW.test(lines[end])) end++;
+        out.push(<OcTable key={`${i}-${j}`} k={`${i}-${j}`} lines={lines.slice(j, end)} />);
+        j = end - 1;
+      } else text.push(lines[j]);
     }
-    return <p key={i} className="oc-rich-p">{lines.map((l, j) => <React.Fragment key={j}>{j > 0 && <br />}{ocInline(l, `${i}-${j}`)}</React.Fragment>)}</p>;
+    if (text.length) out.push(ocBlock(text, `${i}`));
   });
+  return out;
 }
 
 function OcChoiceTiles({ q, disabled, onAnswer }) {
