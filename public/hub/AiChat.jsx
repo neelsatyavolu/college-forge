@@ -205,15 +205,9 @@ function AttachIcon({ size = 18 }) {
   );
 }
 
-// Minimal markdown: **bold** + paragraphs.
+// The copilot's Markdown: the same renderer as onboarding (ChatTiles.jsx ocRich): lists, tables, links.
 function renderRich(md) {
-  return String(md).split("\n\n").map((para, i) => (
-    <p key={i} style={{ margin: "0 0 8px" }}>
-      {para.split(/(\*\*[^*]+\*\*)/g).map((seg, j) =>
-        seg.startsWith("**") ? <strong key={j} style={{ fontWeight: 600, color: "inherit" }}>{seg.slice(2, -2)}</strong> : <React.Fragment key={j}>{seg}</React.Fragment>
-      )}
-    </p>
-  ));
+  return <div className="oc-rich">{window.ocRich(md)}</div>;
 }
 
 function TypingDots() {
